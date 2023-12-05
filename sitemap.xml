@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://nmfs-opensci.github.io/NOAA-quarto-simple/content/publishing.html</loc>
-    <lastmod>2023-12-05T23:11:39.649Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/content/publishing.html</loc>
+    <lastmod>2023-12-05T23:29:04.470Z</lastmod>
   </url>
   <url>
-    <loc>https://nmfs-opensci.github.io/NOAA-quarto-simple/content/NEFSC-YT-case-study.html</loc>
-    <lastmod>2023-12-05T23:11:39.013Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/content/NEFSC-YT-case-study.html</loc>
+    <lastmod>2023-12-05T23:29:03.850Z</lastmod>
   </url>
   <url>
-    <loc>https://nmfs-opensci.github.io/NOAA-quarto-simple/content/rmarkdown.html</loc>
-    <lastmod>2023-12-05T23:11:37.717Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/content/rmarkdown.html</loc>
+    <lastmod>2023-12-05T23:29:02.646Z</lastmod>
   </url>
   <url>
-    <loc>https://nmfs-opensci.github.io/NOAA-quarto-simple/content/customizing.html</loc>
-    <lastmod>2023-12-05T23:11:36.145Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/content/customizing.html</loc>
+    <lastmod>2023-12-05T23:29:00.914Z</lastmod>
   </url>
   <url>
-    <loc>https://nmfs-opensci.github.io/NOAA-quarto-simple/index.html</loc>
-    <lastmod>2023-12-05T23:11:35.281Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/index.html</loc>
+    <lastmod>2023-12-05T23:29:00.054Z</lastmod>
   </url>
   <url>
-    <loc>https://nmfs-opensci.github.io/NOAA-quarto-simple/content/rendering.html</loc>
-    <lastmod>2023-12-05T23:11:36.461Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/content/rendering.html</loc>
+    <lastmod>2023-12-05T23:29:01.210Z</lastmod>
   </url>
   <url>
-    <loc>https://nmfs-opensci.github.io/NOAA-quarto-simple/content/acknowledgements.html</loc>
-    <lastmod>2023-12-05T23:11:37.993Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/content/acknowledgements.html</loc>
+    <lastmod>2023-12-05T23:29:02.910Z</lastmod>
   </url>
   <url>
-    <loc>https://nmfs-opensci.github.io/NOAA-quarto-simple/content/case-study-template.html</loc>
-    <lastmod>2023-12-05T23:11:39.313Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/content/case-study-template.html</loc>
+    <lastmod>2023-12-05T23:29:04.150Z</lastmod>
   </url>
 </urlset>
