@@ -1,6 +1,6 @@
 # FIMS case studies
 
-This is a [website](https://NOAA-FIMS/case-studies/) (`type: website`) showcasing test cases of the [Fisheries Integrated Modeling System](https://NOAA-FIMS/FIMS/).
+This is a [website](https://noaa-fims.github.io/case-studies/) (`type: website`) showcasing test cases of the [Fisheries Integrated Modeling System](https://NOAA-FIMS/FIMS/).
 
 ## How to add a case study
 
