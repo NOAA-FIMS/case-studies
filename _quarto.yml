@@ -3,9 +3,9 @@ project:
 
 website: 
   page-navigation: true
-  title: "NOAA quarto simple" 
-  site-url: "https://nmfs-opensci.github.io/NOAA-quarto-simple" 
-  repo-url: "https://github.com/nmfs-opensci/NOAA-quarto-simple"
+  title: "NOAA FIMS case studies" 
+  site-url: "https://noaa-fims.github.io/case-studies" 
+  repo-url: "https://github.com/NOAA-FIMS/case-studies"
   repo-actions: [edit, source, issue]
   favicon: images/favicon.ico
   
@@ -33,16 +33,16 @@ website:
     contents:
       - href: index.qmd
         text: Home
-      - href: content/add-content.qmd
-        text: Add content
+      - href: content/case-study-template.qmd
+        text: Case study template
       - href: content/customizing.qmd
         text: Customizing
       - href: content/rendering.qmd
         text: Rendering
       - href: content/rmarkdown.Rmd
         text: R Markdown files
-      - href: content/code.qmd
-        text: Code in your files
+      - href: content/NEFSC-YT-case-study.qmd
+        text: NEFSC yellowtail flounder case study
       - href: content/acknowledgements.qmd
         text: Acknowledgements
 
