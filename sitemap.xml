@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/rmarkdown.html</loc>
-    <lastmod>2023-12-07T18:47:24.240Z</lastmod>
-  </url>
-  <url>
     <loc>https://noaa-fims.github.io/case-studies/content/publishing.html</loc>
-    <lastmod>2023-12-07T18:47:22.744Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/acknowledgements.html</loc>
-    <lastmod>2023-12-07T18:47:22.144Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/customizing.html</loc>
-    <lastmod>2023-12-07T18:47:21.572Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/index.html</loc>
-    <lastmod>2023-12-07T18:47:20.732Z</lastmod>
+    <lastmod>2023-12-07T18:49:55.402Z</lastmod>
   </url>
   <url>
     <loc>https://noaa-fims.github.io/case-studies/content/NEFSC-YT-case-study.html</loc>
-    <lastmod>2023-12-07T18:47:21.884Z</lastmod>
+    <lastmod>2023-12-07T18:49:54.766Z</lastmod>
   </url>
   <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/case-study-template.html</loc>
-    <lastmod>2023-12-07T18:47:22.428Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/content/rmarkdown.html</loc>
+    <lastmod>2023-12-07T18:49:54.202Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/SWFSC-sardine.html</loc>
+    <lastmod>2023-12-07T18:49:52.374Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/index.html</loc>
+    <lastmod>2023-12-07T18:49:51.494Z</lastmod>
   </url>
   <url>
     <loc>https://noaa-fims.github.io/case-studies/content/rendering.html</loc>
-    <lastmod>2023-12-07T18:47:23.032Z</lastmod>
+    <lastmod>2023-12-07T18:49:52.670Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/acknowledgements.html</loc>
+    <lastmod>2023-12-07T18:49:54.466Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/case-study-template.html</loc>
+    <lastmod>2023-12-07T18:49:55.062Z</lastmod>
   </url>
 </urlset>
