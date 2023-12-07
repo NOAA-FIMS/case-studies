@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>NOAA FIMS case studies - Customization</title>
+<title>NOAA FIMS case studies - Customize</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -29,8 +29,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../content/rendering.html" rel="next">
-<link href="../content/case-study-template.html" rel="prev">
 <link href="../images/favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -76,7 +74,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../content/customizing.html">Customizing</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Customize</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -120,7 +118,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../content/customizing.html" class="sidebar-item-text sidebar-link active">
+  <a href="../content/customizing.qmd" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Customizing</span></a>
   </div>
 </li>
@@ -158,17 +156,25 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#quarto-documentation" id="toc-quarto-documentation" class="nav-link active" data-scroll-target="#quarto-documentation">Quarto documentation</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#edit-and-add-your-pages" id="toc-edit-and-add-your-pages" class="nav-link active" data-scroll-target="#edit-and-add-your-pages">Edit and add your pages</a></li>
+  <li><a href="#add-a-chunk-of-code-describing-your-setup" id="toc-add-a-chunk-of-code-describing-your-setup" class="nav-link" data-scroll-target="#add-a-chunk-of-code-describing-your-setup">Add a chunk of code describing your setup</a></li>
+  <li><a href="#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make" id="toc-add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make" class="nav-link" data-scroll-target="#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make">Add a bulleted list and script describing simplifications you had to make</a></li>
+  <li><a href="#add-your-script-that-sets-up-and-runs-the-model" id="toc-add-your-script-that-sets-up-and-runs-the-model" class="nav-link" data-scroll-target="#add-your-script-that-sets-up-and-runs-the-model">Add your script that sets up and runs the model</a></li>
+  <li><a href="#add-your-comparison-figures" id="toc-add-your-comparison-figures" class="nav-link" data-scroll-target="#add-your-comparison-figures">Add your comparison figures</a></li>
+  <li><a href="#add-comparison-tables" id="toc-add-comparison-tables" class="nav-link" data-scroll-target="#add-comparison-tables">Add comparison tables</a></li>
+  <li><a href="#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability" id="toc-what-was-your-experience-using-fims-what-could-we-do-to-improve-usability" class="nav-link" data-scroll-target="#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability">What was your experience using FIMS? What could we do to improve usability?</a></li>
+  <li><a href="#list-any-issues-that-you-ran-into-or-found" id="toc-list-any-issues-that-you-ran-into-or-found" class="nav-link" data-scroll-target="#list-any-issues-that-you-ran-into-or-found">List any issues that you ran into or found</a></li>
+  <li><a href="#what-features-are-most-important-to-add-based-on-this-case-study" id="toc-what-features-are-most-important-to-add-based-on-this-case-study" class="nav-link" data-scroll-target="#what-features-are-most-important-to-add-based-on-this-case-study">What features are most important to add based on this case study?</a></li>
+  <li><a href="#add-your-pages-to-the-project" id="toc-add-your-pages-to-the-project" class="nav-link" data-scroll-target="#add-your-pages-to-the-project">Add your pages to the project</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/NOAA-FIMS/case-studies/edit/main/content/customizing.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/NOAA-FIMS/case-studies/blob/main/content/customizing.qmd" class="toc-action">View source</a></p><p><a href="https://github.com/NOAA-FIMS/case-studies/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/NOAA-FIMS/case-studies/edit/main/content/SWFSC-sardine.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/NOAA-FIMS/case-studies/blob/main/content/SWFSC-sardine.qmd" class="toc-action">View source</a></p><p><a href="https://github.com/NOAA-FIMS/case-studies/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Customization</h1>
+<h1 class="title">Customize</h1>
 </div>
 
 
@@ -183,18 +189,49 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="quarto-documentation" class="level2">
-<h2 class="anchored" data-anchor-id="quarto-documentation">Quarto documentation</h2>
-<p>Quarto allow many bells and whistles to make nice output. Read the documentation here <a href="https://quarto.org/docs/guide/">Quarto documentation</a>.</p>
+<section id="edit-and-add-your-pages" class="level2">
+<h2 class="anchored" data-anchor-id="edit-and-add-your-pages">Edit and add your pages</h2>
+<p>Each page should start with</p>
+<pre><code>---
+title: your title
+---</code></pre>
+<p>and the first header will be the 2nd level, so <code>##</code>. Note, there are situations where you leave off</p>
+<pre><code>---
+title: your title
+---</code></pre>
+<p>and start the qmd file with a level header <code>#</code>, but if using the default title yaml (in the <code>---</code> fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation).</p>
 </section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
-<p>Looking at other people’s Quarto code is a great way to figure out how to do stuff. Most will have a link to a GitHub repo where you can see the raw code. Look for a link to edit page or see source code. This will usually be on the right. Or look for the GitHub icon somewhere.</p>
+<section id="add-a-chunk-of-code-describing-your-setup" class="level2">
+<h2 class="anchored" data-anchor-id="add-a-chunk-of-code-describing-your-setup">Add a chunk of code describing your setup</h2>
+<p>Case study files should include: * R version * TMB version * FIMS commit * Name of your stock * Name of your region * Name of the analyst</p>
+</section>
+<section id="add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make" class="level2">
+<h2 class="anchored" data-anchor-id="add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make">Add a bulleted list and script describing simplifications you had to make</h2>
+<p>How I simplified my assessment * Remove seasonality * etc.</p>
+</section>
+<section id="add-your-script-that-sets-up-and-runs-the-model" class="level2">
+<h2 class="anchored" data-anchor-id="add-your-script-that-sets-up-and-runs-the-model">Add your script that sets up and runs the model</h2>
+</section>
+<section id="add-your-comparison-figures" class="level2">
+<h2 class="anchored" data-anchor-id="add-your-comparison-figures">Add your comparison figures</h2>
+</section>
+<section id="add-comparison-tables" class="level2">
+<h2 class="anchored" data-anchor-id="add-comparison-tables">Add comparison tables</h2>
+</section>
+<section id="what-was-your-experience-using-fims-what-could-we-do-to-improve-usability" class="level2">
+<h2 class="anchored" data-anchor-id="what-was-your-experience-using-fims-what-could-we-do-to-improve-usability">What was your experience using FIMS? What could we do to improve usability?</h2>
+</section>
+<section id="list-any-issues-that-you-ran-into-or-found" class="level2">
+<h2 class="anchored" data-anchor-id="list-any-issues-that-you-ran-into-or-found">List any issues that you ran into or found</h2>
+<p>Please <a href="https://github.com/NOAA-FIMS/FIMS/issues/new/choose">open an issue</a> if you found something new.</p>
+</section>
+<section id="what-features-are-most-important-to-add-based-on-this-case-study" class="level2">
+<h2 class="anchored" data-anchor-id="what-features-are-most-important-to-add-based-on-this-case-study">What features are most important to add based on this case study?</h2>
+</section>
+<section id="add-your-pages-to-the-project" class="level2">
+<h2 class="anchored" data-anchor-id="add-your-pages-to-the-project">Add your pages to the project</h2>
 <ul>
-<li><a href="https://quarto.org/docs/gallery/">Quarto gallery</a></li>
-<li><a href="https://nmfs-openscapes.github.io/">nmfs-openscapes</a></li>
-<li><a href="https://thefaylab.github.io/lab-manual/">Faye lab manual</a></li>
-<li><a href="https://nmfs-opensci.github.io/quarto_titlepages/">quarto-titlepages</a> Note the link to edit is broken. Go to repo and look in <code>documentation</code> directory.</li>
+<li>Add the files to <code>_quarto.yml</code></li>
 </ul>
 
 
@@ -549,18 +586,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="../content/case-study-template.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Case study template</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="../content/rendering.html" class="pagination-link">
-        <span class="nav-page-text">Rendering</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">

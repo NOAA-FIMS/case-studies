@@ -30,23 +30,79 @@
   {
     "objectID": "content/NEFSC-YT-case-study.html",
     "href": "content/NEFSC-YT-case-study.html",
-    "title": "Rendering with Code",
+    "title": "Customize",
     "section": "",
-    "text": "You can have code (R, Python or Julia) in your qmd file. You will need to have these installed on your local computer, but presumably you do already if you are adding code to your qmd files.\nx &lt;- c(5, 15, 25, 35, 45, 55)\ny &lt;- c(5, 20, 14, 32, 22, 38)\nlm(x ~ y)\n\n\nCall:\nlm(formula = x ~ y)\n\nCoefficients:\n(Intercept)            y  \n      1.056        1.326"
+    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation)."
   },
   {
-    "objectID": "content/NEFSC-YT-case-study.html#modify-the-github-action",
-    "href": "content/NEFSC-YT-case-study.html#modify-the-github-action",
-    "title": "Rendering with Code",
-    "section": "Modify the GitHub Action",
-    "text": "Modify the GitHub Action\nYou will need to change the GitHub Action in .github/workflows to install these and any needed packages in order for GitHub to be able to render your webpage. The GitHub Action install R since I used that in code.qmd. If you use Python or Julia instead, then you will need to update the GitHub Action to install those.\nIf getting the GitHub Action to work is too much hassle (and that definitely happens), you can alway render locally and publish to the gh-pages branch. If you do this, make sure to delete or rename the GitHub Action to something like\nrender-and-publish.old_yml\nso GitHub does not keep trying to run it. Nothing bad will happen if you don’t do this, but if you are not using the action (because it keeps failing), then you don’t need GitHub to run it."
+    "objectID": "content/NEFSC-YT-case-study.html#edit-and-add-your-pages",
+    "href": "content/NEFSC-YT-case-study.html#edit-and-add-your-pages",
+    "title": "Customize",
+    "section": "",
+    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation)."
   },
   {
-    "objectID": "content/NEFSC-YT-case-study.html#render-locally-and-publish-to-gh-pages-branch",
-    "href": "content/NEFSC-YT-case-study.html#render-locally-and-publish-to-gh-pages-branch",
-    "title": "Rendering with Code",
-    "section": "Render locally and publish to gh-pages branch",
-    "text": "Render locally and publish to gh-pages branch\nTo render locally and push up to the gh-pages branch, open a terminal window and then cd to the directory with the Quarto project. Type this in the terminal:\nquarto render gh-pages"
+    "objectID": "content/NEFSC-YT-case-study.html#add-a-chunk-of-code-describing-your-setup",
+    "href": "content/NEFSC-YT-case-study.html#add-a-chunk-of-code-describing-your-setup",
+    "title": "Customize",
+    "section": "Add a chunk of code describing your setup",
+    "text": "Add a chunk of code describing your setup\nCase study files should include: * R version * TMB version * FIMS commit * Name of your stock * Name of your region * Name of the analyst"
+  },
+  {
+    "objectID": "content/NEFSC-YT-case-study.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
+    "href": "content/NEFSC-YT-case-study.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
+    "title": "Customize",
+    "section": "Add a bulleted list and script describing simplifications you had to make",
+    "text": "Add a bulleted list and script describing simplifications you had to make\nHow I simplified my assessment * Remove seasonality * etc."
+  },
+  {
+    "objectID": "content/NEFSC-YT-case-study.html#add-your-script-that-sets-up-and-runs-the-model",
+    "href": "content/NEFSC-YT-case-study.html#add-your-script-that-sets-up-and-runs-the-model",
+    "title": "Customize",
+    "section": "Add your script that sets up and runs the model",
+    "text": "Add your script that sets up and runs the model"
+  },
+  {
+    "objectID": "content/NEFSC-YT-case-study.html#add-your-comparison-figures",
+    "href": "content/NEFSC-YT-case-study.html#add-your-comparison-figures",
+    "title": "Customize",
+    "section": "Add your comparison figures",
+    "text": "Add your comparison figures"
+  },
+  {
+    "objectID": "content/NEFSC-YT-case-study.html#add-comparison-tables",
+    "href": "content/NEFSC-YT-case-study.html#add-comparison-tables",
+    "title": "Customize",
+    "section": "Add comparison tables",
+    "text": "Add comparison tables"
+  },
+  {
+    "objectID": "content/NEFSC-YT-case-study.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "href": "content/NEFSC-YT-case-study.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "title": "Customize",
+    "section": "What was your experience using FIMS? What could we do to improve usability?",
+    "text": "What was your experience using FIMS? What could we do to improve usability?"
+  },
+  {
+    "objectID": "content/NEFSC-YT-case-study.html#list-any-issues-that-you-ran-into-or-found",
+    "href": "content/NEFSC-YT-case-study.html#list-any-issues-that-you-ran-into-or-found",
+    "title": "Customize",
+    "section": "List any issues that you ran into or found",
+    "text": "List any issues that you ran into or found\nPlease open an issue if you found something new."
+  },
+  {
+    "objectID": "content/NEFSC-YT-case-study.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "href": "content/NEFSC-YT-case-study.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "title": "Customize",
+    "section": "What features are most important to add based on this case study?",
+    "text": "What features are most important to add based on this case study?"
+  },
+  {
+    "objectID": "content/NEFSC-YT-case-study.html#add-your-pages-to-the-project",
+    "href": "content/NEFSC-YT-case-study.html#add-your-pages-to-the-project",
+    "title": "Customize",
+    "section": "Add your pages to the project",
+    "text": "Add your pages to the project\n\nAdd the files to _quarto.yml"
   },
   {
     "objectID": "content/rmarkdown.html",
@@ -70,25 +126,81 @@
     "text": "Including Plots\nYou can also embed plots, for example:\n\n\n\n\n\nNote that the echo = FALSE parameter was added to the code chunk to prevent printing of the R code that generated the plot."
   },
   {
-    "objectID": "content/customizing.html",
-    "href": "content/customizing.html",
-    "title": "Customization",
+    "objectID": "content/SWFSC-sardine.html",
+    "href": "content/SWFSC-sardine.html",
+    "title": "Customize",
     "section": "",
-    "text": "Quarto allow many bells and whistles to make nice output. Read the documentation here Quarto documentation."
+    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation)."
   },
   {
-    "objectID": "content/customizing.html#quarto-documentation",
-    "href": "content/customizing.html#quarto-documentation",
-    "title": "Customization",
+    "objectID": "content/SWFSC-sardine.html#edit-and-add-your-pages",
+    "href": "content/SWFSC-sardine.html#edit-and-add-your-pages",
+    "title": "Customize",
     "section": "",
-    "text": "Quarto allow many bells and whistles to make nice output. Read the documentation here Quarto documentation."
+    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation)."
   },
   {
-    "objectID": "content/customizing.html#examples",
-    "href": "content/customizing.html#examples",
-    "title": "Customization",
-    "section": "Examples",
-    "text": "Examples\nLooking at other people’s Quarto code is a great way to figure out how to do stuff. Most will have a link to a GitHub repo where you can see the raw code. Look for a link to edit page or see source code. This will usually be on the right. Or look for the GitHub icon somewhere.\n\nQuarto gallery\nnmfs-openscapes\nFaye lab manual\nquarto-titlepages Note the link to edit is broken. Go to repo and look in documentation directory."
+    "objectID": "content/SWFSC-sardine.html#add-a-chunk-of-code-describing-your-setup",
+    "href": "content/SWFSC-sardine.html#add-a-chunk-of-code-describing-your-setup",
+    "title": "Customize",
+    "section": "Add a chunk of code describing your setup",
+    "text": "Add a chunk of code describing your setup\nCase study files should include: * R version * TMB version * FIMS commit * Name of your stock * Name of your region * Name of the analyst"
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
+    "href": "content/SWFSC-sardine.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
+    "title": "Customize",
+    "section": "Add a bulleted list and script describing simplifications you had to make",
+    "text": "Add a bulleted list and script describing simplifications you had to make\nHow I simplified my assessment * Remove seasonality * etc."
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#add-your-script-that-sets-up-and-runs-the-model",
+    "href": "content/SWFSC-sardine.html#add-your-script-that-sets-up-and-runs-the-model",
+    "title": "Customize",
+    "section": "Add your script that sets up and runs the model",
+    "text": "Add your script that sets up and runs the model"
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#add-your-comparison-figures",
+    "href": "content/SWFSC-sardine.html#add-your-comparison-figures",
+    "title": "Customize",
+    "section": "Add your comparison figures",
+    "text": "Add your comparison figures"
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#add-comparison-tables",
+    "href": "content/SWFSC-sardine.html#add-comparison-tables",
+    "title": "Customize",
+    "section": "Add comparison tables",
+    "text": "Add comparison tables"
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "href": "content/SWFSC-sardine.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "title": "Customize",
+    "section": "What was your experience using FIMS? What could we do to improve usability?",
+    "text": "What was your experience using FIMS? What could we do to improve usability?"
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#list-any-issues-that-you-ran-into-or-found",
+    "href": "content/SWFSC-sardine.html#list-any-issues-that-you-ran-into-or-found",
+    "title": "Customize",
+    "section": "List any issues that you ran into or found",
+    "text": "List any issues that you ran into or found\nPlease open an issue if you found something new."
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "href": "content/SWFSC-sardine.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "title": "Customize",
+    "section": "What features are most important to add based on this case study?",
+    "text": "What features are most important to add based on this case study?"
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#add-your-pages-to-the-project",
+    "href": "content/SWFSC-sardine.html#add-your-pages-to-the-project",
+    "title": "Customize",
+    "section": "Add your pages to the project",
+    "text": "Add your pages to the project\n\nAdd the files to _quarto.yml"
   },
   {
     "objectID": "index.html",

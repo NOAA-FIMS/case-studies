@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>NOAA FIMS case studies - Rendering with Code</title>
+<title>NOAA FIMS case studies - Customize</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,40 +19,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -154,7 +120,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../content/customizing.html" class="sidebar-item-text sidebar-link">
+  <a href="../content/customizing.qmd" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Customizing</span></a>
   </div>
 </li>
@@ -192,8 +158,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#modify-the-github-action" id="toc-modify-the-github-action" class="nav-link active" data-scroll-target="#modify-the-github-action">Modify the GitHub Action</a></li>
-  <li><a href="#render-locally-and-publish-to-gh-pages-branch" id="toc-render-locally-and-publish-to-gh-pages-branch" class="nav-link" data-scroll-target="#render-locally-and-publish-to-gh-pages-branch">Render locally and publish to gh-pages branch</a></li>
+  <li><a href="#edit-and-add-your-pages" id="toc-edit-and-add-your-pages" class="nav-link active" data-scroll-target="#edit-and-add-your-pages">Edit and add your pages</a></li>
+  <li><a href="#add-a-chunk-of-code-describing-your-setup" id="toc-add-a-chunk-of-code-describing-your-setup" class="nav-link" data-scroll-target="#add-a-chunk-of-code-describing-your-setup">Add a chunk of code describing your setup</a></li>
+  <li><a href="#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make" id="toc-add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make" class="nav-link" data-scroll-target="#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make">Add a bulleted list and script describing simplifications you had to make</a></li>
+  <li><a href="#add-your-script-that-sets-up-and-runs-the-model" id="toc-add-your-script-that-sets-up-and-runs-the-model" class="nav-link" data-scroll-target="#add-your-script-that-sets-up-and-runs-the-model">Add your script that sets up and runs the model</a></li>
+  <li><a href="#add-your-comparison-figures" id="toc-add-your-comparison-figures" class="nav-link" data-scroll-target="#add-your-comparison-figures">Add your comparison figures</a></li>
+  <li><a href="#add-comparison-tables" id="toc-add-comparison-tables" class="nav-link" data-scroll-target="#add-comparison-tables">Add comparison tables</a></li>
+  <li><a href="#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability" id="toc-what-was-your-experience-using-fims-what-could-we-do-to-improve-usability" class="nav-link" data-scroll-target="#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability">What was your experience using FIMS? What could we do to improve usability?</a></li>
+  <li><a href="#list-any-issues-that-you-ran-into-or-found" id="toc-list-any-issues-that-you-ran-into-or-found" class="nav-link" data-scroll-target="#list-any-issues-that-you-ran-into-or-found">List any issues that you ran into or found</a></li>
+  <li><a href="#what-features-are-most-important-to-add-based-on-this-case-study" id="toc-what-features-are-most-important-to-add-based-on-this-case-study" class="nav-link" data-scroll-target="#what-features-are-most-important-to-add-based-on-this-case-study">What features are most important to add based on this case study?</a></li>
+  <li><a href="#add-your-pages-to-the-project" id="toc-add-your-pages-to-the-project" class="nav-link" data-scroll-target="#add-your-pages-to-the-project">Add your pages to the project</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/NOAA-FIMS/case-studies/edit/main/content/NEFSC-YT-case-study.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/NOAA-FIMS/case-studies/blob/main/content/NEFSC-YT-case-study.qmd" class="toc-action">View source</a></p><p><a href="https://github.com/NOAA-FIMS/case-studies/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -202,7 +176,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Rendering with Code</h1>
+<h1 class="title">Customize</h1>
 </div>
 
 
@@ -217,32 +191,50 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>You can have code (R, Python or Julia) in your qmd file. You will need to have these installed on your local computer, but presumably you do already if you are adding code to your qmd files.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">15</span>, <span class="dv">25</span>, <span class="dv">35</span>, <span class="dv">45</span>, <span class="dv">55</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">20</span>, <span class="dv">14</span>, <span class="dv">32</span>, <span class="dv">22</span>, <span class="dv">38</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(x <span class="sc">~</span> y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = x ~ y)
-
-Coefficients:
-(Intercept)            y  
-      1.056        1.326  </code></pre>
-</div>
-</div>
-<section id="modify-the-github-action" class="level2">
-<h2 class="anchored" data-anchor-id="modify-the-github-action">Modify the GitHub Action</h2>
-<p>You will need to change the GitHub Action in <code>.github/workflows</code> to install these and any needed packages in order for GitHub to be able to render your webpage. The GitHub Action install R since I used that in <code>code.qmd</code>. If you use Python or Julia instead, then you will need to update the GitHub Action to install those.</p>
-<p>If getting the GitHub Action to work is too much hassle (and that definitely happens), you can alway render locally and publish to the <code>gh-pages</code> branch. If you do this, make sure to delete or rename the GitHub Action to something like</p>
-<pre><code>render-and-publish.old_yml</code></pre>
-<p>so GitHub does not keep trying to run it. Nothing bad will happen if you don’t do this, but if you are not using the action (because it keeps failing), then you don’t need GitHub to run it.</p>
+<section id="edit-and-add-your-pages" class="level2">
+<h2 class="anchored" data-anchor-id="edit-and-add-your-pages">Edit and add your pages</h2>
+<p>Each page should start with</p>
+<pre><code>---
+title: your title
+---</code></pre>
+<p>and the first header will be the 2nd level, so <code>##</code>. Note, there are situations where you leave off</p>
+<pre><code>---
+title: your title
+---</code></pre>
+<p>and start the qmd file with a level header <code>#</code>, but if using the default title yaml (in the <code>---</code> fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation).</p>
 </section>
-<section id="render-locally-and-publish-to-gh-pages-branch" class="level2">
-<h2 class="anchored" data-anchor-id="render-locally-and-publish-to-gh-pages-branch">Render locally and publish to gh-pages branch</h2>
-<p>To render locally and push up to the <code>gh-pages</code> branch, open a terminal window and then <code>cd</code> to the directory with the Quarto project. Type this in the terminal:</p>
-<pre><code>quarto render gh-pages</code></pre>
+<section id="add-a-chunk-of-code-describing-your-setup" class="level2">
+<h2 class="anchored" data-anchor-id="add-a-chunk-of-code-describing-your-setup">Add a chunk of code describing your setup</h2>
+<p>Case study files should include: * R version * TMB version * FIMS commit * Name of your stock * Name of your region * Name of the analyst</p>
+</section>
+<section id="add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make" class="level2">
+<h2 class="anchored" data-anchor-id="add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make">Add a bulleted list and script describing simplifications you had to make</h2>
+<p>How I simplified my assessment * Remove seasonality * etc.</p>
+</section>
+<section id="add-your-script-that-sets-up-and-runs-the-model" class="level2">
+<h2 class="anchored" data-anchor-id="add-your-script-that-sets-up-and-runs-the-model">Add your script that sets up and runs the model</h2>
+</section>
+<section id="add-your-comparison-figures" class="level2">
+<h2 class="anchored" data-anchor-id="add-your-comparison-figures">Add your comparison figures</h2>
+</section>
+<section id="add-comparison-tables" class="level2">
+<h2 class="anchored" data-anchor-id="add-comparison-tables">Add comparison tables</h2>
+</section>
+<section id="what-was-your-experience-using-fims-what-could-we-do-to-improve-usability" class="level2">
+<h2 class="anchored" data-anchor-id="what-was-your-experience-using-fims-what-could-we-do-to-improve-usability">What was your experience using FIMS? What could we do to improve usability?</h2>
+</section>
+<section id="list-any-issues-that-you-ran-into-or-found" class="level2">
+<h2 class="anchored" data-anchor-id="list-any-issues-that-you-ran-into-or-found">List any issues that you ran into or found</h2>
+<p>Please <a href="https://github.com/NOAA-FIMS/FIMS/issues/new/choose">open an issue</a> if you found something new.</p>
+</section>
+<section id="what-features-are-most-important-to-add-based-on-this-case-study" class="level2">
+<h2 class="anchored" data-anchor-id="what-features-are-most-important-to-add-based-on-this-case-study">What features are most important to add based on this case study?</h2>
+</section>
+<section id="add-your-pages-to-the-project" class="level2">
+<h2 class="anchored" data-anchor-id="add-your-pages-to-the-project">Add your pages to the project</h2>
+<ul>
+<li>Add the files to <code>_quarto.yml</code></li>
+</ul>
 
 
 </section>
