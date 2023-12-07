@@ -35,13 +35,13 @@ website:
         text: Home
       - href: content/case-study-template.qmd
         text: Case study template
-      - href: content/customizing.qmd
-        text: Customizing
+      - href: content/SwFSC-sardine.qmd
+        text: SWFSC sardine case study
       - href: content/rendering.qmd
         text: Rendering
       - href: content/rmarkdown.Rmd
         text: R Markdown files
-      - href: content/NEFSC-YT-case-study.qmd
+      - href: content/NEFSC-yellowtail.qmd
         text: NEFSC yellowtail flounder case study
       - href: content/acknowledgements.qmd
         text: Acknowledgements
