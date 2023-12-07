@@ -1,29 +1,53 @@
 ---
-title: Rendering with Code
+title: Customize
 ---
 
-You can have code (R, Python or Julia) in your qmd file. You will need to have these installed on your local computer, but presumably you do already if you are adding code to your qmd files.
+## Edit and add your pages
 
-```{r echo=TRUE}
-x <- c(5, 15, 25, 35, 45, 55)
-y <- c(5, 20, 14, 32, 22, 38)
-lm(x ~ y)
+Each page should start with 
 ```
-
-
-## Modify the GitHub Action
-
-You will need to change the GitHub Action in `.github/workflows` to install these and any needed packages in order for GitHub to be able to render your webpage. The GitHub Action install R since I used that in `code.qmd`. If you use Python or Julia instead, then you will need to update the GitHub Action to install those.
-
-If getting the GitHub Action to work is too much hassle (and that definitely happens), you can alway render locally and publish to the `gh-pages` branch. If you do this, make sure to delete or rename the GitHub Action to something like
+---
+title: your title
+---
 ```
-render-and-publish.old_yml
+and the first header will be the 2nd level, so `## `. Note, there are situations where you leave off
 ```
-so GitHub does not keep trying to run it. Nothing bad will happen if you don't do this, but if you are not using the action (because it keeps failing), then you don't need GitHub to run it.
+---
+title: your title
+---
+```
+and start the qmd file with a level header `# `, but if using the default title yaml (in the `---` fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation).
 
-## Render locally and publish to gh-pages branch
+## Add a chunk of code describing your setup
 
-To render locally and push up to the `gh-pages` branch, open a terminal window and then `cd` to the directory with the Quarto project. Type this in the terminal:
-```
-quarto render gh-pages
-```
+Case study files should include:
+* R version
+* TMB version
+* FIMS commit
+* Name of your stock
+* Name of your region
+* Name of the analyst
+
+## Add a bulleted list and script describing simplifications you had to make
+
+How I simplified my assessment
+* Remove seasonality
+* etc.
+
+## Add your script that sets up and runs the model
+
+## Add your comparison figures
+
+## Add comparison tables
+
+## What was your experience using FIMS? What could we do to improve usability?
+
+## List any issues that you ran into or found
+
+Please [open an issue](https://github.com/NOAA-FIMS/FIMS/issues/new/choose) if you found something new.
+
+## What features are most important to add based on this case study?
+
+## Add your pages to the project
+
+* Add the files to `_quarto.yml`
