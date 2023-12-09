@@ -35,7 +35,7 @@ website:
         text: Home
       - href: content/case-study-template.qmd
         text: Case study template
-      - href: content/SwFSC-sardine.qmd
+      - href: content/SWFSC-sardine.qmd
         text: SWFSC sardine case study
       - href: content/rendering.qmd
         text: Rendering
