@@ -18,7 +18,7 @@ jobs:
         run: Rscript -e 'install.packages(c("rmarkdown", "knitr", "jsonlite","dplyr","tidyr","ggplot2", "TMB"))'
 
       - name: Install TMB helper
-        run: Rscript -e 'devtools::install_github("kaskr/TMB_contrib_R/TMBhelper")'
+        run: Rscript -e 'remotes::install_github("kaskr/TMB_contrib_R/TMBhelper")'
 
       - name: Install FIMS
         run: Rscript -e 'remotes::install_github("NOAA-FIMS/FIMS")'
