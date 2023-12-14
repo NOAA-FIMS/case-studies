@@ -277,7 +277,7 @@ population$ages <- ages
 population$nfleets <- rdat$parms$nfleets + rdat$parms$nindices # fleets plus surveys
 population$nseasons <- nseasons
 population$nyears <- nyears
-population$prop_female <- 1.0 # ASAP assumption
+#population$prop_female <- 1.0 # ASAP assumption
 
 population$SetMaturity(maturity$get_id())
 population$SetGrowth(ewaa_growth$get_id())
