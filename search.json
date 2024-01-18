@@ -1,5 +1,103 @@
 [
   {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Fisheries Integrated Modeling System case studies",
+    "section": "",
+    "text": "These case studies demonstrate use of the Fisheries Integrated Modeling System to run a few different cases of stock assessment models.\n\ninstall.packages(c(\"dplyr\",\"tidyr\",\"ggplot2\",\"TMB\",\"TMBhelper\")\nremotes::install_github(\"NOAA-FIMS/FIMS\")"
+  },
+  {
+    "objectID": "content/rmarkdown.html",
+    "href": "content/rmarkdown.html",
+    "title": "R Markdown",
+    "section": "",
+    "text": "You can include R Markdown files in your project."
+  },
+  {
+    "objectID": "content/rmarkdown.html#r-markdown",
+    "href": "content/rmarkdown.html#r-markdown",
+    "title": "R Markdown",
+    "section": "R Markdown",
+    "text": "R Markdown\nThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.\nWhen you click the Knit button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:\n\nsummary(cars)\n\n     speed           dist       \n Min.   : 4.0   Min.   :  2.00  \n 1st Qu.:12.0   1st Qu.: 26.00  \n Median :15.0   Median : 36.00  \n Mean   :15.4   Mean   : 42.98  \n 3rd Qu.:19.0   3rd Qu.: 56.00  \n Max.   :25.0   Max.   :120.00"
+  },
+  {
+    "objectID": "content/rmarkdown.html#including-plots",
+    "href": "content/rmarkdown.html#including-plots",
+    "title": "R Markdown",
+    "section": "Including Plots",
+    "text": "Including Plots\nYou can also embed plots, for example:\n\n\n\n\n\nNote that the echo = FALSE parameter was added to the code chunk to prevent printing of the R code that generated the plot."
+  },
+  {
+    "objectID": "content/acknowledgements.html",
+    "href": "content/acknowledgements.html",
+    "title": "Acknowledgments",
+    "section": "",
+    "text": "This repo and GitHub Action was based on the tutorial by Openscapes quarto-website-tutorial by Julia Lowndes and Stefanie Butland."
+  },
+  {
+    "objectID": "content/NEFSC-yellowtail.html",
+    "href": "content/NEFSC-yellowtail.html",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "section": "",
+    "text": "Code\n# Names of required packages\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"TMB\", \"remotes\")\n\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\nremotes::install_github(\"NOAA-FIMS/FIMS\")\nremotes::install_github(\"kaskr/TMB_contrib_R/TMBhelper\")\n\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\nlibrary(FIMS)\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 70c6cc9\n\nStock name: Southern New England-Mid Atlantic Yellowtail Flounder\n\nRegion: NEFSC\n\nAnalyst: Chris Legault"
+  },
+  {
+    "objectID": "content/NEFSC-yellowtail.html#the-setup",
+    "href": "content/NEFSC-yellowtail.html#the-setup",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "section": "",
+    "text": "Code\n# Names of required packages\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"TMB\", \"remotes\")\n\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\nremotes::install_github(\"NOAA-FIMS/FIMS\")\nremotes::install_github(\"kaskr/TMB_contrib_R/TMBhelper\")\n\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\nlibrary(FIMS)\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 70c6cc9\n\nStock name: Southern New England-Mid Atlantic Yellowtail Flounder\n\nRegion: NEFSC\n\nAnalyst: Chris Legault"
+  },
+  {
+    "objectID": "content/NEFSC-yellowtail.html#simplifications-to-the-original-assessment",
+    "href": "content/NEFSC-yellowtail.html#simplifications-to-the-original-assessment",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "section": "Simplifications to the original assessment",
+    "text": "Simplifications to the original assessment\n\nEnd year 2021 to 2019 due to missing 2020 survey\n5 indices to 2\nFilled a survey missing year for one index (see below)\nVarying weight at age to constant over time\nDifferent weight at age matrices for catch, SSB, Jan-1 to same for all 3\nSSB calculated in April to Jan-1\nAggregate index in numbers to weight\nFishery 2 selectivity blocks to 1\nCatch and Index selectivity at age to logistic\nIndex timing from April to Jan-1\nVarying Index CV to constant over time\nVarying Catch ESS to constant over time\nSR unexploited scaler SSB to recruitment\n\nHow I simplified my assessment:\nTo fill the missing year of survey data, I first ran the model in ASAP with the missing data treated as missing. I then filled the missing data with the expected value of the survey, both in aggregate and for catch at age in place of the missing data.\nThe varying weights at age, index CVs, and ESS values were replaced by the time series mean in all years.\nThe catch weight at age matrix was used as the weight at age for all sources."
+  },
+  {
+    "objectID": "content/NEFSC-yellowtail.html#script-that-sets-up-and-runs-the-model",
+    "href": "content/NEFSC-yellowtail.html#script-that-sets-up-and-runs-the-model",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "section": "Script that sets up and runs the model",
+    "text": "Script that sets up and runs the model\n\n\nCode\n# clear memory\nclear()\n\n# read the ASAP rdat files\nrdat &lt;- dget(file.path(\"data_files\", \"NEFSC_YT_SIMPLIFIED.RDAT\")) # to be used in FIMS, lots of modifications from original\norig &lt;- dget(file.path(\"data_files\", \"NEFSC_YT_ORIGINAL.RDAT\"))   # where started before modifications for use in FIMS\n\n# function to create equivalent of data_mile1, basic catch and survey data\n# need to think about how to deal with multiple fleets and indices - only use 1 of each for now\nget_asap_data &lt;- function(rdat){\n  res &lt;- data.frame(type = character(),\n                name = character(),\n                age = integer(),\n                datestart = character(),\n                dateend = character(),\n                value = double(),\n                unit = character(),\n                uncertainty = double())\n  \n  landings &lt;- data.frame(type = \"landings\",\n                     name = \"fleet1\",\n                     age = NA,\n                     datestart = paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-01-01\"),\n                     dateend = paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-12-31\"),\n                     value = as.numeric(rdat$catch.obs[1,]),\n                     unit = \"mt\",\n                     uncertainty = rdat$control.parms$catch.tot.cv[,1])\n  \n  # loop over all indices\n  for (i in 1:rdat$parms$nindices){\n    index &lt;- data.frame(type = \"index\",\n                        name = paste0(\"survey\", i),\n                        age = NA,\n                        datestart = paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-01-01\"),\n                        dateend = paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-12-31\"),\n                        value = as.numeric(rdat$index.obs[[i]]),\n                        unit = \"\",\n                        uncertainty = rdat$index.cv[[i]])\n    if (i == 1){\n      allinds &lt;- index\n    }else{\n      allinds &lt;- rbind(allinds, index)\n    }\n  }\n  \n  catchage &lt;- data.frame(type = \"age\",\n                     name = \"fleet1\",\n                     age = rep(seq(1,rdat$parms$nages), rdat$parms$nyears),\n                     datestart = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-01-01\"), each=rdat$parms$nages),\n                     dateend = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-12-31\"), each=rdat$parms$nages),\n                     value = as.numeric(t(rdat$catch.comp.mats$catch.fleet1.ob)),\n                     unit = \"\",\n                     uncertainty = rep(rdat$fleet.catch.Neff.init[1,], each=rdat$parms$nages))\n  \n  # loop over all indices\n  for (i in 1:rdat$parms$nindices){\n    indexage &lt;- data.frame(type = \"age\",\n                           name = paste0(\"survey\", i),\n                           age = rep(seq(1,rdat$parms$nages), rdat$parms$nyears),\n                           datestart = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-01-01\"), each=rdat$parms$nages),\n                           dateend = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-12-31\"), each=rdat$parms$nages),\n                           value = as.numeric(t(rdat$index.comp.mats[[i*2-1]])),\n                           unit = \"\",\n                           uncertainty = rep(rdat$index.Neff.init[i,], each=rdat$parms$nages))\n    if (i == 1){\n      allindsage &lt;- indexage\n    }else{\n      allindsage &lt;- rbind(allindsage, indexage)\n    }\n  }\n  \n  res &lt;- rbind(res, landings, allinds, catchage, allindsage)\n  return(res)\n}\n\nmydat &lt;- get_asap_data(rdat)\n\nmyfimsframe &lt;- FIMS::FIMSFrame(mydat)\n#str(myfimsframe)\n\n# define the dimensions\nnyears &lt;- rdat$parms$nyears\nyears &lt;- seq(rdat$parms$styr, rdat$parms$endyr)\nnseasons &lt;- 1 # ASAP only has one season\nnages &lt;- rdat$parms$nages\nages &lt;- 1:nages # ASAP starts at age 1\n\n\n# set up FIMS data objects\nage_frame &lt;- FIMS::FIMSFrameAge(mydat)\n\nfishery_catch &lt;- FIMS::m_landings(age_frame)\nfishery_agecomp &lt;- FIMS::m_agecomp(age_frame, \"fleet1\")\nsurvey_index &lt;- list()\nsurvey_agecomp &lt;- list()\nfor (i in 1:rdat$parms$nindices){\n  survey_index[[i]] &lt;- FIMS::m_index(age_frame, paste0(\"survey\", i))\n  survey_agecomp[[i]] &lt;- FIMS::m_agecomp(age_frame, paste0(\"survey\", i))\n}\n\n# eventually change to allow multiple fishing fleets similar to multiple indices - only using 1 fishing fleet for now\nfishing_fleet_index &lt;- methods::new(Index, nyears)\nfishing_fleet_age_comp &lt;- methods::new(AgeComp, nyears, nages)\nfishing_fleet_index$index_data &lt;- fishery_catch\nfishing_fleet_age_comp$age_comp_data &lt;- fishery_agecomp * rep(rdat$fleet.catch.Neff.init[1,], each=rdat$parms$nages)\n\n\n# fleet selectivity\n#methods::show(LogisticSelectivity)\nfishing_fleet_selectivity &lt;- methods::new(LogisticSelectivity)\nfishing_fleet_selectivity$inflection_point$value &lt;- rdat$sel.input.mats$fleet.sel.ini[nages+1,1] # hardwired to assume only 1 fleet and logistic selectivity used\nfishing_fleet_selectivity$inflection_point$is_random_effect &lt;- FALSE\nfishing_fleet_selectivity$inflection_point$estimated &lt;- TRUE\nfishing_fleet_selectivity$slope$value &lt;- rdat$sel.input.mats$fleet.sel.ini[nages+2,1] # hardwired to assume only 1 fleet and logistic selectivity used\nfishing_fleet_selectivity$slope$is_random_effect &lt;- FALSE\nfishing_fleet_selectivity$slope$estimated &lt;- TRUE\n\n# create fleet object\nfishing_fleet &lt;- methods::new(Fleet)\nfishing_fleet$nages &lt;- nages\nfishing_fleet$nyears &lt;- nyears\nfishing_fleet$log_Fmort &lt;- log(rep(rdat$initial.guesses$Fmult.year1.init[1], nyears)) # ASAP assumes Fmult devs = 0\nfishing_fleet$estimate_F &lt;- TRUE\nfishing_fleet$random_F &lt;- FALSE\nfishing_fleet$log_q &lt;- log(rdat$initial.guesses$q.year1.init[1])\nfishing_fleet$estimate_q &lt;- FALSE\nfishing_fleet$random_q &lt;- FALSE\nfishing_fleet$log_obs_error &lt;- rep(log(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), nyears)\nfishing_fleet$estimate_obs_error &lt;- FALSE\n# Next two lines not currently used by FIMS\nfishing_fleet$SetAgeCompLikelihood(1)\nfishing_fleet$SetIndexLikelihood(1)\n# Set Index, AgeComp, and Selectivity using the IDs from the modules defined above\nfishing_fleet$SetObservedIndexData(fishing_fleet_index$get_id()) \nfishing_fleet$SetObservedAgeCompData(fishing_fleet_age_comp$get_id())\nfishing_fleet$SetSelectivity(fishing_fleet_selectivity$get_id())\n\n# survey module now can handle multiple indices\nfor (i in 1:rdat$parms$nindices){\n  survey_fleet_index &lt;- methods::new(Index, nyears)\n  survey_fleet_age_comp &lt;- methods::new(AgeComp, nyears, nages)\n  survey_fleet_index$index_data &lt;- survey_index[[i]]\n  survey_fleet_age_comp$age_comp_data &lt;- survey_agecomp[[i]] * rep(rdat$index.Neff.init[i,], each=rdat$parms$nages)\n  \n  # survey selectivity\n  survey_fleet_selectivity &lt;- new(LogisticSelectivity)\n  survey_fleet_selectivity$inflection_point$value &lt;- rdat$sel.input.mats$index.sel.ini[(i+1)*(nages+2+4)+nages+1,1] # hardwired for this example\n  survey_fleet_selectivity$inflection_point$is_random_effect &lt;- FALSE\n  survey_fleet_selectivity$inflection_point$estimated &lt;- TRUE\n  survey_fleet_selectivity$inflection_point$value &lt;- rdat$sel.input.mats$index.sel.ini[(i+1)*(nages+2+4)+nages+1,1] # hardwired for this example\n  survey_fleet_selectivity$slope$is_random_effect &lt;- FALSE\n  survey_fleet_selectivity$slope$estimated &lt;- TRUE\n  \n  survey_fleet &lt;- methods::new(Fleet)\n  survey_fleet$is_survey &lt;- TRUE\n  survey_fleet$nages &lt;- nages\n  survey_fleet$nyears &lt;- nyears\n  survey_fleet$estimate_F &lt;- FALSE\n  survey_fleet$random_F &lt;- FALSE\n  survey_fleet$log_q &lt;- log(rdat$initial.guesses$q.year1.init[i]) \n  survey_fleet$estimate_q &lt;- TRUE\n  survey_fleet$random_q &lt;- FALSE\n  # sd = sqrt(log(cv^2 + 1)), sd is log transformed\n  survey_fleet$log_obs_error &lt;- rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[i]], na.rm=TRUE)^2 + 1)))), nyears)\n  survey_fleet$estimate_obs_error &lt;- FALSE\n  survey_fleet$SetAgeCompLikelihood(i)\n  survey_fleet$SetIndexLikelihood(i)\n  survey_fleet$SetSelectivity(survey_fleet_selectivity$get_id())\n  survey_fleet$SetObservedIndexData(survey_fleet_index$get_id())\n  survey_fleet$SetObservedAgeCompData(survey_fleet_age_comp$get_id())\n}\n\n# Population module\n\n# recruitment\nrecruitment &lt;- methods::new(BevertonHoltRecruitment)\n#methods::show(BevertonHoltRecruitment)\n\nrecruitment$log_sigma_recruit$value &lt;- log(mean(rdat$control.parms$recruit.cv)) # typically enter same value for every year in ASAP\nrecruitment$log_rzero$value &lt;- log(rdat$initial.guesses$SR.inits$SR.scaler.init) # ASAP can enter either R0 or SSB0, need to make sure use R0 in input file\nrecruitment$log_rzero$is_random_effect &lt;- FALSE\nrecruitment$log_rzero$estimated &lt;- TRUE\n# note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run\nrecruitment$logit_steep$value &lt;- -log(1.0 - rdat$initial.guesses$SR.inits$SR_steepness.init) + log(rdat$initial.guesses$SR.inits$SR_steepness.init - 0.2)\nrecruitment$logit_steep$is_random_effect &lt;- FALSE\nrecruitment$logit_steep$estimated &lt;- FALSE\n\nrecruitment$estimate_log_devs &lt;- TRUE\nrecruitment$log_devs &lt;- rep(1.0, nyears) # set to no deviations (multiplier) to start, just like ASAP\n\n# growth\newaa_growth &lt;- methods::new(EWAAgrowth)\newaa_growth$ages &lt;- ages\n# NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now\newaa_growth$weights &lt;- rdat$WAA.mats$WAA.catch.all[1,] \n\n# NOTE: FIMS assumes SSB calculated at the start of the year, so need to adjust ASAP to do so as well for now, need to make timing of SSB calculation part of FIMS later\n\n# maturity\n# NOTE: for now tricking FIMS into thinking age 0 is age 1, so need to adjust A50 for maturity because FIMS calculations use ages 0-5+ instead of 1-6\nmaturity &lt;- new(LogisticMaturity)\nmaturity$inflection_point$value &lt;- 1.8 # hardwired for now, need to figure out a better way than this\nmaturity$inflection_point$is_random_effect &lt;- FALSE\nmaturity$inflection_point$estimated &lt;- FALSE\nmaturity$slope$value &lt;- 4 # hardwired for now, need to figure out a better way than this\nmaturity$slope$is_random_effect &lt;- FALSE\nmaturity$slope$estimated &lt;- FALSE\n\n# population\npopulation &lt;- new(Population)\npopulation$log_M &lt;- log(as.numeric(t(rdat$M.age)))\npopulation$estimate_M &lt;- FALSE\npopulation$log_init_naa &lt;- log(rdat$N.age[1,]) # log(rdat$initial.guesses$NAA.year1.init)\npopulation$estimate_init_naa &lt;- FALSE # TRUE , NOTE: fixing at ASAP estimates to test SSB calculations\npopulation$nages &lt;- nages\npopulation$ages &lt;- ages\npopulation$nfleets &lt;- rdat$parms$nfleets + rdat$parms$nindices # fleets plus surveys\npopulation$nseasons &lt;- nseasons\npopulation$nyears &lt;- nyears\n#population$prop_female &lt;- 1.0 # ASAP assumption\n\npopulation$SetMaturity(maturity$get_id())\npopulation$SetGrowth(ewaa_growth$get_id())\npopulation$SetRecruitment(recruitment$get_id())\n\n# make FIMS model\nsucess &lt;- CreateTMBModel()\nparameters &lt;- list(p = get_fixed())\nobj &lt;- MakeADFun(data = list(), parameters, DLL = \"FIMS\", silent = TRUE)\n\n\n# fitting the model\nopt &lt;- nlminb(start=obj$par, objective=obj$fn, gradient=obj$gr,\n              control = list(eval.max = 8000, iter.max = 800))\n#  method = \"BFGS\",\n#   control = list(maxit=1000000, reltol = 1e-15))\n#print(opt)\n\n\n#max(abs(obj$gr())) # from Cole, can use TMBhelper::fit_tmb to get val to &lt;1e-10\n\n#opt &lt;- TMBhelper::fit_tmb(obj, newtonsteps=3, quiet = TRUE) # don't understand why quiet flag does not work in Quarto\n\n#max(abs(obj$gr()))\n\nsdr &lt;- TMB::sdreport(obj)\nsdr_fixed &lt;- summary(sdr, \"fixed\")\nreport &lt;- obj$report()\n\n### Plotting\n\nmycols &lt;- c(\"FIMS\" = \"blue\", \"ASAP\" = \"red\", \"ASAP_orig\" = \"darkgreen\")\n\nfor (i in 1:rdat$parms$nindices){\n  index_results &lt;- data.frame(\n    survey = i,\n    year = years,\n    observed = rdat$index.obs[[i]],\n    FIMS = report$exp_index[[rdat$parms$nfleet+i]],\n    ASAP = rdat$index.pred[[i]]\n  )\n  if (i==1){\n    allinds_results &lt;- index_results\n  }else{\n    allinds_results &lt;- rbind(allinds_results, index_results)\n  }\n}\n#print(allinds_results)\n\ncomp_index &lt;- ggplot(allinds_results, aes(x = year, y = observed)) +\n  geom_point() +\n  geom_line(aes(x = year, y = FIMS), color = \"blue\") +\n  geom_line(aes(x = year, y = ASAP), color = \"red\") +\n  facet_wrap(~survey, scales = \"free_y\", nrow = 2) +\n  xlab(\"Year\") +\n  ylab(\"Index\") +\n  ggtitle(\"Blue=FIMS, Red=ASAP\") +\n  theme_bw()\n#print(comp_index)\n\ncatch_results &lt;- data.frame(\n  observed = fishing_fleet_index$index_data,\n  FIMS = report$exp_index[[1]],\n  ASAP = as.numeric(rdat$catch.pred[1,])\n)\n#print(catch_results)\n\ncomp_catch &lt;- ggplot(catch_results, aes(x = years, y = observed)) +\n  geom_point() +\n  xlab(\"Year\") +\n  ylab(\"Catch (mt)\") +\n  geom_line(aes(x = years, y = FIMS), color = \"blue\") +\n  geom_line(aes(x = years, y = ASAP), color = \"red\") +\n  ggtitle(\"Blue=FIMS, Red=ASAP\") +\n  theme_bw()\n#print(comp_catch)\n\npop_results &lt;- data.frame(\n  Year = c(years, max(years)+1, years, years, years, years, max(years)+1, years),\n  Metric = c(rep(\"SSB\", 2*nyears+1), rep(\"F_mort\", 2*nyears), rep(\"Recruitment\", 2*nyears+1)),\n  Model = c(rep(\"FIMS\", nyears+1), rep(\"ASAP\", nyears), rep(c(\"FIMS\", \"ASAP\"), each=nyears), \n             rep(\"FIMS\", nyears+1), rep(\"ASAP\", nyears)),\n  Value = c(report$ssb[[1]], rdat$SSB, report$F_mort[[1]], rdat$F.report, report$recruitment[[1]], as.numeric(rdat$N.age[,1]))\n)\n#print(pop_results)\n\n# ggplot(filter(pop_results, Year &lt;=2019), aes(x=Year, y=Value, color=Model)) +\n#   geom_line() +\n#   facet_wrap(~Metric, ncol=1, scales = \"free_y\") +\n#   theme_bw() +\n#   scale_color_manual(values = mycols)\n\norig_years &lt;- seq(orig$parms$styr, orig$parms$endyr)\norig_pop_results &lt;- data.frame(\n  Year = rep(orig_years, 3),\n  Metric = rep(c(\"SSB\", \"F_mort\", \"Recruitment\"), each = length(orig_years)),\n  Model = \"ASAP_orig\",\n  Value = c(orig$SSB, orig$F.report, as.numeric(orig$N.age[,1]))\n)\n\npop_results_3 &lt;- rbind(pop_results, orig_pop_results)\n#print(pop_results_3)\n\n# ggplot(filter(pop_results_3, Year &lt;=2019), aes(x=Year, y=Value, color=Model)) +\n#   geom_line() +\n#   facet_wrap(~Metric, ncol=1, scales = \"free_y\") +\n#   theme_bw() +\n#   scale_color_manual(values = mycols)\n\ncomp_FRSSB3 &lt;- ggplot(pop_results_3, aes(x=Year, y=Value, color=Model)) +\n  geom_line() +\n  facet_wrap(~Metric, ncol=1, scales = \"free_y\") +\n  theme_bw() +\n  scale_color_manual(values = mycols)\n#print(comp_FRSSB3)\n\nFIMS_naa_results &lt;- data.frame(\n  Year = rep(c(years, max(years)+1), each = nages),\n  Age = rep(ages, nyears+1),\n  Metric = \"NAA\",\n  Model = \"FIMS\",\n  Value = report$naa[[1]]\n)\n\nASAP_naa_results &lt;- data.frame(\n  Year = rep(years, each = nages),\n  Age = rep(ages, nyears),\n  Metric = \"NAA\",\n  Model = \"ASAP\",\n  Value = as.numeric(t(rdat$N.age))\n)\n\norig_naa_results &lt;- data.frame(\n  Year = rep(orig_years, each = nages),\n  Age = rep(ages, length(orig_years)),\n  Metric = \"NAA\",\n  Model = \"ASAP_orig\",\n  Value = as.numeric(t(orig$N.age))\n)\nnaa_results &lt;- rbind(FIMS_naa_results, ASAP_naa_results, orig_naa_results)\n#print(naa_results)\n\n# ggplot(filter(naa_results, Year &lt;= 2019), aes(x=Year, y=Value, color=Model)) +\n#   geom_line() +\n#   facet_wrap(~Age, ncol=1, scales = \"free_y\") +\n#   ylab(\"NAA\") +\n#   theme_bw() +\n#   scale_color_manual(values = mycols)\n\ncomp_naa2 &lt;- ggplot(filter(naa_results, Year &lt;= 2019, Model %in% c(\"ASAP\", \"FIMS\")), aes(x=Year, y=Value, color=Model)) +\n  geom_line() +\n  facet_wrap(~Age, ncol=1, scales = \"free_y\") +\n  ylab(\"NAA\") +\n  theme_bw() +\n  scale_color_manual(values = mycols)\n#print(comp_naa2)\n\n# ggplot(filter(naa_results, Year == 1973, Model %in% c(\"ASAP\", \"FIMS\")), aes(x=Age, y=Value, color=Model)) +\n#   geom_line() +\n#   ylab(\"NAA in Year 1\") +\n#   theme_bw() +\n#   scale_color_manual(values = mycols)\n\n\nsaveplots &lt;- TRUE\nif(saveplots){\n  ggsave(filename = \"figures/NEFSC_YT_compare_index.png\", plot = comp_index, width = 4, height = 4, units = \"in\")\n  ggsave(filename = \"figures/NEFSC_YT_compare_catch.png\", plot = comp_catch, width = 4, height = 4, units = \"in\")\n  ggsave(filename = \"figures/NEFSC_YT_compare_FRSSB3.png\", plot = comp_FRSSB3, width = 5, height = 6.5, units = \"in\")\n  ggsave(filename = \"figures/NEFSC_YT_compare_NAA2.png\", plot = comp_naa2, width = 5, height = 6.5, units = \"in\")\n}"
+  },
+  {
+    "objectID": "content/NEFSC-yellowtail.html#comparison-figures",
+    "href": "content/NEFSC-yellowtail.html#comparison-figures",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "section": "Comparison figures",
+    "text": "Comparison figures"
+  },
+  {
+    "objectID": "content/NEFSC-yellowtail.html#comparison-table",
+    "href": "content/NEFSC-yellowtail.html#comparison-table",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "section": "Comparison table",
+    "text": "Comparison table\nThe likelihood components from FIMS and ASAP for the same data are shown in the table below. Note that the ASAP file had to turn on the use likelihood constants option to enable this comparison (this option should not be used when recruitment deviations are estimated).\n\n\nCode\njnlltab &lt;- data.frame(Component=c(\"Total\",\"Index\",\"Age Comp\", \"Rec\"),\n                      FIMS = c(report$jnll, report$index_nll, report$age_comp_nll, report$rec_nll),\n                      ASAP = c(rdat$like$lk.total,\n                               (rdat$like$lk.catch.total + rdat$like$lk.index.fit.total),\n                               (rdat$like$lk.catch.age.comp + rdat$like$lk.index.age.comp),\n                               rdat$like$lk.Recruit.devs))\nprint(jnlltab)\n\n\n  Component       FIMS     ASAP\n1     Total 1569.47965 2410.844\n2     Index   63.72178 1020.548\n3  Age Comp 1360.01928 1390.297\n4       Rec  145.73859    0.000"
+  },
+  {
+    "objectID": "content/NEFSC-yellowtail.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "href": "content/NEFSC-yellowtail.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "section": "What was your experience using FIMS? What could we do to improve usability?",
+    "text": "What was your experience using FIMS? What could we do to improve usability?\nRelatively easy to use by following the vignette. Creating wrappers for data input would help so that each element did not need to be assigned directly."
+  },
+  {
+    "objectID": "content/NEFSC-yellowtail.html#list-any-issues-that-you-ran-into-or-found",
+    "href": "content/NEFSC-yellowtail.html#list-any-issues-that-you-ran-into-or-found",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "section": "List any issues that you ran into or found",
+    "text": "List any issues that you ran into or found\nPlease open an issue if you found something new.\n\nSSB calculations in FIMS assume 0.5 multiplier, which differs from ASAP Issue #521.\nOutput all derived values (this is mostly done)\nFix recruitment estimation Issue #364\nHandle missing data, especially surveys Issue #502\nWeights at age that change over time\nSeparate weights at age for catch, SSB, Jan-1 population, indices, etc.\nFishery selectivity blocks or random effects\nAllow time-varying CVs and ESS (or alternative functions)\nOption for Index in numbers\nTiming of Index and SSB calculations within the year\nOne-step-ahead residuals\nReference points, projections, pushbutton retro"
+  },
+  {
+    "objectID": "content/NEFSC-yellowtail.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "href": "content/NEFSC-yellowtail.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "section": "What features are most important to add based on this case study?",
+    "text": "What features are most important to add based on this case study?\n\nMissing values, would allow inclusion of the other 3 indices (too many missing years to fill for this example)\n\n\n\nCode\n# Clear C++ objects from memory\nclear()"
+  },
+  {
     "objectID": "content/publishing.html",
     "href": "content/publishing.html",
     "title": "Publishing",
@@ -28,125 +126,6 @@
     "text": "Don’t like using gh-pages?\nIn some cases, you don’t want your website on the gh-pages branch. For example, if you are creating releases and you want the website pages archived in that release, then you won’t want your website pages on the gh-pages branch.\nHere are the changes you need to make if you to avoid gh-pages branch.\n\nAt the top of _quarto.yml add the following:\n\nproject: \n  type: website\n  output-dir: docs\n\nOn GitHub under Settings &gt; Pages set pages to be made from the main branch and the docs directory.\nMake sure docs is not listed in .gitignore\nPublish the site the first time locally using quarto publish from the terminal\nChange the GitHub Action because you can’t use quarto publish gh-pages. You’ll need to push to the main branch yourself (in the GitHub Action)\n\non:\n  push:\n    branches: main\n\nname: Render and Publish\n\njobs:\n  build-deploy:\n    runs-on: ubuntu-latest\n    env:\n      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}\n\n    steps:\n      - name: Check out repository\n        uses: actions/checkout@v2 \n        \n      - name: Set up R (needed for Rmd)\n        uses: r-lib/actions/setup-r@v2\n\n      - name: Install packages (needed for Rmd)\n        run: Rscript -e 'install.packages(c(\"rmarkdown\", \"knitr\", \"jsonlite\"))'\n\n      - name: Set up Quarto\n        uses: quarto-dev/quarto-actions/setup@v2\n        with:\n          # To install LaTeX to build PDF book \n          # tinytex: true \n          # uncomment below and fill to pin a version\n          # version: 0.9.600\n      \n      - name: Render Quarto Project\n        uses: quarto-dev/quarto-actions/render@v2\n        with:\n          to: html\n\n      - name: Set up Git\n        run: |\n          git config --local user.email \"actions@github.com\"\n          git config --local user.name \"GitHub Actions\"\n\n      - name: Commit all changes and push\n        run: |\n          git add -A && git commit -m 'Build site' || echo \"No changes to commit\"\n          git push origin || echo \"No changes to commit\""
   },
   {
-    "objectID": "content/acknowledgements.html",
-    "href": "content/acknowledgements.html",
-    "title": "Acknowledgments",
-    "section": "",
-    "text": "This repo and GitHub Action was based on the tutorial by Openscapes quarto-website-tutorial by Julia Lowndes and Stefanie Butland."
-  },
-  {
-    "objectID": "content/rmarkdown.html",
-    "href": "content/rmarkdown.html",
-    "title": "R Markdown",
-    "section": "",
-    "text": "You can include R Markdown files in your project."
-  },
-  {
-    "objectID": "content/rmarkdown.html#r-markdown",
-    "href": "content/rmarkdown.html#r-markdown",
-    "title": "R Markdown",
-    "section": "R Markdown",
-    "text": "R Markdown\nThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.\nWhen you click the Knit button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:\n\nsummary(cars)\n\n     speed           dist       \n Min.   : 4.0   Min.   :  2.00  \n 1st Qu.:12.0   1st Qu.: 26.00  \n Median :15.0   Median : 36.00  \n Mean   :15.4   Mean   : 42.98  \n 3rd Qu.:19.0   3rd Qu.: 56.00  \n Max.   :25.0   Max.   :120.00"
-  },
-  {
-    "objectID": "content/rmarkdown.html#including-plots",
-    "href": "content/rmarkdown.html#including-plots",
-    "title": "R Markdown",
-    "section": "Including Plots",
-    "text": "Including Plots\nYou can also embed plots, for example:\n\n\n\n\n\nNote that the echo = FALSE parameter was added to the code chunk to prevent printing of the R code that generated the plot."
-  },
-  {
-    "objectID": "content/SWFSC-sardine.html",
-    "href": "content/SWFSC-sardine.html",
-    "title": "Customize",
-    "section": "",
-    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation)."
-  },
-  {
-    "objectID": "content/SWFSC-sardine.html#edit-and-add-your-pages",
-    "href": "content/SWFSC-sardine.html#edit-and-add-your-pages",
-    "title": "Customize",
-    "section": "",
-    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation)."
-  },
-  {
-    "objectID": "content/SWFSC-sardine.html#add-a-chunk-of-code-describing-your-setup",
-    "href": "content/SWFSC-sardine.html#add-a-chunk-of-code-describing-your-setup",
-    "title": "Customize",
-    "section": "Add a chunk of code describing your setup",
-    "text": "Add a chunk of code describing your setup\nCase study files should include: * R version * TMB version * FIMS commit * Name of your stock * Name of your region * Name of the analyst"
-  },
-  {
-    "objectID": "content/SWFSC-sardine.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
-    "href": "content/SWFSC-sardine.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
-    "title": "Customize",
-    "section": "Add a bulleted list and script describing simplifications you had to make",
-    "text": "Add a bulleted list and script describing simplifications you had to make\nHow I simplified my assessment * Remove seasonality * etc."
-  },
-  {
-    "objectID": "content/SWFSC-sardine.html#add-your-script-that-sets-up-and-runs-the-model",
-    "href": "content/SWFSC-sardine.html#add-your-script-that-sets-up-and-runs-the-model",
-    "title": "Customize",
-    "section": "Add your script that sets up and runs the model",
-    "text": "Add your script that sets up and runs the model"
-  },
-  {
-    "objectID": "content/SWFSC-sardine.html#add-your-comparison-figures",
-    "href": "content/SWFSC-sardine.html#add-your-comparison-figures",
-    "title": "Customize",
-    "section": "Add your comparison figures",
-    "text": "Add your comparison figures"
-  },
-  {
-    "objectID": "content/SWFSC-sardine.html#add-comparison-tables",
-    "href": "content/SWFSC-sardine.html#add-comparison-tables",
-    "title": "Customize",
-    "section": "Add comparison tables",
-    "text": "Add comparison tables"
-  },
-  {
-    "objectID": "content/SWFSC-sardine.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
-    "href": "content/SWFSC-sardine.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
-    "title": "Customize",
-    "section": "What was your experience using FIMS? What could we do to improve usability?",
-    "text": "What was your experience using FIMS? What could we do to improve usability?"
-  },
-  {
-    "objectID": "content/SWFSC-sardine.html#list-any-issues-that-you-ran-into-or-found",
-    "href": "content/SWFSC-sardine.html#list-any-issues-that-you-ran-into-or-found",
-    "title": "Customize",
-    "section": "List any issues that you ran into or found",
-    "text": "List any issues that you ran into or found\nPlease open an issue if you found something new."
-  },
-  {
-    "objectID": "content/SWFSC-sardine.html#what-features-are-most-important-to-add-based-on-this-case-study",
-    "href": "content/SWFSC-sardine.html#what-features-are-most-important-to-add-based-on-this-case-study",
-    "title": "Customize",
-    "section": "What features are most important to add based on this case study?",
-    "text": "What features are most important to add based on this case study?"
-  },
-  {
-    "objectID": "content/SWFSC-sardine.html#add-your-pages-to-the-project",
-    "href": "content/SWFSC-sardine.html#add-your-pages-to-the-project",
-    "title": "Customize",
-    "section": "Add your pages to the project",
-    "text": "Add your pages to the project\n\nAdd the files to _quarto.yml"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "NOAA quarto simple with R",
-    "section": "",
-    "text": "This is a template for a simple Quarto website that looks like a “book”. This is a common format for documentation. It includes a GitHub Action that will build the website automatically when you make changes to the files. The NOAA palette and fonts has been added to theme.scss. The webpage will be on the gh-pages branch. Serving the website files from this branch is a common way to keep all the website files from cluttering your main branch.\nThe GitHub Action installs R so you can have R code in your qmd or Rmd files. Note, you do not need to make changes to your Rmd files unless your need Quarto features like cross-references."
-  },
-  {
-    "objectID": "index.html#github-set-up",
-    "href": "index.html#github-set-up",
-    "title": "NOAA quarto simple with R",
-    "section": "GitHub Set-up",
-    "text": "GitHub Set-up\n\nClick the green “use template” button to make a repository with this content. Make sure to make your repo public (since GitHub Pages doesn’t work on private repos unless you have a paid account) and check box to include all the branches (so that you get the gh-pages branch). \nTurn on GitHub Pages under Settings &gt; Pages . You will set pages to be made from the gh-pages branch and root directory. \nTurn on GitHub Actions under Settings &gt; Actions &gt; General \nEdit the repo description and Readme to add a link to the webpage. When you edit the description, you will see the link url in the url box or you can click on the Actions tab or the Settings &gt; Pages page to find the url."
-  },
-  {
     "objectID": "content/rendering.html",
     "href": "content/rendering.html",
     "title": "Rendering",
@@ -173,83 +152,6 @@
     "title": "Rendering",
     "section": "Step 3. Render within RStudio",
     "text": "Step 3. Render within RStudio\nRStudio will recognize that this is a Quarto project by the presence of the _quarto.yml file and will see the “Build” tab. Click the “Render website” button to render to the _site folder.\nPreviewing: You can either click index.html in the _site folder and specify “preview in browser” or set up RStudio to preview to the viewer panel. To do the latter, go to Tools &gt; Global Options &gt; R Markdown. Then select “Show output preview in: Viewer panel”."
-  },
-  {
-    "objectID": "content/NEFSC-yellowtail.html",
-    "href": "content/NEFSC-yellowtail.html",
-    "title": "Customize",
-    "section": "",
-    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation)."
-  },
-  {
-    "objectID": "content/NEFSC-yellowtail.html#edit-and-add-your-pages",
-    "href": "content/NEFSC-yellowtail.html#edit-and-add-your-pages",
-    "title": "Customize",
-    "section": "",
-    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation)."
-  },
-  {
-    "objectID": "content/NEFSC-yellowtail.html#add-a-chunk-of-code-describing-your-setup",
-    "href": "content/NEFSC-yellowtail.html#add-a-chunk-of-code-describing-your-setup",
-    "title": "Customize",
-    "section": "Add a chunk of code describing your setup",
-    "text": "Add a chunk of code describing your setup\nCase study files should include: * R version * TMB version * FIMS commit * Name of your stock * Name of your region * Name of the analyst"
-  },
-  {
-    "objectID": "content/NEFSC-yellowtail.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
-    "href": "content/NEFSC-yellowtail.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
-    "title": "Customize",
-    "section": "Add a bulleted list and script describing simplifications you had to make",
-    "text": "Add a bulleted list and script describing simplifications you had to make\nHow I simplified my assessment * Remove seasonality * etc."
-  },
-  {
-    "objectID": "content/NEFSC-yellowtail.html#add-your-script-that-sets-up-and-runs-the-model",
-    "href": "content/NEFSC-yellowtail.html#add-your-script-that-sets-up-and-runs-the-model",
-    "title": "Customize",
-    "section": "Add your script that sets up and runs the model",
-    "text": "Add your script that sets up and runs the model"
-  },
-  {
-    "objectID": "content/NEFSC-yellowtail.html#add-your-comparison-figures",
-    "href": "content/NEFSC-yellowtail.html#add-your-comparison-figures",
-    "title": "Customize",
-    "section": "Add your comparison figures",
-    "text": "Add your comparison figures"
-  },
-  {
-    "objectID": "content/NEFSC-yellowtail.html#add-comparison-tables",
-    "href": "content/NEFSC-yellowtail.html#add-comparison-tables",
-    "title": "Customize",
-    "section": "Add comparison tables",
-    "text": "Add comparison tables"
-  },
-  {
-    "objectID": "content/NEFSC-yellowtail.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
-    "href": "content/NEFSC-yellowtail.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
-    "title": "Customize",
-    "section": "What was your experience using FIMS? What could we do to improve usability?",
-    "text": "What was your experience using FIMS? What could we do to improve usability?"
-  },
-  {
-    "objectID": "content/NEFSC-yellowtail.html#list-any-issues-that-you-ran-into-or-found",
-    "href": "content/NEFSC-yellowtail.html#list-any-issues-that-you-ran-into-or-found",
-    "title": "Customize",
-    "section": "List any issues that you ran into or found",
-    "text": "List any issues that you ran into or found\nPlease open an issue if you found something new."
-  },
-  {
-    "objectID": "content/NEFSC-yellowtail.html#what-features-are-most-important-to-add-based-on-this-case-study",
-    "href": "content/NEFSC-yellowtail.html#what-features-are-most-important-to-add-based-on-this-case-study",
-    "title": "Customize",
-    "section": "What features are most important to add based on this case study?",
-    "text": "What features are most important to add based on this case study?"
-  },
-  {
-    "objectID": "content/NEFSC-yellowtail.html#add-your-pages-to-the-project",
-    "href": "content/NEFSC-yellowtail.html#add-your-pages-to-the-project",
-    "title": "Customize",
-    "section": "Add your pages to the project",
-    "text": "Add your pages to the project\n\nAdd the files to _quarto.yml"
   },
   {
     "objectID": "content/case-study-template.html",
@@ -324,6 +226,83 @@
   {
     "objectID": "content/case-study-template.html#add-your-pages-to-the-project",
     "href": "content/case-study-template.html#add-your-pages-to-the-project",
+    "title": "Customize",
+    "section": "Add your pages to the project",
+    "text": "Add your pages to the project\n\nAdd the files to _quarto.yml"
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html",
+    "href": "content/SWFSC-sardine.html",
+    "title": "Customize",
+    "section": "",
+    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation)."
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#edit-and-add-your-pages",
+    "href": "content/SWFSC-sardine.html#edit-and-add-your-pages",
+    "title": "Customize",
+    "section": "",
+    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation)."
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#add-a-chunk-of-code-describing-your-setup",
+    "href": "content/SWFSC-sardine.html#add-a-chunk-of-code-describing-your-setup",
+    "title": "Customize",
+    "section": "Add a chunk of code describing your setup",
+    "text": "Add a chunk of code describing your setup\nCase study files should include: * R version * TMB version * FIMS commit * Name of your stock * Name of your region * Name of the analyst"
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
+    "href": "content/SWFSC-sardine.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
+    "title": "Customize",
+    "section": "Add a bulleted list and script describing simplifications you had to make",
+    "text": "Add a bulleted list and script describing simplifications you had to make\nHow I simplified my assessment * Remove seasonality * etc."
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#add-your-script-that-sets-up-and-runs-the-model",
+    "href": "content/SWFSC-sardine.html#add-your-script-that-sets-up-and-runs-the-model",
+    "title": "Customize",
+    "section": "Add your script that sets up and runs the model",
+    "text": "Add your script that sets up and runs the model"
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#add-your-comparison-figures",
+    "href": "content/SWFSC-sardine.html#add-your-comparison-figures",
+    "title": "Customize",
+    "section": "Add your comparison figures",
+    "text": "Add your comparison figures"
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#add-comparison-tables",
+    "href": "content/SWFSC-sardine.html#add-comparison-tables",
+    "title": "Customize",
+    "section": "Add comparison tables",
+    "text": "Add comparison tables"
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "href": "content/SWFSC-sardine.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "title": "Customize",
+    "section": "What was your experience using FIMS? What could we do to improve usability?",
+    "text": "What was your experience using FIMS? What could we do to improve usability?"
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#list-any-issues-that-you-ran-into-or-found",
+    "href": "content/SWFSC-sardine.html#list-any-issues-that-you-ran-into-or-found",
+    "title": "Customize",
+    "section": "List any issues that you ran into or found",
+    "text": "List any issues that you ran into or found\nPlease open an issue if you found something new."
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "href": "content/SWFSC-sardine.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "title": "Customize",
+    "section": "What features are most important to add based on this case study?",
+    "text": "What features are most important to add based on this case study?"
+  },
+  {
+    "objectID": "content/SWFSC-sardine.html#add-your-pages-to-the-project",
+    "href": "content/SWFSC-sardine.html#add-your-pages-to-the-project",
     "title": "Customize",
     "section": "Add your pages to the project",
     "text": "Add your pages to the project\n\nAdd the files to _quarto.yml"

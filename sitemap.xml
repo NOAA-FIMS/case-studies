@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/publishing.html</loc>
-    <lastmod>2023-12-07T18:50:13.958Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/acknowledgements.html</loc>
-    <lastmod>2023-12-07T18:50:13.326Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/index.html</loc>
+    <lastmod>2024-01-18T20:18:36.536Z</lastmod>
   </url>
   <url>
     <loc>https://noaa-fims.github.io/case-studies/content/rmarkdown.html</loc>
-    <lastmod>2023-12-07T18:50:12.758Z</lastmod>
+    <lastmod>2024-01-18T20:18:31.537Z</lastmod>
   </url>
   <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/SWFSC-sardine.html</loc>
-    <lastmod>2023-12-07T18:50:11.078Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/index.html</loc>
-    <lastmod>2023-12-07T18:50:10.186Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/rendering.html</loc>
-    <lastmod>2023-12-07T18:50:11.370Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/content/acknowledgements.html</loc>
+    <lastmod>2024-01-18T20:18:26.934Z</lastmod>
   </url>
   <url>
     <loc>https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html</loc>
-    <lastmod>2023-12-07T18:50:13.054Z</lastmod>
+    <lastmod>2024-01-18T20:18:25.501Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/publishing.html</loc>
+    <lastmod>2024-01-18T20:18:10.658Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/rendering.html</loc>
+    <lastmod>2024-01-18T20:18:26.279Z</lastmod>
   </url>
   <url>
     <loc>https://noaa-fims.github.io/case-studies/content/case-study-template.html</loc>
-    <lastmod>2023-12-07T18:50:13.622Z</lastmod>
+    <lastmod>2024-01-18T20:18:27.792Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/SWFSC-sardine.html</loc>
+    <lastmod>2024-01-18T20:18:32.560Z</lastmod>
   </url>
 </urlset>
