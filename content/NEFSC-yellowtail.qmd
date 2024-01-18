@@ -9,13 +9,20 @@ format:
 
 ```{r}
 #| warning: false
+# Names of required packages
+packages <- c("dplyr", "tidyr", "ggplot2", "TMB", "remotes")
 
-library(dplyr)
-library(tidyr)
-library(ggplot2)
+# Install packages not yet installed
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages], repos = "http://cran.us.r-project.org")
+}
+remotes::install_github("NOAA-FIMS/FIMS")
+remotes::install_github("kaskr/TMB_contrib_R/TMBhelper")
+
+# Load packages
+invisible(lapply(packages, library, character.only = TRUE))
 library(FIMS)
-library(TMB)
-library(TMBhelper)
 
 R_version <- version$version.string
 TMB_version <- packageDescription("TMB")$Version
@@ -185,8 +192,8 @@ fishing_fleet$random_F <- FALSE
 fishing_fleet$log_q <- log(rdat$initial.guesses$q.year1.init[1])
 fishing_fleet$estimate_q <- FALSE
 fishing_fleet$random_q <- FALSE
-fishing_fleet$log_obs_error$value <- log(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))) 
-fishing_fleet$log_obs_error$estimated <- FALSE
+fishing_fleet$log_obs_error <- rep(log(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), nyears)
+fishing_fleet$estimate_obs_error <- FALSE
 # Next two lines not currently used by FIMS
 fishing_fleet$SetAgeCompLikelihood(1)
 fishing_fleet$SetIndexLikelihood(1)
@@ -221,8 +228,8 @@ for (i in 1:rdat$parms$nindices){
   survey_fleet$estimate_q <- TRUE
   survey_fleet$random_q <- FALSE
   # sd = sqrt(log(cv^2 + 1)), sd is log transformed
-  survey_fleet$log_obs_error$value <- log(sqrt(log(as.numeric(mean(rdat$index.cv[[i]], na.rm=TRUE)^2 + 1))))
-  survey_fleet$log_obs_error$estimated <- FALSE
+  survey_fleet$log_obs_error <- rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[i]], na.rm=TRUE)^2 + 1)))), nyears)
+  survey_fleet$estimate_obs_error <- FALSE
   survey_fleet$SetAgeCompLikelihood(i)
   survey_fleet$SetIndexLikelihood(i)
   survey_fleet$SetSelectivity(survey_fleet_selectivity$get_id())
