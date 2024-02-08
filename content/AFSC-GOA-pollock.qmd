@@ -13,6 +13,7 @@ library(tidyverse)
 library(FIMS)
 library(TMB)
 library(TMBhelper)
+## devtools::install_github('afsc-assessments/GOApollock', ref='v0.1.2')
 library(GOApollock)
 theme_set(theme_bw())
 
