@@ -9,6 +9,8 @@ format:
 
 ```{r}
 #| warning: false
+#| label: startup
+
 library(tidyverse)
 library(FIMS)
 library(TMB)
@@ -32,22 +34,28 @@ FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
 
 ## Simplifications to the original assessment
 
-* Drop survey 1
-* To do
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the pollock stock. This is intended as a demonstration and nothing more.
 
+To get the opertional model to more closely match FIMS I:
 
-How I simplified my assessment:
+* Droped surveys 1, 4, and 5
+* Removed ageing error
+* Removed length compositions
+* Removed bias correction in log-normal index likelihoods
+* Simplified catchability of survey 3 to be constant in time (removed random walk)
+* Updated maturity to be parametric rather than empirical
+* Used constant weight at age for all sources: spawning, fishery, surveys, and biomass calculations. The same matrix was used throughout.
+* Changee timing to be Jan 1 for spawning and all surveys
+* Removed prior on catchability for survey 2
+* Removed time-varying fisheries selectivity (constant double logistic)
+* Took off normalization of selectivity
+* Removed age accumulation for fishery age compositions
 
-To fill the missing year of survey data, I first ran the model in ASAP with the missing data treated as missing. I then filled the missing data with the expected value of the survey, both in aggregate and for catch at age in place of the missing data.
-
-The varying weights at age, index CVs, and ESS values were replaced by the time series mean in all years.
-
-The catch weight at age matrix was used as the weight at age for all sources.
 
 ## Script to prepare data for building FIMS object
 ```{r}
 #| warning: false
-
+#| label: prepare-fims-data
 ## define the dimensions and global variables
 years <- 1970:2023
 nyears <- length(years)
@@ -70,6 +78,9 @@ pkinput <- readRDS('data_files/pkinput.RDS')
 ```{r}
 #| warning: false
 #| label: run-FIMS
+#| output: false
+#| eval: true
+
 ## set up FIMS data objects
 clear()
 clear_logs()
@@ -161,9 +172,6 @@ addsegs(yrs=pkdat0$srvyrs6, obs=pkdat0$indxsurv6, CV=pkdat0$indxsurv_log_sd6)
 mtext('Survey 6', line=-1.5)
 legend('topright', legend=c('TMB', 'FIMS init', 'FIMS opt'), lty=1, col=1:3)
 dev.off()
-
-
-
 ```
 ## Comparison figures for basic model
 ![Time Series](figures/AFSC_PK_ts_comparison.png){width=7in}
@@ -174,13 +182,13 @@ dev.off()
 ![Survey 2 Age Composition Fits](figures/AFSC_PK_age_comp_fits_2.png){width=7in}
 
 ## Extra analyses
-Two extra analyses are demonstrated. First is a likelihood profile over lnR0, showing component contributions and testing for data conflict. The second is to run the model through the 'Stan' software using the 'tmbstan' R package. This samples from the posterior and the posterior distribution for spawning stock biomass is shown. Given it's long run time the results are saved to a file and read in for post-hoc plotting.
+Two extra analyses are demonstrated. First is a likelihood profile over lnR0, showing component contributions and testing for data conflict (a Piner plot). The second is to run the model through the 'Stan' software using the 'tmbstan' R package. This samples from the posterior, which are put back into the model to get the posterior distribution for spawning stock biomass. Given its long run time the results are saved to a file and read in for post-hoc plotting.
 
 ``` {r}
-
 #| label: extra-calcs
 #| warning: true
-#| 
+#| output: false
+
 ## Try a likelihood profile
 i <- 68 # this will break if model is changed at all
 map <- parameters
@@ -237,17 +245,21 @@ ggsave('figures/AFSC_PK_like_profile_R0.png', g, width=7, height=3.5)
 ssbpost <- readRDS('data_files/pk_pollock_SSB_posteriors.RDS')
 g <- ggplot(ssbpost, aes(year, ssb/1e9, group=rep)) + geom_line(alpha=.1) +
   ylim(0,NA) + labs(x=NULL, y='SSB (M t)', title='Posterior demo (unconverged!)')
-ggsave('figures/ssb_posterior.png', g, width=7, height=4, units='in')
+ggsave('figures/AFSC_PK_ssb_posterior.png', g, width=7, height=4, units='in')
 
 ```
 
+## Plots for extra analyses
+![Likelihood Profile](figures/AFSC_PK_like_profile.png){width=7in}
+![SSB Posterior](figures/AFSC_PK_ssb_posterior.png){width=7in}
+
 ## Comparison table
 
-The likelihood components from the TMB model do not include constants and thus are not directly comparable. To be fixed later.
+The likelihood components from the TMB model do not include constants and thus are not directly comparable. To be fixed later. Relative differences between the modified TMB model and FIMS implementation are given in the figure above.
 
 ## What was your experience using FIMS? What could we do to improve usability?
 
-TO DO Relatively easy to use by following the example done by Chris Legault.
+To do
 
 ## List any issues that you ran into or found
 
