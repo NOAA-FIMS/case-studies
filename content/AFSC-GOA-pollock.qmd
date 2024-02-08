@@ -47,9 +47,6 @@ The catch weight at age matrix was used as the weight at age for all sources.
 ```{r}
 #| warning: false
 
-# clear memory
-clear()
-
 ## define the dimensions and global variables
 years <- 1970:2023
 nyears <- length(years)
@@ -71,7 +68,7 @@ pkinput <- readRDS('data_files/pkinput.RDS')
 ## Run FIMS model
 ```{r}
 #| warning: false
-#| 
+#| label: run-FIMS
 ## set up FIMS data objects
 clear()
 clear_logs()
@@ -179,6 +176,10 @@ dev.off()
 Two extra analyses are demonstrated. First is a likelihood profile over lnR0, showing component contributions and testing for data conflict. The second is to run the model through the 'Stan' software using the 'tmbstan' R package. This samples from the posterior and the posterior distribution for spawning stock biomass is shown. Given it's long run time the results are saved to a file and read in for post-hoc plotting.
 
 ``` {r}
+
+#| label: extra-calcs
+#| warning: true
+#| 
 ## Try a likelihood profile
 i <- 68 # this will break if model is changed at all
 map <- parameters

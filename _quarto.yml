@@ -43,6 +43,8 @@ website:
         text: R Markdown files
       - href: content/NEFSC-yellowtail.qmd
         text: NEFSC yellowtail flounder case study
+      - href: content/AFSC-GOA-pollock.qmd
+        text: AFSC GOA pollock case study
       - href: content/acknowledgements.qmd
         text: Acknowledgements
 
