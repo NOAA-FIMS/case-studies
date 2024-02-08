@@ -10,13 +10,16 @@ format:
 ```{r}
 #| warning: false
 #| label: startup
+#| output: false
 
-library(tidyverse)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
 library(FIMS)
 library(TMB)
 library(TMBhelper)
 ## devtools::install_github('afsc-assessments/GOApollock', ref='v0.1.2')
-library(GOApollock)
+## library(GOApollock)
 theme_set(theme_bw())
 
 
@@ -56,6 +59,8 @@ To get the opertional model to more closely match FIMS I:
 ```{r}
 #| warning: false
 #| label: prepare-fims-data
+#| output: false
+
 ## define the dimensions and global variables
 years <- 1970:2023
 nyears <- length(years)
