@@ -12,6 +12,15 @@ format:
 #| label: startup
 #| output: false
 
+packages <- c("dplyr", "tidyr", "ggplot2", "TMB", "remotes")
+# Install packages not yet installed
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages], repos = "http://cran.us.r-project.org")
+}
+remotes::install_github("NOAA-FIMS/FIMS", ref='isNA')
+remotes::install_github("kaskr/TMB_contrib_R/TMBhelper")
+
 library(ggplot2)
 library(tidyr)
 library(dplyr)
