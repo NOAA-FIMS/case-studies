@@ -191,7 +191,6 @@ dev.off()
 ![Time Series](figures/AFSC_PK_ts_comparison.png){width=7in}
 ![Time Series (relative error)](figures/AFSC_PK_ts_comparison_relerror.png){width=7in}
 ![Indices](figures/AFSC_PK_index_fits.png){width=7in}
-![Time Series](figures/AFSC_PK_ts_comparison.png){width=7in}
 ![Fishery Age Composition Fits](figures/AFSC_PK_age_comp_fits_1.png){width=7in}
 ![Survey 2 Age Composition Fits](figures/AFSC_PK_age_comp_fits_2.png){width=7in}
 
@@ -264,7 +263,7 @@ ggsave('figures/AFSC_PK_ssb_posterior.png', g, width=7, height=4, units='in')
 ```
 
 ## Plots for extra analyses
-![Likelihood Profile](figures/AFSC_PK_like_profile.png){width=7in}
+![Likelihood Profile](figures/AFSC_PK_like_profile_R0.png){width=7in}
 ![SSB Posterior](figures/AFSC_PK_ssb_posterior.png){width=7in}
 
 ## Comparison table
