@@ -1,0 +1,197 @@
+---
+title: AFSC Case Study BSAI Atka mackerel
+format:
+  html:
+    code-fold: true
+editor_options: 
+  chunk_output_type: console
+---
+
+
+## The setup
+
+```{r}
+#| warning: false
+#| label: startup
+#| output: false
+
+packages <- c("dplyr", "tidyr", "ggplot2", "TMB", "remotes")
+# Install packages not yet installed
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages], repos = "http://cran.us.r-project.org")
+}
+#remotes::install_github("NOAA-FIMS/FIMS", ref='isNA')
+remotes::install_github("kaskr/TMB_contrib_R/TMBhelper")
+
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(FIMS)
+library(TMB)
+library(TMBhelper)
+## devtools::install_github('afsc-assessments/GOApollock', ref='v0.1.2')
+## library(GOApollock)
+theme_set(theme_bw())
+
+
+R_version <- version$version.string
+TMB_version <- packageDescription("TMB")$Version
+FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
+```
+
+-   R version: `r R_version`\
+-   TMB version: `r TMB_version`\
+-   FIMS commit: `r FIMS_commit`\
+-   Stock name: BSAI Atka mackerel\
+-   Region: AFSC\
+-   Analyst: Jim Ianelli \
+
+## Simplifications to the original assessment
+
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the BSAI Atka mackerel stock. 
+
+To get the opertional model to more closely match FIMS I:
+* stumbled lots
+
+## Script to prepare data for building FIMS object
+```{r}
+#| warning: false
+#| label: prepare-fims-data
+#| output: false
+
+## define the dimensions and global variables
+#  Opent the original AMAK file
+atka_dat <- readRDS(here::here("content","data_files","atka_dat.RDS"))
+atka_rep <- readRDS(here::here("content","data_files","atka_rep.RDS"))
+## define the dimensions and global variables
+years <- atka_dat$styr:atka_dat$endyr
+nyears <- length(years)
+nseasons <- 1
+nages <- 11
+ages <- 1:nages
+## nfleets <- 1
+## This will fit the models bridging to FIMS (simplifying)
+## source("fit_bridge_models.R")
+## compare changes to model
+#pkfitfinal <- readRDS("data_files/pkfitfinal.RDS")
+#pkfit0 <- readRDS("data_files/pkfit0.RDS")
+#parfinal <- pkfitfinal$obj$env$parList()
+#pkinput0 <- readRDS('data_files/pkinput0.RDS')
+#fimsdat <- pkdat0 <- pkinput0$dat
+#pkinput <- readRDS('data_files/pkinput.RDS')
+```
+
+
+
+
+How I simplified my assessment:
+* Haven't got there yet...
+
+
+## Script that sets up and runs the model
+
+```{r}
+#| label: run-FIMS
+#| output: false
+#| eval: true
+
+# clear memory
+clear()
+clear_logs()
+estimate_fish_selex <- TRUE
+estimate_survey_selex <- TRUE
+estimate_q2 <- TRUE
+estimate_q3 <- TRUE
+estimate_q6 <- TRUE
+estimate_F <- TRUE
+estimate_recdevs <- TRUE
+
+get_amak_data <- function(rdat,rrep){
+  ## put into fims friendly form
+  res <- data.frame(type = character(),
+                    name = character(),
+                    age = integer(),
+                    datestart = character(),
+                    dateend = character(),
+                    value = double(),
+                    unit = character(),
+                    uncertainty = double())
+  landings <- data.frame(type = "landings",
+                         name = "fleet1",
+                         age = NA,
+                         datestart = paste0(seq(rdat$styr, rdat$endyr), "-01-01"),
+                         dateend = paste0(seq(rdat$styr, rdat$endyr), "-12-31"),
+                         value = as.numeric(rdat$catch),
+                         unit = "t",
+                         uncertainty = rdat$catch_cv)
+  ##  need to fill missing years with -999 so it's ignored in FIMS
+  indtmp <- 0*rdat$catch-999
+  indtmp[which(years %in% rdat$yrs_ind )] <- rdat$biom_ind
+  #indtmp
+  CVtmp <- rep(1, length=nyears) # actually SE in log space
+  CVtmp[which(years %in% rdat$yrs_ind)] <- rdat$biom_std/rdat$biom_ind
+  ## repeat with fish catch at age, using expected in missing years
+  #names(atka_rep)
+  caa <- 0*rrep$N[,-1]-999
+  caa[which(years %in% rdat$yrs_ages_fsh), ] <- rdat$page_fsh
+  Ncaa <- rep(1, nyears)
+  Ncaa[which(years %in% rdat$yrs_ages_fsh)] <- rdat$sample_ages_fsh
+  paa2 <-  0*rrep$N[,-1]-999
+  paa2[which(years %in% rdat$yrs_ages_ind), ] <- rdat$page_ind
+  Npaa2 <- rep(1, nyears)
+  Npaa2[which(years %in% rdat$yrs_ages_ind)] <- rdat$sample_ages_ind
+  index <- data.frame(type = "index",
+                      name = "survey",
+                      age = NA,
+                      datestart = paste0(seq(rdat$styr, rdat$endyr), "-01-01"),
+                      dateend = paste0(seq(rdat$styr, rdat$endyr), "-12-31"),
+                      value = ifelse(indtmp>0, indtmp, indtmp),
+                      unit = "",
+                      uncertainty = CVtmp)
+  ## these have -999 for missing data years
+  catchage <- data.frame(type = "age",
+                         name = "fleet1",
+                         age = rep(seq(1,nages), nyears),
+                         datestart = rep(paste0(seq(rdat$styr, rdat$endyr), "-01-01"), each=nages),
+                         dateend = rep(paste0(seq(rdat$styr, rdat$endyr), "-12-31"), each=nages),
+                         value = as.numeric(t(caa)),
+                         unit = "",
+                         uncertainty = rep(Ncaa, each=nages))
+  indexage <- data.frame(
+    type = "age",
+    name = "survey",
+    age = rep(seq(1, nages), nyears),
+    datestart = rep(paste0( seq(rdat$styr, rdat$endyr), "-01-01" ), each = nages),
+    dateend = rep(paste0( seq(rdat$styr, rdat$endyr), "-12-31" ), each = nages),
+    value = as.numeric(t(paa2)),
+    unit = "",
+    uncertainty = rep(Npaa2, each = nages)
+  )
+  ## indexage=indexage2
+  ## index=index2
+  res <- rbind(res, landings, index, catchage, indexage)
+  return(res)
+}
+fimsdat<-get_amak_data(atka_dat,atka_rep)
+
+```
+
+```{r}
+#| label: run-FIMS2
+#| output: false
+#| eval: true
+#| 
+
+age_frame <- FIMS::FIMSFrameAge(fimsdat)
+fishery_catch <- FIMS::m_landings(age_frame)
+fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1")
+survey_index <- FIMS::m_index(age_frame, "survey")
+survey_agecomp <- FIMS::m_agecomp(age_frame, "survey")
+# need to think about how to deal with multiple fleets - only using 1 fleeet for now
+fish_index <- methods::new(Index, nyears)
+fish_age_comp <- methods::new(AgeComp, nyears, nages)
+fish_index$index_data <- fishery_catch
+fish_age_comp$age_comp_data <- fishery_agecomp * fimsdat$catchage$uncertainty#rep(Ncaa, each=nages)
+
+```
