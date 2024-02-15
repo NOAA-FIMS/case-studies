@@ -1,0 +1,560 @@
+---
+title: AFSC Case Study BSAI Atka mackerel
+editor_options: 
+  chunk_output_type: console
+---
+
+
+## The setup
+
+```{r}
+#| warning: false
+#| label: startup
+#| output: false
+
+packages <- c("dplyr", "tidyr", "ggplot2", "TMB", "remotes")
+# Install packages not yet installed
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages], repos = "http://cran.us.r-project.org")
+}
+#remotes::install_github("NOAA-FIMS/FIMS", ref='isNA')
+remotes::install_github("kaskr/TMB_contrib_R/TMBhelper")
+
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(FIMS)
+library(TMB)
+library(TMBhelper)
+## devtools::install_github('afsc-assessments/GOApollock', ref='v0.1.2')
+## library(GOApollock)
+theme_set(theme_bw())
+
+
+R_version <- version$version.string
+TMB_version <- packageDescription("TMB")$Version
+FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
+```
+
+-   R version: `r R_version`\
+-   TMB version: `r TMB_version`\
+-   FIMS commit: `r FIMS_commit`\
+-   Stock name: BSAI Atka mackerel\
+-   Region: AFSC\
+-   Analyst: Jim Ianelli \
+
+## Simplifications to the original assessment
+
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the pollock stock. This is intended as a demonstration and nothing more.
+
+To get the opertional model to more closely match FIMS I:
+* Removed bias correction in log-normal index likelihoods
+* Simplified catchability of survey 3 to be constant in time (removed random walk)
+* Updated maturity to be parametric rather than empirical
+* Used constant weight at age for all sources: spawning, fishery, surveys, and biomass calculations. The same matrix was used throughout.
+* Changee timing to be Jan 1 for spawning and all surveys
+* Removed prior on catchability for survey 2
+* Removed time-varying fisheries selectivity (constant double logistic)
+* Took off normalization of selectivity
+* Removed age accumulation for fishery age compositions
+
+
+## Script to prepare data for building FIMS object
+```{r}
+#| warning: false
+#| label: prepare-fims-data
+#| output: false
+
+## define the dimensions and global variables
+#  Opent the original AMAK file
+atka_dat <- readRDS("data_files/atka_dat.RDS")
+atka_rep <- readRDS("data_files/atka_rep.RDS")
+## define the dimensions and global variables
+years <- atka_dat$styr:atka_dat$endyr
+nyears <- length(years)
+nseasons <- 1
+nages <- 11
+ages <- 1:nages
+## nfleets <- 1
+## This will fit the models bridging to FIMS (simplifying)
+## source("fit_bridge_models.R")
+## compare changes to model
+#pkfitfinal <- readRDS("data_files/pkfitfinal.RDS")
+#pkfit0 <- readRDS("data_files/pkfit0.RDS")
+#parfinal <- pkfitfinal$obj$env$parList()
+#pkinput0 <- readRDS('data_files/pkinput0.RDS')
+#fimsdat <- pkdat0 <- pkinput0$dat
+#pkinput <- readRDS('data_files/pkinput.RDS')
+```
+
+
+
+
+How I simplified my assessment:
+
+
+## Script that sets up and runs the model
+```{r}
+#| warning: false
+
+# clear memory
+clear()
+clear_logs()
+estimate_fish_selex <- TRUE
+estimate_survey_selex <- TRUE
+estimate_q2 <- TRUE
+estimate_q3 <- TRUE
+estimate_q6 <- TRUE
+estimate_F <- TRUE
+estimate_recdevs <- TRUE
+
+# read the AMAK rdat files
+# First generate them from the original AMAK file
+#rdat <- dget(file.path("data_files", "NEFSC_YT_SIMPLIFIED.RDAT")) # to be used in FIMS, lots of modifications from original
+#orig <- dget(file.path("data_files", "NEFSC_YT_ORIGINAL.RDAT"))   # where started before modifications for use in FIMS
+
+# function to create equivalent of data_mile1, basic catch and survey data
+# need to think about how to deal with multiple fleets and indices - only use 1 of each for now
+#remotes::install_github("mlverse/chattr")
+# q: What is the definition of standard error?
+# a: The standard error is the standard deviation of the log-transformed data. This is the standard deviation of the log-transformed data, not the standard deviation of the data itself. The standard error is the standard deviation of the data itself.
+
+# q: What is the definition of the standard deviation of the age composition data?
+# a: The standard deviation of the age composition data is the standard deviation of the log-transformed age composition data. This is the standard deviation of the log-transformed age composition data, not the standard deviation of the age composition data itself. The standard deviation of the age composition data is the standard deviation of the age composition data itself.
+
+# q: What is the definition of the standard deviation of the index data?
+# a: The standard deviation of the index data is the standard deviation of the log-transformed index data. This is the standard deviation of the log-transformed index data, not the standard deviation of the index data itself. The standard deviation of the index data is the standard deviation of the index data itself.
+fimsdat<-atka_dat
+get_amak_data <- function(rdat){
+## put into fims friendly form
+res <- data.frame(type = character(),
+                  name = character(),
+                  age = integer(),
+                  datestart = character(),
+                  dateend = character(),
+                  value = double(),
+                  unit = character(),
+                  uncertainty = double())
+landings <- data.frame(type = "landings",
+                       name = "fleet1",
+                       age = NA,
+                       datestart = paste0(seq(fimsdat$styr, fimsdat$endyr), "-01-01"),
+                       dateend = paste0(seq(fimsdat$styr, fimsdat$endyr), "-12-31"),
+                       value = as.numeric(fimsdat$catch),
+                       unit = "t",
+                       uncertainty = fimsdat$catch_cv)
+  # Now do same loop but fill in where data exists
+# [1] "styr"                "endyr"               "rec_age"             "n_ages"              "number_length_inter"
+#[6] "Length_bins"         "nfsh"                "catch"               "catch_cv"            "n_ages_fsh"         
+#[11] "n_lengths_fsh"       "yrs_ages_fsh"        "sample_ages_fsh"     "page_fsh"            "wt_age_fsh"         
+#[16] "nind"                "nobs_ind"            "yrs_ind"             "month_ind"           "biom_ind"           
+#[21] "biom_std"            "n_ages_ind"          "n_lengths_ind"       "yrs_ages_ind"        "sample_ages_ind"    
+#[26] "page_ind"            "wt_age_ind"          "wt_age_pop"          "maturity"            "spmonth"            
+#[31] "age_err"            
+##  need to fill missing years with -999 so it's ignored in FIMS
+indtmp <- 0*fimsdat$catch-999
+indtmp[which(years %in% fimsdat$yrs_ind )] <- fimsdat$biom_ind
+#indtmp
+CVtmp <- rep(1, length=nyears) # actually SE in log space
+CVtmp[which(years %in% fimsdat$yrs_ind)] <- fimsdat$biom_std/fimsdat$biom_ind
+## repeat with fish catch at age, using expected in missing years
+#names(atka_rep)
+caa <- 0*atka_rep$N[,-1]-999
+caa[which(years %in% fimsdat$yrs_ages_fsh), ] <- fimsdat$page_fsh
+Ncaa <- rep(1, nyears)
+Ncaa[which(years %in% fimsdat$yrs_ages_fsh)] <- fimsdat$sample_ages_fsh
+paa2 <-  0*atka_rep$N[,-1]-999
+paa2[which(years %in% fimsdat$yrs_ages_ind), ] <- fimsdat$page_ind
+Npaa2 <- rep(1, nyears)
+Npaa2[which(years %in% fimsdat$yrs_ages_ind)] <- fimsdat$sample_ages_ind
+index <- data.frame(type = "index",
+                    name = "survey",
+                    age = NA,
+                    datestart = paste0(seq(fimsdat$styr, fimsdat$endyr), "-01-01"),
+                    dateend = paste0(seq(fimsdat$styr, fimsdat$endyr), "-12-31"),
+                    value = ifelse(indtmp>0, indtmp, indtmp),
+                    unit = "",
+                    uncertainty = CVtmp)
+## these have -999 for missing data years
+catchage <- data.frame(type = "age",
+                       name = "fleet1",
+                       age = rep(seq(1,nages), nyears),
+                       datestart = rep(paste0(seq(fimsdat$styr, fimsdat$endyr), "-01-01"), each=nages),
+                       dateend = rep(paste0(seq(fimsdat$styr, fimsdat$endyr), "-12-31"), each=nages),
+                       value = as.numeric(t(caa)),
+                       unit = "",
+                       uncertainty = rep(Ncaa, each=nages))
+indexage <- data.frame(
+          type = "age",
+          name = "survey",
+          age = rep(seq(1, nages), nyears),
+          datestart = rep(paste0( seq(fimsdat$styr, fimsdat$endyr), "-01-01" ), each = nages),
+          dateend = rep(paste0( seq(fimsdat$styr, fimsdat$endyr), "-12-31" ), each = nages),
+          value = as.numeric(t(paa2)),
+          unit = "",
+          uncertainty = rep(Npaa2, each = nages)
+)
+## indexage=indexage2
+## index=index2
+res <- rbind(res, landings, index, catchage, indexage)
+## rm(landings, index, catchage, indexage)
+
+
+age_frame <- FIMS::FIMSFrameAge(res)
+fishery_catch <- FIMS::m_landings(age_frame)
+fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1")
+survey_index <- FIMS::m_index(age_frame, "survey")
+survey_agecomp <- FIMS::m_agecomp(age_frame, "survey")
+# need to think about how to deal with multiple fleets - only using 1 fleeet for now
+fish_index <- methods::new(Index, nyears)
+fish_age_comp <- methods::new(AgeComp, nyears, nages)
+fish_index$index_data <- fishery_catch
+fish_age_comp$age_comp_data <- fishery_agecomp * catchage$uncertainty#rep(Ncaa, each=nages)
+
+
+### set up fishery
+## fleet selectivity: converted from time-varying ascending
+## slope/intercept to constant double-logistic
+## methods::show(DoubleLogisticSelectivity)
+fish_selex <- methods::new(DoubleLogisticSelectivity)
+fish_selex$inflection_point_asc$value <- 3.0 #parfinal$inf1_fsh_mean
+fish_selex$inflection_point_asc$is_random_effect <- FALSE
+fish_selex$inflection_point_asc$estimated <- estimate_fish_selex
+fish_selex$inflection_point_desc$value <- 3.0 #parfinal$inf2_fsh_mean
+fish_selex$inflection_point_desc$is_random_effect <- FALSE
+fish_selex$inflection_point_desc$estimated <- estimate_fish_selex
+fish_selex$slope_asc$value <- 1. #exp(parfinal$log_slp1_fsh_mean)
+fish_selex$slope_asc$is_random_effect <- FALSE
+fish_selex$slope_asc$estimated <- estimate_fish_selex
+fish_selex$slope_desc$value <- 1. #exp(parfinal$log_slp2_fsh_mean)
+fish_selex$slope_desc$is_random_effect <- FALSE
+fish_selex$slope_desc$estimated <- estimate_fish_selex
+## create fleet object
+fish_fleet <- methods::new(Fleet)
+fish_fleet$nages <- nages
+fish_fleet$nyears <- nyears
+fish_fleet$log_Fmort <- log(atka_rep$F_age_1[,-1])
+fish_fleet$estimate_F <- estimate_F
+fish_fleet$random_F <- FALSE
+fish_fleet$log_q <- 0 # why is this length two in Chris' case study?
+fish_fleet$estimate_q <- FALSE
+fish_fleet$random_q <- FALSE
+fish_fleet$log_obs_error <- log(landings$uncertainty)
+## fish_fleet$log_obs_error$estimated <- FALSE
+# Next two lines not currently used by FIMS
+fish_fleet$SetAgeCompLikelihood(1)
+fish_fleet$SetIndexLikelihood(1)
+# Set Index, AgeComp, and Selectivity using the IDs from the modules defined above
+fish_fleet$SetObservedIndexData(fish_index$get_id())
+fish_fleet$SetObservedAgeCompData(fish_age_comp$get_id())
+fish_fleet$SetSelectivity(fish_selex$get_id())
+
+
+## Setup survey 2
+survey_fleet_index <- methods::new(Index, nyears)
+survey_age_comp <- methods::new(AgeComp, nyears, nages)
+survey_fleet_index$index_data <- survey_index
+survey_age_comp$age_comp_data <- survey_agecomp * indexage$uncertainty
+## survey selectivity: ascending logistic
+## methods::show(DoubleLogisticSelectivity)
+survey_selex <- methods::new(DoubleLogisticSelectivity)
+survey_selex$inflection_point_asc$value <- 3.0 #parfinal$inf1_srv
+survey_selex$inflection_point_asc$is_random_effect <- FALSE
+survey_selex$inflection_point_asc$estimated <- estimate_survey_selex
+survey_selex$slope_asc$value <- 3.0 #exp(parfinal$log_slp1_srv2)
+survey_selex$slope_asc$is_random_effect <- FALSE
+survey_selex$slope_asc$estimated <- estimate_survey_selex
+## not estimated to make it ascending only, fix at input values
+survey_selex$inflection_point_desc$value <- 3.0 #parfinal$inf2_srv2
+survey_selex$inflection_point_desc$is_random_effect <- FALSE
+survey_selex$inflection_point_desc$estimated <- FALSE
+survey_selex$slope_desc$value <- 3.0 #exp(parfinal$log_slp2_srv2)
+survey_selex$slope_desc$is_random_effect <- FALSE
+survey_selex$slope_desc$estimated <- FALSE
+survey_fleet <- methods::new(Fleet)
+survey_fleet$is_survey <- TRUE
+survey_fleet$nages <- nages
+survey_fleet$nyears <- nyears
+survey_fleet$estimate_F <- FALSE
+survey_fleet$random_F <- FALSE
+survey_fleet$log_q <- 1.0 #parfinal$log_q2_mean
+survey_fleet$estimate_q <- estimate_q2
+survey_fleet$random_q <- FALSE
+# sd = sqrt(log(cv^2 + 1)), sd is log transformed
+survey_fleet$log_obs_error <- log(index$uncertainty)
+## survey_fleet$log_obs_error$estimated <- FALSE
+survey_fleet$SetAgeCompLikelihood(1)
+survey_fleet$SetIndexLikelihood(1)
+survey_fleet$SetSelectivity(survey_selex$get_id())
+survey_fleet$SetObservedIndexData(survey_fleet_index$get_id())
+survey_fleet$SetObservedAgeCompData(survey_age_comp$get_id())
+
+# Population module
+# recruitment
+recruitment <- methods::new(BevertonHoltRecruitment)
+## methods::show(BevertonHoltRecruitment)
+recruitment$log_sigma_recruit$value <- 0.6 #log(parfinal$sigmaR)
+recruitment$log_rzero$value <- 11. #parfinal$mean_log_recruit + log(1e9)
+recruitment$log_rzero$is_random_effect <- FALSE
+recruitment$log_rzero$estimated <- TRUE
+## note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run
+recruitment$logit_steep$value <- -log(1.0 - .99999) + log(.99999 - 0.2)
+recruitment$logit_steep$is_random_effect <- FALSE
+recruitment$logit_steep$estimated <- FALSE
+recruitment$estimate_log_devs <- estimate_recdevs
+recruitment$log_devs <-  0. #parfinal$dev_log_recruit[-1]
+
+## growth  -- assumes single WAA vector for everything, based on
+## Srv1 above
+waa <- atka_rep$wt_fsh_1
+ewaa_growth <- methods::new(EWAAgrowth)
+ewaa_growth$ages <- ages
+# NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now
+ewaa_growth$weights <- waa[1,]
+## NOTE: FIMS assumes SSB calculated at the start of the year, so
+## need to adjust ASAP to do so as well for now, need to make
+## timing of SSB calculation part of FIMS later
+## maturity
+## NOTE: for now tricking FIMS into thinking age 0 is age 1, so need to adjust A50 for maturity because FIMS calculations use ages 0-5+ instead of 1-6
+maturity <- new(LogisticMaturity)
+maturity$inflection_point$value <- 4.5
+maturity$inflection_point$is_random_effect <- FALSE
+maturity$inflection_point$estimated <- FALSE
+maturity$slope$value <- 1.5
+maturity$slope$is_random_effect <- FALSE
+maturity$slope$estimated <- FALSE
+
+# population
+population <- new(Population)
+population$log_M <- log( atka_rep$M) 
+population$estimate_M <- FALSE
+population$log_init_naa <- 11. #c(log(pkfitfinal$rep$recruit[1]), log(pkfitfinal$rep$initN)) + log(1e9)
+population$estimate_init_naa <- FALSE # TRUE , NOTE: fixing at ASAP estimates to test SSB calculations
+population$nages <- nages
+population$ages <- ages
+population$nfleets <- 2 # 1 fleet and 1 survey
+population$nseasons <- nseasons
+population$nyears <- nyears
+## population$prop_female <- 1.0 # ASAP assumption
+population$SetMaturity(maturity$get_id())
+population$SetGrowth(ewaa_growth$get_id())
+population$SetRecruitment(recruitment$get_id())
+
+# make FIMS model
+success <- CreateTMBModel()
+parameters <- list(p = get_fixed())
+obj <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
+
+
+# fitting the model
+opt <- nlminb(start=obj$par, objective=obj$fn, gradient=obj$gr,
+              control = list(eval.max = 8000, iter.max = 800))
+#  method = "BFGS",
+#   control = list(maxit=1000000, reltol = 1e-15))
+#print(opt)
+
+
+#max(abs(obj$gr())) # from Cole, can use TMBhelper::fit_tmb to get val to <1e-10
+
+#opt <- TMBhelper::fit_tmb(obj, newtonsteps=3, quiet = TRUE) # don't understand why quiet flag does not work in Quarto
+
+#max(abs(obj$gr()))
+
+sdr <- TMB::sdreport(obj)
+sdr_fixed <- summary(sdr, "fixed")
+report <- obj$report()
+
+### Plotting
+
+mycols <- c("FIMS" = "blue", "ASAP" = "red", "ASAP_orig" = "darkgreen")
+
+for (i in 1:rdat$parms$nindices){
+  index_results <- data.frame(
+    survey = i,
+    year = years,
+    observed = rdat$index.obs[[i]],
+    FIMS = report$exp_index[[rdat$parms$nfleet+i]],
+    ASAP = rdat$index.pred[[i]]
+  )
+  if (i==1){
+    allinds_results <- index_results
+  }else{
+    allinds_results <- rbind(allinds_results, index_results)
+  }
+}
+#print(allinds_results)
+
+comp_index <- ggplot(allinds_results, aes(x = year, y = observed)) +
+  geom_point() +
+  geom_line(aes(x = year, y = FIMS), color = "blue") +
+  geom_line(aes(x = year, y = ASAP), color = "red") +
+  facet_wrap(~survey, scales = "free_y", nrow = 2) +
+  xlab("Year") +
+  ylab("Index") +
+  ggtitle("Blue=FIMS, Red=ASAP") +
+  theme_bw()
+#print(comp_index)
+
+catch_results <- data.frame(
+  observed = fishing_fleet_index$index_data,
+  FIMS = report$exp_index[[1]],
+  ASAP = as.numeric(rdat$catch.pred[1,])
+)
+#print(catch_results)
+
+comp_catch <- ggplot(catch_results, aes(x = years, y = observed)) +
+  geom_point() +
+  xlab("Year") +
+  ylab("Catch (mt)") +
+  geom_line(aes(x = years, y = FIMS), color = "blue") +
+  geom_line(aes(x = years, y = ASAP), color = "red") +
+  ggtitle("Blue=FIMS, Red=ASAP") +
+  theme_bw()
+#print(comp_catch)
+
+pop_results <- data.frame(
+  Year = c(years, max(years)+1, years, years, years, years, max(years)+1, years),
+  Metric = c(rep("SSB", 2*nyears+1), rep("F_mort", 2*nyears), rep("Recruitment", 2*nyears+1)),
+  Model = c(rep("FIMS", nyears+1), rep("ASAP", nyears), rep(c("FIMS", "ASAP"), each=nyears), 
+             rep("FIMS", nyears+1), rep("ASAP", nyears)),
+  Value = c(report$ssb[[1]], rdat$SSB, report$F_mort[[1]], rdat$F.report, report$recruitment[[1]], as.numeric(rdat$N.age[,1]))
+)
+#print(pop_results)
+
+# ggplot(filter(pop_results, Year <=2019), aes(x=Year, y=Value, color=Model)) +
+#   geom_line() +
+#   facet_wrap(~Metric, ncol=1, scales = "free_y") +
+#   theme_bw() +
+#   scale_color_manual(values = mycols)
+
+orig_years <- seq(orig$parms$styr, orig$parms$endyr)
+orig_pop_results <- data.frame(
+  Year = rep(orig_years, 3),
+  Metric = rep(c("SSB", "F_mort", "Recruitment"), each = length(orig_years)),
+  Model = "ASAP_orig",
+  Value = c(orig$SSB, orig$F.report, as.numeric(orig$N.age[,1]))
+)
+
+pop_results_3 <- rbind(pop_results, orig_pop_results)
+#print(pop_results_3)
+
+# ggplot(filter(pop_results_3, Year <=2019), aes(x=Year, y=Value, color=Model)) +
+#   geom_line() +
+#   facet_wrap(~Metric, ncol=1, scales = "free_y") +
+#   theme_bw() +
+#   scale_color_manual(values = mycols)
+
+comp_FRSSB3 <- ggplot(pop_results_3, aes(x=Year, y=Value, color=Model)) +
+  geom_line() +
+  facet_wrap(~Metric, ncol=1, scales = "free_y") +
+  theme_bw() +
+  scale_color_manual(values = mycols)
+#print(comp_FRSSB3)
+
+FIMS_naa_results <- data.frame(
+  Year = rep(c(years, max(years)+1), each = nages),
+  Age = rep(ages, nyears+1),
+  Metric = "NAA",
+  Model = "FIMS",
+  Value = report$naa[[1]]
+)
+
+ASAP_naa_results <- data.frame(
+  Year = rep(years, each = nages),
+  Age = rep(ages, nyears),
+  Metric = "NAA",
+  Model = "ASAP",
+  Value = as.numeric(t(rdat$N.age))
+)
+
+orig_naa_results <- data.frame(
+  Year = rep(orig_years, each = nages),
+  Age = rep(ages, length(orig_years)),
+  Metric = "NAA",
+  Model = "ASAP_orig",
+  Value = as.numeric(t(orig$N.age))
+)
+naa_results <- rbind(FIMS_naa_results, ASAP_naa_results, orig_naa_results)
+#print(naa_results)
+
+# ggplot(filter(naa_results, Year <= 2019), aes(x=Year, y=Value, color=Model)) +
+#   geom_line() +
+#   facet_wrap(~Age, ncol=1, scales = "free_y") +
+#   ylab("NAA") +
+#   theme_bw() +
+#   scale_color_manual(values = mycols)
+
+comp_naa2 <- ggplot(filter(naa_results, Year <= 2019, Model %in% c("ASAP", "FIMS")), aes(x=Year, y=Value, color=Model)) +
+  geom_line() +
+  facet_wrap(~Age, ncol=1, scales = "free_y") +
+  ylab("NAA") +
+  theme_bw() +
+  scale_color_manual(values = mycols)
+#print(comp_naa2)
+
+# ggplot(filter(naa_results, Year == 1973, Model %in% c("ASAP", "FIMS")), aes(x=Age, y=Value, color=Model)) +
+#   geom_line() +
+#   ylab("NAA in Year 1") +
+#   theme_bw() +
+#   scale_color_manual(values = mycols)
+
+
+saveplots <- TRUE
+if(saveplots){
+  ggsave(filename = "figures/NEFSC_YT_compare_index.png", plot = comp_index, width = 4, height = 4, units = "in")
+  ggsave(filename = "figures/NEFSC_YT_compare_catch.png", plot = comp_catch, width = 4, height = 4, units = "in")
+  ggsave(filename = "figures/NEFSC_YT_compare_FRSSB3.png", plot = comp_FRSSB3, width = 5, height = 6.5, units = "in")
+  ggsave(filename = "figures/NEFSC_YT_compare_NAA2.png", plot = comp_naa2, width = 5, height = 6.5, units = "in")
+}
+
+```
+## Comparison figures
+![Catch](figures/NEFSC_YT_compare_catch.png){width=4in}
+![Indices](figures/NEFSC_YT_compare_index.png){width=4in}
+![FRSSB](figures/NEFSC_YT_compare_FRSSB3.png){width=4in}
+![NAA](figures/NEFSC_YT_compare_NAA2.png){width=4in}
+
+## Comparison table
+
+The likelihood components from FIMS and ASAP for the same data are shown in the table below. Note that the ASAP file had to turn on the use likelihood constants option to enable this comparison (this option should not be used when recruitment deviations are estimated).
+
+```{r}
+jnlltab <- data.frame(Component=c("Total","Index","Age Comp", "Rec"),
+                      FIMS = c(report$jnll, report$index_nll, report$age_comp_nll, report$rec_nll),
+                      ASAP = c(rdat$like$lk.total,
+                               (rdat$like$lk.catch.total + rdat$like$lk.index.fit.total),
+                               (rdat$like$lk.catch.age.comp + rdat$like$lk.index.age.comp),
+                               rdat$like$lk.Recruit.devs))
+print(jnlltab)
+```
+
+## What was your experience using FIMS? What could we do to improve usability?
+
+Relatively easy to use by following the vignette. Creating wrappers for data input would help so that each element did not need to be assigned directly. 
+
+## List any issues that you ran into or found
+
+Please [open an issue](https://github.com/NOAA-FIMS/FIMS/issues/new/choose) if you found something new.
+
+* SSB calculations in FIMS assume 0.5 multiplier, which differs from ASAP [Issue #521](https://github.com/NOAA-FIMS/FIMS/issues/521).
+* Output all derived values (this is mostly done)
+* Fix recruitment estimation [Issue #364](https://github.com/NOAA-FIMS/FIMS/issues/364)
+* Handle missing data, especially surveys [Issue #502](https://github.com/NOAA-FIMS/FIMS/issues/502)
+* Weights at age that change over time
+* Separate weights at age for catch, SSB, Jan-1 population, indices, etc.
+* Fishery selectivity blocks or random effects
+* Allow time-varying CVs and ESS (or alternative functions)
+* Option for Index in numbers
+* Timing of Index and SSB calculations within the year
+* One-step-ahead residuals
+* Reference points, projections, pushbutton retro
+
+## What features are most important to add based on this case study?
+
+* Missing values, would allow inclusion of the other 3 indices (too many missing years to fill for this example)
+
+```{r}
+# Clear C++ objects from memory
+clear()
+```
