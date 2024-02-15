@@ -1,0 +1,26 @@
+```{r}
+#| warning: false
+#| label: package-installation
+
+# Names of required packages
+packages <- c("dplyr", "tidyr", "ggplot2", "TMB", "reshape2", "here", "remotes")
+
+# Install packages not yet installed
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages], repos = "http://cran.us.r-project.org")
+}
+
+remotes::install_github("kaskr/TMB_contrib_R/TMBhelper")
+remotes::install_github("NOAA-FIMS/FIMS")
+
+# Load packages
+invisible(lapply(packages, library, character.only = TRUE))
+
+library(FIMS)
+library(TMBhelper)
+
+R_version <- version$version.string
+TMB_version <- packageDescription("TMB")$Version
+FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
+```

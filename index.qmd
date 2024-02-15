@@ -5,8 +5,3 @@ page-layout: full
 ---
 
 These case studies demonstrate use of the Fisheries Integrated Modeling System to run a few different cases of stock assessment models. 
-
-```{r, eval = FALSE}
-install.packages(c("dplyr","tidyr","ggplot2","TMB","TMBhelper")
-remotes::install_github("NOAA-FIMS/FIMS")
-```

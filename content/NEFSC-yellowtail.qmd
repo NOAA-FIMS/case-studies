@@ -7,27 +7,15 @@ format:
 
 ## The setup
 
+{{< include setup.qmd >}}
+
 ```{r}
 #| warning: false
-#| label: package-installation
-# Names of required packages
-packages <- c("dplyr", "tidyr", "ggplot2", "remotes", "TMB")
+#| label: startup
 
-# Install packages not yet installed
-installed_packages <- packages %in% rownames(installed.packages())
-if (any(installed_packages == FALSE)) {
-  install.packages(packages[!installed_packages], repos = "http://cran.us.r-project.org")
-}
-
-# Load packages
-invisible(lapply(packages, library, character.only = TRUE))
-library(FIMS)
-library(TMB)
-library(TMBhelper)
-
-R_version <- version$version.string
-TMB_version <- packageDescription("TMB")$Version
-FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
+# R_version <- version$version.string
+# TMB_version <- packageDescription("TMB")$Version
+# FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
 ```
 
 -   R version: `r R_version`\
