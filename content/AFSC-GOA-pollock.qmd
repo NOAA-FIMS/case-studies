@@ -12,24 +12,20 @@ format:
 #| label: startup
 #| output: false
 
-packages <- c("dplyr", "tidyr", "ggplot2", "TMB", "remotes", "reshape2")
+packages <- c("dplyr", "tidyr", "ggplot2", "remotes", "reshape2", "TMB")
 # Install packages not yet installed
 installed_packages <- packages %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {
   install.packages(packages[!installed_packages], repos = "http://cran.us.r-project.org")
 }
-#remotes::install_github("NOAA-FIMS/FIMS")
-#remotes::install_github("NOAA-FIMS/FIMS", ref='isNA')
-#remotes::install_github("kaskr/TMB_contrib_R/TMBhelper")
 
-library(ggplot2)
-library(tidyr)
-library(dplyr)
+# Load packages
+invisible(lapply(packages, library, character.only = TRUE))
+
 library(FIMS)
 library(TMB)
 library(TMBhelper)
-## devtools::install_github('afsc-assessments/GOApollock', ref='v0.1.2')
-## library(GOApollock)
+
 theme_set(theme_bw())
 
 

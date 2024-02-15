@@ -9,20 +9,21 @@ format:
 
 ```{r}
 #| warning: false
+#| label: package-installation
 # Names of required packages
-packages <- c("dplyr", "tidyr", "ggplot2", "TMB", "remotes")
+packages <- c("dplyr", "tidyr", "ggplot2", "remotes", "TMB")
 
 # Install packages not yet installed
 installed_packages <- packages %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {
   install.packages(packages[!installed_packages], repos = "http://cran.us.r-project.org")
 }
-#remotes::install_github("NOAA-FIMS/FIMS")
-remotes::install_github("kaskr/TMB_contrib_R/TMBhelper")
 
 # Load packages
 invisible(lapply(packages, library, character.only = TRUE))
 library(FIMS)
+library(TMB)
+library(TMBhelper)
 
 R_version <- version$version.string
 TMB_version <- packageDescription("TMB")$Version
@@ -64,6 +65,7 @@ The catch weight at age matrix was used as the weight at age for all sources.
 ## Script that sets up and runs the model
 ```{r}
 #| warning: false
+#| label: run-fims
 
 # clear memory
 clear()
@@ -469,6 +471,7 @@ if(saveplots){
 The likelihood components from FIMS and ASAP for the same data are shown in the table below. Note that the ASAP file had to turn on the use likelihood constants option to enable this comparison (this option should not be used when recruitment deviations are estimated).
 
 ```{r}
+#| label: comparison-table
 jnlltab <- data.frame(Component=c("Total","Index","Age Comp", "Rec"),
                       FIMS = c(report$jnll, report$index_nll, report$age_comp_nll, report$rec_nll),
                       ASAP = c(rdat$like$lk.total,
@@ -504,6 +507,7 @@ Please [open an issue](https://github.com/NOAA-FIMS/FIMS/issues/new/choose) if y
 * Missing values, would allow inclusion of the other 3 indices (too many missing years to fill for this example)
 
 ```{r}
+#| label: clear-C++-objects-from-memory
 # Clear C++ objects from memory
 clear()
 ```
