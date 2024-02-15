@@ -2,38 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://noaa-fims.github.io/case-studies/index.html</loc>
-    <lastmod>2024-02-08T21:43:36.442Z</lastmod>
+    <lastmod>2024-02-15T18:38:14.852Z</lastmod>
   </url>
   <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/rmarkdown.html</loc>
-    <lastmod>2024-02-08T21:43:36.442Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/acknowledgements.html</loc>
-    <lastmod>2024-02-08T21:43:36.413Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html</loc>
-    <lastmod>2024-02-08T21:43:36.412Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/AFSC-GOA-pollock.html</loc>
-    <lastmod>2024-02-08T21:43:36.411Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/publishing.html</loc>
-    <lastmod>2024-02-08T21:43:36.441Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/rendering.html</loc>
-    <lastmod>2024-02-08T21:43:36.441Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/content/AFSC-BSAI-AtkaMackerel.html</loc>
+    <lastmod>2024-02-15T18:38:14.787Z</lastmod>
   </url>
   <url>
     <loc>https://noaa-fims.github.io/case-studies/content/case-study-template.html</loc>
-    <lastmod>2024-02-08T21:43:36.413Z</lastmod>
+    <lastmod>2024-02-15T18:38:14.790Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/rendering.html</loc>
+    <lastmod>2024-02-15T18:38:14.849Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/publishing.html</loc>
+    <lastmod>2024-02-15T18:38:14.849Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/AFSC-GOA-pollock.html</loc>
+    <lastmod>2024-02-15T18:38:14.788Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html</loc>
+    <lastmod>2024-02-15T18:38:14.789Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/acknowledgements.html</loc>
+    <lastmod>2024-02-15T18:38:14.790Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/rmarkdown.html</loc>
+    <lastmod>2024-02-15T18:38:14.850Z</lastmod>
   </url>
   <url>
     <loc>https://noaa-fims.github.io/case-studies/content/SWFSC-sardine.html</loc>
-    <lastmod>2024-02-08T21:43:36.412Z</lastmod>
+    <lastmod>2024-02-15T18:38:14.789Z</lastmod>
   </url>
 </urlset>
