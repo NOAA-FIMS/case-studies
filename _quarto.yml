@@ -35,8 +35,6 @@ website:
         text: Home
       - href: content/case-study-template.qmd
         text: Case study template
-      - href: content/SWFSC-sardine.qmd
-        text: SWFSC sardine case study
       - href: content/rendering.qmd
         text: Rendering
       - href: content/rmarkdown.Rmd
@@ -47,6 +45,8 @@ website:
         text: AFSC GOA pollock case study
       - href: content/AFSC-BSAI-AtkaMackerel.qmd
         text: AFSC BSAI Atka Mackerel case study
+      - href: content/SWFSC-sardine.qmd
+        text: SWFSC sardine case study
       - href: content/acknowledgements.qmd
         text: Acknowledgements
 

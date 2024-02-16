@@ -21,12 +21,15 @@ and start the qmd file with a level header `# `, but if using the default title 
 ## Add a chunk of code describing your setup
 
 Case study files should include:
+
 * R version
 * TMB version
 * FIMS commit
 * Name of your stock
 * Name of your region
 * Name of the analyst
+
+Please ensure that the [`content/setup.qmd`](https://github.com/NOAA-FIMS/case-studies/blob/main/content/setup.qmd) file is updated if the case study requires the installation of additional R packages.
 
 ## Add a bulleted list and script describing simplifications you had to make
 
