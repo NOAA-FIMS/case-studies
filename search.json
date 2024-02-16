@@ -4,245 +4,154 @@
     "href": "index.html",
     "title": "Fisheries Integrated Modeling System case studies",
     "section": "",
-    "text": "These case studies demonstrate use of the Fisheries Integrated Modeling System to run a few different cases of stock assessment models.\n\ninstall.packages(c(\"dplyr\",\"tidyr\",\"ggplot2\",\"TMB\",\"TMBhelper\")\nremotes::install_github(\"NOAA-FIMS/FIMS\")",
+    "text": "These case studies demonstrate use of the Fisheries Integrated Modeling System to run a few different cases of stock assessment models.",
     "crumbs": [
       "Home"
     ]
   },
   {
-    "objectID": "content/AFSC-BSAI-AtkaMackerel.html",
-    "href": "content/AFSC-BSAI-AtkaMackerel.html",
-    "title": "AFSC Case Study BSAI Atka mackerel",
+    "objectID": "content/setup.html",
+    "href": "content/setup.html",
+    "title": "NOAA FIMS case studies",
     "section": "",
-    "text": "Code\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"remotes\", \"here\", \"TMB\")\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\n\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\n\nlibrary(FIMS)\nlibrary(TMB)\nlibrary(TMBhelper)\n## devtools::install_github('afsc-assessments/GOApollock', ref='v0.1.2')\n## library(GOApollock)\ntheme_set(theme_bw())\n\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 18f96a8\n\nStock name: BSAI Atka mackerel\n\nRegion: AFSC\n\nAnalyst: Jim Ianelli",
+    "text": "# Names of required packages\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"TMB\", \"reshape2\", \"here\", \"remotes\")\n\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\n\nremotes::install_github(\"kaskr/TMB_contrib_R/TMBhelper\")\nremotes::install_github(\"NOAA-FIMS/FIMS\")\n\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\n\nlibrary(FIMS)\nlibrary(TMBhelper)\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)"
+  },
+  {
+    "objectID": "content/rmarkdown.html",
+    "href": "content/rmarkdown.html",
+    "title": "R Markdown",
+    "section": "",
+    "text": "You can include R Markdown files in your project.",
     "crumbs": [
-      "AFSC BSAI Atka Mackerel case study"
+      "R Markdown files"
     ]
   },
   {
-    "objectID": "content/AFSC-BSAI-AtkaMackerel.html#the-setup",
-    "href": "content/AFSC-BSAI-AtkaMackerel.html#the-setup",
-    "title": "AFSC Case Study BSAI Atka mackerel",
-    "section": "",
-    "text": "Code\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"remotes\", \"here\", \"TMB\")\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\n\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\n\nlibrary(FIMS)\nlibrary(TMB)\nlibrary(TMBhelper)\n## devtools::install_github('afsc-assessments/GOApollock', ref='v0.1.2')\n## library(GOApollock)\ntheme_set(theme_bw())\n\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 18f96a8\n\nStock name: BSAI Atka mackerel\n\nRegion: AFSC\n\nAnalyst: Jim Ianelli",
+    "objectID": "content/rmarkdown.html#r-markdown",
+    "href": "content/rmarkdown.html#r-markdown",
+    "title": "R Markdown",
+    "section": "R Markdown",
+    "text": "R Markdown\nThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.\nWhen you click the Knit button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:\n\nsummary(cars)\n\n     speed           dist       \n Min.   : 4.0   Min.   :  2.00  \n 1st Qu.:12.0   1st Qu.: 26.00  \n Median :15.0   Median : 36.00  \n Mean   :15.4   Mean   : 42.98  \n 3rd Qu.:19.0   3rd Qu.: 56.00  \n Max.   :25.0   Max.   :120.00",
     "crumbs": [
-      "AFSC BSAI Atka Mackerel case study"
+      "R Markdown files"
     ]
   },
   {
-    "objectID": "content/AFSC-BSAI-AtkaMackerel.html#simplifications-to-the-original-assessment",
-    "href": "content/AFSC-BSAI-AtkaMackerel.html#simplifications-to-the-original-assessment",
-    "title": "AFSC Case Study BSAI Atka mackerel",
+    "objectID": "content/rmarkdown.html#including-plots",
+    "href": "content/rmarkdown.html#including-plots",
+    "title": "R Markdown",
+    "section": "Including Plots",
+    "text": "Including Plots\nYou can also embed plots, for example:\n\n\n\n\n\n\n\n\n\nNote that the echo = FALSE parameter was added to the code chunk to prevent printing of the R code that generated the plot.",
+    "crumbs": [
+      "R Markdown files"
+    ]
+  },
+  {
+    "objectID": "content/acknowledgements.html",
+    "href": "content/acknowledgements.html",
+    "title": "Acknowledgments",
+    "section": "",
+    "text": "This repo and GitHub Action was based on the tutorial by Openscapes quarto-website-tutorial by Julia Lowndes and Stefanie Butland.",
+    "crumbs": [
+      "Acknowledgements"
+    ]
+  },
+  {
+    "objectID": "content/NEFSC-yellowtail.html",
+    "href": "content/NEFSC-yellowtail.html",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "section": "",
+    "text": "Code\n# Names of required packages\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"TMB\", \"reshape2\", \"here\", \"remotes\")\n\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\n\nremotes::install_github(\"kaskr/TMB_contrib_R/TMBhelper\")\nremotes::install_github(\"NOAA-FIMS/FIMS\")\n\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\n\nlibrary(FIMS)\nlibrary(TMBhelper)\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\n\nCode\n# R_version &lt;- version$version.string\n# TMB_version &lt;- packageDescription(\"TMB\")$Version\n# FIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 18f96a8\n\nStock name: Southern New England-Mid Atlantic Yellowtail Flounder\n\nRegion: NEFSC\n\nAnalyst: Chris Legault",
+    "crumbs": [
+      "NEFSC yellowtail flounder case study"
+    ]
+  },
+  {
+    "objectID": "content/NEFSC-yellowtail.html#the-setup",
+    "href": "content/NEFSC-yellowtail.html#the-setup",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "section": "",
+    "text": "Code\n# Names of required packages\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"TMB\", \"reshape2\", \"here\", \"remotes\")\n\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\n\nremotes::install_github(\"kaskr/TMB_contrib_R/TMBhelper\")\nremotes::install_github(\"NOAA-FIMS/FIMS\")\n\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\n\nlibrary(FIMS)\nlibrary(TMBhelper)\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\n\nCode\n# R_version &lt;- version$version.string\n# TMB_version &lt;- packageDescription(\"TMB\")$Version\n# FIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 18f96a8\n\nStock name: Southern New England-Mid Atlantic Yellowtail Flounder\n\nRegion: NEFSC\n\nAnalyst: Chris Legault",
+    "crumbs": [
+      "NEFSC yellowtail flounder case study"
+    ]
+  },
+  {
+    "objectID": "content/NEFSC-yellowtail.html#simplifications-to-the-original-assessment",
+    "href": "content/NEFSC-yellowtail.html#simplifications-to-the-original-assessment",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
     "section": "Simplifications to the original assessment",
-    "text": "Simplifications to the original assessment\nThe model presented in this case study was changed substantially from the operational version and should not be considered reflective of the BSAI Atka mackerel stock.\nTo get the opertional model to more closely match FIMS I: * stumbled lots",
+    "text": "Simplifications to the original assessment\n\nEnd year 2021 to 2019 due to missing 2020 survey\n5 indices to 2\nFilled a survey missing year for one index (see below)\nVarying weight at age to constant over time\nDifferent weight at age matrices for catch, SSB, Jan-1 to same for all 3\nSSB calculated in April to Jan-1\nAggregate index in numbers to weight\nFishery 2 selectivity blocks to 1\nCatch and Index selectivity at age to logistic\nIndex timing from April to Jan-1\nVarying Index CV to constant over time\nVarying Catch ESS to constant over time\nSR unexploited scaler SSB to recruitment\n\nHow I simplified my assessment:\nTo fill the missing year of survey data, I first ran the model in ASAP with the missing data treated as missing. I then filled the missing data with the expected value of the survey, both in aggregate and for catch at age in place of the missing data.\nThe varying weights at age, index CVs, and ESS values were replaced by the time series mean in all years.\nThe catch weight at age matrix was used as the weight at age for all sources.",
     "crumbs": [
-      "AFSC BSAI Atka Mackerel case study"
+      "NEFSC yellowtail flounder case study"
     ]
   },
   {
-    "objectID": "content/AFSC-BSAI-AtkaMackerel.html#script-to-prepare-data-for-building-fims-object",
-    "href": "content/AFSC-BSAI-AtkaMackerel.html#script-to-prepare-data-for-building-fims-object",
-    "title": "AFSC Case Study BSAI Atka mackerel",
-    "section": "Script to prepare data for building FIMS object",
-    "text": "Script to prepare data for building FIMS object\n\n\nCode\n## define the dimensions and global variables\n#  Opent the original AMAK file\natka_dat &lt;- readRDS(here::here(\"content\",\"data_files\",\"atka_dat.RDS\"))\natka_rep &lt;- readRDS(here::here(\"content\",\"data_files\",\"atka_rep.RDS\"))\n## define the dimensions and global variables\nyears &lt;- atka_dat$styr:atka_dat$endyr\nnyears &lt;- length(years)\nnseasons &lt;- 1\nnages &lt;- 11\nages &lt;- 1:nages\n## nfleets &lt;- 1\n## This will fit the models bridging to FIMS (simplifying)\n## source(\"fit_bridge_models.R\")\n## compare changes to model\n#pkfitfinal &lt;- readRDS(\"data_files/pkfitfinal.RDS\")\n#pkfit0 &lt;- readRDS(\"data_files/pkfit0.RDS\")\n#parfinal &lt;- pkfitfinal$obj$env$parList()\n#pkinput0 &lt;- readRDS('data_files/pkinput0.RDS')\n#fimsdat &lt;- pkdat0 &lt;- pkinput0$dat\n#pkinput &lt;- readRDS('data_files/pkinput.RDS')\n\n\nHow I simplified my assessment: * Haven’t got there yet…",
-    "crumbs": [
-      "AFSC BSAI Atka Mackerel case study"
-    ]
-  },
-  {
-    "objectID": "content/AFSC-BSAI-AtkaMackerel.html#script-that-sets-up-and-runs-the-model",
-    "href": "content/AFSC-BSAI-AtkaMackerel.html#script-that-sets-up-and-runs-the-model",
-    "title": "AFSC Case Study BSAI Atka mackerel",
+    "objectID": "content/NEFSC-yellowtail.html#script-that-sets-up-and-runs-the-model",
+    "href": "content/NEFSC-yellowtail.html#script-that-sets-up-and-runs-the-model",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
     "section": "Script that sets up and runs the model",
-    "text": "Script that sets up and runs the model\n\n\nCode\n# clear memory\nclear()\nclear_logs()\nestimate_fish_selex &lt;- TRUE\nestimate_survey_selex &lt;- TRUE\nestimate_q2 &lt;- TRUE\nestimate_q3 &lt;- TRUE\nestimate_q6 &lt;- TRUE\nestimate_F &lt;- TRUE\nestimate_recdevs &lt;- TRUE\n\nget_amak_data &lt;- function(rdat,rrep){\n  ## put into fims friendly form\n  res &lt;- data.frame(type = character(),\n                    name = character(),\n                    age = integer(),\n                    datestart = character(),\n                    dateend = character(),\n                    value = double(),\n                    unit = character(),\n                    uncertainty = double())\n  landings &lt;- data.frame(type = \"landings\",\n                         name = \"fleet1\",\n                         age = NA,\n                         datestart = paste0(seq(rdat$styr, rdat$endyr), \"-01-01\"),\n                         dateend = paste0(seq(rdat$styr, rdat$endyr), \"-12-31\"),\n                         value = as.numeric(rdat$catch),\n                         unit = \"t\",\n                         uncertainty = rdat$catch_cv)\n  ##  need to fill missing years with -999 so it's ignored in FIMS\n  indtmp &lt;- 0*rdat$catch-999\n  indtmp[which(years %in% rdat$yrs_ind )] &lt;- rdat$biom_ind\n  #indtmp\n  CVtmp &lt;- rep(1, length=nyears) # actually SE in log space\n  CVtmp[which(years %in% rdat$yrs_ind)] &lt;- rdat$biom_std/rdat$biom_ind\n  ## repeat with fish catch at age, using expected in missing years\n  #names(atka_rep)\n  caa &lt;- 0*rrep$N[,-1]-999\n  caa[which(years %in% rdat$yrs_ages_fsh), ] &lt;- rdat$page_fsh\n  Ncaa &lt;- rep(1, nyears)\n  Ncaa[which(years %in% rdat$yrs_ages_fsh)] &lt;- rdat$sample_ages_fsh\n  paa2 &lt;-  0*rrep$N[,-1]-999\n  paa2[which(years %in% rdat$yrs_ages_ind), ] &lt;- rdat$page_ind\n  Npaa2 &lt;- rep(1, nyears)\n  Npaa2[which(years %in% rdat$yrs_ages_ind)] &lt;- rdat$sample_ages_ind\n  index &lt;- data.frame(type = \"index\",\n                      name = \"survey\",\n                      age = NA,\n                      datestart = paste0(seq(rdat$styr, rdat$endyr), \"-01-01\"),\n                      dateend = paste0(seq(rdat$styr, rdat$endyr), \"-12-31\"),\n                      value = ifelse(indtmp&gt;0, indtmp, indtmp),\n                      unit = \"\",\n                      uncertainty = CVtmp)\n  ## these have -999 for missing data years\n  catchage &lt;- data.frame(type = \"age\",\n                         name = \"fleet1\",\n                         age = rep(seq(1,nages), nyears),\n                         datestart = rep(paste0(seq(rdat$styr, rdat$endyr), \"-01-01\"), each=nages),\n                         dateend = rep(paste0(seq(rdat$styr, rdat$endyr), \"-12-31\"), each=nages),\n                         value = as.numeric(t(caa)),\n                         unit = \"\",\n                         uncertainty = rep(Ncaa, each=nages))\n  indexage &lt;- data.frame(\n    type = \"age\",\n    name = \"survey\",\n    age = rep(seq(1, nages), nyears),\n    datestart = rep(paste0( seq(rdat$styr, rdat$endyr), \"-01-01\" ), each = nages),\n    dateend = rep(paste0( seq(rdat$styr, rdat$endyr), \"-12-31\" ), each = nages),\n    value = as.numeric(t(paa2)),\n    unit = \"\",\n    uncertainty = rep(Npaa2, each = nages)\n  )\n  ## indexage=indexage2\n  ## index=index2\n  res &lt;- rbind(res, landings, index, catchage, indexage)\n  return(res)\n}\nfimsdat&lt;-get_amak_data(atka_dat,atka_rep)\n\n\n\n\nCode\nage_frame &lt;- FIMS::FIMSFrameAge(fimsdat)\nfishery_catch &lt;- FIMS::m_landings(age_frame)\nfishery_agecomp &lt;- FIMS::m_agecomp(age_frame, \"fleet1\")\nsurvey_index &lt;- FIMS::m_index(age_frame, \"survey\")\nsurvey_agecomp &lt;- FIMS::m_agecomp(age_frame, \"survey\")\n# need to think about how to deal with multiple fleets - only using 1 fleeet for now\nfish_index &lt;- methods::new(Index, nyears)\nfish_age_comp &lt;- methods::new(AgeComp, nyears, nages)\nfish_index$index_data &lt;- fishery_catch\nfish_age_comp$age_comp_data &lt;- fishery_agecomp * fimsdat$catchage$uncertainty#rep(Ncaa, each=nages)",
+    "text": "Script that sets up and runs the model\n\n\nCode\n# clear memory\nclear()\n\n# read the ASAP rdat files\nrdat &lt;- dget(file.path(\"data_files\", \"NEFSC_YT_SIMPLIFIED.RDAT\")) # to be used in FIMS, lots of modifications from original\norig &lt;- dget(file.path(\"data_files\", \"NEFSC_YT_ORIGINAL.RDAT\"))   # where started before modifications for use in FIMS\n\n# function to create equivalent of data_mile1, basic catch and survey data\n# need to think about how to deal with multiple fleets and indices - only use 1 of each for now\nget_asap_data &lt;- function(rdat){\n  res &lt;- data.frame(type = character(),\n                name = character(),\n                age = integer(),\n                datestart = character(),\n                dateend = character(),\n                value = double(),\n                unit = character(),\n                uncertainty = double())\n  \n  landings &lt;- data.frame(type = \"landings\",\n                     name = \"fleet1\",\n                     age = NA,\n                     datestart = paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-01-01\"),\n                     dateend = paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-12-31\"),\n                     value = as.numeric(rdat$catch.obs[1,]),\n                     unit = \"mt\",\n                     uncertainty = rdat$control.parms$catch.tot.cv[,1])\n  \n  # loop over all indices\n  for (i in 1:rdat$parms$nindices){\n    index &lt;- data.frame(type = \"index\",\n                        name = paste0(\"survey\", i),\n                        age = NA,\n                        datestart = paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-01-01\"),\n                        dateend = paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-12-31\"),\n                        value = as.numeric(rdat$index.obs[[i]]),\n                        unit = \"\",\n                        uncertainty = rdat$index.cv[[i]])\n    if (i == 1){\n      allinds &lt;- index\n    }else{\n      allinds &lt;- rbind(allinds, index)\n    }\n  }\n  \n  catchage &lt;- data.frame(type = \"age\",\n                     name = \"fleet1\",\n                     age = rep(seq(1,rdat$parms$nages), rdat$parms$nyears),\n                     datestart = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-01-01\"), each=rdat$parms$nages),\n                     dateend = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-12-31\"), each=rdat$parms$nages),\n                     value = as.numeric(t(rdat$catch.comp.mats$catch.fleet1.ob)),\n                     unit = \"\",\n                     uncertainty = rep(rdat$fleet.catch.Neff.init[1,], each=rdat$parms$nages))\n  \n  # loop over all indices\n  for (i in 1:rdat$parms$nindices){\n    indexage &lt;- data.frame(type = \"age\",\n                           name = paste0(\"survey\", i),\n                           age = rep(seq(1,rdat$parms$nages), rdat$parms$nyears),\n                           datestart = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-01-01\"), each=rdat$parms$nages),\n                           dateend = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-12-31\"), each=rdat$parms$nages),\n                           value = as.numeric(t(rdat$index.comp.mats[[i*2-1]])),\n                           unit = \"\",\n                           uncertainty = rep(rdat$index.Neff.init[i,], each=rdat$parms$nages))\n    if (i == 1){\n      allindsage &lt;- indexage\n    }else{\n      allindsage &lt;- rbind(allindsage, indexage)\n    }\n  }\n  \n  res &lt;- rbind(res, landings, allinds, catchage, allindsage)\n  return(res)\n}\n\nmydat &lt;- get_asap_data(rdat)\n\nmyfimsframe &lt;- FIMS::FIMSFrame(mydat)\n#str(myfimsframe)\n\n# define the dimensions\nnyears &lt;- rdat$parms$nyears\nyears &lt;- seq(rdat$parms$styr, rdat$parms$endyr)\nnseasons &lt;- 1 # ASAP only has one season\nnages &lt;- rdat$parms$nages\nages &lt;- 1:nages # ASAP starts at age 1\n\n\n# set up FIMS data objects\nage_frame &lt;- FIMS::FIMSFrameAge(mydat)\n\nfishery_catch &lt;- FIMS::m_landings(age_frame)\nfishery_agecomp &lt;- FIMS::m_agecomp(age_frame, \"fleet1\")\nsurvey_index &lt;- list()\nsurvey_agecomp &lt;- list()\nfor (i in 1:rdat$parms$nindices){\n  survey_index[[i]] &lt;- FIMS::m_index(age_frame, paste0(\"survey\", i))\n  survey_agecomp[[i]] &lt;- FIMS::m_agecomp(age_frame, paste0(\"survey\", i))\n}\n\n# eventually change to allow multiple fishing fleets similar to multiple indices - only using 1 fishing fleet for now\nfishing_fleet_index &lt;- methods::new(Index, nyears)\nfishing_fleet_age_comp &lt;- methods::new(AgeComp, nyears, nages)\nfishing_fleet_index$index_data &lt;- fishery_catch\nfishing_fleet_age_comp$age_comp_data &lt;- fishery_agecomp * rep(rdat$fleet.catch.Neff.init[1,], each=rdat$parms$nages)\n\n\n# fleet selectivity\n#methods::show(LogisticSelectivity)\nfishing_fleet_selectivity &lt;- methods::new(LogisticSelectivity)\nfishing_fleet_selectivity$inflection_point$value &lt;- rdat$sel.input.mats$fleet.sel.ini[nages+1,1] # hardwired to assume only 1 fleet and logistic selectivity used\nfishing_fleet_selectivity$inflection_point$is_random_effect &lt;- FALSE\nfishing_fleet_selectivity$inflection_point$estimated &lt;- TRUE\nfishing_fleet_selectivity$slope$value &lt;- rdat$sel.input.mats$fleet.sel.ini[nages+2,1] # hardwired to assume only 1 fleet and logistic selectivity used\nfishing_fleet_selectivity$slope$is_random_effect &lt;- FALSE\nfishing_fleet_selectivity$slope$estimated &lt;- TRUE\n\n# create fleet object\nfishing_fleet &lt;- methods::new(Fleet)\nfishing_fleet$nages &lt;- nages\nfishing_fleet$nyears &lt;- nyears\nfishing_fleet$log_Fmort &lt;- log(rep(rdat$initial.guesses$Fmult.year1.init[1], nyears)) # ASAP assumes Fmult devs = 0\nfishing_fleet$estimate_F &lt;- TRUE\nfishing_fleet$random_F &lt;- FALSE\nfishing_fleet$log_q &lt;- log(rdat$initial.guesses$q.year1.init[1])\nfishing_fleet$estimate_q &lt;- FALSE\nfishing_fleet$random_q &lt;- FALSE\nfishing_fleet$log_obs_error &lt;- rep(log(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), nyears)\nfishing_fleet$estimate_obs_error &lt;- FALSE\n# Next two lines not currently used by FIMS\nfishing_fleet$SetAgeCompLikelihood(1)\nfishing_fleet$SetIndexLikelihood(1)\n# Set Index, AgeComp, and Selectivity using the IDs from the modules defined above\nfishing_fleet$SetObservedIndexData(fishing_fleet_index$get_id()) \nfishing_fleet$SetObservedAgeCompData(fishing_fleet_age_comp$get_id())\nfishing_fleet$SetSelectivity(fishing_fleet_selectivity$get_id())\n\n# survey module now can handle multiple indices\nfor (i in 1:rdat$parms$nindices){\n  survey_fleet_index &lt;- methods::new(Index, nyears)\n  survey_fleet_age_comp &lt;- methods::new(AgeComp, nyears, nages)\n  survey_fleet_index$index_data &lt;- survey_index[[i]]\n  survey_fleet_age_comp$age_comp_data &lt;- survey_agecomp[[i]] * rep(rdat$index.Neff.init[i,], each=rdat$parms$nages)\n  \n  # survey selectivity\n  survey_fleet_selectivity &lt;- new(LogisticSelectivity)\n  survey_fleet_selectivity$inflection_point$value &lt;- rdat$sel.input.mats$index.sel.ini[(i+1)*(nages+2+4)+nages+1,1] # hardwired for this example\n  survey_fleet_selectivity$inflection_point$is_random_effect &lt;- FALSE\n  survey_fleet_selectivity$inflection_point$estimated &lt;- TRUE\n  survey_fleet_selectivity$inflection_point$value &lt;- rdat$sel.input.mats$index.sel.ini[(i+1)*(nages+2+4)+nages+1,1] # hardwired for this example\n  survey_fleet_selectivity$slope$is_random_effect &lt;- FALSE\n  survey_fleet_selectivity$slope$estimated &lt;- TRUE\n  \n  survey_fleet &lt;- methods::new(Fleet)\n  survey_fleet$is_survey &lt;- TRUE\n  survey_fleet$nages &lt;- nages\n  survey_fleet$nyears &lt;- nyears\n  survey_fleet$estimate_F &lt;- FALSE\n  survey_fleet$random_F &lt;- FALSE\n  survey_fleet$log_q &lt;- log(rdat$initial.guesses$q.year1.init[i]) \n  survey_fleet$estimate_q &lt;- TRUE\n  survey_fleet$random_q &lt;- FALSE\n  # sd = sqrt(log(cv^2 + 1)), sd is log transformed\n  survey_fleet$log_obs_error &lt;- rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[i]], na.rm=TRUE)^2 + 1)))), nyears)\n  survey_fleet$estimate_obs_error &lt;- FALSE\n  survey_fleet$SetAgeCompLikelihood(i)\n  survey_fleet$SetIndexLikelihood(i)\n  survey_fleet$SetSelectivity(survey_fleet_selectivity$get_id())\n  survey_fleet$SetObservedIndexData(survey_fleet_index$get_id())\n  survey_fleet$SetObservedAgeCompData(survey_fleet_age_comp$get_id())\n}\n\n# Population module\n\n# recruitment\nrecruitment &lt;- methods::new(BevertonHoltRecruitment)\n#methods::show(BevertonHoltRecruitment)\n\nrecruitment$log_sigma_recruit$value &lt;- log(mean(rdat$control.parms$recruit.cv)) # typically enter same value for every year in ASAP\nrecruitment$log_rzero$value &lt;- log(rdat$initial.guesses$SR.inits$SR.scaler.init) # ASAP can enter either R0 or SSB0, need to make sure use R0 in input file\nrecruitment$log_rzero$is_random_effect &lt;- FALSE\nrecruitment$log_rzero$estimated &lt;- TRUE\n# note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run\nrecruitment$logit_steep$value &lt;- -log(1.0 - rdat$initial.guesses$SR.inits$SR_steepness.init) + log(rdat$initial.guesses$SR.inits$SR_steepness.init - 0.2)\nrecruitment$logit_steep$is_random_effect &lt;- FALSE\nrecruitment$logit_steep$estimated &lt;- FALSE\n\nrecruitment$estimate_log_devs &lt;- TRUE\nrecruitment$log_devs &lt;- rep(1.0, nyears) # set to no deviations (multiplier) to start, just like ASAP\n\n# growth\newaa_growth &lt;- methods::new(EWAAgrowth)\newaa_growth$ages &lt;- ages\n# NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now\newaa_growth$weights &lt;- rdat$WAA.mats$WAA.catch.all[1,] \n\n# NOTE: FIMS assumes SSB calculated at the start of the year, so need to adjust ASAP to do so as well for now, need to make timing of SSB calculation part of FIMS later\n\n# maturity\n# NOTE: for now tricking FIMS into thinking age 0 is age 1, so need to adjust A50 for maturity because FIMS calculations use ages 0-5+ instead of 1-6\nmaturity &lt;- new(LogisticMaturity)\nmaturity$inflection_point$value &lt;- 1.8 # hardwired for now, need to figure out a better way than this\nmaturity$inflection_point$is_random_effect &lt;- FALSE\nmaturity$inflection_point$estimated &lt;- FALSE\nmaturity$slope$value &lt;- 4 # hardwired for now, need to figure out a better way than this\nmaturity$slope$is_random_effect &lt;- FALSE\nmaturity$slope$estimated &lt;- FALSE\n\n# population\npopulation &lt;- new(Population)\npopulation$log_M &lt;- log(as.numeric(t(rdat$M.age)))\npopulation$estimate_M &lt;- FALSE\npopulation$log_init_naa &lt;- log(rdat$N.age[1,]) # log(rdat$initial.guesses$NAA.year1.init)\npopulation$estimate_init_naa &lt;- FALSE # TRUE , NOTE: fixing at ASAP estimates to test SSB calculations\npopulation$nages &lt;- nages\npopulation$ages &lt;- ages\npopulation$nfleets &lt;- rdat$parms$nfleets + rdat$parms$nindices # fleets plus surveys\npopulation$nseasons &lt;- nseasons\npopulation$nyears &lt;- nyears\n#population$prop_female &lt;- 1.0 # ASAP assumption\n\npopulation$SetMaturity(maturity$get_id())\npopulation$SetGrowth(ewaa_growth$get_id())\npopulation$SetRecruitment(recruitment$get_id())\n\n# make FIMS model\nsucess &lt;- CreateTMBModel()\nparameters &lt;- list(p = get_fixed())\nobj &lt;- MakeADFun(data = list(), parameters, DLL = \"FIMS\", silent = TRUE)\n\n\n# fitting the model\nopt &lt;- nlminb(start=obj$par, objective=obj$fn, gradient=obj$gr,\n              control = list(eval.max = 8000, iter.max = 800))\n#  method = \"BFGS\",\n#   control = list(maxit=1000000, reltol = 1e-15))\n#print(opt)\n\n\n#max(abs(obj$gr())) # from Cole, can use TMBhelper::fit_tmb to get val to &lt;1e-10\n\n#opt &lt;- TMBhelper::fit_tmb(obj, newtonsteps=3, quiet = TRUE) # don't understand why quiet flag does not work in Quarto\n\n#max(abs(obj$gr()))\n\nsdr &lt;- TMB::sdreport(obj)\nsdr_fixed &lt;- summary(sdr, \"fixed\")\nreport &lt;- obj$report()\n\n### Plotting\n\nmycols &lt;- c(\"FIMS\" = \"blue\", \"ASAP\" = \"red\", \"ASAP_orig\" = \"darkgreen\")\n\nfor (i in 1:rdat$parms$nindices){\n  index_results &lt;- data.frame(\n    survey = i,\n    year = years,\n    observed = rdat$index.obs[[i]],\n    FIMS = report$exp_index[[rdat$parms$nfleet+i]],\n    ASAP = rdat$index.pred[[i]]\n  )\n  if (i==1){\n    allinds_results &lt;- index_results\n  }else{\n    allinds_results &lt;- rbind(allinds_results, index_results)\n  }\n}\n#print(allinds_results)\n\ncomp_index &lt;- ggplot(allinds_results, aes(x = year, y = observed)) +\n  geom_point() +\n  geom_line(aes(x = year, y = FIMS), color = \"blue\") +\n  geom_line(aes(x = year, y = ASAP), color = \"red\") +\n  facet_wrap(~survey, scales = \"free_y\", nrow = 2) +\n  xlab(\"Year\") +\n  ylab(\"Index\") +\n  ggtitle(\"Blue=FIMS, Red=ASAP\") +\n  theme_bw()\n#print(comp_index)\n\ncatch_results &lt;- data.frame(\n  observed = fishing_fleet_index$index_data,\n  FIMS = report$exp_index[[1]],\n  ASAP = as.numeric(rdat$catch.pred[1,])\n)\n#print(catch_results)\n\ncomp_catch &lt;- ggplot(catch_results, aes(x = years, y = observed)) +\n  geom_point() +\n  xlab(\"Year\") +\n  ylab(\"Catch (mt)\") +\n  geom_line(aes(x = years, y = FIMS), color = \"blue\") +\n  geom_line(aes(x = years, y = ASAP), color = \"red\") +\n  ggtitle(\"Blue=FIMS, Red=ASAP\") +\n  theme_bw()\n#print(comp_catch)\n\npop_results &lt;- data.frame(\n  Year = c(years, max(years)+1, years, years, years, years, max(years)+1, years),\n  Metric = c(rep(\"SSB\", 2*nyears+1), rep(\"F_mort\", 2*nyears), rep(\"Recruitment\", 2*nyears+1)),\n  Model = c(rep(\"FIMS\", nyears+1), rep(\"ASAP\", nyears), rep(c(\"FIMS\", \"ASAP\"), each=nyears), \n             rep(\"FIMS\", nyears+1), rep(\"ASAP\", nyears)),\n  Value = c(report$ssb[[1]], rdat$SSB, report$F_mort[[1]], rdat$F.report, report$recruitment[[1]], as.numeric(rdat$N.age[,1]))\n)\n#print(pop_results)\n\n# ggplot(filter(pop_results, Year &lt;=2019), aes(x=Year, y=Value, color=Model)) +\n#   geom_line() +\n#   facet_wrap(~Metric, ncol=1, scales = \"free_y\") +\n#   theme_bw() +\n#   scale_color_manual(values = mycols)\n\norig_years &lt;- seq(orig$parms$styr, orig$parms$endyr)\norig_pop_results &lt;- data.frame(\n  Year = rep(orig_years, 3),\n  Metric = rep(c(\"SSB\", \"F_mort\", \"Recruitment\"), each = length(orig_years)),\n  Model = \"ASAP_orig\",\n  Value = c(orig$SSB, orig$F.report, as.numeric(orig$N.age[,1]))\n)\n\npop_results_3 &lt;- rbind(pop_results, orig_pop_results)\n#print(pop_results_3)\n\n# ggplot(filter(pop_results_3, Year &lt;=2019), aes(x=Year, y=Value, color=Model)) +\n#   geom_line() +\n#   facet_wrap(~Metric, ncol=1, scales = \"free_y\") +\n#   theme_bw() +\n#   scale_color_manual(values = mycols)\n\ncomp_FRSSB3 &lt;- ggplot(pop_results_3, aes(x=Year, y=Value, color=Model)) +\n  geom_line() +\n  facet_wrap(~Metric, ncol=1, scales = \"free_y\") +\n  theme_bw() +\n  scale_color_manual(values = mycols)\n#print(comp_FRSSB3)\n\nFIMS_naa_results &lt;- data.frame(\n  Year = rep(c(years, max(years)+1), each = nages),\n  Age = rep(ages, nyears+1),\n  Metric = \"NAA\",\n  Model = \"FIMS\",\n  Value = report$naa[[1]]\n)\n\nASAP_naa_results &lt;- data.frame(\n  Year = rep(years, each = nages),\n  Age = rep(ages, nyears),\n  Metric = \"NAA\",\n  Model = \"ASAP\",\n  Value = as.numeric(t(rdat$N.age))\n)\n\norig_naa_results &lt;- data.frame(\n  Year = rep(orig_years, each = nages),\n  Age = rep(ages, length(orig_years)),\n  Metric = \"NAA\",\n  Model = \"ASAP_orig\",\n  Value = as.numeric(t(orig$N.age))\n)\nnaa_results &lt;- rbind(FIMS_naa_results, ASAP_naa_results, orig_naa_results)\n#print(naa_results)\n\n# ggplot(filter(naa_results, Year &lt;= 2019), aes(x=Year, y=Value, color=Model)) +\n#   geom_line() +\n#   facet_wrap(~Age, ncol=1, scales = \"free_y\") +\n#   ylab(\"NAA\") +\n#   theme_bw() +\n#   scale_color_manual(values = mycols)\n\ncomp_naa2 &lt;- ggplot(filter(naa_results, Year &lt;= 2019, Model %in% c(\"ASAP\", \"FIMS\")), aes(x=Year, y=Value, color=Model)) +\n  geom_line() +\n  facet_wrap(~Age, ncol=1, scales = \"free_y\") +\n  ylab(\"NAA\") +\n  theme_bw() +\n  scale_color_manual(values = mycols)\n#print(comp_naa2)\n\n# ggplot(filter(naa_results, Year == 1973, Model %in% c(\"ASAP\", \"FIMS\")), aes(x=Age, y=Value, color=Model)) +\n#   geom_line() +\n#   ylab(\"NAA in Year 1\") +\n#   theme_bw() +\n#   scale_color_manual(values = mycols)\n\n\nsaveplots &lt;- TRUE\nif(saveplots){\n  ggsave(filename = \"figures/NEFSC_YT_compare_index.png\", plot = comp_index, width = 4, height = 4, units = \"in\")\n  ggsave(filename = \"figures/NEFSC_YT_compare_catch.png\", plot = comp_catch, width = 4, height = 4, units = \"in\")\n  ggsave(filename = \"figures/NEFSC_YT_compare_FRSSB3.png\", plot = comp_FRSSB3, width = 5, height = 6.5, units = \"in\")\n  ggsave(filename = \"figures/NEFSC_YT_compare_NAA2.png\", plot = comp_naa2, width = 5, height = 6.5, units = \"in\")\n}",
     "crumbs": [
-      "AFSC BSAI Atka Mackerel case study"
+      "NEFSC yellowtail flounder case study"
     ]
   },
   {
-    "objectID": "content/case-study-template.html",
-    "href": "content/case-study-template.html",
-    "title": "Customize",
-    "section": "",
-    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation).",
+    "objectID": "content/NEFSC-yellowtail.html#comparison-figures",
+    "href": "content/NEFSC-yellowtail.html#comparison-figures",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "section": "Comparison figures",
+    "text": "Comparison figures",
     "crumbs": [
-      "Case study template"
+      "NEFSC yellowtail flounder case study"
     ]
   },
   {
-    "objectID": "content/case-study-template.html#edit-and-add-your-pages",
-    "href": "content/case-study-template.html#edit-and-add-your-pages",
-    "title": "Customize",
-    "section": "",
-    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation).",
+    "objectID": "content/NEFSC-yellowtail.html#comparison-table",
+    "href": "content/NEFSC-yellowtail.html#comparison-table",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "section": "Comparison table",
+    "text": "Comparison table\nThe likelihood components from FIMS and ASAP for the same data are shown in the table below. Note that the ASAP file had to turn on the use likelihood constants option to enable this comparison (this option should not be used when recruitment deviations are estimated).\n\n\nCode\njnlltab &lt;- data.frame(Component=c(\"Total\",\"Index\",\"Age Comp\", \"Rec\"),\n                      FIMS = c(report$jnll, report$index_nll, report$age_comp_nll, report$rec_nll),\n                      ASAP = c(rdat$like$lk.total,\n                               (rdat$like$lk.catch.total + rdat$like$lk.index.fit.total),\n                               (rdat$like$lk.catch.age.comp + rdat$like$lk.index.age.comp),\n                               rdat$like$lk.Recruit.devs))\nprint(jnlltab)\n\n\n  Component       FIMS     ASAP\n1     Total 1569.47965 2410.844\n2     Index   63.72178 1020.548\n3  Age Comp 1360.01928 1390.297\n4       Rec  145.73859    0.000",
     "crumbs": [
-      "Case study template"
+      "NEFSC yellowtail flounder case study"
     ]
   },
   {
-    "objectID": "content/case-study-template.html#add-a-chunk-of-code-describing-your-setup",
-    "href": "content/case-study-template.html#add-a-chunk-of-code-describing-your-setup",
-    "title": "Customize",
-    "section": "Add a chunk of code describing your setup",
-    "text": "Add a chunk of code describing your setup\nCase study files should include: * R version * TMB version * FIMS commit * Name of your stock * Name of your region * Name of the analyst",
-    "crumbs": [
-      "Case study template"
-    ]
-  },
-  {
-    "objectID": "content/case-study-template.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
-    "href": "content/case-study-template.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
-    "title": "Customize",
-    "section": "Add a bulleted list and script describing simplifications you had to make",
-    "text": "Add a bulleted list and script describing simplifications you had to make\nHow I simplified my assessment * Remove seasonality * etc.",
-    "crumbs": [
-      "Case study template"
-    ]
-  },
-  {
-    "objectID": "content/case-study-template.html#add-your-script-that-sets-up-and-runs-the-model",
-    "href": "content/case-study-template.html#add-your-script-that-sets-up-and-runs-the-model",
-    "title": "Customize",
-    "section": "Add your script that sets up and runs the model",
-    "text": "Add your script that sets up and runs the model",
-    "crumbs": [
-      "Case study template"
-    ]
-  },
-  {
-    "objectID": "content/case-study-template.html#add-your-comparison-figures",
-    "href": "content/case-study-template.html#add-your-comparison-figures",
-    "title": "Customize",
-    "section": "Add your comparison figures",
-    "text": "Add your comparison figures",
-    "crumbs": [
-      "Case study template"
-    ]
-  },
-  {
-    "objectID": "content/case-study-template.html#add-comparison-tables",
-    "href": "content/case-study-template.html#add-comparison-tables",
-    "title": "Customize",
-    "section": "Add comparison tables",
-    "text": "Add comparison tables",
-    "crumbs": [
-      "Case study template"
-    ]
-  },
-  {
-    "objectID": "content/case-study-template.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
-    "href": "content/case-study-template.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
-    "title": "Customize",
+    "objectID": "content/NEFSC-yellowtail.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "href": "content/NEFSC-yellowtail.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
     "section": "What was your experience using FIMS? What could we do to improve usability?",
-    "text": "What was your experience using FIMS? What could we do to improve usability?",
+    "text": "What was your experience using FIMS? What could we do to improve usability?\nRelatively easy to use by following the vignette. Creating wrappers for data input would help so that each element did not need to be assigned directly.",
     "crumbs": [
-      "Case study template"
+      "NEFSC yellowtail flounder case study"
     ]
   },
   {
-    "objectID": "content/case-study-template.html#list-any-issues-that-you-ran-into-or-found",
-    "href": "content/case-study-template.html#list-any-issues-that-you-ran-into-or-found",
-    "title": "Customize",
+    "objectID": "content/NEFSC-yellowtail.html#list-any-issues-that-you-ran-into-or-found",
+    "href": "content/NEFSC-yellowtail.html#list-any-issues-that-you-ran-into-or-found",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
     "section": "List any issues that you ran into or found",
-    "text": "List any issues that you ran into or found\nPlease open an issue if you found something new.",
+    "text": "List any issues that you ran into or found\nPlease open an issue if you found something new.\n\nSSB calculations in FIMS assume 0.5 multiplier, which differs from ASAP Issue #521.\nOutput all derived values (this is mostly done)\nFix recruitment estimation Issue #364\nHandle missing data, especially surveys Issue #502\nWeights at age that change over time\nSeparate weights at age for catch, SSB, Jan-1 population, indices, etc.\nFishery selectivity blocks or random effects\nAllow time-varying CVs and ESS (or alternative functions)\nOption for Index in numbers\nTiming of Index and SSB calculations within the year\nOne-step-ahead residuals\nReference points, projections, pushbutton retro",
     "crumbs": [
-      "Case study template"
+      "NEFSC yellowtail flounder case study"
     ]
   },
   {
-    "objectID": "content/case-study-template.html#what-features-are-most-important-to-add-based-on-this-case-study",
-    "href": "content/case-study-template.html#what-features-are-most-important-to-add-based-on-this-case-study",
-    "title": "Customize",
+    "objectID": "content/NEFSC-yellowtail.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "href": "content/NEFSC-yellowtail.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
     "section": "What features are most important to add based on this case study?",
-    "text": "What features are most important to add based on this case study?",
+    "text": "What features are most important to add based on this case study?\n\nMissing values, would allow inclusion of the other 3 indices (too many missing years to fill for this example)\n\n\n\nCode\n# Clear C++ objects from memory\nclear()",
     "crumbs": [
-      "Case study template"
+      "NEFSC yellowtail flounder case study"
     ]
-  },
-  {
-    "objectID": "content/case-study-template.html#add-your-pages-to-the-project",
-    "href": "content/case-study-template.html#add-your-pages-to-the-project",
-    "title": "Customize",
-    "section": "Add your pages to the project",
-    "text": "Add your pages to the project\n\nAdd the files to _quarto.yml",
-    "crumbs": [
-      "Case study template"
-    ]
-  },
-  {
-    "objectID": "content/rendering.html",
-    "href": "content/rendering.html",
-    "title": "Rendering",
-    "section": "",
-    "text": "The repo includes a GitHub Action that will render (build) the website automatically when you make changes to the files. It will be pushed to the gh-pages branch.\nBut when you are developing your content, you will want to render it locally.",
-    "crumbs": [
-      "Rendering"
-    ]
-  },
-  {
-    "objectID": "content/rendering.html#step-1.-make-sure-you-have-a-recent-rstudio",
-    "href": "content/rendering.html#step-1.-make-sure-you-have-a-recent-rstudio",
-    "title": "Rendering",
-    "section": "Step 1. Make sure you have a recent RStudio",
-    "text": "Step 1. Make sure you have a recent RStudio\nHave you updated RStudio since about August 2022? No? Then update to a newer version of RStudio. In general, you want to keep RStudio updated and it is required to have a recent version to use Quarto.",
-    "crumbs": [
-      "Rendering"
-    ]
-  },
-  {
-    "objectID": "content/rendering.html#step-2.-clone-and-create-rstudio-project",
-    "href": "content/rendering.html#step-2.-clone-and-create-rstudio-project",
-    "title": "Rendering",
-    "section": "Step 2. Clone and create RStudio project",
-    "text": "Step 2. Clone and create RStudio project\nFirst, clone the repo onto your local computer. How? You can click File &gt; New Project and then select “Version Control”. Paste in the url of the repository. That will clone the repo on to your local computer. When you make changes, you will need to push those up.",
-    "crumbs": [
-      "Rendering"
-    ]
-  },
-  {
-    "objectID": "content/rendering.html#step-3.-render-within-rstudio",
-    "href": "content/rendering.html#step-3.-render-within-rstudio",
-    "title": "Rendering",
-    "section": "Step 3. Render within RStudio",
-    "text": "Step 3. Render within RStudio\nRStudio will recognize that this is a Quarto project by the presence of the _quarto.yml file and will see the “Build” tab. Click the “Render website” button to render to the _site folder.\nPreviewing: You can either click index.html in the _site folder and specify “preview in browser” or set up RStudio to preview to the viewer panel. To do the latter, go to Tools &gt; Global Options &gt; R Markdown. Then select “Show output preview in: Viewer panel”.",
-    "crumbs": [
-      "Rendering"
-    ]
-  },
-  {
-    "objectID": "content/publishing.html",
-    "href": "content/publishing.html",
-    "title": "Publishing",
-    "section": "",
-    "text": "To get your Quarto webpage to show up with the url\nyou have a few steps."
-  },
-  {
-    "objectID": "content/publishing.html#turn-on-github-pages-for-your-repo",
-    "href": "content/publishing.html#turn-on-github-pages-for-your-repo",
-    "title": "Publishing",
-    "section": "Turn on GitHub Pages for your repo",
-    "text": "Turn on GitHub Pages for your repo\n\nTurn on GitHub Pages under Settings &gt; Pages . You will set pages to be made from the gh-pages branch and the root directory.\nTurn on GitHub Actions under Settings &gt; Actions &gt; General\n\nThe GitHub Action will automatically recreate your website when you push to GitHub after you do the initial gh-pages set-up"
-  },
-  {
-    "objectID": "content/publishing.html#do-your-first-publish-to-gh-pages",
-    "href": "content/publishing.html#do-your-first-publish-to-gh-pages",
-    "title": "Publishing",
-    "section": "Do your first publish to gh-pages",
-    "text": "Do your first publish to gh-pages\nThe first time you publish to gh-pages, you need to do so locally.\n\nOn your local computer, open a terminal window and cd to your repo directory. Here is what that cd command looks like for me. You command will look different because your local repo will be somewhere else on your computer.\n\ncd ~/Documents/GitHub/NOAA-quarto-simple\n\nPublish to the gh-pages. In the terminal type\n\nquarto publish gh-pages\nThis is going to render your webpage and then push the _site contents to the gh-pages branch."
-  },
-  {
-    "objectID": "content/publishing.html#dont-like-using-gh-pages",
-    "href": "content/publishing.html#dont-like-using-gh-pages",
-    "title": "Publishing",
-    "section": "Don’t like using gh-pages?",
-    "text": "Don’t like using gh-pages?\nIn some cases, you don’t want your website on the gh-pages branch. For example, if you are creating releases and you want the website pages archived in that release, then you won’t want your website pages on the gh-pages branch.\nHere are the changes you need to make if you to avoid gh-pages branch.\n\nAt the top of _quarto.yml add the following:\n\nproject: \n  type: website\n  output-dir: docs\n\nOn GitHub under Settings &gt; Pages set pages to be made from the main branch and the docs directory.\nMake sure docs is not listed in .gitignore\nPublish the site the first time locally using quarto publish from the terminal\nChange the GitHub Action because you can’t use quarto publish gh-pages. You’ll need to push to the main branch yourself (in the GitHub Action)\n\non:\n  push:\n    branches: main\n\nname: Render and Publish\n\njobs:\n  build-deploy:\n    runs-on: ubuntu-latest\n    env:\n      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}\n\n    steps:\n      - name: Check out repository\n        uses: actions/checkout@v2 \n        \n      - name: Set up R (needed for Rmd)\n        uses: r-lib/actions/setup-r@v2\n\n      - name: Install packages (needed for Rmd)\n        run: Rscript -e 'install.packages(c(\"rmarkdown\", \"knitr\", \"jsonlite\"))'\n\n      - name: Set up Quarto\n        uses: quarto-dev/quarto-actions/setup@v2\n        with:\n          # To install LaTeX to build PDF book \n          # tinytex: true \n          # uncomment below and fill to pin a version\n          # version: 0.9.600\n      \n      - name: Render Quarto Project\n        uses: quarto-dev/quarto-actions/render@v2\n        with:\n          to: html\n\n      - name: Set up Git\n        run: |\n          git config --local user.email \"actions@github.com\"\n          git config --local user.name \"GitHub Actions\"\n\n      - name: Commit all changes and push\n        run: |\n          git add -A && git commit -m 'Build site' || echo \"No changes to commit\"\n          git push origin || echo \"No changes to commit\""
   },
   {
     "objectID": "content/AFSC-GOA-pollock.html",
     "href": "content/AFSC-GOA-pollock.html",
     "title": "AFSC Case Study Gulf of Alaska Walleye Pollock",
     "section": "",
-    "text": "Code\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"remotes\", \"reshape2\", \"TMB\")\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\n\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\n\nlibrary(FIMS)\nlibrary(TMB)\nlibrary(TMBhelper)\n\ntheme_set(theme_bw())\n\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 18f96a8\n\nStock name: Gulf of Alaska (GOA) Walleye Pollock\n\nRegion: AFSC\n\nAnalyst: Cole Monnahan",
+    "text": "Code\n# Names of required packages\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"TMB\", \"reshape2\", \"here\", \"remotes\")\n\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\n\n\n\nThe downloaded binary packages are in\n    /var/folders/qv/pdh5wsgn0lq3dp77zj602b5c0000gn/T//RtmpufUvTJ/downloaded_packages\n\n\nCode\nremotes::install_github(\"kaskr/TMB_contrib_R/TMBhelper\")\n\n\nRcppParallel (NA -&gt; 5.1.7   ) [CRAN]\nps           (NA -&gt; 1.7.6   ) [CRAN]\nbackports    (NA -&gt; 1.4.1   ) [CRAN]\nprocessx     (NA -&gt; 3.8.3   ) [CRAN]\ndesc         (NA -&gt; 1.4.3   ) [CRAN]\ncallr        (NA -&gt; 3.7.3   ) [CRAN]\nmatrixStats  (NA -&gt; 1.2.0   ) [CRAN]\ncheckmate    (NA -&gt; 2.3.1   ) [CRAN]\nBH           (NA -&gt; 1.84.0-0) [CRAN]\nQuickJSR     (NA -&gt; 1.1.3   ) [CRAN]\npkgbuild     (NA -&gt; 1.4.3   ) [CRAN]\nloo          (NA -&gt; 2.6.0   ) [CRAN]\ngridExtra    (NA -&gt; 2.3     ) [CRAN]\ninline       (NA -&gt; 0.3.19  ) [CRAN]\nStanHeaders  (NA -&gt; 2.32.5  ) [CRAN]\nrstan        (NA -&gt; 2.32.5  ) [CRAN]\ntmbstan      (NA -&gt; 1.0.91  ) [CRAN]\nabind        (NA -&gt; 1.4-5   ) [CRAN]\n\nThe downloaded binary packages are in\n    /var/folders/qv/pdh5wsgn0lq3dp77zj602b5c0000gn/T//RtmpufUvTJ/downloaded_packages\n── R CMD build ─────────────────────────────────────────────────────────────────\n* checking for file ‘/private/var/folders/qv/pdh5wsgn0lq3dp77zj602b5c0000gn/T/RtmpufUvTJ/remotes1c9b2abed24d/kaskr-TMB_contrib_R-d275e52/TMBhelper/DESCRIPTION’ ... OK\n* preparing ‘TMBhelper’:\n* checking DESCRIPTION meta-information ... OK\n* checking for LF line-endings in source and make files and shell scripts\n* checking for empty or unneeded directories\n* building ‘TMBhelper_1.4.0.tar.gz’\n\n\nCode\nremotes::install_github(\"NOAA-FIMS/FIMS\")\n\n\nsys         (NA -&gt; 3.4.2 ) [CRAN]\naskpass     (NA -&gt; 1.2.0 ) [CRAN]\nopenssl     (NA -&gt; 2.1.1 ) [CRAN]\ncurl        (NA -&gt; 5.2.0 ) [CRAN]\nini         (NA -&gt; 0.3.1 ) [CRAN]\nhttr2       (NA -&gt; 1.0.0 ) [CRAN]\ngitcreds    (NA -&gt; 0.1.2 ) [CRAN]\nzip         (NA -&gt; 2.3.1 ) [CRAN]\nrstudioapi  (NA -&gt; 0.15.0) [CRAN]\ncredentials (NA -&gt; 2.0.1 ) [CRAN]\nwhisker     (NA -&gt; 0.4.1 ) [CRAN]\ngh          (NA -&gt; 1.4.0 ) [CRAN]\ngert        (NA -&gt; 2.0.1 ) [CRAN]\ncrayon      (NA -&gt; 1.5.2 ) [CRAN]\nclipr       (NA -&gt; 0.8.0 ) [CRAN]\nusethis     (NA -&gt; 2.2.2 ) [CRAN]\n\nThe downloaded binary packages are in\n    /var/folders/qv/pdh5wsgn0lq3dp77zj602b5c0000gn/T//RtmpufUvTJ/downloaded_packages\n── R CMD build ─────────────────────────────────────────────────────────────────\n* checking for file ‘/private/var/folders/qv/pdh5wsgn0lq3dp77zj602b5c0000gn/T/RtmpufUvTJ/remotes1c9b504ca7a3/NOAA-FIMS-FIMS-18f96a8/DESCRIPTION’ ... OK\n* preparing ‘FIMS’:\n* checking DESCRIPTION meta-information ... OK\n* cleaning src\n* checking for LF line-endings in source and make files and shell scripts\n* checking for empty or unneeded directories\n* building ‘FIMS_0.2.0.0.tar.gz’\n\n\nCode\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\n\nlibrary(FIMS)\nlibrary(TMBhelper)\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\n\nCode\ntheme_set(theme_bw())\n\n\n# R_version &lt;- version$version.string\n# TMB_version &lt;- packageDescription(\"TMB\")$Version\n# FIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 18f96a8\n\nStock name: Gulf of Alaska (GOA) Walleye Pollock\n\nRegion: AFSC\n\nAnalyst: Cole Monnahan",
     "crumbs": [
       "AFSC GOA pollock case study"
     ]
@@ -252,7 +161,7 @@
     "href": "content/AFSC-GOA-pollock.html#the-setup",
     "title": "AFSC Case Study Gulf of Alaska Walleye Pollock",
     "section": "",
-    "text": "Code\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"remotes\", \"reshape2\", \"TMB\")\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\n\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\n\nlibrary(FIMS)\nlibrary(TMB)\nlibrary(TMBhelper)\n\ntheme_set(theme_bw())\n\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 18f96a8\n\nStock name: Gulf of Alaska (GOA) Walleye Pollock\n\nRegion: AFSC\n\nAnalyst: Cole Monnahan",
+    "text": "Code\n# Names of required packages\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"TMB\", \"reshape2\", \"here\", \"remotes\")\n\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\n\n\n\nThe downloaded binary packages are in\n    /var/folders/qv/pdh5wsgn0lq3dp77zj602b5c0000gn/T//RtmpufUvTJ/downloaded_packages\n\n\nCode\nremotes::install_github(\"kaskr/TMB_contrib_R/TMBhelper\")\n\n\nRcppParallel (NA -&gt; 5.1.7   ) [CRAN]\nps           (NA -&gt; 1.7.6   ) [CRAN]\nbackports    (NA -&gt; 1.4.1   ) [CRAN]\nprocessx     (NA -&gt; 3.8.3   ) [CRAN]\ndesc         (NA -&gt; 1.4.3   ) [CRAN]\ncallr        (NA -&gt; 3.7.3   ) [CRAN]\nmatrixStats  (NA -&gt; 1.2.0   ) [CRAN]\ncheckmate    (NA -&gt; 2.3.1   ) [CRAN]\nBH           (NA -&gt; 1.84.0-0) [CRAN]\nQuickJSR     (NA -&gt; 1.1.3   ) [CRAN]\npkgbuild     (NA -&gt; 1.4.3   ) [CRAN]\nloo          (NA -&gt; 2.6.0   ) [CRAN]\ngridExtra    (NA -&gt; 2.3     ) [CRAN]\ninline       (NA -&gt; 0.3.19  ) [CRAN]\nStanHeaders  (NA -&gt; 2.32.5  ) [CRAN]\nrstan        (NA -&gt; 2.32.5  ) [CRAN]\ntmbstan      (NA -&gt; 1.0.91  ) [CRAN]\nabind        (NA -&gt; 1.4-5   ) [CRAN]\n\nThe downloaded binary packages are in\n    /var/folders/qv/pdh5wsgn0lq3dp77zj602b5c0000gn/T//RtmpufUvTJ/downloaded_packages\n── R CMD build ─────────────────────────────────────────────────────────────────\n* checking for file ‘/private/var/folders/qv/pdh5wsgn0lq3dp77zj602b5c0000gn/T/RtmpufUvTJ/remotes1c9b2abed24d/kaskr-TMB_contrib_R-d275e52/TMBhelper/DESCRIPTION’ ... OK\n* preparing ‘TMBhelper’:\n* checking DESCRIPTION meta-information ... OK\n* checking for LF line-endings in source and make files and shell scripts\n* checking for empty or unneeded directories\n* building ‘TMBhelper_1.4.0.tar.gz’\n\n\nCode\nremotes::install_github(\"NOAA-FIMS/FIMS\")\n\n\nsys         (NA -&gt; 3.4.2 ) [CRAN]\naskpass     (NA -&gt; 1.2.0 ) [CRAN]\nopenssl     (NA -&gt; 2.1.1 ) [CRAN]\ncurl        (NA -&gt; 5.2.0 ) [CRAN]\nini         (NA -&gt; 0.3.1 ) [CRAN]\nhttr2       (NA -&gt; 1.0.0 ) [CRAN]\ngitcreds    (NA -&gt; 0.1.2 ) [CRAN]\nzip         (NA -&gt; 2.3.1 ) [CRAN]\nrstudioapi  (NA -&gt; 0.15.0) [CRAN]\ncredentials (NA -&gt; 2.0.1 ) [CRAN]\nwhisker     (NA -&gt; 0.4.1 ) [CRAN]\ngh          (NA -&gt; 1.4.0 ) [CRAN]\ngert        (NA -&gt; 2.0.1 ) [CRAN]\ncrayon      (NA -&gt; 1.5.2 ) [CRAN]\nclipr       (NA -&gt; 0.8.0 ) [CRAN]\nusethis     (NA -&gt; 2.2.2 ) [CRAN]\n\nThe downloaded binary packages are in\n    /var/folders/qv/pdh5wsgn0lq3dp77zj602b5c0000gn/T//RtmpufUvTJ/downloaded_packages\n── R CMD build ─────────────────────────────────────────────────────────────────\n* checking for file ‘/private/var/folders/qv/pdh5wsgn0lq3dp77zj602b5c0000gn/T/RtmpufUvTJ/remotes1c9b504ca7a3/NOAA-FIMS-FIMS-18f96a8/DESCRIPTION’ ... OK\n* preparing ‘FIMS’:\n* checking DESCRIPTION meta-information ... OK\n* cleaning src\n* checking for LF line-endings in source and make files and shell scripts\n* checking for empty or unneeded directories\n* building ‘FIMS_0.2.0.0.tar.gz’\n\n\nCode\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\n\nlibrary(FIMS)\nlibrary(TMBhelper)\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\n\nCode\ntheme_set(theme_bw())\n\n\n# R_version &lt;- version$version.string\n# TMB_version &lt;- packageDescription(\"TMB\")$Version\n# FIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 18f96a8\n\nStock name: Gulf of Alaska (GOA) Walleye Pollock\n\nRegion: AFSC\n\nAnalyst: Cole Monnahan",
     "crumbs": [
       "AFSC GOA pollock case study"
     ]
@@ -358,133 +267,231 @@
     ]
   },
   {
-    "objectID": "content/NEFSC-yellowtail.html",
-    "href": "content/NEFSC-yellowtail.html",
-    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "objectID": "content/publishing.html",
+    "href": "content/publishing.html",
+    "title": "Publishing",
     "section": "",
-    "text": "Code\n# Names of required packages\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"remotes\", \"TMB\")\n\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\n\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\nlibrary(FIMS)\nlibrary(TMB)\nlibrary(TMBhelper)\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 18f96a8\n\nStock name: Southern New England-Mid Atlantic Yellowtail Flounder\n\nRegion: NEFSC\n\nAnalyst: Chris Legault",
-    "crumbs": [
-      "NEFSC yellowtail flounder case study"
-    ]
+    "text": "To get your Quarto webpage to show up with the url\nyou have a few steps."
   },
   {
-    "objectID": "content/NEFSC-yellowtail.html#the-setup",
-    "href": "content/NEFSC-yellowtail.html#the-setup",
-    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "objectID": "content/publishing.html#turn-on-github-pages-for-your-repo",
+    "href": "content/publishing.html#turn-on-github-pages-for-your-repo",
+    "title": "Publishing",
+    "section": "Turn on GitHub Pages for your repo",
+    "text": "Turn on GitHub Pages for your repo\n\nTurn on GitHub Pages under Settings &gt; Pages . You will set pages to be made from the gh-pages branch and the root directory.\nTurn on GitHub Actions under Settings &gt; Actions &gt; General\n\nThe GitHub Action will automatically recreate your website when you push to GitHub after you do the initial gh-pages set-up"
+  },
+  {
+    "objectID": "content/publishing.html#do-your-first-publish-to-gh-pages",
+    "href": "content/publishing.html#do-your-first-publish-to-gh-pages",
+    "title": "Publishing",
+    "section": "Do your first publish to gh-pages",
+    "text": "Do your first publish to gh-pages\nThe first time you publish to gh-pages, you need to do so locally.\n\nOn your local computer, open a terminal window and cd to your repo directory. Here is what that cd command looks like for me. You command will look different because your local repo will be somewhere else on your computer.\n\ncd ~/Documents/GitHub/NOAA-quarto-simple\n\nPublish to the gh-pages. In the terminal type\n\nquarto publish gh-pages\nThis is going to render your webpage and then push the _site contents to the gh-pages branch."
+  },
+  {
+    "objectID": "content/publishing.html#dont-like-using-gh-pages",
+    "href": "content/publishing.html#dont-like-using-gh-pages",
+    "title": "Publishing",
+    "section": "Don’t like using gh-pages?",
+    "text": "Don’t like using gh-pages?\nIn some cases, you don’t want your website on the gh-pages branch. For example, if you are creating releases and you want the website pages archived in that release, then you won’t want your website pages on the gh-pages branch.\nHere are the changes you need to make if you to avoid gh-pages branch.\n\nAt the top of _quarto.yml add the following:\n\nproject: \n  type: website\n  output-dir: docs\n\nOn GitHub under Settings &gt; Pages set pages to be made from the main branch and the docs directory.\nMake sure docs is not listed in .gitignore\nPublish the site the first time locally using quarto publish from the terminal\nChange the GitHub Action because you can’t use quarto publish gh-pages. You’ll need to push to the main branch yourself (in the GitHub Action)\n\non:\n  push:\n    branches: main\n\nname: Render and Publish\n\njobs:\n  build-deploy:\n    runs-on: ubuntu-latest\n    env:\n      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}\n\n    steps:\n      - name: Check out repository\n        uses: actions/checkout@v2 \n        \n      - name: Set up R (needed for Rmd)\n        uses: r-lib/actions/setup-r@v2\n\n      - name: Install packages (needed for Rmd)\n        run: Rscript -e 'install.packages(c(\"rmarkdown\", \"knitr\", \"jsonlite\"))'\n\n      - name: Set up Quarto\n        uses: quarto-dev/quarto-actions/setup@v2\n        with:\n          # To install LaTeX to build PDF book \n          # tinytex: true \n          # uncomment below and fill to pin a version\n          # version: 0.9.600\n      \n      - name: Render Quarto Project\n        uses: quarto-dev/quarto-actions/render@v2\n        with:\n          to: html\n\n      - name: Set up Git\n        run: |\n          git config --local user.email \"actions@github.com\"\n          git config --local user.name \"GitHub Actions\"\n\n      - name: Commit all changes and push\n        run: |\n          git add -A && git commit -m 'Build site' || echo \"No changes to commit\"\n          git push origin || echo \"No changes to commit\""
+  },
+  {
+    "objectID": "content/rendering.html",
+    "href": "content/rendering.html",
+    "title": "Rendering",
     "section": "",
-    "text": "Code\n# Names of required packages\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"remotes\", \"TMB\")\n\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\n\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\nlibrary(FIMS)\nlibrary(TMB)\nlibrary(TMBhelper)\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 18f96a8\n\nStock name: Southern New England-Mid Atlantic Yellowtail Flounder\n\nRegion: NEFSC\n\nAnalyst: Chris Legault",
+    "text": "The repo includes a GitHub Action that will render (build) the website automatically when you make changes to the files. It will be pushed to the gh-pages branch.\nBut when you are developing your content, you will want to render it locally.",
     "crumbs": [
-      "NEFSC yellowtail flounder case study"
+      "Rendering"
     ]
   },
   {
-    "objectID": "content/NEFSC-yellowtail.html#simplifications-to-the-original-assessment",
-    "href": "content/NEFSC-yellowtail.html#simplifications-to-the-original-assessment",
-    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
-    "section": "Simplifications to the original assessment",
-    "text": "Simplifications to the original assessment\n\nEnd year 2021 to 2019 due to missing 2020 survey\n5 indices to 2\nFilled a survey missing year for one index (see below)\nVarying weight at age to constant over time\nDifferent weight at age matrices for catch, SSB, Jan-1 to same for all 3\nSSB calculated in April to Jan-1\nAggregate index in numbers to weight\nFishery 2 selectivity blocks to 1\nCatch and Index selectivity at age to logistic\nIndex timing from April to Jan-1\nVarying Index CV to constant over time\nVarying Catch ESS to constant over time\nSR unexploited scaler SSB to recruitment\n\nHow I simplified my assessment:\nTo fill the missing year of survey data, I first ran the model in ASAP with the missing data treated as missing. I then filled the missing data with the expected value of the survey, both in aggregate and for catch at age in place of the missing data.\nThe varying weights at age, index CVs, and ESS values were replaced by the time series mean in all years.\nThe catch weight at age matrix was used as the weight at age for all sources.",
+    "objectID": "content/rendering.html#step-1.-make-sure-you-have-a-recent-rstudio",
+    "href": "content/rendering.html#step-1.-make-sure-you-have-a-recent-rstudio",
+    "title": "Rendering",
+    "section": "Step 1. Make sure you have a recent RStudio",
+    "text": "Step 1. Make sure you have a recent RStudio\nHave you updated RStudio since about August 2022? No? Then update to a newer version of RStudio. In general, you want to keep RStudio updated and it is required to have a recent version to use Quarto.",
     "crumbs": [
-      "NEFSC yellowtail flounder case study"
+      "Rendering"
     ]
   },
   {
-    "objectID": "content/NEFSC-yellowtail.html#script-that-sets-up-and-runs-the-model",
-    "href": "content/NEFSC-yellowtail.html#script-that-sets-up-and-runs-the-model",
-    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
-    "section": "Script that sets up and runs the model",
-    "text": "Script that sets up and runs the model\n\n\nCode\n# clear memory\nclear()\n\n# read the ASAP rdat files\nrdat &lt;- dget(file.path(\"data_files\", \"NEFSC_YT_SIMPLIFIED.RDAT\")) # to be used in FIMS, lots of modifications from original\norig &lt;- dget(file.path(\"data_files\", \"NEFSC_YT_ORIGINAL.RDAT\"))   # where started before modifications for use in FIMS\n\n# function to create equivalent of data_mile1, basic catch and survey data\n# need to think about how to deal with multiple fleets and indices - only use 1 of each for now\nget_asap_data &lt;- function(rdat){\n  res &lt;- data.frame(type = character(),\n                name = character(),\n                age = integer(),\n                datestart = character(),\n                dateend = character(),\n                value = double(),\n                unit = character(),\n                uncertainty = double())\n  \n  landings &lt;- data.frame(type = \"landings\",\n                     name = \"fleet1\",\n                     age = NA,\n                     datestart = paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-01-01\"),\n                     dateend = paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-12-31\"),\n                     value = as.numeric(rdat$catch.obs[1,]),\n                     unit = \"mt\",\n                     uncertainty = rdat$control.parms$catch.tot.cv[,1])\n  \n  # loop over all indices\n  for (i in 1:rdat$parms$nindices){\n    index &lt;- data.frame(type = \"index\",\n                        name = paste0(\"survey\", i),\n                        age = NA,\n                        datestart = paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-01-01\"),\n                        dateend = paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-12-31\"),\n                        value = as.numeric(rdat$index.obs[[i]]),\n                        unit = \"\",\n                        uncertainty = rdat$index.cv[[i]])\n    if (i == 1){\n      allinds &lt;- index\n    }else{\n      allinds &lt;- rbind(allinds, index)\n    }\n  }\n  \n  catchage &lt;- data.frame(type = \"age\",\n                     name = \"fleet1\",\n                     age = rep(seq(1,rdat$parms$nages), rdat$parms$nyears),\n                     datestart = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-01-01\"), each=rdat$parms$nages),\n                     dateend = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-12-31\"), each=rdat$parms$nages),\n                     value = as.numeric(t(rdat$catch.comp.mats$catch.fleet1.ob)),\n                     unit = \"\",\n                     uncertainty = rep(rdat$fleet.catch.Neff.init[1,], each=rdat$parms$nages))\n  \n  # loop over all indices\n  for (i in 1:rdat$parms$nindices){\n    indexage &lt;- data.frame(type = \"age\",\n                           name = paste0(\"survey\", i),\n                           age = rep(seq(1,rdat$parms$nages), rdat$parms$nyears),\n                           datestart = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-01-01\"), each=rdat$parms$nages),\n                           dateend = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), \"-12-31\"), each=rdat$parms$nages),\n                           value = as.numeric(t(rdat$index.comp.mats[[i*2-1]])),\n                           unit = \"\",\n                           uncertainty = rep(rdat$index.Neff.init[i,], each=rdat$parms$nages))\n    if (i == 1){\n      allindsage &lt;- indexage\n    }else{\n      allindsage &lt;- rbind(allindsage, indexage)\n    }\n  }\n  \n  res &lt;- rbind(res, landings, allinds, catchage, allindsage)\n  return(res)\n}\n\nmydat &lt;- get_asap_data(rdat)\n\nmyfimsframe &lt;- FIMS::FIMSFrame(mydat)\n#str(myfimsframe)\n\n# define the dimensions\nnyears &lt;- rdat$parms$nyears\nyears &lt;- seq(rdat$parms$styr, rdat$parms$endyr)\nnseasons &lt;- 1 # ASAP only has one season\nnages &lt;- rdat$parms$nages\nages &lt;- 1:nages # ASAP starts at age 1\n\n\n# set up FIMS data objects\nage_frame &lt;- FIMS::FIMSFrameAge(mydat)\n\nfishery_catch &lt;- FIMS::m_landings(age_frame)\nfishery_agecomp &lt;- FIMS::m_agecomp(age_frame, \"fleet1\")\nsurvey_index &lt;- list()\nsurvey_agecomp &lt;- list()\nfor (i in 1:rdat$parms$nindices){\n  survey_index[[i]] &lt;- FIMS::m_index(age_frame, paste0(\"survey\", i))\n  survey_agecomp[[i]] &lt;- FIMS::m_agecomp(age_frame, paste0(\"survey\", i))\n}\n\n# eventually change to allow multiple fishing fleets similar to multiple indices - only using 1 fishing fleet for now\nfishing_fleet_index &lt;- methods::new(Index, nyears)\nfishing_fleet_age_comp &lt;- methods::new(AgeComp, nyears, nages)\nfishing_fleet_index$index_data &lt;- fishery_catch\nfishing_fleet_age_comp$age_comp_data &lt;- fishery_agecomp * rep(rdat$fleet.catch.Neff.init[1,], each=rdat$parms$nages)\n\n\n# fleet selectivity\n#methods::show(LogisticSelectivity)\nfishing_fleet_selectivity &lt;- methods::new(LogisticSelectivity)\nfishing_fleet_selectivity$inflection_point$value &lt;- rdat$sel.input.mats$fleet.sel.ini[nages+1,1] # hardwired to assume only 1 fleet and logistic selectivity used\nfishing_fleet_selectivity$inflection_point$is_random_effect &lt;- FALSE\nfishing_fleet_selectivity$inflection_point$estimated &lt;- TRUE\nfishing_fleet_selectivity$slope$value &lt;- rdat$sel.input.mats$fleet.sel.ini[nages+2,1] # hardwired to assume only 1 fleet and logistic selectivity used\nfishing_fleet_selectivity$slope$is_random_effect &lt;- FALSE\nfishing_fleet_selectivity$slope$estimated &lt;- TRUE\n\n# create fleet object\nfishing_fleet &lt;- methods::new(Fleet)\nfishing_fleet$nages &lt;- nages\nfishing_fleet$nyears &lt;- nyears\nfishing_fleet$log_Fmort &lt;- log(rep(rdat$initial.guesses$Fmult.year1.init[1], nyears)) # ASAP assumes Fmult devs = 0\nfishing_fleet$estimate_F &lt;- TRUE\nfishing_fleet$random_F &lt;- FALSE\nfishing_fleet$log_q &lt;- log(rdat$initial.guesses$q.year1.init[1])\nfishing_fleet$estimate_q &lt;- FALSE\nfishing_fleet$random_q &lt;- FALSE\nfishing_fleet$log_obs_error &lt;- rep(log(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), nyears)\nfishing_fleet$estimate_obs_error &lt;- FALSE\n# Next two lines not currently used by FIMS\nfishing_fleet$SetAgeCompLikelihood(1)\nfishing_fleet$SetIndexLikelihood(1)\n# Set Index, AgeComp, and Selectivity using the IDs from the modules defined above\nfishing_fleet$SetObservedIndexData(fishing_fleet_index$get_id()) \nfishing_fleet$SetObservedAgeCompData(fishing_fleet_age_comp$get_id())\nfishing_fleet$SetSelectivity(fishing_fleet_selectivity$get_id())\n\n# survey module now can handle multiple indices\nfor (i in 1:rdat$parms$nindices){\n  survey_fleet_index &lt;- methods::new(Index, nyears)\n  survey_fleet_age_comp &lt;- methods::new(AgeComp, nyears, nages)\n  survey_fleet_index$index_data &lt;- survey_index[[i]]\n  survey_fleet_age_comp$age_comp_data &lt;- survey_agecomp[[i]] * rep(rdat$index.Neff.init[i,], each=rdat$parms$nages)\n  \n  # survey selectivity\n  survey_fleet_selectivity &lt;- new(LogisticSelectivity)\n  survey_fleet_selectivity$inflection_point$value &lt;- rdat$sel.input.mats$index.sel.ini[(i+1)*(nages+2+4)+nages+1,1] # hardwired for this example\n  survey_fleet_selectivity$inflection_point$is_random_effect &lt;- FALSE\n  survey_fleet_selectivity$inflection_point$estimated &lt;- TRUE\n  survey_fleet_selectivity$inflection_point$value &lt;- rdat$sel.input.mats$index.sel.ini[(i+1)*(nages+2+4)+nages+1,1] # hardwired for this example\n  survey_fleet_selectivity$slope$is_random_effect &lt;- FALSE\n  survey_fleet_selectivity$slope$estimated &lt;- TRUE\n  \n  survey_fleet &lt;- methods::new(Fleet)\n  survey_fleet$is_survey &lt;- TRUE\n  survey_fleet$nages &lt;- nages\n  survey_fleet$nyears &lt;- nyears\n  survey_fleet$estimate_F &lt;- FALSE\n  survey_fleet$random_F &lt;- FALSE\n  survey_fleet$log_q &lt;- log(rdat$initial.guesses$q.year1.init[i]) \n  survey_fleet$estimate_q &lt;- TRUE\n  survey_fleet$random_q &lt;- FALSE\n  # sd = sqrt(log(cv^2 + 1)), sd is log transformed\n  survey_fleet$log_obs_error &lt;- rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[i]], na.rm=TRUE)^2 + 1)))), nyears)\n  survey_fleet$estimate_obs_error &lt;- FALSE\n  survey_fleet$SetAgeCompLikelihood(i)\n  survey_fleet$SetIndexLikelihood(i)\n  survey_fleet$SetSelectivity(survey_fleet_selectivity$get_id())\n  survey_fleet$SetObservedIndexData(survey_fleet_index$get_id())\n  survey_fleet$SetObservedAgeCompData(survey_fleet_age_comp$get_id())\n}\n\n# Population module\n\n# recruitment\nrecruitment &lt;- methods::new(BevertonHoltRecruitment)\n#methods::show(BevertonHoltRecruitment)\n\nrecruitment$log_sigma_recruit$value &lt;- log(mean(rdat$control.parms$recruit.cv)) # typically enter same value for every year in ASAP\nrecruitment$log_rzero$value &lt;- log(rdat$initial.guesses$SR.inits$SR.scaler.init) # ASAP can enter either R0 or SSB0, need to make sure use R0 in input file\nrecruitment$log_rzero$is_random_effect &lt;- FALSE\nrecruitment$log_rzero$estimated &lt;- TRUE\n# note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run\nrecruitment$logit_steep$value &lt;- -log(1.0 - rdat$initial.guesses$SR.inits$SR_steepness.init) + log(rdat$initial.guesses$SR.inits$SR_steepness.init - 0.2)\nrecruitment$logit_steep$is_random_effect &lt;- FALSE\nrecruitment$logit_steep$estimated &lt;- FALSE\n\nrecruitment$estimate_log_devs &lt;- TRUE\nrecruitment$log_devs &lt;- rep(1.0, nyears) # set to no deviations (multiplier) to start, just like ASAP\n\n# growth\newaa_growth &lt;- methods::new(EWAAgrowth)\newaa_growth$ages &lt;- ages\n# NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now\newaa_growth$weights &lt;- rdat$WAA.mats$WAA.catch.all[1,] \n\n# NOTE: FIMS assumes SSB calculated at the start of the year, so need to adjust ASAP to do so as well for now, need to make timing of SSB calculation part of FIMS later\n\n# maturity\n# NOTE: for now tricking FIMS into thinking age 0 is age 1, so need to adjust A50 for maturity because FIMS calculations use ages 0-5+ instead of 1-6\nmaturity &lt;- new(LogisticMaturity)\nmaturity$inflection_point$value &lt;- 1.8 # hardwired for now, need to figure out a better way than this\nmaturity$inflection_point$is_random_effect &lt;- FALSE\nmaturity$inflection_point$estimated &lt;- FALSE\nmaturity$slope$value &lt;- 4 # hardwired for now, need to figure out a better way than this\nmaturity$slope$is_random_effect &lt;- FALSE\nmaturity$slope$estimated &lt;- FALSE\n\n# population\npopulation &lt;- new(Population)\npopulation$log_M &lt;- log(as.numeric(t(rdat$M.age)))\npopulation$estimate_M &lt;- FALSE\npopulation$log_init_naa &lt;- log(rdat$N.age[1,]) # log(rdat$initial.guesses$NAA.year1.init)\npopulation$estimate_init_naa &lt;- FALSE # TRUE , NOTE: fixing at ASAP estimates to test SSB calculations\npopulation$nages &lt;- nages\npopulation$ages &lt;- ages\npopulation$nfleets &lt;- rdat$parms$nfleets + rdat$parms$nindices # fleets plus surveys\npopulation$nseasons &lt;- nseasons\npopulation$nyears &lt;- nyears\n#population$prop_female &lt;- 1.0 # ASAP assumption\n\npopulation$SetMaturity(maturity$get_id())\npopulation$SetGrowth(ewaa_growth$get_id())\npopulation$SetRecruitment(recruitment$get_id())\n\n# make FIMS model\nsucess &lt;- CreateTMBModel()\nparameters &lt;- list(p = get_fixed())\nobj &lt;- MakeADFun(data = list(), parameters, DLL = \"FIMS\", silent = TRUE)\n\n\n# fitting the model\nopt &lt;- nlminb(start=obj$par, objective=obj$fn, gradient=obj$gr,\n              control = list(eval.max = 8000, iter.max = 800))\n#  method = \"BFGS\",\n#   control = list(maxit=1000000, reltol = 1e-15))\n#print(opt)\n\n\n#max(abs(obj$gr())) # from Cole, can use TMBhelper::fit_tmb to get val to &lt;1e-10\n\n#opt &lt;- TMBhelper::fit_tmb(obj, newtonsteps=3, quiet = TRUE) # don't understand why quiet flag does not work in Quarto\n\n#max(abs(obj$gr()))\n\nsdr &lt;- TMB::sdreport(obj)\nsdr_fixed &lt;- summary(sdr, \"fixed\")\nreport &lt;- obj$report()\n\n### Plotting\n\nmycols &lt;- c(\"FIMS\" = \"blue\", \"ASAP\" = \"red\", \"ASAP_orig\" = \"darkgreen\")\n\nfor (i in 1:rdat$parms$nindices){\n  index_results &lt;- data.frame(\n    survey = i,\n    year = years,\n    observed = rdat$index.obs[[i]],\n    FIMS = report$exp_index[[rdat$parms$nfleet+i]],\n    ASAP = rdat$index.pred[[i]]\n  )\n  if (i==1){\n    allinds_results &lt;- index_results\n  }else{\n    allinds_results &lt;- rbind(allinds_results, index_results)\n  }\n}\n#print(allinds_results)\n\ncomp_index &lt;- ggplot(allinds_results, aes(x = year, y = observed)) +\n  geom_point() +\n  geom_line(aes(x = year, y = FIMS), color = \"blue\") +\n  geom_line(aes(x = year, y = ASAP), color = \"red\") +\n  facet_wrap(~survey, scales = \"free_y\", nrow = 2) +\n  xlab(\"Year\") +\n  ylab(\"Index\") +\n  ggtitle(\"Blue=FIMS, Red=ASAP\") +\n  theme_bw()\n#print(comp_index)\n\ncatch_results &lt;- data.frame(\n  observed = fishing_fleet_index$index_data,\n  FIMS = report$exp_index[[1]],\n  ASAP = as.numeric(rdat$catch.pred[1,])\n)\n#print(catch_results)\n\ncomp_catch &lt;- ggplot(catch_results, aes(x = years, y = observed)) +\n  geom_point() +\n  xlab(\"Year\") +\n  ylab(\"Catch (mt)\") +\n  geom_line(aes(x = years, y = FIMS), color = \"blue\") +\n  geom_line(aes(x = years, y = ASAP), color = \"red\") +\n  ggtitle(\"Blue=FIMS, Red=ASAP\") +\n  theme_bw()\n#print(comp_catch)\n\npop_results &lt;- data.frame(\n  Year = c(years, max(years)+1, years, years, years, years, max(years)+1, years),\n  Metric = c(rep(\"SSB\", 2*nyears+1), rep(\"F_mort\", 2*nyears), rep(\"Recruitment\", 2*nyears+1)),\n  Model = c(rep(\"FIMS\", nyears+1), rep(\"ASAP\", nyears), rep(c(\"FIMS\", \"ASAP\"), each=nyears), \n             rep(\"FIMS\", nyears+1), rep(\"ASAP\", nyears)),\n  Value = c(report$ssb[[1]], rdat$SSB, report$F_mort[[1]], rdat$F.report, report$recruitment[[1]], as.numeric(rdat$N.age[,1]))\n)\n#print(pop_results)\n\n# ggplot(filter(pop_results, Year &lt;=2019), aes(x=Year, y=Value, color=Model)) +\n#   geom_line() +\n#   facet_wrap(~Metric, ncol=1, scales = \"free_y\") +\n#   theme_bw() +\n#   scale_color_manual(values = mycols)\n\norig_years &lt;- seq(orig$parms$styr, orig$parms$endyr)\norig_pop_results &lt;- data.frame(\n  Year = rep(orig_years, 3),\n  Metric = rep(c(\"SSB\", \"F_mort\", \"Recruitment\"), each = length(orig_years)),\n  Model = \"ASAP_orig\",\n  Value = c(orig$SSB, orig$F.report, as.numeric(orig$N.age[,1]))\n)\n\npop_results_3 &lt;- rbind(pop_results, orig_pop_results)\n#print(pop_results_3)\n\n# ggplot(filter(pop_results_3, Year &lt;=2019), aes(x=Year, y=Value, color=Model)) +\n#   geom_line() +\n#   facet_wrap(~Metric, ncol=1, scales = \"free_y\") +\n#   theme_bw() +\n#   scale_color_manual(values = mycols)\n\ncomp_FRSSB3 &lt;- ggplot(pop_results_3, aes(x=Year, y=Value, color=Model)) +\n  geom_line() +\n  facet_wrap(~Metric, ncol=1, scales = \"free_y\") +\n  theme_bw() +\n  scale_color_manual(values = mycols)\n#print(comp_FRSSB3)\n\nFIMS_naa_results &lt;- data.frame(\n  Year = rep(c(years, max(years)+1), each = nages),\n  Age = rep(ages, nyears+1),\n  Metric = \"NAA\",\n  Model = \"FIMS\",\n  Value = report$naa[[1]]\n)\n\nASAP_naa_results &lt;- data.frame(\n  Year = rep(years, each = nages),\n  Age = rep(ages, nyears),\n  Metric = \"NAA\",\n  Model = \"ASAP\",\n  Value = as.numeric(t(rdat$N.age))\n)\n\norig_naa_results &lt;- data.frame(\n  Year = rep(orig_years, each = nages),\n  Age = rep(ages, length(orig_years)),\n  Metric = \"NAA\",\n  Model = \"ASAP_orig\",\n  Value = as.numeric(t(orig$N.age))\n)\nnaa_results &lt;- rbind(FIMS_naa_results, ASAP_naa_results, orig_naa_results)\n#print(naa_results)\n\n# ggplot(filter(naa_results, Year &lt;= 2019), aes(x=Year, y=Value, color=Model)) +\n#   geom_line() +\n#   facet_wrap(~Age, ncol=1, scales = \"free_y\") +\n#   ylab(\"NAA\") +\n#   theme_bw() +\n#   scale_color_manual(values = mycols)\n\ncomp_naa2 &lt;- ggplot(filter(naa_results, Year &lt;= 2019, Model %in% c(\"ASAP\", \"FIMS\")), aes(x=Year, y=Value, color=Model)) +\n  geom_line() +\n  facet_wrap(~Age, ncol=1, scales = \"free_y\") +\n  ylab(\"NAA\") +\n  theme_bw() +\n  scale_color_manual(values = mycols)\n#print(comp_naa2)\n\n# ggplot(filter(naa_results, Year == 1973, Model %in% c(\"ASAP\", \"FIMS\")), aes(x=Age, y=Value, color=Model)) +\n#   geom_line() +\n#   ylab(\"NAA in Year 1\") +\n#   theme_bw() +\n#   scale_color_manual(values = mycols)\n\n\nsaveplots &lt;- TRUE\nif(saveplots){\n  ggsave(filename = \"figures/NEFSC_YT_compare_index.png\", plot = comp_index, width = 4, height = 4, units = \"in\")\n  ggsave(filename = \"figures/NEFSC_YT_compare_catch.png\", plot = comp_catch, width = 4, height = 4, units = \"in\")\n  ggsave(filename = \"figures/NEFSC_YT_compare_FRSSB3.png\", plot = comp_FRSSB3, width = 5, height = 6.5, units = \"in\")\n  ggsave(filename = \"figures/NEFSC_YT_compare_NAA2.png\", plot = comp_naa2, width = 5, height = 6.5, units = \"in\")\n}",
+    "objectID": "content/rendering.html#step-2.-clone-and-create-rstudio-project",
+    "href": "content/rendering.html#step-2.-clone-and-create-rstudio-project",
+    "title": "Rendering",
+    "section": "Step 2. Clone and create RStudio project",
+    "text": "Step 2. Clone and create RStudio project\nFirst, clone the repo onto your local computer. How? You can click File &gt; New Project and then select “Version Control”. Paste in the url of the repository. That will clone the repo on to your local computer. When you make changes, you will need to push those up.",
     "crumbs": [
-      "NEFSC yellowtail flounder case study"
+      "Rendering"
     ]
   },
   {
-    "objectID": "content/NEFSC-yellowtail.html#comparison-figures",
-    "href": "content/NEFSC-yellowtail.html#comparison-figures",
-    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
-    "section": "Comparison figures",
-    "text": "Comparison figures",
+    "objectID": "content/rendering.html#step-3.-render-within-rstudio",
+    "href": "content/rendering.html#step-3.-render-within-rstudio",
+    "title": "Rendering",
+    "section": "Step 3. Render within RStudio",
+    "text": "Step 3. Render within RStudio\nRStudio will recognize that this is a Quarto project by the presence of the _quarto.yml file and will see the “Build” tab. Click the “Render website” button to render to the _site folder.\nPreviewing: You can either click index.html in the _site folder and specify “preview in browser” or set up RStudio to preview to the viewer panel. To do the latter, go to Tools &gt; Global Options &gt; R Markdown. Then select “Show output preview in: Viewer panel”.",
     "crumbs": [
-      "NEFSC yellowtail flounder case study"
+      "Rendering"
     ]
   },
   {
-    "objectID": "content/NEFSC-yellowtail.html#comparison-table",
-    "href": "content/NEFSC-yellowtail.html#comparison-table",
-    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
-    "section": "Comparison table",
-    "text": "Comparison table\nThe likelihood components from FIMS and ASAP for the same data are shown in the table below. Note that the ASAP file had to turn on the use likelihood constants option to enable this comparison (this option should not be used when recruitment deviations are estimated).\n\n\nCode\njnlltab &lt;- data.frame(Component=c(\"Total\",\"Index\",\"Age Comp\", \"Rec\"),\n                      FIMS = c(report$jnll, report$index_nll, report$age_comp_nll, report$rec_nll),\n                      ASAP = c(rdat$like$lk.total,\n                               (rdat$like$lk.catch.total + rdat$like$lk.index.fit.total),\n                               (rdat$like$lk.catch.age.comp + rdat$like$lk.index.age.comp),\n                               rdat$like$lk.Recruit.devs))\nprint(jnlltab)\n\n\n  Component       FIMS     ASAP\n1     Total 1569.47965 2410.844\n2     Index   63.72178 1020.548\n3  Age Comp 1360.01928 1390.297\n4       Rec  145.73859    0.000",
+    "objectID": "content/case-study-template.html",
+    "href": "content/case-study-template.html",
+    "title": "Customize",
+    "section": "",
+    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation).",
     "crumbs": [
-      "NEFSC yellowtail flounder case study"
+      "Case study template"
     ]
   },
   {
-    "objectID": "content/NEFSC-yellowtail.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
-    "href": "content/NEFSC-yellowtail.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
-    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "objectID": "content/case-study-template.html#edit-and-add-your-pages",
+    "href": "content/case-study-template.html#edit-and-add-your-pages",
+    "title": "Customize",
+    "section": "",
+    "text": "Each page should start with\n---\ntitle: your title\n---\nand the first header will be the 2nd level, so ##. Note, there are situations where you leave off\n---\ntitle: your title\n---\nand start the qmd file with a level header #, but if using the default title yaml (in the --- fence) is a good habit since it makes it easy for Quarto convert your qmd file to other formats (like into a presentation).",
+    "crumbs": [
+      "Case study template"
+    ]
+  },
+  {
+    "objectID": "content/case-study-template.html#add-a-chunk-of-code-describing-your-setup",
+    "href": "content/case-study-template.html#add-a-chunk-of-code-describing-your-setup",
+    "title": "Customize",
+    "section": "Add a chunk of code describing your setup",
+    "text": "Add a chunk of code describing your setup\nCase study files should include:\n\nR version\nTMB version\nFIMS commit\nName of your stock\nName of your region\nName of the analyst\n\nPlease ensure that the content/setup.qmd file is updated if the case study requires the installation of additional R packages.",
+    "crumbs": [
+      "Case study template"
+    ]
+  },
+  {
+    "objectID": "content/case-study-template.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
+    "href": "content/case-study-template.html#add-a-bulleted-list-and-script-describing-simplifications-you-had-to-make",
+    "title": "Customize",
+    "section": "Add a bulleted list and script describing simplifications you had to make",
+    "text": "Add a bulleted list and script describing simplifications you had to make\nHow I simplified my assessment * Remove seasonality * etc.",
+    "crumbs": [
+      "Case study template"
+    ]
+  },
+  {
+    "objectID": "content/case-study-template.html#add-your-script-that-sets-up-and-runs-the-model",
+    "href": "content/case-study-template.html#add-your-script-that-sets-up-and-runs-the-model",
+    "title": "Customize",
+    "section": "Add your script that sets up and runs the model",
+    "text": "Add your script that sets up and runs the model",
+    "crumbs": [
+      "Case study template"
+    ]
+  },
+  {
+    "objectID": "content/case-study-template.html#add-your-comparison-figures",
+    "href": "content/case-study-template.html#add-your-comparison-figures",
+    "title": "Customize",
+    "section": "Add your comparison figures",
+    "text": "Add your comparison figures",
+    "crumbs": [
+      "Case study template"
+    ]
+  },
+  {
+    "objectID": "content/case-study-template.html#add-comparison-tables",
+    "href": "content/case-study-template.html#add-comparison-tables",
+    "title": "Customize",
+    "section": "Add comparison tables",
+    "text": "Add comparison tables",
+    "crumbs": [
+      "Case study template"
+    ]
+  },
+  {
+    "objectID": "content/case-study-template.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "href": "content/case-study-template.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "title": "Customize",
     "section": "What was your experience using FIMS? What could we do to improve usability?",
-    "text": "What was your experience using FIMS? What could we do to improve usability?\nRelatively easy to use by following the vignette. Creating wrappers for data input would help so that each element did not need to be assigned directly.",
+    "text": "What was your experience using FIMS? What could we do to improve usability?",
     "crumbs": [
-      "NEFSC yellowtail flounder case study"
+      "Case study template"
     ]
   },
   {
-    "objectID": "content/NEFSC-yellowtail.html#list-any-issues-that-you-ran-into-or-found",
-    "href": "content/NEFSC-yellowtail.html#list-any-issues-that-you-ran-into-or-found",
-    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "objectID": "content/case-study-template.html#list-any-issues-that-you-ran-into-or-found",
+    "href": "content/case-study-template.html#list-any-issues-that-you-ran-into-or-found",
+    "title": "Customize",
     "section": "List any issues that you ran into or found",
-    "text": "List any issues that you ran into or found\nPlease open an issue if you found something new.\n\nSSB calculations in FIMS assume 0.5 multiplier, which differs from ASAP Issue #521.\nOutput all derived values (this is mostly done)\nFix recruitment estimation Issue #364\nHandle missing data, especially surveys Issue #502\nWeights at age that change over time\nSeparate weights at age for catch, SSB, Jan-1 population, indices, etc.\nFishery selectivity blocks or random effects\nAllow time-varying CVs and ESS (or alternative functions)\nOption for Index in numbers\nTiming of Index and SSB calculations within the year\nOne-step-ahead residuals\nReference points, projections, pushbutton retro",
+    "text": "List any issues that you ran into or found\nPlease open an issue if you found something new.",
     "crumbs": [
-      "NEFSC yellowtail flounder case study"
+      "Case study template"
     ]
   },
   {
-    "objectID": "content/NEFSC-yellowtail.html#what-features-are-most-important-to-add-based-on-this-case-study",
-    "href": "content/NEFSC-yellowtail.html#what-features-are-most-important-to-add-based-on-this-case-study",
-    "title": "NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder",
+    "objectID": "content/case-study-template.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "href": "content/case-study-template.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "title": "Customize",
     "section": "What features are most important to add based on this case study?",
-    "text": "What features are most important to add based on this case study?\n\nMissing values, would allow inclusion of the other 3 indices (too many missing years to fill for this example)\n\n\n\nCode\n# Clear C++ objects from memory\nclear()",
+    "text": "What features are most important to add based on this case study?",
     "crumbs": [
-      "NEFSC yellowtail flounder case study"
+      "Case study template"
     ]
   },
   {
-    "objectID": "content/acknowledgements.html",
-    "href": "content/acknowledgements.html",
-    "title": "Acknowledgments",
+    "objectID": "content/case-study-template.html#add-your-pages-to-the-project",
+    "href": "content/case-study-template.html#add-your-pages-to-the-project",
+    "title": "Customize",
+    "section": "Add your pages to the project",
+    "text": "Add your pages to the project\n\nAdd the files to _quarto.yml",
+    "crumbs": [
+      "Case study template"
+    ]
+  },
+  {
+    "objectID": "content/AFSC-BSAI-AtkaMackerel.html",
+    "href": "content/AFSC-BSAI-AtkaMackerel.html",
+    "title": "AFSC Case Study BSAI Atka mackerel",
     "section": "",
-    "text": "This repo and GitHub Action was based on the tutorial by Openscapes quarto-website-tutorial by Julia Lowndes and Stefanie Butland.",
+    "text": "Code\n# Names of required packages\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"TMB\", \"reshape2\", \"here\", \"remotes\")\n\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\n\nremotes::install_github(\"kaskr/TMB_contrib_R/TMBhelper\")\nremotes::install_github(\"NOAA-FIMS/FIMS\")\n\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\n\nlibrary(FIMS)\nlibrary(TMBhelper)\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\n\nCode\ntheme_set(theme_bw())\n\n\n# R_version &lt;- version$version.string\n# TMB_version &lt;- packageDescription(\"TMB\")$Version\n# FIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 18f96a8\n\nStock name: BSAI Atka mackerel\n\nRegion: AFSC\n\nAnalyst: Jim Ianelli",
     "crumbs": [
-      "Acknowledgements"
+      "AFSC BSAI Atka Mackerel case study"
     ]
   },
   {
-    "objectID": "content/rmarkdown.html",
-    "href": "content/rmarkdown.html",
-    "title": "R Markdown",
+    "objectID": "content/AFSC-BSAI-AtkaMackerel.html#the-setup",
+    "href": "content/AFSC-BSAI-AtkaMackerel.html#the-setup",
+    "title": "AFSC Case Study BSAI Atka mackerel",
     "section": "",
-    "text": "You can include R Markdown files in your project.",
+    "text": "Code\n# Names of required packages\npackages &lt;- c(\"dplyr\", \"tidyr\", \"ggplot2\", \"TMB\", \"reshape2\", \"here\", \"remotes\")\n\n# Install packages not yet installed\ninstalled_packages &lt;- packages %in% rownames(installed.packages())\nif (any(installed_packages == FALSE)) {\n  install.packages(packages[!installed_packages], repos = \"http://cran.us.r-project.org\")\n}\n\nremotes::install_github(\"kaskr/TMB_contrib_R/TMBhelper\")\nremotes::install_github(\"NOAA-FIMS/FIMS\")\n\n# Load packages\ninvisible(lapply(packages, library, character.only = TRUE))\n\nlibrary(FIMS)\nlibrary(TMBhelper)\n\nR_version &lt;- version$version.string\nTMB_version &lt;- packageDescription(\"TMB\")$Version\nFIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\n\nCode\ntheme_set(theme_bw())\n\n\n# R_version &lt;- version$version.string\n# TMB_version &lt;- packageDescription(\"TMB\")$Version\n# FIMS_commit &lt;- substr(packageDescription(\"FIMS\")$GithubSHA1, 1, 7)\n\n\n\nR version: R version 4.3.2 (2023-10-31)\n\nTMB version: 1.9.10\n\nFIMS commit: 18f96a8\n\nStock name: BSAI Atka mackerel\n\nRegion: AFSC\n\nAnalyst: Jim Ianelli",
     "crumbs": [
-      "R Markdown files"
+      "AFSC BSAI Atka Mackerel case study"
     ]
   },
   {
-    "objectID": "content/rmarkdown.html#r-markdown",
-    "href": "content/rmarkdown.html#r-markdown",
-    "title": "R Markdown",
-    "section": "R Markdown",
-    "text": "R Markdown\nThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.\nWhen you click the Knit button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:\n\nsummary(cars)\n\n     speed           dist       \n Min.   : 4.0   Min.   :  2.00  \n 1st Qu.:12.0   1st Qu.: 26.00  \n Median :15.0   Median : 36.00  \n Mean   :15.4   Mean   : 42.98  \n 3rd Qu.:19.0   3rd Qu.: 56.00  \n Max.   :25.0   Max.   :120.00",
+    "objectID": "content/AFSC-BSAI-AtkaMackerel.html#simplifications-to-the-original-assessment",
+    "href": "content/AFSC-BSAI-AtkaMackerel.html#simplifications-to-the-original-assessment",
+    "title": "AFSC Case Study BSAI Atka mackerel",
+    "section": "Simplifications to the original assessment",
+    "text": "Simplifications to the original assessment\nThe model presented in this case study was changed substantially from the operational version and should not be considered reflective of the BSAI Atka mackerel stock.\nTo get the opertional model to more closely match FIMS I: * stumbled lots",
     "crumbs": [
-      "R Markdown files"
+      "AFSC BSAI Atka Mackerel case study"
     ]
   },
   {
-    "objectID": "content/rmarkdown.html#including-plots",
-    "href": "content/rmarkdown.html#including-plots",
-    "title": "R Markdown",
-    "section": "Including Plots",
-    "text": "Including Plots\nYou can also embed plots, for example:\n\n\n\n\n\n\n\n\n\nNote that the echo = FALSE parameter was added to the code chunk to prevent printing of the R code that generated the plot.",
+    "objectID": "content/AFSC-BSAI-AtkaMackerel.html#script-to-prepare-data-for-building-fims-object",
+    "href": "content/AFSC-BSAI-AtkaMackerel.html#script-to-prepare-data-for-building-fims-object",
+    "title": "AFSC Case Study BSAI Atka mackerel",
+    "section": "Script to prepare data for building FIMS object",
+    "text": "Script to prepare data for building FIMS object\n\n\nCode\n## define the dimensions and global variables\n#  Opent the original AMAK file\natka_dat &lt;- readRDS(here::here(\"content\",\"data_files\",\"atka_dat.RDS\"))\natka_rep &lt;- readRDS(here::here(\"content\",\"data_files\",\"atka_rep.RDS\"))\n## define the dimensions and global variables\nyears &lt;- atka_dat$styr:atka_dat$endyr\nnyears &lt;- length(years)\nnseasons &lt;- 1\nnages &lt;- 11\nages &lt;- 1:nages\n## nfleets &lt;- 1\n## This will fit the models bridging to FIMS (simplifying)\n## source(\"fit_bridge_models.R\")\n## compare changes to model\n#pkfitfinal &lt;- readRDS(\"data_files/pkfitfinal.RDS\")\n#pkfit0 &lt;- readRDS(\"data_files/pkfit0.RDS\")\n#parfinal &lt;- pkfitfinal$obj$env$parList()\n#pkinput0 &lt;- readRDS('data_files/pkinput0.RDS')\n#fimsdat &lt;- pkdat0 &lt;- pkinput0$dat\n#pkinput &lt;- readRDS('data_files/pkinput.RDS')\n\n\nHow I simplified my assessment: * Haven’t got there yet…",
     "crumbs": [
-      "R Markdown files"
+      "AFSC BSAI Atka Mackerel case study"
+    ]
+  },
+  {
+    "objectID": "content/AFSC-BSAI-AtkaMackerel.html#script-that-sets-up-and-runs-the-model",
+    "href": "content/AFSC-BSAI-AtkaMackerel.html#script-that-sets-up-and-runs-the-model",
+    "title": "AFSC Case Study BSAI Atka mackerel",
+    "section": "Script that sets up and runs the model",
+    "text": "Script that sets up and runs the model\n\n\nCode\n# clear memory\nclear()\nclear_logs()\nestimate_fish_selex &lt;- TRUE\nestimate_survey_selex &lt;- TRUE\nestimate_q2 &lt;- TRUE\nestimate_q3 &lt;- TRUE\nestimate_q6 &lt;- TRUE\nestimate_F &lt;- TRUE\nestimate_recdevs &lt;- TRUE\n\nget_amak_data &lt;- function(rdat,rrep){\n  ## put into fims friendly form\n  res &lt;- data.frame(type = character(),\n                    name = character(),\n                    age = integer(),\n                    datestart = character(),\n                    dateend = character(),\n                    value = double(),\n                    unit = character(),\n                    uncertainty = double())\n  landings &lt;- data.frame(type = \"landings\",\n                         name = \"fleet1\",\n                         age = NA,\n                         datestart = paste0(seq(rdat$styr, rdat$endyr), \"-01-01\"),\n                         dateend = paste0(seq(rdat$styr, rdat$endyr), \"-12-31\"),\n                         value = as.numeric(rdat$catch),\n                         unit = \"t\",\n                         uncertainty = rdat$catch_cv)\n  ##  need to fill missing years with -999 so it's ignored in FIMS\n  indtmp &lt;- 0*rdat$catch-999\n  indtmp[which(years %in% rdat$yrs_ind )] &lt;- rdat$biom_ind\n  #indtmp\n  CVtmp &lt;- rep(1, length=nyears) # actually SE in log space\n  CVtmp[which(years %in% rdat$yrs_ind)] &lt;- rdat$biom_std/rdat$biom_ind\n  ## repeat with fish catch at age, using expected in missing years\n  #names(atka_rep)\n  caa &lt;- 0*rrep$N[,-1]-999\n  caa[which(years %in% rdat$yrs_ages_fsh), ] &lt;- rdat$page_fsh\n  Ncaa &lt;- rep(1, nyears)\n  Ncaa[which(years %in% rdat$yrs_ages_fsh)] &lt;- rdat$sample_ages_fsh\n  paa2 &lt;-  0*rrep$N[,-1]-999\n  paa2[which(years %in% rdat$yrs_ages_ind), ] &lt;- rdat$page_ind\n  Npaa2 &lt;- rep(1, nyears)\n  Npaa2[which(years %in% rdat$yrs_ages_ind)] &lt;- rdat$sample_ages_ind\n  index &lt;- data.frame(type = \"index\",\n                      name = \"survey\",\n                      age = NA,\n                      datestart = paste0(seq(rdat$styr, rdat$endyr), \"-01-01\"),\n                      dateend = paste0(seq(rdat$styr, rdat$endyr), \"-12-31\"),\n                      value = ifelse(indtmp&gt;0, indtmp, indtmp),\n                      unit = \"\",\n                      uncertainty = CVtmp)\n  ## these have -999 for missing data years\n  catchage &lt;- data.frame(type = \"age\",\n                         name = \"fleet1\",\n                         age = rep(seq(1,nages), nyears),\n                         datestart = rep(paste0(seq(rdat$styr, rdat$endyr), \"-01-01\"), each=nages),\n                         dateend = rep(paste0(seq(rdat$styr, rdat$endyr), \"-12-31\"), each=nages),\n                         value = as.numeric(t(caa)),\n                         unit = \"\",\n                         uncertainty = rep(Ncaa, each=nages))\n  indexage &lt;- data.frame(\n    type = \"age\",\n    name = \"survey\",\n    age = rep(seq(1, nages), nyears),\n    datestart = rep(paste0( seq(rdat$styr, rdat$endyr), \"-01-01\" ), each = nages),\n    dateend = rep(paste0( seq(rdat$styr, rdat$endyr), \"-12-31\" ), each = nages),\n    value = as.numeric(t(paa2)),\n    unit = \"\",\n    uncertainty = rep(Npaa2, each = nages)\n  )\n  ## indexage=indexage2\n  ## index=index2\n  res &lt;- rbind(res, landings, index, catchage, indexage)\n  return(res)\n}\nfimsdat&lt;-get_amak_data(atka_dat,atka_rep)\n\n\n\n\nCode\nage_frame &lt;- FIMS::FIMSFrameAge(fimsdat)\nfishery_catch &lt;- FIMS::m_landings(age_frame)\nfishery_agecomp &lt;- FIMS::m_agecomp(age_frame, \"fleet1\")\nsurvey_index &lt;- FIMS::m_index(age_frame, \"survey\")\nsurvey_agecomp &lt;- FIMS::m_agecomp(age_frame, \"survey\")\n# need to think about how to deal with multiple fleets - only using 1 fleeet for now\nfish_index &lt;- methods::new(Index, nyears)\nfish_age_comp &lt;- methods::new(AgeComp, nyears, nages)\nfish_index$index_data &lt;- fishery_catch\nfish_age_comp$age_comp_data &lt;- fishery_agecomp * fimsdat$catchage$uncertainty#rep(Ncaa, each=nages)",
+    "crumbs": [
+      "AFSC BSAI Atka Mackerel case study"
     ]
   },
   {
