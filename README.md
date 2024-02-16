@@ -4,8 +4,10 @@ This is a [website](https://noaa-fims.github.io/case-studies/) (`type: website`)
 
 ## How to add a case study
 
+* Create a new branch to work on a case study.
 * Edit the qmd or md files in the `content` folder. qmd files can include code (R) and lots of Quarto markdown bells and whistles (like call-outs, cross-references, auto-citations and much more).
-* Add the files to `_quarto.yml`
+* Add the files to `_quarto.yml`.
+* Submit a pull request when finished working on a case study. If the case study renders successfully, the rendered pages will be uploaded to the artifacts section of the GitHub Actions page. If the case study fails to render, developers can review the GitHub Actions log to debug.
 
 <hr>
 
