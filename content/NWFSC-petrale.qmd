@@ -45,20 +45,10 @@ FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
 * Varying Index CV to constant over time
 * Varying Catch ESS to constant over time
 
-How I simplified my assessment:
-
-To fill the missing year of survey data, I first ran the model in ASAP with the missing data treated as missing. I then filled the missing data with the expected value of the survey, both in aggregate and for catch at age in place of the missing data.
-
-The varying weights at age, index CVs, and ESS values were replaced by the time series mean in all years.
-
-The catch weight at age matrix was used as the weight at age for all sources.
-
 ## Script that sets up and runs the model
 ```{r}
 #| warning: false
 
-# function to create equivalent of data_mile1, basic catch and survey data
-# need to think about how to deal with multiple fleets and indices - only use 1 of each for now
 get_ss3_data <- function(dat){
   # create empty data frame
   res <- data.frame(type = character(),
