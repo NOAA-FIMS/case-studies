@@ -261,13 +261,17 @@ recruitment$log_devs <- rep(1.0, nyears) # set to no deviations (multiplier) to 
 # growth
 ewaa_growth <- methods::new(EWAAgrowth)
 ewaa_growth$ages <- ages
-# NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now
+# NOTE: getting weight-at-age vector from 
+# petrale_output$wtatage |> 
+#   dplyr::filter(Sex == 1 & Fleet == -1 & Yr == 1876) |> 
+#   dplyr::select(paste(0:40)) |>
+#   round(4)
 ewaa_growth$weights <- c(
-  0.0014, 0.0202, 0.0895, 0.2077, 0.3621, 0.5348, 0.7107, 0.8794, 1.0346, 
-  1.1736, 1.2955, 1.4010, 1.4913, 1.5680, 1.6327, 1.6870, 1.7325, 1.7685, 
-  1.7969, 1.8205, 1.8401, 1.8564, 1.8699, 1.8811, 1.8904, 1.8980, 1.9043, 
-  1.9096, 1.9139, 1.9174, 1.9204, 1.9228, 1.9248, 1.9264, 1.9278, 1.9289, 
-  1.9299, 1.9306, 1.9312, 1.9318, 1.9324
+    0.0010, 0.0148, 0.0617, 0.1449, 0.2570, 0.3876, 0.5260, 0.6640, 0.7957, 0.9175, 
+    1.0273, 1.1247, 1.2097, 1.2831, 1.3460, 1.3994, 1.4446, 1.4821, 1.5132, 1.5392, 
+    1.5609, 1.5789, 1.5939, 1.6063, 1.6165, 1.6251, 1.6321, 1.6379, 1.6427, 1.6467, 
+    1.6499, 1.6526, 1.6549, 1.6567, 1.6582, 1.6595, 1.6605, 1.6613, 1.6620, 1.6626, 
+    1.6633
   )
 
 # maturity
