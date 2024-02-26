@@ -1,0 +1,315 @@
+---
+title: NWFSC Case Study Petrale Sole
+format:
+  html:
+    code-fold: true
+editor_options: 
+  chunk_output_type: console
+---
+
+## The setup
+
+```{r}
+#| warning: false
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(FIMS)
+library(TMB)
+library(TMBhelper)
+
+R_version <- version$version.string
+TMB_version <- packageDescription("TMB")$Version
+FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
+```
+
+-   R version: `r R_version`\
+-   TMB version: `r TMB_version`\
+-   FIMS commit: `r FIMS_commit`\
+-   Stock name: West Coast Petrale Sole\
+-   Region: NWFSC\
+-   Analyst: Ian G. Taylor\
+
+## Simplifications to the original assessment
+
+* Remove data
+  * Remove lengths
+  * Remove male ages
+  * Remove discard fractions and discard comps
+* Simplify selectivity
+  * Remove length-based retention functions
+  * Convert to age-based logistic (from length-based double-normal, fixed asymptotic)
+* Remove parameter priors (on M and h)
+* Use female mean weight at age as calculated from the parametric growth curves
+* Varying Index CV to constant over time
+* Varying Catch ESS to constant over time
+
+How I simplified my assessment:
+
+To fill the missing year of survey data, I first ran the model in ASAP with the missing data treated as missing. I then filled the missing data with the expected value of the survey, both in aggregate and for catch at age in place of the missing data.
+
+The varying weights at age, index CVs, and ESS values were replaced by the time series mean in all years.
+
+The catch weight at age matrix was used as the weight at age for all sources.
+
+## Script that sets up and runs the model
+```{r}
+#| warning: false
+
+# function to create equivalent of data_mile1, basic catch and survey data
+# need to think about how to deal with multiple fleets and indices - only use 1 of each for now
+get_ss3_data <- function(dat){
+  # create empty data frame
+  res <- data.frame(type = character(),
+                name = character(),
+                age = integer(),
+                datestart = character(),
+                dateend = character(),
+                value = double(),
+                unit = character(),
+                uncertainty = double())
+
+#Q: is it true that we can only have a single landings fleet? m_landings() doesn't accept a fleet name.  
+
+  # aggregate landings across fleets
+  landings <- dat$catch |> 
+    dplyr::group_by(year) |> 
+    dplyr::summarize(catch = sum(catch), uncertainty = mean(catch_se))
+
+  # convert landings to FIMSFrame format
+  landings <- data.frame(type = "landings",
+                     name = paste0("fleet1"), # landings aggregated to fleet 1
+                     age = NA,
+                     datestart = paste0(landings$year, "-01-01"),
+                     dateend = paste0(landings$year, "-12-31"),
+                     value = landings$catch,
+                     unit = "mt",
+                     uncertainty = landings$uncertainty)
+  
+  # convert indices to FIMSFrame format
+  indices <- data.frame(type = "index",
+                      name = paste0("fleet", dat$CPUE$index),
+                      age = NA,
+                      datestart = paste0(dat$CPUE$year, "-01-01"),
+                      dateend = paste0(dat$CPUE$year, "-12-31"),
+                      value = dat$CPUE$obs,
+                      unit = "",
+                      uncertainty = dat$CPUE$se_log)
+  
+  # partially convert age comps (filter, make into long table)
+  agecomps <-
+    dat$agecomp |>
+    dplyr::filter(FltSvy %in% c(1,2,3,-4)) |> # remove excluded observations
+    # note that fleet 4 used conditional age-at-length data with marginal observations
+    # entered as fleet == -4 (to exclude from likelihood due to redundancy)
+    # using only marginals in this case
+    dplyr::select(!dplyr::starts_with("m", ignore.case = FALSE)) |> # exclude male comps
+    tidyr::pivot_longer( # convert columns f1...f17 to values in a new "age" colum of a longer table
+        cols = dplyr::starts_with("f", ignore.case = FALSE), 
+        names_to = "age", 
+        values_to = "value") |>
+    dplyr::mutate(age = as.numeric(substring(age, first = 2))) # convert "f17" to 17
+
+  # finish converting age comps to FIMSFrame format
+  agecomps <- data.frame(
+    type = "age",
+    name = paste0("fleet", abs(agecomps$FltSvy)), # abs to include fleet == -4
+    age = agecomps$age,
+    datestart = paste0(agecomps$Yr, "-01-01"),
+    dateend = paste0(agecomps$Yr, "-12-31"),
+    value = agecomps$value,
+    unit = "",
+#Q: should uncertainty here be the total sample size across bins, or the samples within the bin?    
+    #uncertainty = round(agecomps$Nsamp * agecomps$value)
+    uncertainty = round(agecomps$Nsamp)
+  )
+
+  # combine all data sources
+  res <- rbind(res, landings, indices, agecomps)
+}
+
+
+# read SS3 input files from petrale sole assessment on github
+petrale_input <- r4ss::SS_read("https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/")
+# doesn't work from github
+#petrale_output <- r4ss::SS_output("https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/")
+
+# generic names for SS3 data and control files
+ss3dat <- petrale_input$dat
+ss3ctl <- petrale_input$ctl
+
+# define the dimensions
+years <- seq(ss3dat$styr, ss3dat$endyr)
+nyears <- length(years)
+nseasons <- 1
+nages <- ss3dat$Nages
+ages <- 0:nages # SS3 typically starts at age 1
+
+# use function defined above to extract data for FIMS
+mydat <- get_ss3_data(ss3dat)
+
+# I don't know what these commands are doing
+age_frame <- FIMS::FIMSFrameAge(mydat)
+fishery_catch <- FIMS::m_landings(age_frame)
+fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1")
+survey_index <- FIMS::m_index(age_frame, "fleet4")
+survey_agecomp <- FIMS::m_agecomp(age_frame, "fleet4")
+
+
+
+fish_index <- methods::new(Index, nyears)
+fish_age_comp <- methods::new(AgeComp, nyears, nages)
+fish_index$index_data <- fishery_catch
+#Q: I'm confused about FIMSFrame in proportions vs here needing numbers
+fish_age_comp$age_comp_data <- age_frame@data |> 
+  dplyr::filter(type == "age" & name == "fleet1") |>
+  dplyr::mutate(n = value * uncertainty) |>
+  dplyr::pull(n)
+
+# switches to turn on or off estimation
+estimate_fish_selex <- TRUE
+estimate_survey_selex <- TRUE
+estimate_q <- TRUE
+estimate_F <- TRUE
+estimate_recdevs <- TRUE
+
+### set up fishery
+## methods::show(DoubleLogisticSelectivity)
+fish_selex <- methods::new(LogisticSelectivity)
+
+# SS3 model had length-based selectivity which leads to sex-specific
+# age-based selectivity due to sexually-dimorphic growth. 
+# I didn't bother to calculate an age-based inflection point averaged over sexes
+fish_selex$inflection_point$value <- 10 
+fish_selex$inflection_point$is_random_effect <- FALSE
+fish_selex$inflection_point$estimated <- estimate_fish_selex
+fish_selex$slope$value <- 2
+fish_selex$slope$is_random_effect <- FALSE
+fish_selex$slope$estimated <- estimate_fish_selex
+
+## create fleet object for fishing fleet
+fish_fleet <- methods::new(Fleet)
+fish_fleet$nages <- nages
+fish_fleet$nyears <- nyears
+fish_fleet$log_Fmort <- rep(0.1, nyears)
+fish_fleet$estimate_F <- estimate_F
+fish_fleet$random_F <- FALSE
+fish_fleet$log_q <- 0 
+fish_fleet$estimate_q <- FALSE
+fish_fleet$random_q <- FALSE
+fish_fleet$log_obs_error <- rep(log(sqrt(log(0.01^2 + 1))), nyears)
+
+# Set Index, AgeComp, and Selectivity using the IDs from the modules defined above
+fish_fleet$SetObservedIndexData(fish_index$get_id())
+fish_fleet$SetObservedAgeCompData(fish_age_comp$get_id())
+fish_fleet$SetSelectivity(fish_selex$get_id())
+
+## Setup survey
+survey_fleet_index <- methods::new(Index, nyears)
+survey_age_comp <- methods::new(AgeComp, nyears, nages)
+survey_fleet_index$index_data <- survey_index
+survey_age_comp$age_comp_data <- mydat |> 
+  dplyr::filter(type == "age" & name == "fleet4") |>
+  dplyr::mutate(n = value * uncertainty) |>
+  dplyr::pull(n)
+
+## survey selectivity: ascending logistic
+## methods::show(DoubleLogisticSelectivity)
+survey_selex <- new(LogisticSelectivity)
+survey_selex$inflection_point$value <- 6
+survey_selex$inflection_point$is_random_effect <- FALSE
+survey_selex$inflection_point$estimated <- estimate_survey_selex
+survey_selex$slope$value <- 2
+survey_selex$slope$is_random_effect <- FALSE
+survey_selex$slope$estimated <- estimate_survey_selex
+
+## create fleet object for survey
+survey_fleet <- methods::new(Fleet)
+survey_fleet$is_survey <- TRUE
+survey_fleet$nages <- nages
+survey_fleet$nyears <- nyears
+survey_fleet$estimate_F <- FALSE
+survey_fleet$random_F <- FALSE
+survey_fleet$log_q <- 1.4 # petrale sole catchability estimated ~4.0 = exp(1.4)
+survey_fleet$estimate_q <- estimate_q
+survey_fleet$random_q <- FALSE
+#Q: why can't the index uncertainty come from FIMSFrame?
+survey_fleet$log_obs_error <- age_frame@data |> 
+  dplyr::filter(type == "index" & name == "fleet4") |> 
+  dplyr::pull(uncertainty) |> 
+  log()
+
+survey_fleet$SetAgeCompLikelihood(1)
+survey_fleet$SetIndexLikelihood(1)
+survey_fleet$SetSelectivity(survey_selex$get_id())
+survey_fleet$SetObservedIndexData(survey_fleet_index$get_id())
+survey_fleet$SetObservedAgeCompData(survey_age_comp$get_id())
+
+# Population module
+
+# recruitment
+recruitment <- methods::new(BevertonHoltRecruitment)
+#methods::show(BevertonHoltRecruitment)
+
+# petrale sigmaR is 0.5
+recruitment$log_sigma_recruit$value <- log(ss3ctl$SR_parms["SR_sigmaR", "INIT"])
+# petrale log(R0) is around 9.6 (where R0 is in thousands)
+#Q: do we need to account for SS3 R0 in thousands?
+recruitment$log_rzero$value <- ss3ctl$SR_parms["SR_LN(R0)", "INIT"]
+recruitment$log_rzero$is_random_effect <- FALSE
+recruitment$log_rzero$estimated <- TRUE
+# petrale steepness is fixed at 0.8
+steep <- ss3ctl$SR_parms["SR_BH_steep", "INIT"]
+recruitment$logit_steep$value <- -log(1.0 - steep) + log(steep - 0.2)
+recruitment$logit_steep$is_random_effect <- FALSE
+recruitment$logit_steep$estimated <- FALSE
+
+recruitment$estimate_log_devs <- TRUE
+recruitment$log_devs <- rep(1.0, nyears) # set to no deviations (multiplier) to start, just like ASAP
+
+# growth
+ewaa_growth <- methods::new(EWAAgrowth)
+ewaa_growth$ages <- ages
+# NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now
+ewaa_growth$weights <- c(
+  0.0014, 0.0202, 0.0895, 0.2077, 0.3621, 0.5348, 0.7107, 0.8794, 1.0346, 
+  1.1736, 1.2955, 1.4010, 1.4913, 1.5680, 1.6327, 1.6870, 1.7325, 1.7685, 
+  1.7969, 1.8205, 1.8401, 1.8564, 1.8699, 1.8811, 1.8904, 1.8980, 1.9043, 
+  1.9096, 1.9139, 1.9174, 1.9204, 1.9228, 1.9248, 1.9264, 1.9278, 1.9289, 
+  1.9299, 1.9306, 1.9312, 1.9318, 1.9324
+  )
+
+# maturity
+maturity <- new(LogisticMaturity)
+# approximate age-based equivalent to length-based maturity in petrale model
+# based on looking at model$endgrowth |> dplyr::filter(Sex == 1) |> dplyr::select(Age_Beg, Len_Mat)
+maturity$inflection_point$value <- 6.5 
+maturity$inflection_point$is_random_effect <- FALSE
+maturity$inflection_point$estimated <- FALSE
+maturity$slope$value <- 2 # arbitrary guess
+maturity$slope$is_random_effect <- FALSE
+maturity$slope$estimated <- FALSE
+
+# population
+population <- new(Population)
+# petrale natural mortality is estimated around 0.14
+population$log_M <- log(ss3ctl$MG_parms["NatM_p_1_Fem_GP_1", "INIT"])
+population$estimate_M <- TRUE
+#Q: rescale numbers at age by 1000?
+population$log_init_naa <- log(recruitment$log_rzero$value * exp(0:nages))
+population$estimate_init_naa <- TRUE 
+population$nages <- nages
+population$ages <- ages
+population$nfleets <- 2 # fleets plus surveys
+population$nseasons <- nseasons
+population$nyears <- nyears
+#population$prop_female <- 0.5 # ASAP assumption
+
+population$SetMaturity(maturity$get_id())
+population$SetGrowth(ewaa_growth$get_id())
+population$SetRecruitment(recruitment$get_id())
+
+# make FIMS model
+sucess <- CreateTMBModel()
+#Q: why did it crash?
