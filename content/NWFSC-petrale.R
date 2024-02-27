@@ -133,11 +133,11 @@ fish_age_comp$age_comp_data <- age_frame@data |>
   dplyr::pull(n)
 
 # switches to turn on or off estimation
-estimate_fish_selex <- TRUE
-estimate_survey_selex <- TRUE
-estimate_q <- TRUE
-estimate_F <- TRUE
-estimate_recdevs <- TRUE
+estimate_fish_selex <- FALSE
+estimate_survey_selex <- FALSE
+estimate_q <- FALSE
+estimate_F <- FALSE
+estimate_recdevs <- FALSE
 
 ### set up fishery
 ## methods::show(DoubleLogisticSelectivity)
@@ -221,16 +221,16 @@ recruitment <- methods::new(BevertonHoltRecruitment)
 recruitment$log_sigma_recruit$value <- log(ss3ctl$SR_parms["SR_sigmaR", "INIT"])
 # petrale log(R0) is around 9.6 (where R0 is in thousands)
 #Q: do we need to account for SS3 R0 in thousands?
-recruitment$log_rzero$value <- ss3ctl$SR_parms["SR_LN(R0)", "INIT"]
+recruitment$log_rzero$value <- log(1000) + ss3ctl$SR_parms["SR_LN(R0)", "INIT"]
 recruitment$log_rzero$is_random_effect <- FALSE
-recruitment$log_rzero$estimated <- TRUE
+recruitment$log_rzero$estimated <- FALSE
 # petrale steepness is fixed at 0.8
 steep <- ss3ctl$SR_parms["SR_BH_steep", "INIT"]
 recruitment$logit_steep$value <- -log(1.0 - steep) + log(steep - 0.2)
 recruitment$logit_steep$is_random_effect <- FALSE
 recruitment$logit_steep$estimated <- FALSE
 
-recruitment$estimate_log_devs <- TRUE
+recruitment$estimate_log_devs <- FALSE
 recruitment$log_devs <- rep(1.0, nyears) # set to no deviations (multiplier) to start, just like ASAP
 
 # growth
@@ -264,10 +264,10 @@ maturity$slope$estimated <- FALSE
 population <- new(Population)
 # petrale natural mortality is estimated around 0.14
 population$log_M <- rep(log(ss3ctl$MG_parms["NatM_p_1_Fem_GP_1", "INIT"]), nages)
-population$estimate_M <- TRUE
+population$estimate_M <- FALSE
 #Q: rescale numbers at age by 1000?
-population$log_init_naa <- log(recruitment$log_rzero$value * exp(ages))
-population$estimate_init_naa <- TRUE 
+population$log_init_naa <- log(1000*exp(recruitment$log_rzero$value) * exp(-ages))
+population$estimate_init_naa <- FALSE 
 population$nages <- nages
 population$ages <- ages
 population$nfleets <- 2 # fleets plus surveys
@@ -280,5 +280,5 @@ population$SetGrowth(ewaa_growth$get_id())
 population$SetRecruitment(recruitment$get_id())
 
 # make FIMS model
-sucess <- CreateTMBModel()
+# sucess <- CreateTMBModel()
 #Q: why did it crash?
