@@ -280,5 +280,5 @@ population$SetGrowth(ewaa_growth$get_id())
 population$SetRecruitment(recruitment$get_id())
 
 # make FIMS model
-#sucess <- CreateTMBModel()
+sucess <- CreateTMBModel()
 #Q: why did it crash?

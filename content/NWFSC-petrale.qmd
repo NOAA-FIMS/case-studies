@@ -122,10 +122,11 @@ get_ss3_data <- function(dat){
 
 # read SS3 input files from petrale sole assessment on github
 petrale_input <- r4ss::SS_read("https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/")
-# doesn't work from github
-#petrale_output <- r4ss::SS_output("https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/")
 
-# generic names for SS3 data and control files
+# # reading output doesn't work from github, so just using hard-wired values from model output
+# petrale_output <- r4ss::SS_output("https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/")
+
+# generic names for SS3 data and control files could be useful in future generalized version of this code
 ss3dat <- petrale_input$dat
 ss3ctl <- petrale_input$ctl
 
@@ -133,25 +134,35 @@ ss3ctl <- petrale_input$ctl
 years <- seq(ss3dat$styr, ss3dat$endyr)
 nyears <- length(years)
 nseasons <- 1
-nages <- ss3dat$Nages
-ages <- 0:nages # SS3 typically starts at age 1
+#ages <- 0:ss3dat$Nages # population ages in SS3, starts at age 0
+ages <- 1:17 # same as data bins
+nages <- length(ages)
 
 # use function defined above to extract data for FIMS
 mydat <- get_ss3_data(ss3dat)
+
+# remove fleets 2 and 3 and rename fleet4 as fleet2
+mydat <- mydat |> 
+  dplyr::filter(name %in% c("fleet1", "fleet4")) |>
+  dplyr::mutate(name = dplyr::case_when(
+    name == "fleet1" ~ name,
+    name == "fleet4" ~ "fleet2" # change fleet4 to fleet2
+  ))
 
 # I don't know what these commands are doing
 age_frame <- FIMS::FIMSFrameAge(mydat)
 fishery_catch <- FIMS::m_landings(age_frame)
 fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1")
-survey_index <- FIMS::m_index(age_frame, "fleet4")
-survey_agecomp <- FIMS::m_agecomp(age_frame, "fleet4")
+survey_index <- FIMS::m_index(age_frame, "fleet2")
+survey_agecomp <- FIMS::m_agecomp(age_frame, "fleet2")
 
 
 
 fish_index <- methods::new(Index, nyears)
 fish_age_comp <- methods::new(AgeComp, nyears, nages)
 fish_index$index_data <- fishery_catch
-#Q: I'm confused about FIMSFrame in proportions vs here needing numbers
+#Q: I'm confused about FIMSFrame being set up with age comps in proportions 
+#   vs here needing age comps in numbers
 fish_age_comp$age_comp_data <- age_frame@data |> 
   dplyr::filter(type == "age" & name == "fleet1") |>
   dplyr::mutate(n = value * uncertainty) |>
@@ -200,7 +211,7 @@ survey_fleet_index <- methods::new(Index, nyears)
 survey_age_comp <- methods::new(AgeComp, nyears, nages)
 survey_fleet_index$index_data <- survey_index
 survey_age_comp$age_comp_data <- mydat |> 
-  dplyr::filter(type == "age" & name == "fleet4") |>
+  dplyr::filter(type == "age" & name == "fleet2") |>
   dplyr::mutate(n = value * uncertainty) |>
   dplyr::pull(n)
 
@@ -226,7 +237,7 @@ survey_fleet$estimate_q <- estimate_q
 survey_fleet$random_q <- FALSE
 #Q: why can't the index uncertainty come from FIMSFrame?
 survey_fleet$log_obs_error <- age_frame@data |> 
-  dplyr::filter(type == "index" & name == "fleet4") |> 
+  dplyr::filter(type == "index" & name == "fleet2") |> 
   dplyr::pull(uncertainty) |> 
   log()
 
@@ -272,7 +283,7 @@ ewaa_growth$weights <- c(
     1.5609, 1.5789, 1.5939, 1.6063, 1.6165, 1.6251, 1.6321, 1.6379, 1.6427, 1.6467, 
     1.6499, 1.6526, 1.6549, 1.6567, 1.6582, 1.6595, 1.6605, 1.6613, 1.6620, 1.6626, 
     1.6633
-  )
+  )[1:nages]
 
 # maturity
 maturity <- new(LogisticMaturity)
@@ -288,17 +299,17 @@ maturity$slope$estimated <- FALSE
 # population
 population <- new(Population)
 # petrale natural mortality is estimated around 0.14
-population$log_M <- log(ss3ctl$MG_parms["NatM_p_1_Fem_GP_1", "INIT"])
+population$log_M <- rep(log(ss3ctl$MG_parms["NatM_p_1_Fem_GP_1", "INIT"]), nages)
 population$estimate_M <- TRUE
 #Q: rescale numbers at age by 1000?
-population$log_init_naa <- log(recruitment$log_rzero$value * exp(0:nages))
+population$log_init_naa <- log(recruitment$log_rzero$value * exp(ages))
 population$estimate_init_naa <- TRUE 
 population$nages <- nages
 population$ages <- ages
 population$nfleets <- 2 # fleets plus surveys
 population$nseasons <- nseasons
 population$nyears <- nyears
-#population$prop_female <- 0.5 # ASAP assumption
+population$proportion_female <- 0.5 
 
 population$SetMaturity(maturity$get_id())
 population$SetGrowth(ewaa_growth$get_id())
