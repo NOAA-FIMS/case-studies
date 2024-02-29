@@ -1,12 +1,12 @@
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-library(FIMS)
+require(FIMS)
 library(TMB)
 # devtools::install_github("kaskr/TMB_contrib_R/TMBhelper")
 library(TMBhelper)
 # remotes::install_github("r4ss/r4ss")
-library(r4ss) 
+require(r4ss) 
 
 R_version <- version$version.string
 TMB_version <- packageDescription("TMB")$Version
@@ -157,12 +157,12 @@ nyears <- length(years)
 mydat <- mydat |> dplyr::filter(datestart %in% paste0(years, "-01-01"))
 
 
-#Q: I don't know what these commands are doing
-age_frame <- FIMS::FIMSFrameAge(mydat)
-fishery_catch <- FIMS::m_landings(age_frame)
-fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1")
-survey_index <- FIMS::m_index(age_frame, "fleet2")
-survey_agecomp <- FIMS::m_agecomp(age_frame, "fleet2")
+age_frame <- FIMS::FIMSFrameAge(mydat) # similar to FIMSFrame() but includes ages
+# in the future FIMSFrame() and FIMSFrameAge() will likely be merged
+fishery_catch <- FIMS::m_landings(age_frame) # filtering for the landings only
+fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1") # filtering for ages from fleet 1
+survey_index <- FIMS::m_index(age_frame, "fleet2") # filtering for index data from fleet 2
+survey_agecomp <- FIMS::m_agecomp(age_frame, "fleet2") # filtering for ages from fleet 2
 
 
 
@@ -171,10 +171,12 @@ fish_age_comp <- methods::new(AgeComp, nyears, nages)
 fish_index$index_data <- fishery_catch
 #Q: I'm confused about FIMSFrame being set up with age comps in proportions 
 #   vs here needing age comps in numbers
+# just not sorted out yet, in the future this could be made simpler
 fish_age_comp$age_comp_data <- age_frame@data |> 
   dplyr::filter(type == "age" & name == "fleet1") |>
   dplyr::mutate(n = value * uncertainty) |>
-  dplyr::pull(n)
+  dplyr::pull(n) |> 
+  round(1)
 
 # switches to turn on or off estimation
 estimate_fish_selex <- FALSE
@@ -317,12 +319,14 @@ population$ages <- ages
 population$nfleets <- 2 # fleets plus surveys
 population$nseasons <- nseasons
 population$nyears <- nyears
-population$proportion_female <- 0.5 
+#population$proportion_female <- rep(0.5, nages)
 
 population$SetMaturity(maturity$get_id())
 population$SetGrowth(ewaa_growth$get_id())
 population$SetRecruitment(recruitment$get_id())
 
 # make FIMS model
-# sucess <- CreateTMBModel()
-#Q: why did it crash?
+success <- CreateTMBModel()
+
+parameters <- list(p = get_fixed())
+obj <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = FALSE)
