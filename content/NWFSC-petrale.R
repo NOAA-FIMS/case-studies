@@ -13,7 +13,7 @@ TMB_version <- packageDescription("TMB")$Version
 FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
 
 
-get_ss3_data <- function(dat){
+get_ss3_data <- function(dat, fleets){
   # create empty data frame
   res <- data.frame(type = character(),
                 name = character(),
@@ -27,7 +27,7 @@ get_ss3_data <- function(dat){
 #Q: is it true that we can only have a single landings fleet? m_landings() doesn't accept a fleet name.  
 
   # aggregate landings across fleets
-  landings <- dat$catch |> 
+  catch_by_year <- dat$catch |> 
     dplyr::group_by(year) |> 
     dplyr::summarize(catch = sum(catch), uncertainty = mean(catch_se))
 
@@ -35,48 +35,85 @@ get_ss3_data <- function(dat){
   landings <- data.frame(type = "landings",
                      name = paste0("fleet1"), # landings aggregated to fleet 1
                      age = NA,
-                     datestart = paste0(landings$year, "-01-01"),
-                     dateend = paste0(landings$year, "-12-31"),
-                     value = landings$catch,
+                     datestart = paste0(catch_by_year$year, "-01-01"),
+                     dateend = paste0(catch_by_year$year, "-12-31"),
+                     value = catch_by_year$catch,
                      unit = "mt",
-                     uncertainty = landings$uncertainty)
-  
+                     uncertainty = catch_by_year$uncertainty)
+
+  # check for any gaps in landings time series
+  years <- min(catch_by_year$year):max(catch_by_year$year)
+  if (!all(years %in% catch_by_year$year)) {
+    stop("missing years in landings")
+  }
+
   # convert indices to FIMSFrame format
+  index_info <- dat$CPUE |> 
+    dplyr::filter(index %in% fleets) |>
+    dplyr::select(year, index, obs, se_log)
+
+  # add -999 for missing years
+  # create empty data frame for all combinations of year and fleet
+  index_info_empty <- tidyr::expand_grid(
+    year = years,
+    index = fleets 
+  ) |> dplyr::mutate(obs = -999, se_log = 1)
+  # combine the two data frames and remove redundant rows
+  index_info <- rbind(index_info, index_info_empty) |>
+    dplyr::distinct(year, index, .keep_all = TRUE) |> 
+    dplyr::arrange(index, year)
+
   indices <- data.frame(type = "index",
-                      name = paste0("fleet", dat$CPUE$index),
+                      name = paste0("fleet", index_info$index),
                       age = NA,
-                      datestart = paste0(dat$CPUE$year, "-01-01"),
-                      dateend = paste0(dat$CPUE$year, "-12-31"),
-                      value = dat$CPUE$obs,
+                      datestart = paste0(index_info$year, "-01-01"),
+                      dateend = paste0(index_info$year, "-12-31"),
+                      value = index_info$obs,
                       unit = "",
-                      uncertainty = dat$CPUE$se_log)
-  
+                      uncertainty = index_info$se_log)
+
   # partially convert age comps (filter, make into long table)
-  agecomps <-
+  age_info <-
     dat$agecomp |>
-    dplyr::filter(FltSvy %in% c(1,2,3,-4)) |> # remove excluded observations
-    # note that fleet 4 used conditional age-at-length data with marginal observations
+    # specific to petrale:
+    # fleet 4 used conditional age-at-length data with marginal observations
     # entered as fleet == -4 (to exclude from likelihood due to redundancy)
-    # using only marginals in this case
+    # using only marginals in this case and exclude CAAL data
+    dplyr::filter(FltSvy %in% c(1,2,3,-4)) |> 
+    dplyr::mutate(FltSvy = abs(FltSvy)) |>
+    dplyr::filter(FltSvy %in% fleets) |> 
     dplyr::select(!dplyr::starts_with("m", ignore.case = FALSE)) |> # exclude male comps
     tidyr::pivot_longer( # convert columns f1...f17 to values in a new "age" colum of a longer table
         cols = dplyr::starts_with("f", ignore.case = FALSE), 
         names_to = "age", 
         values_to = "value") |>
-    dplyr::mutate(age = as.numeric(substring(age, first = 2))) # convert "f17" to 17
+    dplyr::mutate(age = as.numeric(substring(age, first = 2))) |> # convert "f17" to 17
+    dplyr::select(Yr, FltSvy, Nsamp, age, value)
+
+  # add -999 for missing years
+  # create empty data frame for all combinations of year, fleet, and age
+  age_info_empty <- tidyr::expand_grid(
+    Yr = years,
+    FltSvy = fleets,
+    age = ages
+  ) |> dplyr::mutate(Nsamp = 1, value = -999)
+  # combine the two data frames and remove redundant rows
+  age_info <- rbind(age_info, age_info_empty) |>
+    dplyr::distinct(Yr, FltSvy, age, .keep_all = TRUE) |> 
+    dplyr::arrange(FltSvy, Yr, age)
 
   # finish converting age comps to FIMSFrame format
   agecomps <- data.frame(
     type = "age",
-    name = paste0("fleet", abs(agecomps$FltSvy)), # abs to include fleet == -4
-    age = agecomps$age,
-    datestart = paste0(agecomps$Yr, "-01-01"),
-    dateend = paste0(agecomps$Yr, "-12-31"),
-    value = agecomps$value,
+    name = paste0("fleet", abs(age_info$FltSvy)), # abs to include fleet == -4
+    age = age_info$age,
+    datestart = paste0(age_info$Yr, "-01-01"),
+    dateend = paste0(age_info$Yr, "-12-31"),
+    value = age_info$value + 0.001, # add constant to avoid 0 values
     unit = "",
 #Q: should uncertainty here be the total sample size across bins, or the samples within the bin?    
-    #uncertainty = round(agecomps$Nsamp * agecomps$value)
-    uncertainty = round(agecomps$Nsamp)
+    #uncertainty = round(age_info$Nsamp * age_info$value)
+    uncertainty = round(age_info$Nsamp)
   )
 
   # combine all data sources
@@ -103,7 +140,7 @@ ages <- 1:17 # same as data bins
 nages <- length(ages)
 
 # use function defined above to extract data for FIMS
-mydat <- get_ss3_data(ss3dat)
+mydat <- get_ss3_data(ss3dat, fleets = c(1,4))
 
 # remove fleets 2 and 3 and rename fleet4 as fleet2
 mydat <- mydat |> 
@@ -113,7 +150,14 @@ mydat <- mydat |>
     name == "fleet4" ~ "fleet2" # change fleet4 to fleet2
   ))
 
-# I don't know what these commands are doing
+# filter for just years with no missing age or index data
+# in spite of filling in -999 values earlier, just in case
+years <- 2003:2019
+nyears <- length(years)
+mydat <- mydat |> dplyr::filter(datestart %in% paste0(years, "-01-01"))
+
+
+#Q: I don't know what these commands are doing
 age_frame <- FIMS::FIMSFrameAge(mydat)
 fishery_catch <- FIMS::m_landings(age_frame)
 fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1")
