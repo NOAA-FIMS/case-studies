@@ -35,6 +35,71 @@ How I simplified my assessment
 * etc.
 
 ## Add your script that sets up and runs the model
+```{r}
+load("data_files/sardine2024.Rdata")
+
+#------key to convert model years to calendar years
+times <- sardine2024$timeseries %>% select(Yr, Seas)
+times$calyear <- times$Yr
+times[which(times$Seas == 2), 'calyear'] <- times[which(times$Seas == 2), 'calyear'] + 1
+times$datestart <- paste0(times$calyear, "-01-01")
+times$dateend <- paste0(times$calyear, "-06-30")
+
+#Change for seas 1
+times[which(times$Seas == 1), 'datestart'] <- paste0(times[which(times$Seas == 1), 'calyear'],
+                                                     "-07-01")
+times[which(times$Seas == 1), 'dateend'] <- paste0(times[which(times$Seas == 1), 'calyear'],
+                                                     "-12-31")
+
+#------catch data
+#FIMS formatting
+#type, name, age, datestart, dateend, value, unit, uncertainty
+
+#Catch 
+landings <- sardine2024$catch %>% select(Fleet, Yr, Seas, Obs, se) %>%
+  filter(Yr > 2004)
+landings$type <- "landings"
+landings$name <- paste0("fleet", landings$Fleet)
+landings <- landings %>% left_join(times, by = c("Yr", "Seas"))
+landings$unit <- "mt"
+landings$uncertainty <- landings$se
+
+#Create key for changing model year to calendar year
+expand(Yr = 20)
+
+times  <- tibble(Yr = 2005:2023)
+times <- times %>% expand(Yr, Seas = 1:2)
+
+
+landings$cal_year
+
+
+landings %>% distinct(Seas) %>% mutate(start = c("-07-01", "01-01"))
+
+
+landings$datestart <- paste0(landings$Yr, "-07-01")
+landings$dateend <- paste0(landings$Yr, "-12-31")
+
+landings[which(landings$Seas == 2), 'datestart']
+
+
+#Might have to keep the model summer only
+unit = "mt"
+uncertainty <- 0.05
+
+#CPUE
+sardine2024$cpue
+
+#Age comp
+
+
+#Weight-at-age
+
+
+
+
+```
+
 
 ## Add your comparison figures
 
