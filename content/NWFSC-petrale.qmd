@@ -68,11 +68,10 @@ nages <- length(ages)
 
 # source function to simplify data and convert from SS3 format
 source("R/get_ss3_data.R")
-mydat <- get_ss3_data(ss3dat)
+mydat <- get_ss3_data(ss3dat, fleets = c(1,4))
 
-# remove fleets 2 and 3 and rename fleet4 as fleet2
+# rename fleet4 as fleet2 (fleets 2 and 3 already removed above)
 mydat <- mydat |>
-  dplyr::filter(name %in% c("fleet1", "fleet4")) |>
   dplyr::mutate(name = dplyr::case_when(
     name == "fleet1" ~ name,
     name == "fleet4" ~ "fleet2" # change fleet4 to fleet2
