@@ -13,6 +13,7 @@ if (any(installed_packages == FALSE)) {
 
 remotes::install_github("kaskr/TMB_contrib_R/TMBhelper")
 remotes::install_github("NOAA-FIMS/FIMS")
+remotes::install_github("r4ss/r4ss")
 
 # Load packages
 invisible(lapply(packages, library, character.only = TRUE))
