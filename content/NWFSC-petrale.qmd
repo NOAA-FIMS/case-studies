@@ -78,10 +78,10 @@ mydat <- mydat |>
   ))
 ```
 
-## Run FIMS model
+## Setup FIMS model
 ```{r}
 #| warning: false
-#| label: run-FIMS
+#| label: setup-FIMS
 #| output: false
 #| eval: true
 
@@ -267,6 +267,11 @@ population$SetRecruitment(recruitment$get_id())
 
 ## Run FIMS model and look at output
 ```{r}
+#| warning: true
+#| label: run-FIMS
+#| output: false
+#| eval: true
+
 # make FIMS model
 success <- CreateTMBModel()
 parameters <- list(p = get_fixed())
