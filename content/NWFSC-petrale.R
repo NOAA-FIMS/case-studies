@@ -13,134 +13,6 @@ TMB_version <- packageDescription("TMB")$Version
 FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
 
 
-get_ss3_data <- function(dat, fleets) {
-  # create empty data frame
-  res <- data.frame(
-    type = character(),
-    name = character(),
-    age = integer(),
-    datestart = character(),
-    dateend = character(),
-    value = double(),
-    unit = character(),
-    uncertainty = double()
-  )
-
-  # Q: is it true that we can only have a single landings fleet? m_landings() doesn't accept a fleet name.
-
-  # aggregate landings across fleets
-  catch_by_year <- dat$catch |>
-    dplyr::group_by(year) |>
-    dplyr::summarize(catch = sum(catch), uncertainty = mean(catch_se))
-
-  # convert landings to FIMSFrame format
-  landings <- data.frame(
-    type = "landings",
-    name = paste0("fleet1"), # landings aggregated to fleet 1
-    age = NA,
-    datestart = paste0(catch_by_year$year, "-01-01"),
-    dateend = paste0(catch_by_year$year, "-12-31"),
-    value = catch_by_year$catch,
-    unit = "mt",
-    uncertainty = catch_by_year$uncertainty
-  )
-
-  # check for any gaps in landings time series
-  years <- min(catch_by_year$year):max(catch_by_year$year)
-  if (!all(years %in% catch_by_year$year)) {
-    stop("missing years in landings")
-  }
-
-  # convert indices to FIMSFrame format
-  index_info <- dat$CPUE |>
-    dplyr::filter(index %in% fleets) |>
-    dplyr::select(year, index, obs, se_log)
-
-  # add -999 for missing years
-  # create empty data frame for all combinations of year and fleet
-  index_info_empty <- tidyr::expand_grid(
-    year = years,
-    index = fleets
-  ) |> dplyr::mutate(obs = -999, se_log = 1)
-  # combine the two data frames and remove redundant rows
-  index_info <- rbind(index_info, index_info_empty) |>
-    dplyr::distinct(year, index, .keep_all = TRUE) |>
-    dplyr::arrange(index, year)
-
-  indices <- data.frame(
-    type = "index",
-    name = paste0("fleet", index_info$index),
-    age = NA,
-    datestart = paste0(index_info$year, "-01-01"),
-    dateend = paste0(index_info$year, "-12-31"),
-    value = index_info$obs,
-    unit = "",
-    uncertainty = index_info$se_log
-  )
-
-  # partially convert age comps (filter, make into long table)
-
-  # first rescale females to sum to 1.0
-  # (data processing step had females + males sum to 100 for no good reason)
-  dat$agecomp$sum_fem <-
-    dat$agecomp |>
-    dplyr::select(dplyr::starts_with("f", ignore.case = FALSE)) |> # get female comps
-    rowSums()
-  # couldn't figure out dplyr approach to rescaling the subset of columns
-  # with female proportions to sum to 1.0
-  dat$agecomp[, names(dat$agecomp) %in% paste0("f", ages)] <-
-    dat$agecomp[, names(dat$agecomp) %in% paste0("f", ages)] /
-      dat$agecomp$sum_fem
-
-  # further processing
-  age_info <-
-    dat$agecomp |>
-    # specific to petrale:
-    # fleet 4 used conditional age-at-length data with marginal observations
-    # entered as fleet == -4 (to exclude from likelihood due to redundancy)
-    # using only marginals in this case and exclude CAAL data
-    dplyr::filter(FltSvy %in% c(1, 2, 3, -4)) |>
-    dplyr::mutate(FltSvy = abs(FltSvy)) |> # convert negative fleet to positive
-    dplyr::filter(FltSvy %in% fleets) |> # subset for fleets requested
-    dplyr::select(!dplyr::starts_with("m", ignore.case = FALSE)) |> # exclude male comps
-    tidyr::pivot_longer( # convert columns f1...f17 to values in a new "age" colum of a longer table
-      cols = dplyr::starts_with("f", ignore.case = FALSE),
-      names_to = "age",
-      values_to = "value"
-    ) |>
-    dplyr::mutate(age = as.numeric(substring(age, first = 2))) |> # convert "f17" to 17
-    dplyr::select(Yr, FltSvy, Nsamp, age, value)
-
-  # add -999 for missing years
-  # create empty data frame for all combinations of year, fleet, and age
-  age_info_empty <- tidyr::expand_grid(
-    Yr = years,
-    FltSvy = fleets,
-    age = ages
-  ) |> dplyr::mutate(Nsamp = 1, value = -999 - 0.001)
-  # combine the two data frames and remove redundant rows
-  age_info <- rbind(age_info, age_info_empty) |>
-    dplyr::distinct(Yr, FltSvy, age, .keep_all = TRUE) |>
-    dplyr::arrange(FltSvy, Yr, age)
-
-  # finish converting age comps to FIMSFrame format
-  agecomps <- data.frame(
-    type = "age",
-    name = paste0("fleet", abs(age_info$FltSvy)), # abs to include fleet == -4
-    age = age_info$age,
-    datestart = paste0(age_info$Yr, "-01-01"),
-    dateend = paste0(age_info$Yr, "-12-31"),
-    value = age_info$value + 0.001, # add constant to avoid 0 values
-    unit = "",
-    # Q: should uncertainty here be the total sample size across bins, or the samples within the bin?
-    # uncertainty = round(age_info$Nsamp * age_info$value)
-    uncertainty = round(age_info$Nsamp)
-  )
-
-  # combine all data sources
-  res <- rbind(res, landings, indices, agecomps)
-}
-
 
 # read SS3 input files from petrale sole assessment on github
 petrale_input <- r4ss::SS_read("https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/")
@@ -290,8 +162,6 @@ recruitment$log_sigma_recruit$value <- log(ss3ctl$SR_parms["SR_sigmaR", "INIT"])
 # Q: do we need to account for SS3 R0 in thousands?
 # recruitment$log_rzero$value <- log(1000) + ss3ctl$SR_parms["SR_LN(R0)", "INIT"]
 recruitment$log_rzero$value <- ss3ctl$SR_parms["SR_LN(R0)", "INIT"]
-
-# value from recruitment near end of time series after projecting with no catch
 recruitment$log_rzero$is_random_effect <- FALSE
 recruitment$log_rzero$estimated <- estimate_log_rzero
 # petrale steepness is fixed at 0.8
@@ -317,11 +187,8 @@ ewaa_growth$ages <- ages
 ewaa_growth$weights <- c(
   # 0.0010,  # age 0
   0.0148, 0.0617, 0.1449, 0.2570, 0.3876, 0.5260, 0.6640, 0.7957, 0.9175,
-  1.0273, 1.1247, 1.2097, 1.2831, 1.3460, 1.3994, 1.4446, 1.4821, 1.5132, 1.5392,
-  1.5609, 1.5789, 1.5939, 1.6063, 1.6165, 1.6251, 1.6321, 1.6379, 1.6427, 1.6467,
-  1.6499, 1.6526, 1.6549, 1.6567, 1.6582, 1.6595, 1.6605, 1.6613, 1.6620, 1.6626,
-  1.6633
-)[ages]
+  1.0273, 1.1247, 1.2097, 1.2831, 1.3460, 1.3994, 1.4446, 1.4821
+)
 
 # maturity
 maturity <- new(LogisticMaturity)
@@ -429,16 +296,32 @@ if (TRUE) {
   ggsave("content/figures/NWFSC-petrale_fit_index.png")
 
   # plot age comp fits
+  # age comps for fleet 1
   results_frame |>
-    dplyr::filter(type == "age" & value != -999) |>
+    dplyr::filter(type == "age" & name == "fleet1" & value != -999) |>
     ggplot(aes(x = age, y = value)) +
-    facet_wrap(vars(paste(name, year))) +
+    # note: dir = "v" sets vertical direction to fill the facets which
+    # makes comparison of progression of cohorts easier to see
+    facet_wrap(vars(year), dir = "v") +
     geom_point() +
     xlab("Age") +
     ylab("Proportion") +
     geom_line(aes(x = age, y = expected), color = "blue") +
     theme_bw()
-  ggsave("content/figures/NWFSC-petrale_fit_comps.png")
+  ggsave("content/figures/NWFSC-petrale_fit_comps_fleet1.png")
+
+  results_frame |>
+    dplyr::filter(type == "age" & name == "fleet2" & value != -999) |>
+    ggplot(aes(x = age, y = value)) +
+    # note: dir = "v" sets vertical direction to fill the facets which
+    # makes comparison of progression of cohorts easier to see
+    facet_wrap(vars(year), dir = "v") +
+    geom_point() +
+    xlab("Age") +
+    ylab("Proportion") +
+    geom_line(aes(x = age, y = expected), color = "blue") +
+    theme_bw()
+  ggsave("content/figures/NWFSC-petrale_fit_comps_fleet2.png")
 
   timeseries <- rbind(
     data.frame(
@@ -468,30 +351,57 @@ if (TRUE) {
     ggplot(aes(x = year, y = value)) +
     facet_wrap(vars(type), scales = "free") +
     geom_line() +
-    expand_limits(y = 0)
+    expand_limits(y = 0) +
+    theme_bw()
   ggsave("content/figures/NWFSC-petrale_time_series.png")
 
+  # create function to extract time series output from SS3 model
+  get_ss3_timeseries <- function(model, platform = "ss3") {
+    timeseries_ss3 <- model$timeseries |>
+      dplyr::filter(Yr %in% timeseries$year) |> # filter for matching years only (no forecast)
+      dplyr::select(Yr, Bio_all, SpawnBio, Recruit_0, "F:_1") |> # select quants of interest
+      dplyr::rename( # change to names used with FIMS
+        year = Yr,
+        biomass = Bio_all, ssb = SpawnBio, recruitment = Recruit_0, F_mort = "F:_1"
+      ) |>
+      dplyr::mutate(ssb = 1000 * ssb) |>
+      tidyr::pivot_longer( # convert quantities in separate columns into a single value column
+        cols = -1,
+        names_to = "type",
+        values_to = "value"
+      ) |>
+      dplyr::arrange(type) |> # sort by type instead of year
+      dplyr::mutate(platform = platform)
 
-  timeseries_ss3 <- p1$timeseries |>
-    dplyr::filter(Yr %in% timeseries$year) |> # filter for matching years only (no forecast)
-    dplyr::select(Yr, Bio_all, SpawnBio, Recruit_0, "F:_1") |> # select quants of interest
-    dplyr::rename( # change to names used with FIMS
-      year = Yr,
-      biomass = Bio_all, ssb = SpawnBio, recruitment = Recruit_0, F_mort = "F:_1"
-    ) |>
-    dplyr::mutate(ssb = 1000 * ssb) |>
-    tidyr::pivot_longer( # convert quantities in separate columns into a single value column
-      cols = -1,
-      names_to = "type",
-      values_to = "value"
-    ) |>
-    dplyr::arrange(type) |> # sort by type instead of year
-    dplyr::mutate(platform = "ss3")
+    return(timeseries_ss3)
+  }
 
+  # compare to SS3 output
+  if (FALSE) {
+    # read SS3 models from location on Ian's computer
+    p1 <- r4ss::SS_output("c:/ss/Petrale/Petrale2023/petrale/models//2023.a034.001/")
+    p2 <- r4ss::SS_output("c:/ss/Petrale/Petrale2023/petrale/models//2023.a050.002_FIMS_case-study_wtatage/")
+    # # saving all model output creates large files (7MB for original)
+    # saveRDS(p1, file = "content/data_files/NWFSC-petrale-SS3-original.rds")
+    # saveRDS(p2, file = "content/data_files/NWFSC-petrale-SS3-simplified.rds")
+
+    # combine SS3 model time series into data frame using function above
+    timeseries_compare <- rbind(
+      get_ss3_timeseries(model = p1, platform = "ss3_original"),
+      get_ss3_timeseries(model = p2, platform = "ss3_simplified")
+    )
+    # save data frame of time series results
+    saveRDS(timeseries_compare, file = "content/data_files/NWFSC-petrale-SS3-timeseries.rds")
+  }
+
+  # load saved time series
+  timeseries_compare <- readRDS("content/data_files/NWFSC-petrale-SS3-timeseries.rds")
+  # add FIMS output to time series table
   timeseries_compare <- timeseries |>
     dplyr::mutate(platform = "FIMS") |>
-    rbind(timeseries_ss3)
+    rbind(timeseries_compare)
 
+  # make plot comparing time series
   timeseries_compare |>
     ggplot(aes(year, value, color = platform)) +
     geom_line() +
@@ -499,6 +409,7 @@ if (TRUE) {
     ylim(0, NA) +
     labs(x = NULL, y = NULL) +
     theme_bw()
+  ggsave("content/figures/NWFSC-petrale_timeseries_comparison.png")
 
   # numbers at age as a matrix
   naa <- matrix(report$naa[[1]], ncol = nages, byrow = TRUE)
@@ -509,7 +420,8 @@ if (TRUE) {
   # bubble plot of numbers at age
   naa_df |>
     ggplot(aes(x = year, y = age, size = naa)) +
-    geom_point(alpha = 0.2)
+    geom_point(alpha = 0.2) +
+    theme_bw()
   ggsave("content/figures/NWFSC-petrale_numbers_at_age.png")
 
   clear()
