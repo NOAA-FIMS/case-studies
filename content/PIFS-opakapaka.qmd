@@ -1,0 +1,53 @@
+---
+title: PIFSC Opakapaka Case Study
+format:
+  html:
+    code-fold: true
+---
+
+Case study files should include:
+
+* R version
+* TMB version
+* FIMS commit
+* Name of your stock
+* Name of your region
+* Name of the analyst
+
+Please ensure that the [`content/setup.qmd`](https://github.com/NOAA-FIMS/case-studies/blob/main/content/setup.qmd) file is updated if the case study requires the installation of additional R packages.
+
+## The setup
+```{R}
+R_version <- version$version.string
+TMB_version <- packageDescription("TMB")$Version
+FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
+```
+
+* R version = `R_version`
+* TMB version = `TMB_version`
+* FIMS commit = `FIMS_commit`
+
+## Add a bulleted list and script describing simplifications you had to make
+
+How I simplified my assessment
+* Remove seasonality
+* etc.
+
+## Add your script that sets up and runs the model
+
+## Add your comparison figures
+
+## Add comparison tables
+
+## What was your experience using FIMS? What could we do to improve usability?
+
+## List any issues that you ran into or found
+
+Please [open an issue](https://github.com/NOAA-FIMS/FIMS/issues/new/choose) if you found something new.
+
+## What features are most important to add based on this case study?
+
+## Add your pages to the project
+
+* Add the files to `_quarto.yml`
+
