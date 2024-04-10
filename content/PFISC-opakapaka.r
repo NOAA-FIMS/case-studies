@@ -55,8 +55,8 @@ age_frame@fleets
 #fishery data
 fishery_catch <- FIMS::m_landings(age_frame)
 head(fishery_catch)
-
-fishery_index <- FIMS::m_index(age_frame, "fleet1")
+fishery_agecommp <- FIMS::m_agecomp(age_frame, "fleet1")
+#fishery_index <- FIMS::m_index(age_frame, "fleet1")
 
 #survey data
 survey_index <- FIMS::m_index(age_frame, "fleet2")
@@ -68,17 +68,21 @@ survey_agecomp <- FIMS::m_agecomp(age_frame, "fleet2")
 #show(Index)
 #show(AgeComp)
 fishing_fleet_index <- methods::new(Index, nyears)
-
+fishing_fleet_age_comp <- methods::new(AgeComp, nyears, nages)
 #Q: Don't understand why we put the fishery catch in the index data? 
 fishing_fleet_index$index_data <- fishery_catch
-
+fishing_fleet_age_comp$age_comp_data <- age_frame@data |>
+  dplyr::filter(type == "age" & name == "fleet1") |>
+  dplyr::mutate(n = value * uncertainty) |>
+  dplyr::pull(n) |>
+  round(1)
 ##Fleet selectivity
 # switches to turn on or off estimation
 estimate_fish_selex <- TRUE
 estimate_survey_selex <- TRUE
 estimate_q <- TRUE
 estimate_F <- TRUE
-estimate_recdevs <- FALSE
+estimate_recdevs <- TRUE
 estimate_init_naa <- FALSE
 estimate_log_rzero <- TRUE
 estimate_random_effect <- FALSE
@@ -104,14 +108,14 @@ fishing_fleet$log_Fmort <- log(rep(0.00001, nyears))
 fishing_fleet$estimate_F <- estimate_F
 fishing_fleet$random_F <- estimate_random_effect
 # Set value for log_q
-fishing_fleet$log_q <- log(1.0)
+fishing_fleet$log_q <- 0
 fishing_fleet$estimate_q <- estimate_q
 fishing_fleet$random_q <- estimate_random_effect
 fishing_fleet$log_obs_error <- rep(log(sqrt(log(0.01^2 + 1))), nyears)
-fishing_fleet$estimate_obs_error <- FALSE
+#fishing_fleet$estimate_obs_error <- FALSE
 # Set Index, AgeComp, and Selectivity using the IDs from the modules defined above
 fishing_fleet$SetObservedIndexData(fishing_fleet_index$get_id())
-#fishing_fleet$SetObservedAgeCompData(fishing_fleet_age_comp$get_id())
+fishing_fleet$SetObservedAgeCompData(fishing_fleet_age_comp$get_id())
 fishing_fleet$SetSelectivity(fishing_fleet_selectivity$get_id())
 
 ## Survey Module
@@ -151,8 +155,11 @@ survey_fleet$log_q <- log(2.94455e-07)
 survey_fleet$estimate_q <- TRUE
 survey_fleet$random_q <- FALSE
 # sd = sqrt(log(cv^2 + 1)), sd is log transformed
-survey_fleet$log_obs_error <- rep(log(sqrt(log(0.2^2 + 1))), nyears)
-survey_fleet$estimate_obs_error <- FALSE
+survey_fleet$log_obs_error <- age_frame@data |>
+  dplyr::filter(type == "index" & name == "fleet2") |>
+  dplyr::pull(uncertainty) |>
+  log()
+#survey_fleet$estimate_obs_error <- FALSE
 survey_fleet$SetAgeCompLikelihood(1)
 survey_fleet$SetIndexLikelihood(1)
 survey_fleet$SetSelectivity(survey_fleet_selectivity$get_id())
@@ -217,7 +224,7 @@ population$estimate_init_naa <- estimate_init_naa
 population$nages <- nages
 population$ages <- ages
 population$nfleets <- 2 # fleets plus surveys
-population$nseasons <- nseasons
+population$nseasons <- 1
 population$nyears <- nyears
 # population$proportion_female <- rep(0.5, nages)
 
@@ -227,3 +234,10 @@ population$SetRecruitment(recruitment$get_id())
 
 ## Create FIMS Model and Make TMB Function
 success <- CreateTMBModel()
+parameters <- list(p = get_fixed())
+obj <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
+
+opt <- nlminb(obj$par, obj$fn, obj$gr, control = list(eval.max = 10000, iter.max = 10000))
+print(opt)
+report <- obj$report()
+head(report$ssb)
