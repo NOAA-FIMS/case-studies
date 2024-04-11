@@ -32,7 +32,14 @@ Case study files should include:
 
 How I simplified my assessment
 * Remove seasonality
-* etc.
+* Sum the catch values for MexCal S1 and S2
+* Sum the age comps for MexCal S1 and S2
+* Drop spring AT survey index values
+* Assume Q=1 for AT survey, rather than have annual values
+* Assume time-invariant logistic selectivity PNW and AT survey fleets
+* Assume time-invariant double logistic selectivity MexCal fleet
+* Lorenzen age M -> one M value
+ 
 
 ## Add your script that sets up and runs the model
 ```{r}
