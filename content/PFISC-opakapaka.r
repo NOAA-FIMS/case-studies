@@ -17,11 +17,12 @@ TMB_version <- packageDescription("TMB")$Version
 FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
 
 ## Read in SS input files
-load(file.path(getwd(), "content", "data_files", "opaka_model.RDS"))
+load(file.path("C:/Users/Megumi.Oshima/Documents/", "case-studies", "content", "data_files", "opaka_model.RDS"))
 ss3dat <- ss3output$dat
 ss3ctl <- ss3output$ctl
+ss3dat <- SS_readdat_3.30(file = file.path(getwd(), "..", "Opaka-FIMS-Case-Study", "Model", "07_subset_yrs", "data.ss"))
 ## Function written by Ian Taylor to get SS3 data into FIMSframeAge format
-source("./content/R/get_ss3_data.r")
+source("C:/Users/Megumi.Oshima/Documents/case-studies/content/R/get_ss3_data.r")
 
 ## Define the dimensions
 ### years from 1949 to 2023
@@ -43,6 +44,9 @@ head(ss3dat$agecomp)
 
 str(opaka_dat)
 
+##use subset of data for years where BFISH index exists
+#opaka_dat_sub <- opaka_dat |> filter(as.Date(datestart) > as.Date("2016-01-01"))
+#nyears <- length(unique(opaka_dat_sub$datestart))
 ## Set up FIMS model
 
 #age data
@@ -51,6 +55,16 @@ age_frame@ages
 age_frame@nages
 head(age_frame@data)
 age_frame@fleets
+age_frame@start_year
+age_frame@end_year
+
+#plot data components in age_frame
+age_frame@data |> 
+ggplot() +
+geom_line(aes(x = lubridate::year(datestart), y = value, color = name)) + 
+facet_wrap(~type, scales = "free") + 
+theme_bw() +
+labs(x = "Year", y = "")
 
 #fishery data
 fishery_catch <- FIMS::m_landings(age_frame)
@@ -223,7 +237,7 @@ population$log_init_naa <- log(init_naa)
 population$estimate_init_naa <- estimate_init_naa
 population$nages <- nages
 population$ages <- ages
-population$nfleets <- 2 # fleets plus surveys
+population$nfleets <- 2 # fleet plus surveys
 population$nseasons <- 1
 population$nyears <- nyears
 # population$proportion_female <- rep(0.5, nages)
@@ -241,3 +255,17 @@ opt <- nlminb(obj$par, obj$fn, obj$gr, control = list(eval.max = 10000, iter.max
 print(opt)
 report <- obj$report()
 head(report$ssb)
+plot(x = years, y = report$ssb[[1]][2:76])
+report$log_recruit_dev
+report$biomass
+report$M
+report$F_mort
+
+plot(x = years, y = ss3dat$catch$catch, pch = 16)
+lines(x = years, y = report$exp_catch[[1]], col = "blue")
+
+plot(x = c(years, max(years) + 1), y = report$ssb[[1]], type = "l")
+report$exp_index
+ss3dat$CPUE
+
+plot(x = years, y = report$exp_index[[2]], type = "l")
