@@ -31,7 +31,8 @@ get_ss3_data <- function(dat, fleets, ages) {
   catch_by_year <- dat$catch |>
     dplyr::filter(fleet %in% fleets) |> 
     dplyr::group_by(year) |>
-    dplyr::summarize(catch = sum(catch), uncertainty = mean(catch_se))
+    dplyr::summarize(catch = sum(catch), uncertainty = mean(catch_se)) |> 
+    dplyr::filter(year != -999)
 
   # convert landings to FIMSFrame format
   landings <- data.frame(
