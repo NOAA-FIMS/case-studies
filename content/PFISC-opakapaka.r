@@ -17,12 +17,12 @@ TMB_version <- packageDescription("TMB")$Version
 FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
 
 ## Read in SS input files
-load(file.path("C:/Users/Megumi.Oshima/Documents/", "case-studies", "content", "data_files", "opaka_model.RDS"))
-ss3dat <- ss3output$dat
-ss3ctl <- ss3output$ctl
-ss3dat <- SS_readdat_3.30(file = file.path(getwd(), "..", "Opaka-FIMS-Case-Study", "Model", "07_subset_yrs", "data.ss"))
+load(file.path(getwd(), "content", "data_files", "opaka_model2.RDS"))
+#ss3dat <- ss3output$dat
+#ss3ctl <- ss3output$ctl
+#ss3dat <- SS_readdat_3.30(file = file.path(getwd(), "..", "Opaka-FIMS-Case-Study", "Model", "07_subset_yrs", "data.ss"))
 ## Function written by Ian Taylor to get SS3 data into FIMSframeAge format
-source("C:/Users/Megumi.Oshima/Documents/case-studies/content/R/get_ss3_data.r")
+source("./content/R/get_ss3_data.r")
 
 ## Define the dimensions
 ### years from 1949 to 2023
@@ -54,9 +54,10 @@ age_frame <- FIMS::FIMSFrameAge(opaka_dat)
 age_frame@ages
 age_frame@nages
 head(age_frame@data)
+tail(age_frame@data)
 age_frame@fleets
 age_frame@start_year
-age_frame@end_year
+age_frame@end_year #not sure why this is saying 9 when other components are correct
 
 #plot data components in age_frame
 age_frame@data |> 
@@ -207,12 +208,7 @@ ewaa_growth$ages <- ages
 #round(4)
 #ewaa_growth$weights <- unlist(weights)
 
-ewaa_growth$weights <- c(0.3814, 
-0.8472, 1.2541, 1.7741, 2.3158, 2.8184, 3.2614, 
-3.6402, 3.9573, 4.2188, 4.432, 4.6043, 4.7426, 
-4.8531, 4.941, 5.0108, 5.0661, 5.1097, 5.1442, 
-5.1713, 5.1927)
-
+ewaa_growth$weights <- c(0.041, 0.2942, 0.7766, 1.235, 1.7445, 2.2816, 2.7782, 3.2152, 3.5887, 3.9014, 4.1592, 4.3694, 4.5392, 4.6756, 4.7846, 4.8713, 4.9401, 4.9945, 5.0376, 5.0715, 5.0983)
 # maturity
 maturity <- new(LogisticMaturity)
 # approximate age-based equivalent to length-based maturity in petrale model
@@ -250,18 +246,17 @@ population$SetRecruitment(recruitment$get_id())
 success <- CreateTMBModel()
 parameters <- list(p = get_fixed())
 obj <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
-
 opt <- nlminb(obj$par, obj$fn, obj$gr, control = list(eval.max = 10000, iter.max = 10000))
-print(opt)
+#print(opt)
 report <- obj$report()
 head(report$ssb)
-plot(x = years, y = report$ssb[[1]][2:76])
+
 report$log_recruit_dev
 report$biomass
 report$M
 report$F_mort
 
-plot(x = years, y = ss3dat$catch$catch, pch = 16)
+plot(x = years, y = ss3dat$catch$catch[2:76], pch = 16)
 lines(x = years, y = report$exp_catch[[1]], col = "blue")
 
 plot(x = c(years, max(years) + 1), y = report$ssb[[1]], type = "l")
