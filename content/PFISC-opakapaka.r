@@ -20,7 +20,6 @@ FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
 load(file.path(getwd(), "content", "data_files", "opaka_model2.RDS"))
 #ss3dat <- ss3output$dat
 #ss3ctl <- ss3output$ctl
-#ss3dat <- SS_readdat_3.30(file = file.path(getwd(), "..", "Opaka-FIMS-Case-Study", "Model", "07_subset_yrs", "data.ss"))
 ## Function written by Ian Taylor to get SS3 data into FIMSframeAge format
 source("./content/R/get_ss3_data.r")
 
@@ -166,6 +165,7 @@ survey_fleet$nyears <- nyears
 survey_fleet$estimate_F <- FALSE
 survey_fleet$random_F <- FALSE
 survey_fleet$log_q <- log(2.94455e-07)
+#survey_fleet$log_q <- -3.84862
 #Q: can I have 2 surveys? If so, where am I specifying there are 2? Do I create a second survey fleet module? For now, start with just fleet1 and fleet2, then add in fleet3 to try a third survey module
 survey_fleet$estimate_q <- TRUE
 survey_fleet$random_q <- FALSE
@@ -256,11 +256,167 @@ report$biomass
 report$M
 report$F_mort
 
-plot(x = years, y = ss3dat$catch$catch[2:76], pch = 16)
-lines(x = years, y = report$exp_catch[[1]], col = "blue")
+# copy input data to use as basis for results
+results_frame <- age_frame@data
+results_frame$expected <- NA
+# convert date string to numeric year
+# I'm doing this differently bc my years are 1-75 not the typical year
+results_frame <- results_frame |>
+tidyr::separate(col = datestart, into = c("year", "temp1", "temp2"), sep = "-", remove = FALSE) |> 
+dplyr::select(-c(temp1, temp2))  |> 
+dplyr::mutate(year = as.integer(year))
 
-plot(x = c(years, max(years) + 1), y = report$ssb[[1]], type = "l")
-report$exp_index
-ss3dat$CPUE
+# add expected index to data frame
+results_frame$expected[results_frame$type == "index" & results_frame$name == "fleet2"] <-
+  report$exp_index[[2]]
 
-plot(x = years, y = report$exp_index[[2]], type = "l")
+# add estimated catch to data frame
+results_frame$expected[results_frame$type == "landings" & results_frame$name == "fleet1"] <-
+  report$exp_catch[[1]]
+
+# add estimated age comps to data frame
+for (fleet in 1:2) {
+  # copy Cole's approach to rescaling expected comps to proportions
+  x1 <- matrix(report$cnaa[[fleet]], ncol = nages, byrow = TRUE)
+  x1 <- x1 / rowSums(x1)
+  dimnames(x1) <- list(year = years, age = ages)
+  x1 <- reshape2::melt(x1, value.name = "paa") |>
+    dplyr::mutate(type = "age", name = paste0("fleet", fleet))
+  # add expected proportions into results_frame
+  results_frame <-
+    # add paa for age comps (will be NA for all other types)
+    dplyr::left_join(x = results_frame, y = x1) |> 
+    # replace value column with paa for age data within this fleet (when not NA)
+    dplyr::mutate(expected = dplyr::case_when(is.na(paa) ~ expected, TRUE ~ paa)) |> 
+    dplyr::select(-paa) # remove temporary paa column
+}
+
+# plot catch fit
+  results_frame |>
+    dplyr::filter(type == "landings" & value != -999) |>
+    ggplot(aes(x = year, y = value)) +
+    geom_point() +
+    xlab("Year") +
+    ylab("Catch (mt)") +
+    geom_line(aes(x = year, y = expected), color = "blue") +
+    theme_bw()
+
+ # plot index fit
+  results_frame |>
+    dplyr::filter(type == "index" & value != -999 & !is.na(expected)) |>
+    ggplot(aes(x = year, y = value)) +
+    geom_point() +
+    xlab("Year") +
+    ylab("Index") +
+    geom_line(aes(x = year, y = expected), color = "blue") +
+    theme_bw()
+
+# plot age comp fits
+  # age comps for fleet 1
+  results_frame |>
+    dplyr::filter(type == "age" & name == "fleet1" & value != -999) |>
+    ggplot(aes(x = age, y = value)) +
+    # note: dir = "v" sets vertical direction to fill the facets which
+    # makes comparison of progression of cohorts easier to see
+    facet_wrap(vars(year), dir = "v") +
+    geom_point() +
+    xlab("Age") +
+    ylab("Proportion") +
+    geom_line(aes(x = age, y = expected), color = "blue") +
+    theme_bw()
+
+  results_frame |>
+    dplyr::filter(type == "age" & name == "fleet2" & value != -999) |>
+    ggplot(aes(x = age, y = value)) +
+    # note: dir = "v" sets vertical direction to fill the facets which
+    # makes comparison of progression of cohorts easier to see
+    facet_wrap(vars(year), dir = "v") +
+    geom_point() +
+    xlab("Age") +
+    ylab("Proportion") +
+    geom_line(aes(x = age, y = expected), color = "blue") +
+    theme_bw()
+
+timeseries <- rbind(
+    data.frame(
+      year = c(years, max(years) + 1),
+      type = "ssb",
+      value = report$ssb[[1]]
+    ),
+    data.frame(
+      year = c(years, max(years) + 1),
+      type = "biomass",
+      value = report$biomass[[1]]
+    ),
+    data.frame(
+      year = c(years),
+      type = "recruitment",
+      value = report$recruitment[[1]][1:nyears] # final value was 0
+    ),
+    data.frame(
+      year = c(years),
+      type = "F_mort",
+      value = report$F_mort[[1]]
+    )
+  )
+
+# plot timeseries
+timeseries |>
+    ggplot(aes(x = year, y = value)) +
+    facet_wrap(vars(type), scales = "free") +
+    geom_line() +
+    expand_limits(y = 0) +
+    theme_bw()
+
+get_ss3_timeseries <- function(model, platform = "ss3") {
+    timeseries_ss3 <- model$timeseries |>
+      dplyr::filter(Yr %in% timeseries$year) |> # filter for matching years only (no forecast)
+      dplyr::select(Yr, Bio_all, SpawnBio, Recruit_0, "F:_1") |> # select quants of interest
+      dplyr::rename( # change to names used with FIMS
+        year = Yr,
+        biomass = Bio_all, ssb = SpawnBio, recruitment = Recruit_0, F_mort = "F:_1"
+      ) |>
+      dplyr::mutate(ssb = 1000 * ssb) |>
+      tidyr::pivot_longer( # convert quantities in separate columns into a single value column
+        cols = -1,
+        names_to = "type",
+        values_to = "value"
+      ) |>
+      dplyr::arrange(type) |> # sort by type instead of year
+      dplyr::mutate(platform = platform)
+
+    return(timeseries_ss3)
+  }
+
+timeseries_compare <- get_ss3_timeseries(model = ss3rep, platform = "ss3")
+head(timeseries_compare)
+timeseries_compare <- timeseries |>
+    dplyr::mutate(platform = "FIMS") |>
+    rbind(timeseries_compare)
+
+timeseries_compare |> filter(type == "ssb") ##Q. why is ss3 SSB so much larger? something happening with the units? 
+# make plot comparing time series
+  timeseries_compare |>
+    ggplot(aes(year, value, color = platform)) +
+    geom_line() +
+    facet_wrap("type", scales = "free") +
+    ylim(0, NA) +
+    labs(x = NULL, y = NULL) +
+    theme_bw()
+
+ # numbers at age as a matrix
+  naa <- matrix(report$naa[[1]], ncol = nages, byrow = TRUE)
+  # numbers at age as a long data frame
+  naa_df <- tidyr::expand_grid(year = c(years, max(years) + 1), age = ages) |>
+    data.frame(naa = report$naa[[1]])
+
+  # bubble plot of numbers at age
+  naa_df |>
+    ggplot(aes(x = year, y = age, size = naa)) +
+    geom_point(alpha = 0.2) +
+    theme_bw()
+
+
+
+
+clear()
