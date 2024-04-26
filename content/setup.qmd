@@ -3,7 +3,7 @@
 #| label: package-installation
 
 # Names of required packages
-packages <- c("dplyr", "tidyr", "ggplot2", "TMB", "reshape2", "here", "remotes")
+packages <- c("dplyr", "tidyr", "ggplot2", "TMB", "reshape2", "here", "remotes", "lubridate")
 
 # Install packages not yet installed
 installed_packages <- packages %in% rownames(installed.packages())
