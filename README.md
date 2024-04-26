@@ -2,6 +2,16 @@
 
 This is a [website](https://noaa-fims.github.io/case-studies/) (`type: website`) showcasing test cases of the [Fisheries Integrated Modeling System](https://NOAA-FIMS/FIMS/).
 
+Case studies included so far:
+Stock | Status
+-- | --
+NEFSC yellowtail flounder | working
+AFSC GOA pollock | working
+AFSC BSAI Atka Mackerel | working
+SWFSC sardine | working
+NWFSC petrale | working
+PIFSC opakapaka | in progress (in branch)
+
 ## How to add a case study
 
 * Create a new branch to work on a case study.
