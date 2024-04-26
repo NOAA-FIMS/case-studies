@@ -330,7 +330,7 @@ results_frame |>
   ylab("Catch (mt)") +
   geom_line(aes(x = year, y = expected), color = "blue") +
   theme_bw()
-ggsave("content/figures/NWFSC-petrale_fit_catch.png")
+ggsave("figures/NWFSC-petrale_fit_catch.png")
 
 # plot index fit
 results_frame |>
@@ -341,7 +341,7 @@ results_frame |>
   ylab("Index") +
   geom_line(aes(x = year, y = expected), color = "blue") +
   theme_bw()
-ggsave("content/figures/NWFSC-petrale_fit_index.png")
+ggsave("figures/NWFSC-petrale_fit_index.png")
 
 # plot age comp fits
 # age comps for fleet 1
@@ -356,7 +356,7 @@ results_frame |>
   ylab("Proportion") +
   geom_line(aes(x = age, y = expected), color = "blue") +
   theme_bw()
-ggsave("content/figures/NWFSC-petrale_fit_comps_fleet1.png")
+ggsave("figures/NWFSC-petrale_fit_comps_fleet1.png")
 # age comps for fleet 2
 results_frame |>
   dplyr::filter(type == "age" & name == "fleet2" & value != -999) |>
@@ -369,7 +369,7 @@ results_frame |>
   ylab("Proportion") +
   geom_line(aes(x = age, y = expected), color = "blue") +
   theme_bw()
-ggsave("content/figures/NWFSC-petrale_fit_comps_fleet2.png")
+ggsave("figures/NWFSC-petrale_fit_comps_fleet2.png")
 
 # assemble time series output
 timeseries <- rbind(
@@ -401,7 +401,7 @@ timeseries |>
   geom_line() +
   expand_limits(y = 0) +
   theme_bw()
-ggsave("content/figures/NWFSC-petrale_time_series.png")
+ggsave("figures/NWFSC-petrale_time_series.png")
 ```
 
 ## Compare results to SS3 models (still a work in progress)
@@ -411,7 +411,7 @@ ggsave("content/figures/NWFSC-petrale_time_series.png")
 #| output: false
 
 # load saved time series
-timeseries_compare <- readRDS("content/data_files/NWFSC-petrale-SS3-timeseries.rds")
+timeseries_compare <- readRDS("data_files/NWFSC-petrale-SS3-timeseries.rds")
 # add FIMS output to time series table
 timeseries_compare <- timeseries |>
   dplyr::mutate(platform = "FIMS") |>
@@ -424,7 +424,7 @@ timeseries_compare |>
   ylim(0, NA) +
   labs(x = NULL, y = NULL) +
   theme_bw()
-ggsave("content/figures/NWFSC-petrale_timeseries_comparison.png")
+ggsave("figures/NWFSC-petrale_timeseries_comparison.png")
 # numbers at age as a matrix
 naa <- matrix(report$naa[[1]], ncol = nages, byrow = TRUE)
 # numbers at age as a long data frame
@@ -435,7 +435,7 @@ naa_df |>
   ggplot(aes(x = year, y = age, size = naa)) +
   geom_point(alpha = 0.2) +
   theme_bw()
-ggsave("content/figures/NWFSC-petrale_numbers_at_age.png")
+ggsave("figures/NWFSC-petrale_numbers_at_age.png")
 clear()
 # end "if (FALSE)" block to only run if model is working
 ```
