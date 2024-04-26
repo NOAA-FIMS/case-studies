@@ -265,7 +265,7 @@ population$SetGrowth(ewaa_growth$get_id())
 population$SetRecruitment(recruitment$get_id())
 ```
 
-## Run FIMS model and look at output
+## Run FIMS model
 ```{r}
 #| warning: true
 #| label: run-FIMS
@@ -283,7 +283,14 @@ print(opt)
 # sdr <- TMB::sdreport(obj)
 # sdr_fixed <- summary(sdr, "fixed")
 # print(sdr_fixed)
+```
 
+## Get FIMS output and plot results
+```{r}
+#| warning: true
+#| label: get-results
+#| output: false
+#| eval: true
 report <- obj$report()
 # copy input data to use as basis for results
 results_frame <- age_frame@data
