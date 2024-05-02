@@ -1,23 +1,17 @@
 ---
 title: PIFSC Opakapaka Case Study
+author: Meg Oshima
 format:
   html:
     code-fold: true
 ---
 
-Case study files should include:
-
-* R version
-* TMB version
-* FIMS commit
-* Name of your stock
-* Name of your region
-* Name of the analyst
 
 Please ensure that the [`content/setup.qmd`](https://github.com/NOAA-FIMS/case-studies/blob/main/content/setup.qmd) file is updated if the case study requires the installation of additional R packages.
 
 ## The setup
-```{R}
+```{r}
+#| echo: false
 R_version <- version$version.string
 TMB_version <- packageDescription("TMB")$Version
 FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
@@ -27,23 +21,162 @@ FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
 * TMB version = `TMB_version`
 * FIMS commit = `FIMS_commit`
 
-## Add a bulleted list and script describing simplifications you had to make
+## Simplifications made to the model
 
 How I simplified my assessment
 * Remove seasonality
 * etc.
 
-## Add your script that sets up and runs the model
+## Script that sets up and runs the model
 
-## Add your comparison figures
+```{r}
+#| warning: false
+#| echo: false
+#| output: false
+#| message: false
+source(file.path(getwd(), "content", "PFISC-opakapaka.r"))
+```
+
+## Results from FIMS model
+### Catch fit
+```{r}
+  results_frame |>
+    dplyr::filter(type == "landings" & value != -999) |>
+    ggplot(aes(x = year, y = value)) +
+    geom_point() +
+    xlab("Year") +
+    ylab("Catch (mt)") +
+    geom_line(aes(x = year, y = expected), color = "blue") +
+    theme_bw()
+```
+
+### Index fit
+```{r}
+
+  results_frame |>
+    dplyr::filter(type == "index" & value != -999 & !is.na(expected)) |>
+    ggplot(aes(x = year, y = value)) +
+    geom_point() +
+    xlab("Year") +
+    ylab("Index") +
+    geom_line(aes(x = year, y = expected), color = "blue") +
+    theme_bw()
+```
+### Age comp fits
+
+```{r}  
+  # fleet 1
+  results_frame |>
+    dplyr::filter(type == "age" & name == "fleet1" & value != -999) |>
+    ggplot(aes(x = age, y = value)) +
+    # note: dir = "v" sets vertical direction to fill the facets which
+    # makes comparison of progression of cohorts easier to see
+    facet_wrap(vars(year), dir = "v") +
+    geom_point() +
+    geom_line(aes(x = age, y = expected), color = "blue") +
+    theme_bw() +
+    labs(x = "Age", y = "Proportion", title = "Fleet 2")
+
+# fleet 2
+  results_frame |>
+    dplyr::filter(type == "age" & name == "fleet2" & value != -999) |>
+    ggplot(aes(x = age, y = value)) +
+    # note: dir = "v" sets vertical direction to fill the facets which
+    # makes comparison of progression of cohorts easier to see
+    facet_wrap(vars(year), dir = "v") +
+    geom_point() +
+    geom_line(aes(x = age, y = expected), color = "blue") +
+    theme_bw() +
+    labs(x = "Age", y = "Proportion", title = "Fleet 2")
+
+```
+
+### FIMS timeseries
+```{r}
+timeseries <- rbind(
+    data.frame(
+      year = c(years, max(years) + 1),
+      type = "ssb",
+      value = report$ssb[[1]]
+    ),
+    data.frame(
+      year = c(years, max(years) + 1),
+      type = "biomass",
+      value = report$biomass[[1]]
+    ),
+    data.frame(
+      year = c(years),
+      type = "recruitment",
+      value = report$recruitment[[1]][1:nyears] # final value was 0
+    ),
+    data.frame(
+      year = c(years),
+      type = "F_mort",
+      value = report$F_mort[[1]]
+    )
+  )
+
+timeseries |>
+    ggplot(aes(x = year, y = value)) +
+    facet_wrap(vars(type), scales = "free") +
+    geom_line() +
+    expand_limits(y = 0) +
+    theme_bw()
+
+```
+
+### Time series comparisons with SS3 model
+```{r}
+get_ss3_timeseries <- function(model, platform = "ss3") {
+    timeseries_ss3 <- model$timeseries |>
+      dplyr::filter(Yr %in% timeseries$year) |> # filter for matching years only (no forecast)
+      dplyr::select(Yr, Bio_all, SpawnBio, Recruit_0, "F:_1") |> # select quants of interest
+      dplyr::rename( # change to names used with FIMS
+        year = Yr,
+        biomass = Bio_all, ssb = SpawnBio, recruitment = Recruit_0, F_mort = "F:_1"
+      ) |>
+      dplyr::mutate(ssb = 1000 * ssb) |>
+      tidyr::pivot_longer( # convert quantities in separate columns into a single value column
+        cols = -1,
+        names_to = "type",
+        values_to = "value"
+      ) |>
+      dplyr::arrange(type) |> # sort by type instead of year
+      dplyr::mutate(platform = platform)
+
+    return(timeseries_ss3)
+  }
+
+timeseries_compare <- get_ss3_timeseries(model = ss3rep, platform = "ss3")
+timeseries_compare <- timeseries |>
+    dplyr::mutate(platform = "FIMS") |>
+    rbind(timeseries_compare)
+ timeseries_compare |>
+    ggplot(aes(year, value, color = platform)) +
+    geom_line() +
+    facet_wrap("type", scales = "free") +
+    ylim(0, NA) +
+    labs(x = NULL, y = NULL) +
+    theme_bw()
+```
+
+The units for SSB in SS3 are different from FIMS, need to figure out what is causing this difference
+```{r}
+  timeseries_compare |> filter(type == "ssb") |>  ##Q. why is ss3 SSB so much larger? something happening with the units? 
+  mutate(value_2 = ifelse(platform == "FIMS", value, value/1000)) |> 
+  ggplot(aes(year, value_2, color = platform)) +
+  geom_line() +
+  ylim(0, NA) +
+  theme_bw()
+```
+
 
 ## Add comparison tables
+Include likelihood comparison and parameter estimates
 
 ## What was your experience using FIMS? What could we do to improve usability?
 
 ## List any issues that you ran into or found
-
-Please [open an issue](https://github.com/NOAA-FIMS/FIMS/issues/new/choose) if you found something new.
 
 ## What features are most important to add based on this case study?
 

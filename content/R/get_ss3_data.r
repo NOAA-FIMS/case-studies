@@ -89,7 +89,7 @@ get_ss3_data <- function(dat, fleets, ages) {
     rowSums()
   # couldn't figure out dplyr approach to rescaling the subset of columns
   # with female proportions to sum to 1.0
-  fcols <- dat$agecomp  |> select(dplyr::starts_with("f", ignore.case = FALSE))
+  fcols <- dat$agecomp  |> dplyr::select(dplyr::starts_with("f", ignore.case = FALSE))
   if(length(fcols) > 0){
     dat$agecomp[, names(dat$agecomp) %in% paste0("f", ages)] <-
     dat$agecomp[, names(dat$agecomp) %in% paste0("f", ages)] /
