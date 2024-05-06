@@ -3,7 +3,7 @@
 #| label: package-installation
 
 # Names of required packages
-packages <- c("dplyr", "tidyr", "ggplot2", "TMB", "reshape2", "here", "remotes")
+packages <- c("dplyr", "tidyr", "ggplot2", "TMB", "reshape2", "here", "remotes", "lubridate")
 
 # Install packages not yet installed
 installed_packages <- packages %in% rownames(installed.packages())
@@ -13,6 +13,7 @@ if (any(installed_packages == FALSE)) {
 
 remotes::install_github("kaskr/TMB_contrib_R/TMBhelper")
 remotes::install_github("NOAA-FIMS/FIMS")
+remotes::install_github("r4ss/r4ss")
 
 # Load packages
 invisible(lapply(packages, library, character.only = TRUE))

@@ -90,7 +90,7 @@ estimate_q3 <- TRUE
 estimate_q6 <- TRUE
 estimate_F <- TRUE
 estimate_recdevs <- TRUE
-source("pk_prepare_FIMS_inputs.R")
+source("R/pk_prepare_FIMS_inputs.R")
 ## make FIMS model
 success <- CreateTMBModel()
 parameters <- list(p = get_fixed())
