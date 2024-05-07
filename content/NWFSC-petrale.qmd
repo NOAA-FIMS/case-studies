@@ -68,7 +68,7 @@ nages <- length(ages)
 
 # source function to simplify data and convert from SS3 format
 source("R/get_ss3_data.R")
-mydat <- get_ss3_data(ss3dat, fleets = c(1,4))
+mydat <- get_ss3_data(ss3dat, fleets = c(1,4), ages = ages)
 
 # rename fleet4 as fleet2 (fleets 2 and 3 already removed above)
 mydat <- mydat |>
