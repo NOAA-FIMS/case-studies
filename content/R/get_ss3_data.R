@@ -6,6 +6,7 @@
 #' @param dat The `dat` element of the list created by `r4ss::SS_read()` or the 
 #' output from running `r4ss::SS_readdat()` directly.
 #' @param fleets Which fleets to include in the processed output.
+#' @param ages Vector of ages to index.
 #' @return A data frame that can be passed to `FIMS::FIMSFrameAge()`
 #' @author Ian G. Taylor
 #' @export
