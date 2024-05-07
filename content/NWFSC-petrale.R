@@ -33,7 +33,7 @@ ages <- 1:17 # same as data bins
 nages <- length(ages)
 
 # use function defined above to extract data for FIMS
-mydat <- get_ss3_data(ss3dat, fleets = c(1, 4))
+mydat <- get_ss3_data(ss3dat, fleets = c(1, 4), ages = ages)
 
 # remove fleets 2 and 3 and rename fleet4 as fleet2
 mydat <- mydat |>
