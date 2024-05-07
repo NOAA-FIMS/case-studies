@@ -168,7 +168,7 @@ survey_fleet$nages <- nages
 survey_fleet$nyears <- nyears
 survey_fleet$estimate_F <- FALSE
 survey_fleet$random_F <- FALSE
-survey_fleet$log_q <- log(2.94455e-07)
+survey_fleet$log_q <- log(0.03950927)
 
 #Q: can I have 2 surveys? If so, where am I specifying there are 2? Do I create a second survey fleet module? For now, start with just fleet1 and fleet2, then add in fleet3 to try a third survey module
 survey_fleet$estimate_q <- TRUE
@@ -191,7 +191,7 @@ recruitment <- methods::new(BevertonHoltRecruitment)
 #There are three parameters we need to set-up: *log_sigma_recruit*, *log_rzero*, and *logit_steep*.
 recruitment$log_sigma_recruit$value <- log(0.52)
 recruitment$log_sigma_recruit$estimated
-recruitment$log_rzero$value <- 5.58284
+recruitment$log_rzero$value <- ss3ctl$SR_parms["SR_LN(R0)", "INIT"]
 recruitment$log_rzero$is_random_effect <- FALSE
 recruitment$log_rzero$estimated <- TRUE
 recruitment$logit_steep$value <- -log(1.0 - 0.76) + log(0.76 - 0.2)
@@ -209,7 +209,7 @@ dplyr::filter(Sex == 1 & Fleet == 1 & Yr == 1) |>
 dplyr::select(paste(1:21)) |> 
 round(4)
 ewaa_growth$weights <- unlist(weights)
-
+#ewaa_growth$weights <- c(0.041, 0.2942, 0.7766, 1.235, 1.7445, 2.2816, 2.7782, 3.2152, 3.5887, 3.9014, 4.1592, 4.3694, 4.5392, 4.6756, 4.7846, 4.8713, 4.9401, 4.9945, 5.0376, 5.0715, 5.0983)
 # maturity
 maturity <- new(LogisticMaturity)
 # approximate age-based equivalent to length-based maturity in petrale model
@@ -298,14 +298,14 @@ for (fleet in 1:2) {
 #     theme_bw()
 
 #  # plot index fit
-#   results_frame |>
-#     dplyr::filter(type == "index" & value != -999 & !is.na(expected)) |>
-#     ggplot(aes(x = year, y = value)) +
-#     geom_point() +
-#     xlab("Year") +
-#     ylab("Index") +
-#     geom_line(aes(x = year, y = expected), color = "blue") +
-#     theme_bw()
+  results_frame |>
+    dplyr::filter(type == "index" & value != -999 & !is.na(expected)) |>
+    ggplot(aes(x = year, y = value)) +
+    geom_point() +
+    xlab("Year") +
+    ylab("Index") +
+    geom_line(aes(x = year, y = expected), color = "blue") +
+    theme_bw()
 
 # # plot age comp fits
 #   # age comps for fleet 1
@@ -320,82 +320,84 @@ for (fleet in 1:2) {
   #   theme_bw() +
   #   labs(x = "Age", y = "Proportion", title = "Fleet 2")
 
-#   results_frame |>
-#     dplyr::filter(type == "age" & name == "fleet2" & value != -999) |>
-#     ggplot(aes(x = age, y = value)) +
-#     # note: dir = "v" sets vertical direction to fill the facets which
-#     # makes comparison of progression of cohorts easier to see
-#     facet_wrap(vars(year), dir = "v") +
-#     geom_point() +
-#     geom_line(aes(x = age, y = expected), color = "blue") +
-#     theme_bw() +
-#     labs(x = "Age", y = "Proportion", title = "Fleet 2")
+  results_frame |>
+    dplyr::filter(type == "age" & name == "fleet2" & value != -999) |>
+    ggplot(aes(x = age, y = value)) +
+    # note: dir = "v" sets vertical direction to fill the facets which
+    # makes comparison of progression of cohorts easier to see
+    facet_wrap(vars(year), dir = "v") +
+    geom_point() +
+    geom_line(aes(x = age, y = expected), color = "blue") +
+    theme_bw() +
+    labs(x = "Age", y = "Proportion", title = "Fleet 2")
 
-# timeseries <- rbind(
-#     data.frame(
-#       year = c(years, max(years) + 1),
-#       type = "ssb",
-#       value = report$ssb[[1]]
-#     ),
-#     data.frame(
-#       year = c(years, max(years) + 1),
-#       type = "biomass",
-#       value = report$biomass[[1]]
-#     ),
-#     data.frame(
-#       year = c(years),
-#       type = "recruitment",
-#       value = report$recruitment[[1]][1:nyears] # final value was 0
-#     ),
-#     data.frame(
-#       year = c(years),
-#       type = "F_mort",
-#       value = report$F_mort[[1]]
-#     )
-#   )
+timeseries <- rbind(
+    data.frame(
+      year = c(years, max(years) + 1),
+      type = "ssb",
+      value = report$ssb[[1]]
+    ),
+    data.frame(
+      year = c(years, max(years) + 1),
+      type = "biomass",
+      value = report$biomass[[1]]
+    ),
+    data.frame(
+      year = c(years),
+      type = "recruitment",
+      value = report$recruitment[[1]][1:nyears] # final value was 0
+    ),
+    data.frame(
+      year = c(years),
+      type = "F_mort",
+      value = report$F_mort[[1]]
+    )
+  )
 
 # # plot timeseries
-# timeseries |>
-#     ggplot(aes(x = year, y = value)) +
-#     facet_wrap(vars(type), scales = "free") +
-#     geom_line() +
-#     expand_limits(y = 0) +
-#     theme_bw()
+timeseries |>
+    ggplot(aes(x = year, y = value)) +
+    facet_wrap(vars(type), scales = "free") +
+    geom_line() +
+    expand_limits(y = 0) +
+    theme_bw()
 
-# get_ss3_timeseries <- function(model, platform = "ss3") {
-#     timeseries_ss3 <- model$timeseries |>
-#       dplyr::filter(Yr %in% timeseries$year) |> # filter for matching years only (no forecast)
-#       dplyr::select(Yr, Bio_all, SpawnBio, Recruit_0, "F:_1") |> # select quants of interest
-#       dplyr::rename( # change to names used with FIMS
-#         year = Yr,
-#         biomass = Bio_all, ssb = SpawnBio, recruitment = Recruit_0, F_mort = "F:_1"
-#       ) |>
-#       dplyr::mutate(ssb = 1000 * ssb) |>
-#       tidyr::pivot_longer( # convert quantities in separate columns into a single value column
-#         cols = -1,
-#         names_to = "type",
-#         values_to = "value"
-#       ) |>
-#       dplyr::arrange(type) |> # sort by type instead of year
-#       dplyr::mutate(platform = platform)
+get_ss3_timeseries <- function(model, platform = "ss3") {
+    timeseries_ss3 <- model$timeseries |>
+      dplyr::filter(Yr %in% timeseries$year) |> # filter for matching years only (no forecast)
+      dplyr::select(Yr, Bio_all, SpawnBio, Recruit_0, "F:_1") |> # select quants of interest
+      dplyr::rename( # change to names used with FIMS
+        year = Yr,
+        biomass = Bio_all, ssb = SpawnBio, recruitment = Recruit_0, F_mort = "F:_1"
+      ) |>
+      #dplyr::mutate(ssb = 1000 * ssb) |>
+      tidyr::pivot_longer( # convert quantities in separate columns into a single value column
+        cols = -1,
+        names_to = "type",
+        values_to = "value"
+      ) |>
+      dplyr::arrange(type) |> # sort by type instead of year
+      dplyr::mutate(platform = platform)
 
-#     return(timeseries_ss3)
-#   }
+    return(timeseries_ss3)
+  }
 
-# timeseries_compare <- get_ss3_timeseries(model = ss3rep, platform = "ss3")
-# timeseries_compare <- timeseries |>
-#     dplyr::mutate(platform = "FIMS") |>
-#     rbind(timeseries_compare)
+timeseries_compare <- get_ss3_timeseries(model = ss3rep, platform = "ss3")
+timeseries_compare <- timeseries |>
+    dplyr::mutate(platform = "FIMS") |>
+    rbind(timeseries_compare)
 
 # make plot comparing time series
-#   timeseries_compare |>
-#     ggplot(aes(year, value, color = platform)) +
-#     geom_line() +
-#     facet_wrap("type", scales = "free") +
-#     ylim(0, NA) +
-#     labs(x = NULL, y = NULL) +
-#     theme_bw()
+  timeseries_compare |>
+    ggplot(aes(year, value, color = platform)) +
+    geom_line() +
+    facet_wrap("type", scales = "free") +
+    ylim(0, NA) +
+    labs(x = NULL, y = NULL) +
+    theme_bw()
 
+
+write.csv(timeseries_compare, file.path(getwd(), "content", "data_files", "timeseries_compare.csv"))
 #   timeseries_compare |> filter(type == "ssb") |>  ##Q. why is ss3 SSB so much larger? something happening with the units? 
 #   mutate(value_2 = ifelse(platform == "FIMS", value, value/1000)) |> 
 #   ggplot(aes(year, value_2, color = platform)) +
@@ -414,8 +416,5 @@ for (fleet in 1:2) {
 #     ggplot(aes(x = year, y = age, size = naa)) +
 #     geom_point(alpha = 0.2) +
 #     theme_bw()
-
-
-
 
 clear()
