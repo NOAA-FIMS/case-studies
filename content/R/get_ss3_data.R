@@ -1,4 +1,4 @@
-#' Convert SS3 data into format required by FIMS (only works for petrale so far)
+#' Convert SS3 data into format required by FIMS (works for petrale and opaka so far)
 #'
 #' Uses output from `r4ss::SS_read()` or `r4ss::SS_readdat()` and does
 #' filtering, simplifying, and reformatting.
@@ -6,11 +6,12 @@
 #' @param dat The `dat` element of the list created by `r4ss::SS_read()` or the 
 #' output from running `r4ss::SS_readdat()` directly.
 #' @param fleets Which fleets to include in the processed output.
+#' @param ages Vector of ages to index.
 #' @return A data frame that can be passed to `FIMS::FIMSFrameAge()`
 #' @author Ian G. Taylor
 #' @export
 
-get_ss3_data <- function(dat, fleets) {
+get_ss3_data <- function(dat, fleets, ages) {
   # create empty data frame
   res <- data.frame(
     type = character(),
@@ -28,8 +29,10 @@ get_ss3_data <- function(dat, fleets) {
 
   # aggregate landings across fleets
   catch_by_year <- dat$catch |>
+    dplyr::filter(fleet %in% fleets) |> 
     dplyr::group_by(year) |>
-    dplyr::summarize(catch = sum(catch), uncertainty = mean(catch_se))
+    dplyr::summarize(catch = sum(catch), uncertainty = mean(catch_se)) |> 
+    dplyr::filter(year != -999)
 
   # convert landings to FIMSFrame format
   landings <- data.frame(
@@ -82,13 +85,20 @@ get_ss3_data <- function(dat, fleets) {
   # (data processing step had females + males sum to 100 for no good reason)
   dat$agecomp$sum_fem <-
     dat$agecomp |>
-    dplyr::select(dplyr::starts_with("f", ignore.case = FALSE)) |> # get female comps
+    dplyr::select(dplyr::starts_with(c("f","a"), ignore.case = FALSE) ) |> # get female comps (or comps if single-sex)
     rowSums()
   # couldn't figure out dplyr approach to rescaling the subset of columns
   # with female proportions to sum to 1.0
-  dat$agecomp[, names(dat$agecomp) %in% paste0("f", ages)] <-
+ fcols <- dat$agecomp  |> dplyr::select(dplyr::starts_with("f", ignore.case = FALSE))
+  if(length(fcols) > 0){
+    dat$agecomp[, names(dat$agecomp) %in% paste0("f", ages)] <-
     dat$agecomp[, names(dat$agecomp) %in% paste0("f", ages)] /
       dat$agecomp$sum_fem
+  }else{
+    dat$agecomp[, names(dat$agecomp) %in% paste0("a", ages)] <-
+    dat$agecomp[, names(dat$agecomp) %in% paste0("a", ages)] /
+      dat$agecomp$sum_fem
+  }
 
   # further processing
   age_info <-
@@ -97,12 +107,13 @@ get_ss3_data <- function(dat, fleets) {
     # fleet 4 used conditional age-at-length data with marginal observations
     # entered as fleet == -4 (to exclude from likelihood due to redundancy)
     # using only marginals in this case and exclude CAAL data
-    dplyr::filter(FltSvy %in% c(1, 2, 3, -4)) |>
+    #dplyr::filter(FltSvy %in% c(1, 2, 3, -4)) |>
+    dplyr::filter(FltSvy %in% fleets*-1 | FltSvy %in% fleets) |>
     dplyr::mutate(FltSvy = abs(FltSvy)) |> # convert negative fleet to positive
-    dplyr::filter(FltSvy %in% fleets) |> # subset for fleets requested
+    #dplyr::filter(FltSvy %in% fleets) |> # subset for fleets requested
     dplyr::select(!dplyr::starts_with("m", ignore.case = FALSE)) |> # exclude male comps
     tidyr::pivot_longer( # convert columns f1...f17 to values in a new "age" colum of a longer table
-      cols = dplyr::starts_with("f", ignore.case = FALSE),
+      cols = dplyr::starts_with(c("f", "a"), ignore.case = FALSE),
       names_to = "age",
       values_to = "value"
     ) |>
