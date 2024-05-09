@@ -205,10 +205,12 @@ recruitment <- methods::new(BevertonHoltRecruitment)
 # petrale sigmaR is 0.5
 recruitment$log_sigma_recruit$value <- log(ss3ctl$SR_parms["SR_sigmaR", "INIT"])
 # petrale log(R0) is around 9.6 (where R0 is in thousands)
+recruitment$log_rzero$value <- ss3ctl$SR_parms["SR_LN(R0)", "INIT"]
 # Q: do we need to account for SS3 R0 in thousands?
 # A: formula below is thanks to Bai Li
 #    in https://github.com/NOAA-FIMS/case-studies/commit/d7c0d645a18766d030f632e5818d91764e2297ef
-recruitment$log_rzero$value <- log(exp(ss3ctl$SR_parms["SR_LN(R0)", "INIT"])*1000)
+# but did not produce good results (perhaps due to some other issue) 
+# recruitment$log_rzero$value <- log(exp(ss3ctl$SR_parms["SR_LN(R0)", "INIT"])*1000)
 recruitment$log_rzero$is_random_effect <- FALSE
 recruitment$log_rzero$estimated <- estimate_log_rzero
 # petrale steepness is fixed at 0.8
