@@ -105,9 +105,9 @@ get_ss3_data <- function(dat, fleets, ages) {
     # specific to petrale:
     # fleet 4 used conditional age-at-length data with marginal observations
     # entered as fleet == -4 (to exclude from likelihood due to redundancy)
-    # using only marginals in this case and exclude CAAL data
-    #dplyr::filter(FltSvy %in% c(1, 2, 3, -4)) |>
-    dplyr::filter(FltSvy %in% fleets*-1 | FltSvy %in% fleets) |>
+    # using only marginals in this case and exclude CAAL data by filtering out
+    # the fleet 4 age data prior to entry into this function
+    dplyr::filter(FltSvy %in% -fleets | FltSvy %in% fleets) |>
     dplyr::mutate(FltSvy = abs(FltSvy)) |> # convert negative fleet to positive
     #dplyr::filter(FltSvy %in% fleets) |> # subset for fleets requested
     dplyr::select(!dplyr::starts_with("m", ignore.case = FALSE)) |> # exclude male comps
@@ -118,7 +118,7 @@ get_ss3_data <- function(dat, fleets, ages) {
     ) |>
     dplyr::mutate(age = as.numeric(substring(age, first = 2))) |> # convert "f17" to 17
     dplyr::select(Yr, FltSvy, Nsamp, age, value)
-
+browser()
   # add -999 for missing years
   # create empty data frame for all combinations of year, fleet, and age
   age_info_empty <- tidyr::expand_grid(
