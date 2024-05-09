@@ -101,8 +101,8 @@ survey_index <- FIMS::m_index(age_frame, "fleet2") # filtering for index data fr
 survey_agecomp <- FIMS::m_agecomp(age_frame, "fleet2") # filtering for ages from fleet 2
 
 fish_index <- methods::new(Index, nyears)
-fish_age_comp <- methods::new(AgeComp, nyears, nages)
 fish_index$index_data <- fishery_catch
+fish_age_comp <- methods::new(AgeComp, nyears, nages)
 # Q: I'm confused about FIMSFrame being set up with age comps in proportions
 #   vs here needing age comps in numbers
 # A: It's just not sorted out in FIMS yet, in the future this could be made simpler
@@ -149,6 +149,8 @@ fish_fleet$random_q <- FALSE
 fish_fleet$log_obs_error <- rep(log(sqrt(log(0.01^2 + 1))), nyears)
 
 # Set Index, AgeComp, and Selectivity using the IDs from the modules defined above
+fish_fleet$SetAgeCompLikelihood(1)
+fish_fleet$SetIndexLikelihood(1)
 fish_fleet$SetObservedIndexData(fish_index$get_id())
 fish_fleet$SetObservedAgeCompData(fish_age_comp$get_id())
 fish_fleet$SetSelectivity(fish_selex$get_id())
@@ -204,8 +206,9 @@ recruitment <- methods::new(BevertonHoltRecruitment)
 recruitment$log_sigma_recruit$value <- log(ss3ctl$SR_parms["SR_sigmaR", "INIT"])
 # petrale log(R0) is around 9.6 (where R0 is in thousands)
 # Q: do we need to account for SS3 R0 in thousands?
-# recruitment$log_rzero$value <- log(1000) + ss3ctl$SR_parms["SR_LN(R0)", "INIT"]
-recruitment$log_rzero$value <- ss3ctl$SR_parms["SR_LN(R0)", "INIT"]
+# A: formula below is thanks to Bai Li
+#    in https://github.com/NOAA-FIMS/case-studies/commit/d7c0d645a18766d030f632e5818d91764e2297ef
+recruitment$log_rzero$value <- log(exp(ss3ctl$SR_parms["SR_LN(R0)", "INIT"])*1000)
 recruitment$log_rzero$is_random_effect <- FALSE
 recruitment$log_rzero$estimated <- estimate_log_rzero
 # petrale steepness is fixed at 0.8

@@ -118,7 +118,7 @@ get_ss3_data <- function(dat, fleets, ages) {
     ) |>
     dplyr::mutate(age = as.numeric(substring(age, first = 2))) |> # convert "f17" to 17
     dplyr::select(Yr, FltSvy, Nsamp, age, value)
-browser()
+
   # add -999 for missing years
   # create empty data frame for all combinations of year, fleet, and age
   age_info_empty <- tidyr::expand_grid(
