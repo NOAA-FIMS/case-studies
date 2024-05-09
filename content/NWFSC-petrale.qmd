@@ -68,6 +68,9 @@ nages <- length(ages)
 
 # source function to simplify data and convert from SS3 format
 source("R/get_ss3_data.R")
+# remove conditional age-at-length data for fleet 4 outside of the function
+ss3dat$agecomp <- ss3dat$agecomp |> dplyr::filter(FltSvy != 4)
+# convert SS3 data into FIMS format using function defined in the R directory
 mydat <- get_ss3_data(ss3dat, fleets = c(1,4), ages = ages)
 
 # rename fleet4 as fleet2 (fleets 2 and 3 already removed above)
