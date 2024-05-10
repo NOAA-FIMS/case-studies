@@ -459,8 +459,12 @@ clear()
 ```
 
 ## Plots
+### Catch fit
 ![Fit to catch](figures/NWFSC-petrale_fit_catch.png){width=7in}
+### Index fit
 ![Fit to index](figures/NWFSC-petrale_fit_index.png){width=7in}
+### Age comp fits
 ![Fit to fishery age comps](figures/NWFSC-petrale_fit_comps_fleet1.png){width=7in}
-![Fit to survey age comps](figures/NWFSC-petrale_fit_comps_fleet1.png){width=7in}
+![Fit to survey age comps](figures/NWFSC-petrale_fit_comps_fleet2.png){width=7in}
+### Time series comparisons with SS3 model
 ![Time series comparison with SS3 models](figures/NWFSC-petrale_timeseries_comparison.png){width=7in}

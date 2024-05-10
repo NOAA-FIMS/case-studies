@@ -325,7 +325,7 @@ for (fleet in 1:2) {
     geom_point() +
     geom_line(aes(x = age, y = expected), color = "blue") +
     theme_bw() +
-    labs(x = "Age", y = "Proportion", title = "Fleet 2")
+    labs(x = "Age", y = "Proportion", title = "Fleet 1")
 
 # fleet 2
   results_frame |>
