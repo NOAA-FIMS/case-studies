@@ -68,8 +68,18 @@ nages <- length(ages)
 
 # source function to simplify data and convert from SS3 format
 source("R/get_ss3_data.R")
-# remove conditional age-at-length data for fleet 4 outside of the function
-ss3dat$agecomp <- ss3dat$agecomp |> dplyr::filter(FltSvy != 4)
+
+# fleet 4 used conditional age-at-length data with marginal observations
+# entered as fleet == -4 (to exclude from likelihood due to redundancy)
+# using only marginals for FIMS and exclude CAAL data by filtering out
+# the fleet 4 age data
+# similarly, some early ages were excluded from fleet 1 in the original model
+# by assigning to fleet -1, these get filtered by get_ss3_data()
+
+# only include age comps with fleet = -4 or 1:
+ss3dat$agecomp <- ss3dat$agecomp |> dplyr::filter(FltSvy %in% c(-4, 1))
+ss3dat$agecomp$FltSvy <- abs(ss3dat$agecomp$FltSvy)
+
 # convert SS3 data into FIMS format using function defined in the R directory
 mydat <- get_ss3_data(ss3dat, fleets = c(1,4), ages = ages)
 
