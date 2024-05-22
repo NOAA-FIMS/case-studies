@@ -50,8 +50,7 @@ mydat <- mydat |>
 # mydat <- mydat |> dplyr::filter(datestart %in% paste0(years, "-01-01"))
 
 
-age_frame <- FIMS::FIMSFrameAge(mydat) # similar to FIMSFrame() but includes ages
-# in the future FIMSFrame() and FIMSFrameAge() will likely be merged
+age_frame <- FIMS::FIMSFrame(mydat) 
 fishery_catch <- FIMS::m_landings(age_frame) # filtering for the landings only
 fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1") # filtering for ages from fleet 1
 survey_index <- FIMS::m_index(age_frame, "fleet2") # filtering for index data from fleet 2

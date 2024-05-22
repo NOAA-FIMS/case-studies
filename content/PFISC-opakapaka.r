@@ -22,7 +22,7 @@ load(file.path(getwd(), "content", "data_files", "opaka_model.RDS"))
 ## RDS file can also be found at
 #githubURL <- "https://github.com/MOshima-PIFSC/Opaka-FIMS-Case-Study/blob/main/Model/FIMS-em/1/em/opaka_model.RDS"
 
-## Function written by Ian Taylor to get SS3 data into FIMSframeAge format
+## Function written by Ian Taylor to get SS3 data into FIMSFrame format
 source("./content/R/get_ss3_data.r")
 
 # Define the dimensions ----
@@ -34,7 +34,7 @@ ages <- ss3dat$agebin_vector
 nages <- length(ages)
 
 # Data prep ----
-## Use R/get_ss3_data function to get from data.ss to FIMSframeAge
+## Use R/get_ss3_data function to get from data.ss to FIMSFrame
 opaka_dat <- get_ss3_data(ss3dat, fleets = c(1,2), ages = ages) #trying with just one fishery and one survey first
 ## Checking data inputs to make sure it looks good
 #head(opaka_dat)  #landings get aggregated into one fleet if you have multiple (commercial + non-commercial)
@@ -48,7 +48,7 @@ opaka_dat <- get_ss3_data(ss3dat, fleets = c(1,2), ages = ages) #trying with jus
 # Set up FIMS model ----
 
 #age data
-age_frame <- FIMS::FIMSFrameAge(opaka_dat)
+age_frame <- FIMS::FIMSFrame(opaka_dat)
 ## Checks to make sure age_frame looks good
 # age_frame@ages
 # age_frame@nages
