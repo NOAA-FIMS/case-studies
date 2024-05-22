@@ -144,7 +144,7 @@ ages <- 1:nages # ASAP starts at age 1
 
 
 # set up FIMS data objects
-age_frame <- FIMS::FIMSFrameAge(mydat)
+age_frame <- FIMS::FIMSFrame(mydat)
 
 fishery_catch <- FIMS::m_landings(age_frame)
 fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1")

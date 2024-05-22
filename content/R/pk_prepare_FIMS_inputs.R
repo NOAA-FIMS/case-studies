@@ -153,7 +153,7 @@ res <- rbind(res, landings, index, catchage, indexage)
 ## rm(landings, index, catchage, indexage)
 
 
-age_frame <- FIMS::FIMSFrameAge(res)
+age_frame <- FIMS::FIMSFrame(res)
 fishery_catch <- FIMS::m_landings(age_frame)
 fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1")
 survey_index2 <- FIMS::m_index(age_frame, "survey2")
