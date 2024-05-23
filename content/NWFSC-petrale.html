@@ -299,7 +299,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
 <li>TMB version: 1.9.11<br>
 </li>
-<li>FIMS commit: fe5836b<br>
+<li>FIMS commit: 288a6ac<br>
 </li>
 <li>Stock name: West Coast Petrale Sole<br>
 </li>
@@ -390,184 +390,183 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">clear_logs</span>()</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># I don't know what these commands are doing</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>age_frame <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">FIMSFrameAge</span>(mydat) <span class="co"># similar to FIMSFrame() but includes ages</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># in the future FIMSFrame() and FIMSFrameAge() will likely be merged</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>fishery_catch <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">m_landings</span>(age_frame) <span class="co"># filtering for the landings only</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>fishery_agecomp <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">m_agecomp</span>(age_frame, <span class="st">"fleet1"</span>) <span class="co"># filtering for ages from fleet 1</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>survey_index <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">m_index</span>(age_frame, <span class="st">"fleet2"</span>) <span class="co"># filtering for index data from fleet 2</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>survey_agecomp <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">m_agecomp</span>(age_frame, <span class="st">"fleet2"</span>) <span class="co"># filtering for ages from fleet 2</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>fish_index <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(Index, nyears)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>fish_index<span class="sc">$</span>index_data <span class="ot">&lt;-</span> fishery_catch</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>fish_age_comp <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(AgeComp, nyears, nages)</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Q: I'm confused about FIMSFrame being set up with age comps in proportions</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#   vs here needing age comps in numbers</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co"># A: It's just not sorted out in FIMS yet, in the future this could be made simpler</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>fish_age_comp<span class="sc">$</span>age_comp_data <span class="ot">&lt;-</span> age_frame<span class="sc">@</span>data <span class="sc">|&gt;</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"age"</span> <span class="sc">&amp;</span> name <span class="sc">==</span> <span class="st">"fleet1"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">n =</span> value <span class="sc">*</span> uncertainty) <span class="sc">|&gt;</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(n) <span class="sc">|&gt;</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">1</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>age_frame <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">FIMSFrame</span>(mydat) </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>fishery_catch <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">m_landings</span>(age_frame) <span class="co"># filtering for the landings only</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>fishery_agecomp <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">m_agecomp</span>(age_frame, <span class="st">"fleet1"</span>) <span class="co"># filtering for ages from fleet 1</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>survey_index <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">m_index</span>(age_frame, <span class="st">"fleet2"</span>) <span class="co"># filtering for index data from fleet 2</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>survey_agecomp <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">m_agecomp</span>(age_frame, <span class="st">"fleet2"</span>) <span class="co"># filtering for ages from fleet 2</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>fish_index <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(Index, nyears)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>fish_index<span class="sc">$</span>index_data <span class="ot">&lt;-</span> fishery_catch</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>fish_age_comp <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(AgeComp, nyears, nages)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Q: I'm confused about FIMSFrame being set up with age comps in proportions</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#   vs here needing age comps in numbers</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co"># A: It's just not sorted out in FIMS yet, in the future this could be made simpler</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>fish_age_comp<span class="sc">$</span>age_comp_data <span class="ot">&lt;-</span> age_frame<span class="sc">@</span>data <span class="sc">|&gt;</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"age"</span> <span class="sc">&amp;</span> name <span class="sc">==</span> <span class="st">"fleet1"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">n =</span> value <span class="sc">*</span> uncertainty) <span class="sc">|&gt;</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(n) <span class="sc">|&gt;</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">1</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co"># switches to turn on or off estimation</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>estimate_fish_selex <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>estimate_survey_selex <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>estimate_q <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>estimate_F <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>estimate_recdevs <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>estimate_init_naa <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>estimate_log_rzero <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="do">### set up fishery</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="do">## methods::show(DoubleLogisticSelectivity)</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>fish_selex <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(LogisticSelectivity)</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co"># SS3 model had length-based selectivity which leads to sex-specific</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co"># age-based selectivity due to sexually-dimorphic growth.</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co"># I didn't bother to calculate an age-based inflection point averaged over sexes</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>fish_selex<span class="sc">$</span>inflection_point<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>fish_selex<span class="sc">$</span>inflection_point<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>fish_selex<span class="sc">$</span>inflection_point<span class="sc">$</span>estimated <span class="ot">&lt;-</span> estimate_fish_selex</span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>fish_selex<span class="sc">$</span>slope<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>fish_selex<span class="sc">$</span>slope<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>fish_selex<span class="sc">$</span>slope<span class="sc">$</span>estimated <span class="ot">&lt;-</span> estimate_fish_selex</span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="do">## create fleet object for fishing fleet</span></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>fish_fleet <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(Fleet)</span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>nages <span class="ot">&lt;-</span> nages</span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>nyears <span class="ot">&lt;-</span> nyears</span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>log_Fmort <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">rep</span>(<span class="fl">0.00001</span>, nyears))</span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>estimate_F <span class="ot">&lt;-</span> estimate_F</span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>random_F <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>log_q <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>estimate_q <span class="ot">&lt;-</span> estimate_q</span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>random_q <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>log_obs_error <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">log</span>(<span class="fu">sqrt</span>(<span class="fu">log</span>(<span class="fl">0.01</span><span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span>))), nyears)</span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="co"># Set Index, AgeComp, and Selectivity using the IDs from the modules defined above</span></span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span><span class="fu">SetAgeCompLikelihood</span>(<span class="dv">1</span>)</span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span><span class="fu">SetIndexLikelihood</span>(<span class="dv">1</span>)</span>
-<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span><span class="fu">SetObservedIndexData</span>(fish_index<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span><span class="fu">SetObservedAgeCompData</span>(fish_age_comp<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span><span class="fu">SetSelectivity</span>(fish_selex<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a><span class="do">## Setup survey</span></span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>survey_fleet_index <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(Index, nyears)</span>
-<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>survey_age_comp <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(AgeComp, nyears, nages)</span>
-<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>survey_fleet_index<span class="sc">$</span>index_data <span class="ot">&lt;-</span> survey_index</span>
-<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>survey_age_comp<span class="sc">$</span>age_comp_data <span class="ot">&lt;-</span> mydat <span class="sc">|&gt;</span></span>
-<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"age"</span> <span class="sc">&amp;</span> name <span class="sc">==</span> <span class="st">"fleet2"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">n =</span> value <span class="sc">*</span> uncertainty) <span class="sc">|&gt;</span></span>
-<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(n)</span>
-<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a><span class="do">## survey selectivity: ascending logistic</span></span>
-<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a><span class="do">## methods::show(DoubleLogisticSelectivity)</span></span>
-<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>survey_selex <span class="ot">&lt;-</span> <span class="fu">new</span>(LogisticSelectivity)</span>
-<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>survey_selex<span class="sc">$</span>inflection_point<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">6</span></span>
-<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>survey_selex<span class="sc">$</span>inflection_point<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>survey_selex<span class="sc">$</span>inflection_point<span class="sc">$</span>estimated <span class="ot">&lt;-</span> estimate_survey_selex</span>
-<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>survey_selex<span class="sc">$</span>slope<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a>survey_selex<span class="sc">$</span>slope<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a>survey_selex<span class="sc">$</span>slope<span class="sc">$</span>estimated <span class="ot">&lt;-</span> estimate_survey_selex</span>
-<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a><span class="do">## create fleet object for survey</span></span>
-<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a>survey_fleet <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(Fleet)</span>
-<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>is_survey <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>nages <span class="ot">&lt;-</span> nages</span>
-<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>nyears <span class="ot">&lt;-</span> nyears</span>
-<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>estimate_F <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>random_F <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>log_q <span class="ot">&lt;-</span> <span class="fl">1.4</span> <span class="co"># petrale sole catchability estimated ~4.0 = exp(1.4)</span></span>
-<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>estimate_q <span class="ot">&lt;-</span> estimate_q</span>
-<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>random_q <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a><span class="co"># Q: why can't the index uncertainty come from FIMSFrame?</span></span>
-<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>log_obs_error <span class="ot">&lt;-</span> age_frame<span class="sc">@</span>data <span class="sc">|&gt;</span></span>
-<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"index"</span> <span class="sc">&amp;</span> name <span class="sc">==</span> <span class="st">"fleet2"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(uncertainty) <span class="sc">|&gt;</span></span>
-<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>()</span>
-<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span><span class="fu">SetAgeCompLikelihood</span>(<span class="dv">1</span>)</span>
-<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span><span class="fu">SetIndexLikelihood</span>(<span class="dv">1</span>)</span>
-<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span><span class="fu">SetSelectivity</span>(survey_selex<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span><span class="fu">SetObservedIndexData</span>(survey_fleet_index<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span><span class="fu">SetObservedAgeCompData</span>(survey_age_comp<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a><span class="co"># Population module</span></span>
-<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a><span class="co"># recruitment</span></span>
-<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a>recruitment <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(BevertonHoltRecruitment)</span>
-<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a><span class="co"># methods::show(BevertonHoltRecruitment)</span></span>
-<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a><span class="co"># petrale sigmaR is 0.5</span></span>
-<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_sigma_recruit<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="fu">log</span>(ss3ctl<span class="sc">$</span>SR_parms[<span class="st">"SR_sigmaR"</span>, <span class="st">"INIT"</span>])</span>
-<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a><span class="co"># petrale log(R0) is around 9.6 (where R0 is in thousands)</span></span>
-<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_rzero<span class="sc">$</span>value <span class="ot">&lt;-</span> ss3ctl<span class="sc">$</span>SR_parms[<span class="st">"SR_LN(R0)"</span>, <span class="st">"INIT"</span>]</span>
-<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a><span class="co"># Q: do we need to account for SS3 R0 in thousands?</span></span>
-<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a><span class="co"># A: formula below is thanks to Bai Li</span></span>
-<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a><span class="co">#    in https://github.com/NOAA-FIMS/case-studies/commit/d7c0d645a18766d030f632e5818d91764e2297ef</span></span>
-<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a><span class="co"># but did not produce good results (perhaps due to some other issue) </span></span>
-<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a><span class="co"># recruitment$log_rzero$value &lt;- log(exp(ss3ctl$SR_parms["SR_LN(R0)", "INIT"])*1000)</span></span>
-<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_rzero<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_rzero<span class="sc">$</span>estimated <span class="ot">&lt;-</span> estimate_log_rzero</span>
-<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a><span class="co"># petrale steepness is fixed at 0.8</span></span>
-<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a>steep <span class="ot">&lt;-</span> ss3ctl<span class="sc">$</span>SR_parms[<span class="st">"SR_BH_steep"</span>, <span class="st">"INIT"</span>]</span>
-<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>logit_steep<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">log</span>(<span class="fl">1.0</span> <span class="sc">-</span> steep) <span class="sc">+</span> <span class="fu">log</span>(steep <span class="sc">-</span> <span class="fl">0.2</span>)</span>
-<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>logit_steep<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>logit_steep<span class="sc">$</span>estimated <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>estimate_log_devs <span class="ot">&lt;-</span> estimate_recdevs</span>
-<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a><span class="co"># Q: why are parameters "log_devs" when output is "report$log_recruit_dev"?</span></span>
-<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a><span class="co"># and are they multipliers, not deviations from zero?</span></span>
-<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a><span class="co"># needed to change from 1 to 0 to get stable population</span></span>
-<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_devs <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, nyears) <span class="co"># set to no deviations (multiplier) to start</span></span>
-<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a><span class="co"># growth</span></span>
-<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a>ewaa_growth <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(EWAAgrowth)</span>
-<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a>ewaa_growth<span class="sc">$</span>ages <span class="ot">&lt;-</span> ages</span>
-<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: getting weight-at-age vector from</span></span>
-<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a><span class="co"># petrale_output$wtatage |&gt;</span></span>
-<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a><span class="co">#   dplyr::filter(Sex == 1 &amp; Fleet == -1 &amp; Yr == 1876) |&gt;</span></span>
-<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a><span class="co">#   dplyr::select(paste(0:40)) |&gt;</span></span>
-<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a><span class="co">#   round(4)</span></span>
-<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a>ewaa_growth<span class="sc">$</span>weights <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 0.0010,  # age 0</span></span>
-<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.0148</span>, <span class="fl">0.0617</span>, <span class="fl">0.1449</span>, <span class="fl">0.2570</span>, <span class="fl">0.3876</span>, <span class="fl">0.5260</span>, <span class="fl">0.6640</span>, <span class="fl">0.7957</span>, <span class="fl">0.9175</span>,</span>
-<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a>  <span class="fl">1.0273</span>, <span class="fl">1.1247</span>, <span class="fl">1.2097</span>, <span class="fl">1.2831</span>, <span class="fl">1.3460</span>, <span class="fl">1.3994</span>, <span class="fl">1.4446</span>, <span class="fl">1.4821</span></span>
-<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a><span class="co"># maturity</span></span>
-<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a>maturity <span class="ot">&lt;-</span> <span class="fu">new</span>(LogisticMaturity)</span>
-<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a><span class="co"># approximate age-based equivalent to length-based maturity in petrale model</span></span>
-<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a><span class="co"># based on looking at model$endgrowth |&gt; dplyr::filter(Sex == 1) |&gt; dplyr::select(Age_Beg, Len_Mat)</span></span>
-<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a>maturity<span class="sc">$</span>inflection_point<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="fl">6.5</span></span>
-<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a>maturity<span class="sc">$</span>inflection_point<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a>maturity<span class="sc">$</span>inflection_point<span class="sc">$</span>estimated <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a>maturity<span class="sc">$</span>slope<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="co"># arbitrary guess</span></span>
-<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a>maturity<span class="sc">$</span>slope<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a>maturity<span class="sc">$</span>slope<span class="sc">$</span>estimated <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a><span class="co"># population</span></span>
-<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a>population <span class="ot">&lt;-</span> <span class="fu">new</span>(Population)</span>
-<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a><span class="co"># petrale natural mortality is estimated around 0.14</span></span>
-<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a>M_value <span class="ot">&lt;-</span> ss3ctl<span class="sc">$</span>MG_parms[<span class="st">"NatM_p_1_Fem_GP_1"</span>, <span class="st">"INIT"</span>]</span>
-<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>log_M <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">log</span>(M_value), nages <span class="sc">*</span> nyears)</span>
-<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>estimate_M <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a><span class="co"># initial numbers at age based on R0 + mortality</span></span>
-<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a>init_naa <span class="ot">&lt;-</span> <span class="fu">exp</span>(recruitment<span class="sc">$</span>log_rzero<span class="sc">$</span>value) <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>(ages <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> M_value)</span>
-<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a>init_naa[nages] <span class="ot">&lt;-</span> init_naa[nages] <span class="sc">/</span> M_value <span class="co"># sum of infinite series</span></span>
-<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>log_init_naa <span class="ot">&lt;-</span> <span class="fu">log</span>(init_naa)</span>
-<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>estimate_init_naa <span class="ot">&lt;-</span> estimate_init_naa</span>
-<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>nages <span class="ot">&lt;-</span> nages</span>
-<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>ages <span class="ot">&lt;-</span> ages</span>
-<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>nfleets <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="co"># fleets plus surveys</span></span>
-<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>nseasons <span class="ot">&lt;-</span> nseasons</span>
-<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>nyears <span class="ot">&lt;-</span> nyears</span>
-<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a><span class="co"># population$proportion_female &lt;- rep(0.5, nages)</span></span>
-<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span><span class="fu">SetMaturity</span>(maturity<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span><span class="fu">SetGrowth</span>(ewaa_growth<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span><span class="fu">SetRecruitment</span>(recruitment<span class="sc">$</span><span class="fu">get_id</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co"># switches to turn on or off estimation</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>estimate_fish_selex <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>estimate_survey_selex <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>estimate_q <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>estimate_F <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>estimate_recdevs <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>estimate_init_naa <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>estimate_log_rzero <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="do">### set up fishery</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="do">## methods::show(DoubleLogisticSelectivity)</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>fish_selex <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(LogisticSelectivity)</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co"># SS3 model had length-based selectivity which leads to sex-specific</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co"># age-based selectivity due to sexually-dimorphic growth.</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co"># I didn't bother to calculate an age-based inflection point averaged over sexes</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>fish_selex<span class="sc">$</span>inflection_point<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>fish_selex<span class="sc">$</span>inflection_point<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>fish_selex<span class="sc">$</span>inflection_point<span class="sc">$</span>estimated <span class="ot">&lt;-</span> estimate_fish_selex</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>fish_selex<span class="sc">$</span>slope<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>fish_selex<span class="sc">$</span>slope<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>fish_selex<span class="sc">$</span>slope<span class="sc">$</span>estimated <span class="ot">&lt;-</span> estimate_fish_selex</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="do">## create fleet object for fishing fleet</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>fish_fleet <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(Fleet)</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>nages <span class="ot">&lt;-</span> nages</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>nyears <span class="ot">&lt;-</span> nyears</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>log_Fmort <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">rep</span>(<span class="fl">0.00001</span>, nyears))</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>estimate_F <span class="ot">&lt;-</span> estimate_F</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>random_F <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>log_q <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>estimate_q <span class="ot">&lt;-</span> estimate_q</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>random_q <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span>log_obs_error <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">log</span>(<span class="fu">sqrt</span>(<span class="fu">log</span>(<span class="fl">0.01</span><span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span>))), nyears)</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="co"># Set Index, AgeComp, and Selectivity using the IDs from the modules defined above</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span><span class="fu">SetAgeCompLikelihood</span>(<span class="dv">1</span>)</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span><span class="fu">SetIndexLikelihood</span>(<span class="dv">1</span>)</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span><span class="fu">SetObservedIndexData</span>(fish_index<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span><span class="fu">SetObservedAgeCompData</span>(fish_age_comp<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>fish_fleet<span class="sc">$</span><span class="fu">SetSelectivity</span>(fish_selex<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="do">## Setup survey</span></span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>survey_fleet_index <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(Index, nyears)</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>survey_age_comp <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(AgeComp, nyears, nages)</span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>survey_fleet_index<span class="sc">$</span>index_data <span class="ot">&lt;-</span> survey_index</span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>survey_age_comp<span class="sc">$</span>age_comp_data <span class="ot">&lt;-</span> mydat <span class="sc">|&gt;</span></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"age"</span> <span class="sc">&amp;</span> name <span class="sc">==</span> <span class="st">"fleet2"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">n =</span> value <span class="sc">*</span> uncertainty) <span class="sc">|&gt;</span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(n)</span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a><span class="do">## survey selectivity: ascending logistic</span></span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a><span class="do">## methods::show(DoubleLogisticSelectivity)</span></span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>survey_selex <span class="ot">&lt;-</span> <span class="fu">new</span>(LogisticSelectivity)</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>survey_selex<span class="sc">$</span>inflection_point<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>survey_selex<span class="sc">$</span>inflection_point<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>survey_selex<span class="sc">$</span>inflection_point<span class="sc">$</span>estimated <span class="ot">&lt;-</span> estimate_survey_selex</span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>survey_selex<span class="sc">$</span>slope<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>survey_selex<span class="sc">$</span>slope<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a>survey_selex<span class="sc">$</span>slope<span class="sc">$</span>estimated <span class="ot">&lt;-</span> estimate_survey_selex</span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="do">## create fleet object for survey</span></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>survey_fleet <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(Fleet)</span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>is_survey <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>nages <span class="ot">&lt;-</span> nages</span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>nyears <span class="ot">&lt;-</span> nyears</span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>estimate_F <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>random_F <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>log_q <span class="ot">&lt;-</span> <span class="fl">1.4</span> <span class="co"># petrale sole catchability estimated ~4.0 = exp(1.4)</span></span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>estimate_q <span class="ot">&lt;-</span> estimate_q</span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>random_q <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a><span class="co"># Q: why can't the index uncertainty come from FIMSFrame?</span></span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span>log_obs_error <span class="ot">&lt;-</span> age_frame<span class="sc">@</span>data <span class="sc">|&gt;</span></span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"index"</span> <span class="sc">&amp;</span> name <span class="sc">==</span> <span class="st">"fleet2"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(uncertainty) <span class="sc">|&gt;</span></span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>()</span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span><span class="fu">SetAgeCompLikelihood</span>(<span class="dv">1</span>)</span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span><span class="fu">SetIndexLikelihood</span>(<span class="dv">1</span>)</span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span><span class="fu">SetSelectivity</span>(survey_selex<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span><span class="fu">SetObservedIndexData</span>(survey_fleet_index<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a>survey_fleet<span class="sc">$</span><span class="fu">SetObservedAgeCompData</span>(survey_age_comp<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a><span class="co"># Population module</span></span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a><span class="co"># recruitment</span></span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>recruitment <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(BevertonHoltRecruitment)</span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a><span class="co"># methods::show(BevertonHoltRecruitment)</span></span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a><span class="co"># petrale sigmaR is 0.5</span></span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_sigma_recruit<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="fu">log</span>(ss3ctl<span class="sc">$</span>SR_parms[<span class="st">"SR_sigmaR"</span>, <span class="st">"INIT"</span>])</span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a><span class="co"># petrale log(R0) is around 9.6 (where R0 is in thousands)</span></span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_rzero<span class="sc">$</span>value <span class="ot">&lt;-</span> ss3ctl<span class="sc">$</span>SR_parms[<span class="st">"SR_LN(R0)"</span>, <span class="st">"INIT"</span>]</span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a><span class="co"># Q: do we need to account for SS3 R0 in thousands?</span></span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a><span class="co"># A: formula below is thanks to Bai Li</span></span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a><span class="co">#    in https://github.com/NOAA-FIMS/case-studies/commit/d7c0d645a18766d030f632e5818d91764e2297ef</span></span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a><span class="co"># but did not produce good results (perhaps due to some other issue) </span></span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a><span class="co"># recruitment$log_rzero$value &lt;- log(exp(ss3ctl$SR_parms["SR_LN(R0)", "INIT"])*1000)</span></span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_rzero<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_rzero<span class="sc">$</span>estimated <span class="ot">&lt;-</span> estimate_log_rzero</span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a><span class="co"># petrale steepness is fixed at 0.8</span></span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a>steep <span class="ot">&lt;-</span> ss3ctl<span class="sc">$</span>SR_parms[<span class="st">"SR_BH_steep"</span>, <span class="st">"INIT"</span>]</span>
+<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>logit_steep<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">log</span>(<span class="fl">1.0</span> <span class="sc">-</span> steep) <span class="sc">+</span> <span class="fu">log</span>(steep <span class="sc">-</span> <span class="fl">0.2</span>)</span>
+<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>logit_steep<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>logit_steep<span class="sc">$</span>estimated <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>estimate_log_devs <span class="ot">&lt;-</span> estimate_recdevs</span>
+<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a><span class="co"># Q: why are parameters "log_devs" when output is "report$log_recruit_dev"?</span></span>
+<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a><span class="co"># and are they multipliers, not deviations from zero?</span></span>
+<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a><span class="co"># needed to change from 1 to 0 to get stable population</span></span>
+<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_devs <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, nyears) <span class="co"># set to no deviations (multiplier) to start</span></span>
+<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a><span class="co"># growth</span></span>
+<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a>ewaa_growth <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(EWAAgrowth)</span>
+<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a>ewaa_growth<span class="sc">$</span>ages <span class="ot">&lt;-</span> ages</span>
+<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: getting weight-at-age vector from</span></span>
+<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a><span class="co"># petrale_output$wtatage |&gt;</span></span>
+<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a><span class="co">#   dplyr::filter(Sex == 1 &amp; Fleet == -1 &amp; Yr == 1876) |&gt;</span></span>
+<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a><span class="co">#   dplyr::select(paste(0:40)) |&gt;</span></span>
+<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a><span class="co">#   round(4)</span></span>
+<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a>ewaa_growth<span class="sc">$</span>weights <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 0.0010,  # age 0</span></span>
+<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.0148</span>, <span class="fl">0.0617</span>, <span class="fl">0.1449</span>, <span class="fl">0.2570</span>, <span class="fl">0.3876</span>, <span class="fl">0.5260</span>, <span class="fl">0.6640</span>, <span class="fl">0.7957</span>, <span class="fl">0.9175</span>,</span>
+<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a>  <span class="fl">1.0273</span>, <span class="fl">1.1247</span>, <span class="fl">1.2097</span>, <span class="fl">1.2831</span>, <span class="fl">1.3460</span>, <span class="fl">1.3994</span>, <span class="fl">1.4446</span>, <span class="fl">1.4821</span></span>
+<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a><span class="co"># maturity</span></span>
+<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a>maturity <span class="ot">&lt;-</span> <span class="fu">new</span>(LogisticMaturity)</span>
+<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a><span class="co"># approximate age-based equivalent to length-based maturity in petrale model</span></span>
+<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a><span class="co"># based on looking at model$endgrowth |&gt; dplyr::filter(Sex == 1) |&gt; dplyr::select(Age_Beg, Len_Mat)</span></span>
+<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a>maturity<span class="sc">$</span>inflection_point<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="fl">6.5</span></span>
+<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a>maturity<span class="sc">$</span>inflection_point<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a>maturity<span class="sc">$</span>inflection_point<span class="sc">$</span>estimated <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a>maturity<span class="sc">$</span>slope<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="co"># arbitrary guess</span></span>
+<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a>maturity<span class="sc">$</span>slope<span class="sc">$</span>is_random_effect <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a>maturity<span class="sc">$</span>slope<span class="sc">$</span>estimated <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a><span class="co"># population</span></span>
+<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a>population <span class="ot">&lt;-</span> <span class="fu">new</span>(Population)</span>
+<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a><span class="co"># petrale natural mortality is estimated around 0.14</span></span>
+<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a>M_value <span class="ot">&lt;-</span> ss3ctl<span class="sc">$</span>MG_parms[<span class="st">"NatM_p_1_Fem_GP_1"</span>, <span class="st">"INIT"</span>]</span>
+<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>log_M <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">log</span>(M_value), nages <span class="sc">*</span> nyears)</span>
+<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>estimate_M <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a><span class="co"># initial numbers at age based on R0 + mortality</span></span>
+<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a>init_naa <span class="ot">&lt;-</span> <span class="fu">exp</span>(recruitment<span class="sc">$</span>log_rzero<span class="sc">$</span>value) <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>(ages <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> M_value)</span>
+<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a>init_naa[nages] <span class="ot">&lt;-</span> init_naa[nages] <span class="sc">/</span> M_value <span class="co"># sum of infinite series</span></span>
+<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>log_init_naa <span class="ot">&lt;-</span> <span class="fu">log</span>(init_naa)</span>
+<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>estimate_init_naa <span class="ot">&lt;-</span> estimate_init_naa</span>
+<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>nages <span class="ot">&lt;-</span> nages</span>
+<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>ages <span class="ot">&lt;-</span> ages</span>
+<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>nfleets <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="co"># fleets plus surveys</span></span>
+<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>nseasons <span class="ot">&lt;-</span> nseasons</span>
+<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>nyears <span class="ot">&lt;-</span> nyears</span>
+<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a><span class="co"># population$proportion_female &lt;- rep(0.5, nages)</span></span>
+<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span><span class="fu">SetMaturity</span>(maturity<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span><span class="fu">SetGrowth</span>(ewaa_growth<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span><span class="fu">SetRecruitment</span>(recruitment<span class="sc">$</span><span class="fu">get_id</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>

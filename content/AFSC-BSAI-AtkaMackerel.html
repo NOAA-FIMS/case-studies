@@ -297,7 +297,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
 <li>TMB version: 1.9.11<br>
 </li>
-<li>FIMS commit: fe5836b<br>
+<li>FIMS commit: 288a6ac<br>
 </li>
 <li>Stock name: BSAI Atka mackerel<br>
 </li>
@@ -429,7 +429,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>age_frame <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">FIMSFrameAge</span>(fimsdat)</span>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>age_frame <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">FIMSFrame</span>(fimsdat)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>fishery_catch <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">m_landings</span>(age_frame)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>fishery_agecomp <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">m_agecomp</span>(age_frame, <span class="st">"fleet1"</span>)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>survey_index <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">m_index</span>(age_frame, <span class="st">"survey"</span>)</span>
