@@ -10,7 +10,7 @@ AFSC GOA pollock | working
 AFSC BSAI Atka Mackerel | working
 SWFSC sardine | working
 NWFSC petrale | working
-PIFSC opakapaka | in progress (in branch)
+PIFSC opakapaka | working
 
 ## How to add a case study
 
