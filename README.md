@@ -21,6 +21,20 @@ PIFSC opakapaka | working
 
 <hr>
 
+## How to use codespaces 
+
+See the [GitHub codespaces documentation](https://docs.github.com/en/codespaces) for general codespaces help.
+
+After launching a codespace, to code in Rstudio rather than VSCode, type `rserver` into the command line.
+
+If needed for use, reshape2 will need to be install on the R terminal using `install.packages("reshape2")`. It was failing to install as part of the codespaces devcontainer.json file, and so was not included for now.
+
+If gdb is needed, it can be installed on the command line using:
+```
+sudo apt-get update
+sudo apt-get install gdb
+```
+
 ### Disclaimer
 
 This repository is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project content is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.
