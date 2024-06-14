@@ -8,9 +8,9 @@ title: SWFSC Case Study Pacific sardine
 
 ## Add a chunk of code describing your setup
 
--   R version: `r version$version.string`\
--   TMB version: `r packageDescription("TMB")$Version`\
--   FIMS commit: `r substr(packageDescription("FIMS")$GithubSHA1, 1, 7)`\
+-   R version: `r R_version`\
+-   TMB version: `r TMB_version`\
+-   FIMS commit: `r FIMS_commit`\
 -   Stock name: Pacific sardine northern subpopulation\
 -   Region: SWFSC\
 -   Analyst: Peter Kuriyama\
@@ -38,29 +38,29 @@ How I simplified my assessment
 ## Add your script that sets up and runs the model
 ```{r}
 
-options(max.print = 1000, device = 'windows')
-
-library(plyr)
-library(reshape2)
-library(tidyverse)
-library(devtools)
-library(patchwork)
-library(scales)
-withr::local_options(pkg.build_extra_flags = FALSE)
-
-library(TMB)
-# devtools::install_github("kaskr/TMB_contrib_R/TMBhelper")
-library(TMBhelper)
-library(r4ss)
-
-#Local version of FIMS downloaded last week
-# devtools::load_all("../fims_v2/FIMS")
-
-
-# devtools::install_github("NOAA-FIMS/FIMS")
-# pak::pkg_install("NOAA-FIMS/FIMS")
-
-library(FIMS)
+# options(max.print = 1000, device = 'windows')
+# 
+# library(plyr)
+# library(reshape2)
+# library(tidyverse)
+# library(devtools)
+# library(patchwork)
+# library(scales)
+# withr::local_options(pkg.build_extra_flags = FALSE)
+# 
+# library(TMB)
+# # devtools::install_github("kaskr/TMB_contrib_R/TMBhelper")
+# library(TMBhelper)
+# library(r4ss)
+# 
+# #Local version of FIMS downloaded last week
+# # devtools::load_all("../fims_v2/FIMS")
+# 
+# 
+# # devtools::install_github("NOAA-FIMS/FIMS")
+# # pak::pkg_install("NOAA-FIMS/FIMS")
+# 
+# library(FIMS)
 
 clear()
 rm(list = ls())
@@ -450,7 +450,22 @@ names(ssbs)[2] <- 'ss3'
 
 ssbs %>% filter(Yr >= 2005, Yr < 2024) %>% melt(id.var = "Yr") %>%
   ggplot(aes(x = Yr, y = value, group = variable, color = variable)) +
-  geom_point() + geom_line() + scale_y_continuous(label = comma)
+  geom_point() + geom_line() + ylab("Spawning biomass (mt)") + theme_bw() +
+  xlab("year") + theme(legend.position = c(.9, .9))
+
+ggsave("figures/SWFSC-sardine-sb.png", width = 7.35, height = 4.8)
+
+#------------------------------------------------------------------------
+#------Index fits
+index <- ssres$cpue %>% select(Yr, Obs, Exp) 
+names(index) <- c("year", 'obs', 'ss3')
+index$fims <- endres$exp_index[[2]]
+index %>% melt(id.var = c("year", "obs")) %>%
+  ggplot(aes(x = year)) + geom_point(aes(y = obs)) + 
+  geom_line(aes(y = value, color = variable, group = variable)) +
+  theme_bw() + theme(legend.position = c(.9, .9)) + xlab("Year") +
+  ylab("Survey biomass value (mt)")
+ggsave("figures/SWFSC-sardine-surveyfit.png", width = 6.8, height = 5.25)
 
 #------------------------------------------------------------------------
 #-----Calculate age-1+ biomass
@@ -464,26 +479,29 @@ naa1$cohort <- naa1$year - naa1$age
 #Format Weight at age
 waa <- data.frame(age = ewaa_growth$ages, waa = ewaa_growth$weights[1:length(ages)])
 
-naa1 <- naa1 %>% left_join(waa)
+naa1 <- naa1 %>% dplyr::left_join(waa)
 naa1 <- naa1 %>% mutate(weight = value * waa)
 age1plus <- naa1 %>% filter(age != 0) %>% group_by(year) %>% summarize(summbio = sum(weight))
 
 bio1 <- ssres$timeseries %>% filter(Seas == 1) %>% select(Yr, Bio_smry) %>%
   mutate(year = Yr, ss3bio = Bio_smry) %>% select(-Yr, -Bio_smry)
 
-age1plus <- age1plus %>% left_join(bio1)
+age1plus <- age1plus %>% dplyr::left_join(bio1)
 names(age1plus) <- c("year", "fims", "ss3")
 
 #Full time series of age-1+ biomass
 age1plus %>% melt(id.var = "year") %>% ggplot(aes(x = year, y = value, group = variable, color = variable)) +
-  geom_point() + geom_line() + scale_y_continuous(label = comma) +
-  ylab("Age-1+ biomass (mt)")
+  geom_point() + geom_line() + 
+  ylab("Age-1+ biomass (mt)") + theme_bw() + theme(legend.position = c(.9, .9))
+
+ggsave("figures/SWFSC-sardine-age1plusbio.png", width = 6.8, height = 5.25)
 
 #Zoomed in time series of age-1+
 age1plus %>% melt(id.var = "year") %>% filter(year >= 2010) %>%
   ggplot(aes(x = year, y = value, group = variable, color = variable)) +
-  geom_point() + geom_line() + scale_y_continuous(label = comma) + 
-  ylab("Age-1+ biomass (mt)")
+  geom_point() + geom_line() + theme_bw() +
+  ylab("Age-1+ biomass (mt)") + theme(legend.position = c(.9, .9))
+ggsave("figures/SWFSC-sardine-age1plusbio_zoomedin.png", width = 6.8, height = 5.25)
 
 #------------------------------------------------------------------------
 #------Recruitment
@@ -492,8 +510,9 @@ recs <- ssres$timeseries %>% select(Yr, Recruit_0) %>%
 names(recs)[2] <- "ss3"
 
 recs %>% filter(Yr >= 2005, Yr < 2024) %>% melt(id.var = "Yr") %>%
-  ggplot(aes(x = Yr, y = value, group = variable, color = variable)) +
-  geom_point() + geom_line()
+  ggplot(aes(x = Yr, y = value, group = variable, color = variable)) + theme_bw() +
+  geom_point() + geom_line() + theme(legend.position = c(.9, .9)) + ylab("Recruits (x1000)")
+ggsave("figures/SWFSC-sardine-recruitment.png", width = 6.8, height = 5.25)
 
 #------------------------------------------------------------------------
 #------Fixed selectivities
