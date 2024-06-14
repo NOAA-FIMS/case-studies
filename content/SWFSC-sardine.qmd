@@ -8,6 +8,7 @@ title: SWFSC Case Study Pacific sardine
 
 ## Add a chunk of code describing your setup
 
+
 -   R version: `r R_version`\
 -   TMB version: `r TMB_version`\
 -   FIMS commit: `r FIMS_commit`\
@@ -37,6 +38,7 @@ How I simplified my assessment
 
 ## Add your script that sets up and runs the model
 ```{r}
+
 
 # options(max.print = 1000, device = 'windows')
 # 
@@ -480,13 +482,17 @@ naa1$cohort <- naa1$year - naa1$age
 waa <- data.frame(age = ewaa_growth$ages, waa = ewaa_growth$weights[1:length(ages)])
 
 naa1 <- naa1 %>% dplyr::left_join(waa)
+
+
 naa1 <- naa1 %>% mutate(weight = value * waa)
 age1plus <- naa1 %>% filter(age != 0) %>% group_by(year) %>% summarize(summbio = sum(weight))
 
 bio1 <- ssres$timeseries %>% filter(Seas == 1) %>% select(Yr, Bio_smry) %>%
   mutate(year = Yr, ss3bio = Bio_smry) %>% select(-Yr, -Bio_smry)
 
+
 age1plus <- age1plus %>% dplyr::left_join(bio1)
+
 names(age1plus) <- c("year", "fims", "ss3")
 
 #Full time series of age-1+ biomass
@@ -503,6 +509,7 @@ age1plus %>% melt(id.var = "year") %>% filter(year >= 2010) %>%
   ylab("Age-1+ biomass (mt)") + theme(legend.position = c(.9, .9))
 ggsave("figures/SWFSC-sardine-age1plusbio_zoomedin.png", width = 6.8, height = 5.25)
 
+
 #------------------------------------------------------------------------
 #------Recruitment
 recs <- ssres$timeseries %>% select(Yr, Recruit_0) %>%
@@ -510,9 +517,11 @@ recs <- ssres$timeseries %>% select(Yr, Recruit_0) %>%
 names(recs)[2] <- "ss3"
 
 recs %>% filter(Yr >= 2005, Yr < 2024) %>% melt(id.var = "Yr") %>%
+
   ggplot(aes(x = Yr, y = value, group = variable, color = variable)) + theme_bw() +
   geom_point() + geom_line() + theme(legend.position = c(.9, .9)) + ylab("Recruits (x1000)")
 ggsave("figures/SWFSC-sardine-recruitment.png", width = 6.8, height = 5.25)
+
 
 #------------------------------------------------------------------------
 #------Fixed selectivities
