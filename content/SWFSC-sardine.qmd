@@ -324,7 +324,7 @@ recruitment$estimate_log_devs <- estimate_recdevs
 recruitment$log_devs <- rep(log(1), nyears) # set to no deviations (multiplier) to start
 
 # growth
-wtatage <- SS_readwtatage("data_files/sardine_wtatage.ss_new")
+wtatage <- r4ss::SS_readwtatage("data_files/sardine_wtatage.ss_new")
 
 ewaa_growth <- methods::new(EWAAgrowth)
 ewaa_growth$ages <- ages
