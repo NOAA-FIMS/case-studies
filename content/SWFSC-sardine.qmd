@@ -1,10 +1,22 @@
 ---
 title: SWFSC Case Study Pacific sardine
+format:
+  html:
+    code-fold: true
 ---
 
 ## The setup
 
 {{< include setup.qmd >}}
+
+```{r}
+#| warning: false
+#| label: startup
+
+# R_version <- version$version.string
+# TMB_version <- packageDescription("TMB")$Version
+# FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
+```
 
 ## Add a chunk of code describing your setup
 
