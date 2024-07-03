@@ -497,7 +497,7 @@ fims.survey.caa <- fims.survey.ncaa / rowSums(fims.survey.ncaa)
 bam.survey.caa <- sca$comp.mats$acomp.CVT.pr
 obs.survey.caa <- sca$comp.mats$acomp.CVT.ob
 ######################################################################
-windows(width = 8, height = 10, record = T)
+png(filename = paste(out.folder, "/SEFSC_scamp_tseries_fits.", plot.type, sep = ""), width = 8, height = 10, units="in", res=72)
 mat <- matrix(1:3, ncol = 1)
 layout(mat = mat, widths = rep.int(1, ncol(mat)), heights = rep.int(1, nrow(mat)))
 par(las = 1, mar = c(4.1, 4.25, 1.0, 0.5), cex = 1)
@@ -527,10 +527,10 @@ plot(fleet2_landings_results$yr, fleet2_landings_results$observed,
 lines(fleet2_landings_results$yr, fleet2_landings_results$bam.expected, lwd = 3, col = cols[2])
 lines(fleet2_landings_results$yr, fleet2_landings_results$fims.expected, lwd = 3, col = cols[4])
 
-savePlot(filename = paste(out.folder, "/Plot_tseries_fits.", plot.type, sep = ""), type = c(plot.type))
+dev.off()
 
 ######################################################################
-windows(width = 8, height = 8, record = T)
+png(filename = paste(out.folder, "/SEFSC_scamp_tseries_F.", plot.type, sep = ""), width = 8, height = 8, units="in", res=72)
 mat <- matrix(1:2, ncol = 1)
 layout(mat = mat, widths = rep.int(1, ncol(mat)), heights = rep.int(1, nrow(mat)))
 par(las = 1, mar = c(4.1, 4.25, 1.0, 0.5), cex = 1)
@@ -550,10 +550,10 @@ plot(fleet2_F_results$yr, fleet2_F_results$bam.F.fleet2,
 )
 lines(fleet2_F_results$yr, fleet2_F_results$fims.F.fleet2, lwd = 3, col = cols[4])
 
-savePlot(filename = paste(out.folder, "/Plot_tseries_F.", plot.type, sep = ""), type = c(plot.type))
+dev.off()
 
 ######################################################################
-windows(width = 8, height = 10, record = T)
+png(filename = paste(out.folder, "/SEFSC_scamp_selex.", plot.type, sep = ""), width = 8, height = 10, units="in", res=72)
 mat <- matrix(1:3, ncol = 1)
 layout(mat = mat, widths = rep.int(1, ncol(mat)), heights = rep.int(1, nrow(mat)))
 par(las = 1, mar = c(4.1, 4.25, 1.0, 0.5), cex = 1)
@@ -569,13 +569,13 @@ lines(ages, selex.fims.fleet2, lwd = 3, col = cols[4])
 plot(ages, selex.bam.survey, lwd = 3, col = cols[2], type = "l", xlab = "Age", ylab = "Survey selectivity")
 lines(ages, selex.fims.survey, lwd = 3, col = cols[4])
 
-savePlot(filename = paste(out.folder, "/Plot_selex.", plot.type, sep = ""), type = c(plot.type))
+dev.off()
 
 
 
 ######################################################################
 
-windows(width = 10, height = 8, record = T)
+png(filename = paste(out.folder, "/SEFSC_scamp_tseries_popn.", plot.type, sep = ""), width = 8, height = 7, units="in", res=72)
 mat <- matrix(1:4, ncol = 2)
 layout(mat = mat, widths = rep.int(1, ncol(mat)), heights = rep.int(1, nrow(mat)))
 par(las = 1, mar = c(4.1, 4.25, 1.0, 0.5), cex = 1)
@@ -608,10 +608,10 @@ plot(popn_results$yr, popn_results$bam.abundance,
 )
 lines(popn_results$yr, popn_results$fims.abundance, lwd = 3, col = cols[4])
 
-savePlot(filename = paste(out.folder, "/Plot_tseries_popn.", plot.type, sep = ""), type = c(plot.type))
+dev.off()
 
 ######################################################################
-windows(width = 8, height = 11, record = T)
+png(filename = paste(out.folder, "/SEFSC_scamp_caa_fleet1.", plot.type, sep = ""), width = 8, height = 11, units="in", res=72)
 mat <- matrix(1:18, ncol = 3)
 layout(mat = mat, widths = rep.int(1, ncol(mat)), heights = rep.int(1, nrow(mat)))
 par(las = 1, mar = c(2.2, 2.7, 0.5, 0.5), cex = 0.75)
@@ -631,10 +631,11 @@ for (i in 1:nrow(obs.fleet1.caa))
   }
 }
 
-savePlot(filename = paste(out.folder, "/Plot_caa_fleet1.", plot.type, sep = ""), type = c(plot.type))
+dev.off()
 
+######################################################################
+png(filename = paste(out.folder, "/SEFSC_scamp_caa_fleet2.", plot.type, sep = ""), width = 8, height = 11, units="in", res=72)
 
-windows(width = 8, height = 11, record = T)
 mat <- matrix(1:28, ncol = 4)
 layout(mat = mat, widths = rep.int(1, ncol(mat)), heights = rep.int(1, nrow(mat)))
 par(las = 1, mar = c(2.2, 2.7, 0.5, 0.5), cex = 0.75)
@@ -654,10 +655,11 @@ for (i in 1:nrow(obs.fleet2.caa))
   }
 }
 
-savePlot(filename = paste(out.folder, "/Plot_caa_fleet2.", plot.type, sep = ""), type = c(plot.type))
+dev.off()
 
+######################################################################
+png(filename = paste(out.folder, "/SEFSC_scamp_caa_survey.", plot.type, sep = ""), width = 8, height = 11, units="in", res=72)
 
-windows(width = 8, height = 11, record = T)
 mat <- matrix(1:30, ncol = 5)
 layout(mat = mat, widths = rep.int(1, ncol(mat)), heights = rep.int(1, nrow(mat)))
 par(las = 1, mar = c(2.2, 2.7, 0.5, 0.5), cex = 0.75)
@@ -677,7 +679,7 @@ for (i in 1:nrow(obs.survey.caa))
   }
 }
 
-savePlot(filename = paste(out.folder, "/Plot_caa_survey.", plot.type, sep = ""), type = c(plot.type))
+dev.off()
 
 clear()
 ```
@@ -686,19 +688,19 @@ clear()
 
 ## Comparison figures
 
-![Fits-tseries](Figures/Plot_tseries_fits.png){width=7in, fig-align="left"} 
+![Fits-tseries](figures/SEFSC_scamp_tseries_fits.png){width=7in, fig-align="left"} 
 
-![Fits-CAA-fleet1](Figures/Plot_caa_fleet1.png){width=7in, fig-align="left"}
+![Fits-CAA-fleet1](figures/SEFSC_scamp_caa_fleet1.png){width=7in, fig-align="left"}
 
-![Fits-CAA-fleet2](Figures/Plot_caa_fleet2.png){width=7in, fig-align="left"}
+![Fits-CAA-fleet2](figures/SEFSC_scamp_caa_fleet2.png){width=7in, fig-align="left"}
 
-![Fits-CAA-survey](Figures/Plot_caa_survey.png){width=7in, fig-align="left"}
+![Fits-CAA-survey](figures/SEFSC_scamp_caa_survey.png){width=7in, fig-align="left"}
 
-![Predicted-selex](Figures/Plot_selex.png){width=7in, fig-align="left"}
+![Predicted-selex](figures/SEFSC_scamp_selex.png){width=7in, fig-align="left"}
 
-![Predicted-tseries-F](Figures/Plot_tseries_F.png){width=7in, fig-align="left"}
+![Predicted-tseries-F](figures/SEFSC_scamp_tseries_F.png){width=7in, fig-align="left"}
 
-![Predicted-tseries-population](Figures/Plot_tseries_popn.png){width=7in, fig-align="left"}
+![Predicted-tseries-population](figures/SEFSC_scamp_tseries_popn.png){width=7in, fig-align="left"}
 
 ## What was your experience using FIMS? What could we do to improve usability?
 -    Great joy when it finally worked!  But, it took a lot of time to first simplify the corresponding BAM implementation and then
