@@ -71,13 +71,13 @@ commercial in pounds and recreational in numbers.\
 # automatically loads fims Rcpp module
 library(FIMS) # Updated to latest fims on 6/6/24
 library(TMB)
-library(tidyverse)
+library(dplyr)
 
 # clear memory
 clear()
 graphics.off()
 
-sca <- dget("scamp32o.rdat") # get scamp data and output from simplified version of BAM
+sca <- dget("data_files/scamp32o.rdat") # get scamp data and output from simplified version of BAM
 
 # Set dimensions
 styr <- dplyr::first(sca$t.series$year)
