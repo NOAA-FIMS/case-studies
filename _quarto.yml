@@ -51,6 +51,8 @@ website:
         text: PIFSC Opakapaka case study
       - href: content/NWFSC-petrale.qmd
         text: NWFSC petrale case study
+      - href: content/SEFSC-scamp.qmd
+        text: SEFSC scamp case study
       - href: content/acknowledgements.qmd
         text: Acknowledgements
 
