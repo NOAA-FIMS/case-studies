@@ -62,16 +62,11 @@ commercial in pounds and recreational in numbers.\
 
 ## Add your script that sets up and runs the model
 
-```{r}
+```{r, output=FALSE}
 ###############################################
 # South Atlantic scamp grouper example assessment
 # Compare output from FIMS and a simplified version of BAM
 ##############################################
-
-# automatically loads fims Rcpp module
-library(FIMS) # Updated to latest fims on 6/6/24
-library(TMB)
-library(dplyr)
 
 # clear memory
 clear()
