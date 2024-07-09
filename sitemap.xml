@@ -2,58 +2,58 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://noaa-fims.github.io/case-studies/index.html</loc>
-    <lastmod>2024-06-18T18:16:24.955Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/SWFSC-sardine.html</loc>
-    <lastmod>2024-06-18T18:16:24.917Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/AFSC-BSAI-AtkaMackerel.html</loc>
-    <lastmod>2024-06-18T18:16:24.915Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/case-study-template.html</loc>
-    <lastmod>2024-06-18T18:16:24.917Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/NWFSC-petrale.html</loc>
-    <lastmod>2024-06-18T18:16:24.916Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/PIFS-opakapaka.html</loc>
-    <lastmod>2024-06-18T18:16:24.916Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/publishing.html</loc>
-    <lastmod>2024-06-18T18:16:24.954Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/AFSC-GOA-pollock.html</loc>
-    <lastmod>2024-06-18T18:16:24.915Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html</loc>
-    <lastmod>2024-06-18T18:16:24.916Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/rendering.html</loc>
-    <lastmod>2024-06-18T18:16:24.954Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/acknowledgements.html</loc>
-    <lastmod>2024-06-18T18:16:24.917Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/rmarkdown.html</loc>
-    <lastmod>2024-06-18T18:16:24.954Z</lastmod>
+    <lastmod>2024-07-09T21:17:48.006Z</lastmod>
   </url>
   <url>
     <loc>https://noaa-fims.github.io/case-studies/content/setup.html</loc>
-    <lastmod>2024-06-18T18:16:24.954Z</lastmod>
+    <lastmod>2024-07-09T21:17:48.006Z</lastmod>
   </url>
   <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/pc.html</loc>
-    <lastmod>2024-06-18T18:16:24.954Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/content/AFSC-BSAI-AtkaMackerel.html</loc>
+    <lastmod>2024-07-09T21:17:47.932Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/case-study-template.html</loc>
+    <lastmod>2024-07-09T21:17:47.934Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/NWFSC-petrale.html</loc>
+    <lastmod>2024-07-09T21:17:47.933Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/PIFS-opakapaka.html</loc>
+    <lastmod>2024-07-09T21:17:47.933Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/publishing.html</loc>
+    <lastmod>2024-07-09T21:17:48.005Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/AFSC-GOA-pollock.html</loc>
+    <lastmod>2024-07-09T21:17:47.932Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html</loc>
+    <lastmod>2024-07-09T21:17:47.933Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/rendering.html</loc>
+    <lastmod>2024-07-09T21:17:48.005Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/acknowledgements.html</loc>
+    <lastmod>2024-07-09T21:17:47.934Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/rmarkdown.html</loc>
+    <lastmod>2024-07-09T21:17:48.006Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/SEFSC-scamp.html</loc>
+    <lastmod>2024-07-09T21:17:47.934Z</lastmod>
+  </url>
+  <url>
+    <loc>https://noaa-fims.github.io/case-studies/content/SWFSC-sardine.html</loc>
+    <lastmod>2024-07-09T21:17:47.934Z</lastmod>
   </url>
 </urlset>
