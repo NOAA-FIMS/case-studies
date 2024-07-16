@@ -302,7 +302,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
 <li>TMB version: 1.9.14<br>
 </li>
-<li>FIMS commit: ecd2d80<br>
+<li>FIMS commit: 39d0743<br>
 </li>
 <li>Stock name: South Atlantic scamp grouper<br>
 </li>
@@ -693,7 +693,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a><span class="co"># TMB reporting</span></span>
 <span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a>sdr <span class="ot">&lt;-</span> TMB<span class="sc">::</span><span class="fu">sdreport</span>(obj)</span>
 <span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a>sdr_fixed <span class="ot">&lt;-</span> <span class="fu">summary</span>(sdr, <span class="st">"fixed"</span>)</span>
-<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a>report <span class="ot">&lt;-</span> obj<span class="sc">$</span><span class="fu">report</span>()</span>
+<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a>report <span class="ot">&lt;-</span> obj<span class="sc">$</span><span class="fu">report</span>(obj<span class="sc">$</span>env<span class="sc">$</span>last.par.best)</span>
 <span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a><span class="co"># print(sdr_fixed)</span></span>
 <span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a></span>

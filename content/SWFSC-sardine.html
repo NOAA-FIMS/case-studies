@@ -309,7 +309,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
 <li>TMB version: 1.9.14<br>
 </li>
-<li>FIMS commit: ecd2d80<br>
+<li>FIMS commit: 39d0743<br>
 </li>
 <li>Stock name: Pacific sardine northern subpopulation<br>
 </li>
@@ -709,7 +709,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-379"><a href="#cb3-379" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-381"><a href="#cb3-381" aria-hidden="true" tabindex="-1"></a>obj <span class="ot">&lt;-</span> <span class="fu">MakeADFun</span>(<span class="at">data =</span> <span class="fu">list</span>(), parameters, <span class="at">DLL =</span> <span class="st">"FIMS"</span>, <span class="at">silent =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a>report <span class="ot">&lt;-</span> obj<span class="sc">$</span><span class="fu">report</span>()</span>
+<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a>report <span class="ot">&lt;-</span> obj<span class="sc">$</span><span class="fu">report</span>(obj<span class="sc">$</span>env<span class="sc">$</span>last.par.best)</span>
 <span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a><span class="co">#Are there flags for when something is going wrong with the model where initial values</span></span>
 <span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a><span class="co">#are all 0?</span></span>

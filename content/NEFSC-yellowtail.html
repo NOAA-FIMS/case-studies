@@ -304,7 +304,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
 <li>TMB version: 1.9.14<br>
 </li>
-<li>FIMS commit: ecd2d80<br>
+<li>FIMS commit: 39d0743<br>
 </li>
 <li>Stock name: Southern New England-Mid Atlantic Yellowtail Flounder<br>
 </li>
@@ -588,7 +588,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a>sdr <span class="ot">&lt;-</span> TMB<span class="sc">::</span><span class="fu">sdreport</span>(obj)</span>
 <span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a>sdr_fixed <span class="ot">&lt;-</span> <span class="fu">summary</span>(sdr, <span class="st">"fixed"</span>)</span>
-<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a>report <span class="ot">&lt;-</span> obj<span class="sc">$</span><span class="fu">report</span>()</span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a>report <span class="ot">&lt;-</span> obj<span class="sc">$</span><span class="fu">report</span>(obj<span class="sc">$</span>env<span class="sc">$</span>last.par.best)</span>
 <span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a><span class="do">### Plotting</span></span>
 <span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a></span>
