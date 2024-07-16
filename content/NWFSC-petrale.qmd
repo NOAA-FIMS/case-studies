@@ -308,7 +308,7 @@ print(opt)
 #| label: get-results
 #| output: false
 #| eval: true
-report <- obj$report()
+report <- obj$report(obj$env$last.par.best)
 # copy input data to use as basis for results
 results_frame <- age_frame@data
 results_frame$expected <- NA
