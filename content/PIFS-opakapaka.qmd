@@ -244,7 +244,7 @@ parameters <- list(p = get_fixed())
 obj <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
 opt <- nlminb(obj$par, obj$fn, obj$gr, control = list(eval.max = 10000, iter.max = 10000))
 #print(opt)
-report <- obj$report()
+report <- obj$report(obj$env$last.par.best)
 ```
 
 ## Results from FIMS model

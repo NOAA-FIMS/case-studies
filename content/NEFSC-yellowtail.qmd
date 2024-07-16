@@ -302,7 +302,7 @@ opt <- nlminb(start=obj$par, objective=obj$fn, gradient=obj$gr,
 
 sdr <- TMB::sdreport(obj)
 sdr_fixed <- summary(sdr, "fixed")
-report <- obj$report()
+report <- obj$report(obj$env$last.par.best)
 
 ### Plotting
 

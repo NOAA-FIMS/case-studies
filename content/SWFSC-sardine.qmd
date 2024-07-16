@@ -433,7 +433,7 @@ pars <- tibble(parname = parname, startingvals = parameters$p)
 
 
 obj <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
-report <- obj$report()
+report <- obj$report(obj$env$last.par.best)
 
 #Are there flags for when something is going wrong with the model where initial values
 #are all 0?

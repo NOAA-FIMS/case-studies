@@ -102,7 +102,7 @@ rep1 <- obj$report() # FIMS initial values
 opt <- TMBhelper::fit_tmb(obj, getsd=FALSE, newtonsteps=0, control=list(trace=100))
 ## opt <- with(obj, nlminb(start=par, objective=fn, gradient=gr))
 max(abs(obj$gr())) # from Cole, can use TMBhelper::fit_tmb to get val to <1e-10
-rep2 <- obj$report() ## FIMS after estimation
+rep2 <- obj$report(obj$env$last.par.best) ## FIMS after estimation
 
 ## Output plotting
 out1 <- get_long_outputs(rep1, rep0) %>%
@@ -199,7 +199,7 @@ for(j in 1:length(xseq)){
   parameters$p[i] <- xseq[j]
   obj2 <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE, map=map)
   opt2 <- TMBhelper::fit_tmb(obj2, getsd=FALSE, newtonsteps=0, control=list(trace=0))
-  out <- obj2$report()
+  out <- obj2$report(obj2$env$last.par.best)
   res[[j]] <- data.frame(j=j, lnR0=xseq[j], total=out$jnll, index=out$index_nll,
                          age=out$age_comp_nll,recruit=out$rec_nll, maxgrad=max(abs(obj$gr())))
 }
