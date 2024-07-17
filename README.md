@@ -11,6 +11,7 @@ AFSC BSAI Atka Mackerel | working
 SWFSC sardine | working
 NWFSC petrale | working
 PIFSC opakapaka | working
+SEFSC scamp | working
 
 ## How to add a case study
 
