@@ -153,7 +153,7 @@ fish_fleet$log_Fmort <- log(rep(0.00001, nyears))
 fish_fleet$estimate_F <- estimate_F
 fish_fleet$random_F <- FALSE
 fish_fleet$log_q <- 0
-fish_fleet$estimate_q <- estimate_q
+fish_fleet$estimate_q <- FALSE
 fish_fleet$random_q <- FALSE
 fish_fleet$log_obs_error <- rep(log(sqrt(log(0.01^2 + 1))), nyears)
 
