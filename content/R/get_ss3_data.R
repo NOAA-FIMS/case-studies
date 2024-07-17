@@ -8,7 +8,7 @@
 #' @param fleets Which fleets to include in the processed output.
 #' @param ages Vector of ages to index.
 #' @return A data frame that can be passed to `FIMS::FIMSFrame()`
-#' @author Ian G. Taylor
+#' @author Ian G. Taylor, Megumi Oshima
 #' @export
 
 get_ss3_data <- function(dat, fleets, ages) {
