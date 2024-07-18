@@ -1,0 +1,12 @@
+Welcome to your Case Studies Codespace!
+
+To code in Rstudio rather than VSCode, type `rserver` into the terminal (bash).
+
+If needed for use, the R package reshape2 will need to be installed in the R terminal using: 
+
+install.packages("reshape2")
+
+If gdb is needed, it can be installed on terminal (bash) using:
+
+sudo apt-get update
+sudo apt-get install gdb
