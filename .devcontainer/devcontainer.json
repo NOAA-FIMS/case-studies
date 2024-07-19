@@ -10,7 +10,8 @@
 		// if we want to install r packages using pak
 		// more info: https://github.com/rocker-org/devcontainer-features/blob/main/src/r-packages/README.md
 		"ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
-			"packages": "make,gcc,g++"			
+			"packages": "make,gcc,g++,gdb",
+			"updatePackages": true
 		},
 		"ghcr.io/rocker-org/devcontainer-features/r-packages:1": {
 			"packages": "TMBhelper=github::kaskr/TMB_contrib_R/TMBhelper,dplyr,tidyr,ggplot2,TMB,here,remotes,lubridate,github::NOAA-FIMS/FIMS,github::r4ss/r4ss",
