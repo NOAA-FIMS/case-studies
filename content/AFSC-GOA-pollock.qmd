@@ -99,8 +99,8 @@ obj <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
 rep0 <- pkfitfinal$rep
 rep1 <- obj$report() # FIMS initial values
 ## try fitting the model
-opt <- TMBhelper::fit_tmb(obj, getsd=FALSE, newtonsteps=0, control=list(trace=100))
-## opt <- with(obj, nlminb(start=par, objective=fn, gradient=gr))
+## opt <- TMBhelper::fit_tmb(obj, getsd=FALSE, newtonsteps=0, control=list(trace=100))
+opt <- with(obj, nlminb(start=par, objective=fn, gradient=gr))
 max(abs(obj$gr())) # from Cole, can use TMBhelper::fit_tmb to get val to <1e-10
 rep2 <- obj$report(obj$env$last.par.best) ## FIMS after estimation
 
@@ -198,7 +198,7 @@ for(j in 1:length(xseq)){
   print(j)
   parameters$p[i] <- xseq[j]
   obj2 <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE, map=map)
-  opt2 <- TMBhelper::fit_tmb(obj2, getsd=FALSE, newtonsteps=0, control=list(trace=0))
+  opt2 <- with(obj2, nlminb(par, fn, gr)) ## TMBhelper::fit_tmb(obj2, getsd=FALSE, newtonsteps=0, control=list(trace=0))
   out <- obj2$report(obj2$env$last.par.best)
   res[[j]] <- data.frame(j=j, lnR0=xseq[j], total=out$jnll, index=out$index_nll,
                          age=out$age_comp_nll,recruit=out$rec_nll, maxgrad=max(abs(obj$gr())))
@@ -224,7 +224,7 @@ ggsave('figures/AFSC_PK_like_profile_R0.png', g, width=7, height=3.5)
 ## map$p[65:66] <- NA # map off R0 specified below
 ## map$p <- as.factor(map$p)
 ## obj3 <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent=TRUE, map=map)
-## opt3 <- TMBhelper::fit_tmb(obj3, getsd=FALSE, newtonsteps=0, control=list(trace=0))
+## opt3 <- with(obj3, nlminb(par, fn, gr) ## TMBhelper::fit_tmb(obj3, getsd=FALSE, newtonsteps=0, control=list(trace=0))
 ## ## Fails when trying to do this in parallel unfortunately
 ## fit <- tmbstan(obj3, chains=1, cores=1, open_progress=FALSE,
 ##                init='last.par.best', control=list(max_treedepth=10))
