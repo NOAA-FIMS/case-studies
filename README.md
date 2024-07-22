@@ -30,11 +30,7 @@ After launching a codespace, to code in Rstudio rather than VSCode, type `rserve
 
 If needed for use, reshape2 will need to be install on the R terminal using `install.packages("reshape2")`. It was failing to install as part of the codespaces devcontainer.json file, and so was not included for now.
 
-If gdb is needed, it can be installed on the command line using:
-```
-sudo apt-get update
-sudo apt-get install gdb
-```
+gdb is installed in the codespace.
 
 ### Disclaimer
 

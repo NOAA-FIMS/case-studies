@@ -1,0 +1,2 @@
+sudo cp .devcontainer/welcome.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+echo 'options(repos = c(CRAN = "https://cloud.r-project.org"))' | sudo sh -c 'cat - >>"${R_HOME}/etc/Rprofile.site"'
