@@ -237,7 +237,6 @@ population$ages <- ages
 population$nfleets <- 2 # fleet plus surveys
 population$nseasons <- 1
 population$nyears <- nyears
-# population$proportion_female <- rep(0.5, nages)
 
 population$SetMaturity(maturity$get_id())
 population$SetGrowth(ewaa_growth$get_id())
