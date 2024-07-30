@@ -25,12 +25,15 @@ estimate_recdevs <- TRUE
 
 
 
+clear()
+clear_logs()
 source("R/pk_prepare_FIMS_inputs.R")
 ## make FIMS model
 success <- CreateTMBModel()
 parameters <- list(p = get_fixed())
 obj1 <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
 rep1 <- obj1$report()
+
 
 ## Organize input lists by process
 clear()
@@ -46,5 +49,15 @@ rep2 <- obj2$report()
 ## Test that the two models are identical
 all.equal(rep1,rep2)
 
+cbind(sort(obj1$par), sort(obj2$par))
+
 clear()
 clear_logs()
+
+## Parameters are in a different order but seem to match
+opt1 <- with(obj1, nlminb(par,fn,gr))
+opt2 <- with(obj2, nlminb(par,fn,gr))
+all.equal(obj1$report(opt1$par), obj2$report(opt2$par))
+sum(obj1$par)-sum(obj2$par)
+
+cbind(sort(opt1$par)- sort(opt2$par))
