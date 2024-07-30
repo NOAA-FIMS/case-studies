@@ -26,7 +26,7 @@ setup_fleets <- function(fleets,population, catchability, selectivity, data){
       flts[[i]]$is_survey <- TRUE
       flts[[i]]$log_q <- catchability$init_pars[i]
       flts[[i]]$estimate_q <- is.na(catchability$fix_pars[i])
-      flts[[i]]$random_q <- catchability$re[i]!='none'
+      flts[[i]]$random_q <- FALSE# catchability$re[i]!='none'
       fltindex$index_data <- FIMS::m_index(data, fleets$names[i])
       flts[[i]]$log_obs_error <- log(filter(fltdat, type=='index')$uncertainty)
       fltacomp$age_comp_data <- acomp * filter(fltdat, type=='age')$uncertainty
@@ -47,29 +47,29 @@ setup_selex <- function(selectivity){
       sels[[i]] <- methods::new(DoubleLogisticSelectivity)
 
       sels[[i]]$inflection_point_asc$value <- s$init_pars[[i]][1]
-      sels[[i]]$inflection_point_asc$is_random_effect <- s$re[1]!='none' & 1 %in% s$where[[i]]
+      sels[[i]]$inflection_point_asc$is_random_effect <- FALSE ## s$re[1]!='none' & 1 %in% s$where[[i]]
       sels[[i]]$inflection_point_asc$estimated <- !(1 %in% s$fix_pars[[i]])
 
       sels[[i]]$slope_asc$value <- s$init_pars[[i]][2]
-      sels[[i]]$slope_asc$is_random_effect <- s$re[1]!='none' & 2 %in% s$where[[i]]
+      sels[[i]]$slope_asc$is_random_effect <- FALSE## s$re[i]!='none' & 2 %in% s$where[[i]]
       sels[[i]]$slope_asc$estimated <- !(2 %in% s$fix_pars[[i]])
 
       sels[[i]]$inflection_point_desc$value <- s$init_pars[[i]][3]
-      sels[[i]]$inflection_point_desc$is_random_effect <- s$re[1]!='none' & 3 %in% s$where[[i]]
-      sels[[i]]$inflection_point_desc$estimated <- !(1 %in% s$fix_pars[[i]])
+      sels[[i]]$inflection_point_desc$is_random_effect <- FALSE#s$re[i]!='none' & 3 %in% s$where[[i]]
+      sels[[i]]$inflection_point_desc$estimated <- !(3 %in% s$fix_pars[[i]])
 
       sels[[i]]$slope_desc$value <- s$init_pars[[i]][4]
-      sels[[i]]$slope_desc$is_random_effect <- s$re[1]!='none' & 4 %in% s$where[[i]]
+      sels[[i]]$slope_desc$is_random_effect <- FALSE#s$re[i]!='none' & 4 %in% s$where[[i]]
       sels[[i]]$slope_desc$estimated <- !(4 %in% s$fix_pars[[i]])
     } else if(s$form[i]=='Logistic'){
       sels[[i]] <- methods::new(LogisticSelectivity)
 
       sels[[i]]$inflection_point$value <- s$init_pars[[i]][1]
-      sels[[i]]$inflection_point$is_random_effect <- s$re[1]!='none' & 1 %in% s$where[[i]]
+      sels[[i]]$inflection_point$is_random_effect <- FALSE#s$re[i]!='none' & 1 %in% s$where[[i]]
       sels[[i]]$inflection_point$estimated <- !(1 %in% s$fix_pars[[i]])
 
       sels[[i]]$slope$value <- s$init_pars[[i]][2]
-      sels[[i]]$slope$is_random_effect <- s$re[1]!='none' & 2 %in% s$where[[i]]
+      sels[[i]]$slope$is_random_effect <- FALSE#s$re[i]!='none' & 2 %in% s$where[[i]]
       sels[[i]]$slope$estimated <- !(2 %in% s$fix_pars[[i]])
     }
   }
@@ -77,19 +77,19 @@ setup_selex <- function(selectivity){
   return(sels)
 }
 setup_recruitment <- function(recruitment){
-  rec <- recruitment
+  r <- recruitment
   rec <- methods::new(BevertonHoltRecruitment)
   ## methods::show(BevertonHoltRecruitment)
-  rec$log_sigma_recruit$value <- log(recruitment$init_pars[3])
-  rec$log_rzero$value <- log(recruitment$init_pars[1])
+  rec$log_sigma_recruit$value <- log(r$init_pars[3])
+  rec$log_rzero$value <- log(r$init_pars[1])
   rec$log_rzero$is_random_effect <- FALSE
-  rec$log_rzero$estimated <- (1 %in% recruitment$fix_pars)
-  steep <- recruitment$init_pars[2]
+  rec$log_rzero$estimated <- TRUE ## !(1 %in% r$fix_pars)
+  steep <- r$init_pars[2]
   rec$logit_steep$value <- -log(1.0 - steep) + log(steep - 0.2)
   rec$logit_steep$is_random_effect <- FALSE
-  rec$logit_steep$estimated <- (2 %in% recruitment$fix_pars)
-  rec$estimate_log_devs <- estimate_recdevs
-  rec$log_devs <-  recruitment$init_recdevs
+  rec$logit_steep$estimated <- FALSE ## !(2 %in% r$fix_pars)
+  rec$estimate_log_devs <- TRUE
+  rec$log_devs <-  r$init_recdevs
   message("Finished setting up recruitment")
   return(rec)
 }
@@ -116,7 +116,7 @@ setup_population <- function(population, matout, growthout, recout){
   pop$log_M <- log(population$M)
   pop$estimate_M <- FALSE
   pop$log_init_naa <- log(population$init_naa)
-  pop$estimate_init_naa <- population$fix_naa
+  pop$estimate_init_naa <- !population$fix_naa
   pop$nages <- population$nages
   pop$ages <- population$ages
   pop$nfleets <- population$nfleets
@@ -134,24 +134,26 @@ setup_population <- function(population, matout, growthout, recout){
 mle <- parfinal
 data <- age_frame
 myNA <- rep(NA,3)
-population <- list(ages=ages, nfleets=4, nyears=nyears,
-                   years=years, nages=length(ages),
-                   M=as.numeric(t(matrix(rep(pkfitfinal$rep$M, each=nyears), nrow=nyears))),
-                   init_naa= exp(c(log(pkfitfinal$rep$recruit[1]), log(pkfitfinal$rep$initN)) + log(1e9)),
-                   fix_naa=TRUE)
+pop <- list(ages=ages, nfleets=4, nyears=nyears,
+            years=years, nages=length(ages),
+            M=as.numeric(t(matrix(rep(pkfitfinal$rep$M, each=nyears), nrow=nyears))),
+            init_naa= exp(c(log(pkfitfinal$rep$recruit[1]), log(pkfitfinal$rep$initN)) + log(1e9)),
+            fix_naa=TRUE)
 fleets <- list(names=c('fleet1', 'survey2', 'survey3', 'survey6'),
                type=c('landings', rep('index',3)),
                estimate_Fmort=c(TRUE, myNA),
                init_Fmort=list(pkfitfinal$rep$F, myNA),
                reFmort=c(FALSE, myNA))
+
+sel_init_pars <- list(c(mle$inf1_fsh_mean, exp(mle$log_slp1_fsh_mean), mle$inf2_fsh_mean, exp(mle$log_slp2_fsh_mean)),
+                      c(mle$inf1_srv2, exp(mle$log_slp1_srv2), mle$inf2_srv2, exp(mle$log_slp2_srv2)),
+                      c(mle$inf1_srv3, exp(mle$log_slp1_srv3)),
+                      c(mle$inf1_srv6, exp(mle$log_slp1_srv6), mle$inf2_srv6, exp(mle$log_slp2_srv6)))
 sel <- list(names=fleets$names,
               form=c('DoubleLogistic', 'DoubleLogistic', 'Logistic', 'DoubleLogistic'),
               fix_pars=list(NA, 3:4, NA, 1:2),
               re=rep('none',4),
-              init_pars=list(c(mle$inf1_fsh_mean, exp(mle$log_slp1_fsh_mean), mle$inf2_fsh_mean, exp(mle$log_slp2_fsh_mean)),
-                             c(mle$inf1_srv2, exp(mle$log_slp1_srv2), mle$inf2_srv2, exp(mle$log_slp2_srv2)),
-                             c(mle$inf1_srv3, exp(mle$log_slp1_srv3)),
-                             c(mle$inf1_srv6, exp(mle$log_slp1_srv6), mle$inf2_srv6, exp(mle$log_slp2_srv6))))
+              init_pars=sel_init_pars)
 catchability <- list(names=fleets$names,
                      form=c('none', rep('linear', times=3)),
                      re=rep('none', 4),
@@ -169,11 +171,11 @@ growth <- list(type='EWAA', waa=pkinput$dat$wt_srv1[1,])
 maturity <- list(type='logistic', init_pars=c(4.5, 1.5), fix_pars=1:2)
 
 selexout <- setup_selex(sel)
-setup_fleets(fleets, population, catchability, selectivity=selexout, data=age_frame)
+setup_fleets(fleets, pop, catchability, selectivity=selexout, data=age_frame)
 recout <- setup_recruitment(recruitment)
 growthout <- setup_growth(growth)
 matout <- setup_maturity(maturity)
-setup_population(population, matout, growthout, recout)
+setup_population(pop, matout, growthout, recout)
 
 
 

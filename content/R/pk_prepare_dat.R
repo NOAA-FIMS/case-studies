@@ -177,3 +177,6 @@ fish_age_comp <- methods::new(AgeComp, nyears, nages)
 fish_index$index_data <- fishery_catch
 fish_age_comp$age_comp_data <-
   fishery_agecomp * catchage$uncertainty#rep(Ncaa, each=nages)
+
+
+FIMS::m_index(age_frame, 'survey2')
