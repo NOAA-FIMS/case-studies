@@ -1,6 +1,4 @@
-
 set_selectivity <- function(form, initial_values, is_estimated, is_random_effect) {
-  
   # Check if the current form is "LogisticSelectivity"
   if (form == "LogisticSelectivity") {
     # Create a new LogisticSelectivity object
@@ -46,7 +44,7 @@ set_selectivity <- function(form, initial_values, is_estimated, is_random_effect
 }
 
 set_fleet <- function(data = age_frame, is_estimated_obs_error, selectivity_ctl,
-                      Fmort_ctl, catchability_ctl) {
+                      selectivity_module_list, Fmort_ctl, catchability_ctl) {
   fishing_fleet_names <- dplyr::filter(
     .data = as.data.frame(data@data),
     type == "landings"
@@ -93,12 +91,18 @@ set_fleet <- function(data = age_frame, is_estimated_obs_error, selectivity_ctl,
     age_comp$age_comp_data <- FIMS::m_agecomp(data, fleet_names[i]) *
       age_comp_uncertainty[[i]]
 
-    selectivity[[i]] <- set_selectivity(
-      form = selectivity_ctl$form[[i]],
-      initial_values = selectivity_ctl$initial_values[[i]], 
-      is_estimated = selectivity_ctl$is_estimated[[i]], 
-      is_random_effect = selectivity_ctl$is_random_effect[[i]]
-    )
+    if (!is.null(selectivity_ctl)) {
+      selectivity[[i]] <- set_selectivity(
+        form = selectivity_ctl$form[[i]],
+        initial_values = selectivity_ctl$initial_values[[i]],
+        is_estimated = selectivity_ctl$is_estimated[[i]],
+        is_random_effect = selectivity_ctl$is_random_effect[[i]]
+      )
+    }
+
+    if (!is.null(selectivity_module_list)) {
+      selectivity[[i]] <- selectivity_module_list[[i]]
+    }
 
     fleet[[i]] <- methods::new(Fleet)
 
@@ -132,141 +136,114 @@ set_fleet <- function(data = age_frame, is_estimated_obs_error, selectivity_ctl,
   return(fleet)
 }
 
-## define the dimensions and global variables
-library(FIMS)
+set_recruitment <- function(form, initial_values, is_estimated, is_random_effect) {
+  if (form == "BevertonHoltRecruitment") {
+    recruitment <- methods::new(BevertonHoltRecruitment)
 
-years <- 1970:2023
-nyears <- length(years)
-nseasons <- 1
-nages <- 10
-ages <- 1:nages
-source("R/pk_prepare_dat.R")
+    # Set initial parameter values
+    recruitment$log_rzero$value <- initial_values$log_rzero
+    recruitment$logit_steep$value <- initial_values$logit_steep
+    recruitment$log_sigma_recruit$value <- initial_values$log_sigma_recruit
+    recruitment$log_devs <- initial_values$log_devs
 
-## test R functions
-clear()
-clear_logs()
-fleet <- set_fleet(
-  data = age_frame,
-  is_estimated_obs_error = list(FALSE, FALSE, FALSE, FALSE),
-  selectivity_ctl = list(
-    form = list(
-      "DoubleLogisticSelectivity",
-      "DoubleLogisticSelectivity",
-      "LogisticSelectivity",
-      "DoubleLogisticSelectivity"
-    ),
-    initial_values = list(
-      c(
-        parfinal$inf1_fsh_mean, exp(parfinal$log_slp1_fsh_mean),
-        parfinal$inf2_fsh_mean, exp(parfinal$log_slp2_fsh_mean)
-      ),
-      c(
-        parfinal$inf1_srv2, exp(parfinal$log_slp1_srv2),
-        parfinal$inf2_srv2, exp(parfinal$log_slp2_srv2)
-      ),
-      c(parfinal$inf1_srv3, exp(parfinal$log_slp1_srv3)),
-      c(
-        parfinal$inf1_srv6, exp(parfinal$log_slp1_srv6),
-        parfinal$inf2_srv6, exp(parfinal$log_slp2_srv6)
-      )
-    ),
-    is_estimated = list(
-      rep(TRUE, 4),
-      rep(TRUE, 4),
-      rep(TRUE, 2),
-      rep(TRUE, 4)
-    ),
-    is_random_effect = list(
-      rep(FALSE, 4),
-      rep(FALSE, 4),
-      rep(FALSE, 2),
-      rep(FALSE, 4)
+    # Set whether each parameter is estimated
+    recruitment$log_rzero$estimated <- is_estimated$log_rzero
+    recruitment$logit_steep$estimated <- is_estimated$logit_steep
+    recruitment$log_sigma_recruit$estimated <- is_estimated$log_sigma_recruit
+    recruitment$estimate_log_devs <- is_estimated$log_devs
+
+    # Set whether each parameter has random effects
+    recruitment$log_rzero$is_random_effect <- is_random_effect$log_rzero
+    recruitment$logit_steep$is_random_effect <- is_random_effect$logit_steep
+    recruitment$log_sigma_recruit$estimated <- is_estimated$log_sigma_recruit
+  }
+  return(recruitment)
+}
+
+set_growth <- function(data, form, initial_values,
+                       is_estimated = NULL, is_random_effect = NULL) {
+  if (form == "EWAAgrowth") {
+    growth <- methods::new(EWAAgrowth)
+    growth$ages <- data$ages
+    # NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now
+    growth$weights <- initial_values$weights
+  }
+  return(growth)
+}
+
+set_maturity <- function(form, initial_values, is_estimated, is_random_effect) {
+  if (form == "LogisticMaturity") {
+    maturity <- methods::new(LogisticMaturity)
+
+    # Set initial parameter values
+    maturity$inflection_point$value <- initial_values$inflection_point
+    maturity$slope$value <- initial_values$slope
+
+    # Set whether each parameter is estimated
+    maturity$inflection_point$estimated <- is_estimated$inflection_point
+    maturity$slope$estimated <- is_estimated$slope
+
+    # Set whether each parameter has random effects
+    maturity$inflection_point$is_random_effect <- is_random_effect$inflection_point
+    maturity$slope$is_random_effect <- is_random_effect$slope
+  }
+
+  return(maturity)
+}
+
+set_population <- function(data, initial_values, is_estimated,
+                           maturity, growth, recruitment) {
+  population <- methods::new(Population)
+
+  population$nages <- data$nages
+  population$ages <- data$ages
+  population$nfleets <- data$nfleets
+  population$nseasons <- data$nseasons
+  population$nyears <- data$nyears
+
+  # Set initial parameter values
+  population$log_M <- initial_values$log_M
+  population$log_init_naa <- initial_values$log_init_naa
+
+  # Set whether each parameter is estimated
+  population$estimate_M <- is_estimated$log_M
+  population$estimate_init_naa <- is_estimated$log_init_naa
+
+  if (typeof(maturity) == "S4") {
+    maturity_module <- maturity
+  } else {
+    maturity_module <- set_maturity(
+      form = maturity$form,
+      initial_values = maturity$initial_values,
+      is_estimated = maturity$is_estimated,
+      is_random_effect = maturity$is_random_effect
     )
-  ),
-  Fmort_ctl = list(
-    is_survey = list(FALSE, TRUE, TRUE, TRUE),
-    estimate_F = list(TRUE, FALSE, FALSE, FALSE),
-    random_F = list(FALSE, FALSE, FALSE, FALSE)
-  ),
-  catchability_ctl = list(
-    log_q = list(
-      0, parfinal$log_q2_mean,
-      parfinal$log_q3_mean, parfinal$inf1_srv6
-    ),
-    estimate_q = list(FALSE, TRUE, TRUE, TRUE),
-    random_q = list(FALSE, FALSE, FALSE, FALSE)
-  )
-)
+  }
 
-# Population module
-estimate_recdevs <- TRUE
-# recruitment
-recruitment <- methods::new(BevertonHoltRecruitment)
-## methods::show(BevertonHoltRecruitment)
-recruitment$log_sigma_recruit$value <- log(parfinal$sigmaR)
-recruitment$log_rzero$value <- parfinal$mean_log_recruit + log(1e9)
-recruitment$log_rzero$is_random_effect <- FALSE
-recruitment$log_rzero$estimated <- TRUE
-## note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run
-recruitment$logit_steep$value <-
-  -log(1.0 - .99999) + log(.99999 - 0.2)
-recruitment$logit_steep$is_random_effect <- FALSE
-recruitment$logit_steep$estimated <- FALSE
-recruitment$estimate_log_devs <- estimate_recdevs
-recruitment$log_devs <-  parfinal$dev_log_recruit[-1]
+  if (typeof(growth) == "S4") {
+    growth_module <- growth
+  } else {
+    growth_module <- set_growth(
+      data = data,
+      form = growth$form,
+      initial_values = growth$initial_values
+    )
+  }
 
-## growth  -- assumes single WAA vector for everything, based on
-## Srv1 above
-waa <- pkinput$dat$wt_srv1
-ewaa_growth <- methods::new(EWAAgrowth)
-ewaa_growth$ages <- ages
-# NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now
-ewaa_growth$weights <- waa[1, ]
-## NOTE: FIMS assumes SSB calculated at the start of the year, so
-## need to adjust ASAP to do so as well for now, need to make
-## timing of SSB calculation part of FIMS later
-## maturity
-## NOTE: for now tricking FIMS into thinking age 0 is age 1, so need to adjust A50 for maturity because FIMS calculations use ages 0-5+ instead of 1-6
-maturity <- new(LogisticMaturity)
-maturity$inflection_point$value <- 4.5
-maturity$inflection_point$is_random_effect <- FALSE
-maturity$inflection_point$estimated <- FALSE
-maturity$slope$value <- 1.5
-maturity$slope$is_random_effect <- FALSE
-maturity$slope$estimated <- FALSE
+  if (typeof(recruitment) == "S4") {
+    recruitment_module <- recruitment
+  } else {
+    recruitment_module <- set_recruitment(
+      form = recruitment$form,
+      initial_values = recruitment$initial_values,
+      is_estimated = recruitment$is_estimated,
+      is_random_effect = recruitment$is_random_effect
+    )
+  }
 
-# population
-population <- new(Population)
-population$log_M <-
-  log(as.numeric(t(matrix(
-    rep(pkfitfinal$rep$M, each = nyears), nrow = nyears
-  ))))
-population$estimate_M <- FALSE
-population$log_init_naa <-
-  c(log(pkfitfinal$rep$recruit[1]), log(pkfitfinal$rep$initN)) + log(1e9)
-population$estimate_init_naa <-
-  FALSE # TRUE , NOTE: fixing at ASAP estimates to test SSB calculations
-population$nages <- nages
-population$ages <- ages
-population$nfleets <- 2 # 1 fleet and 1 survey
-population$nseasons <- nseasons
-population$nyears <- nyears
-## population$prop_female <- 1.0 # ASAP assumption
-population$SetMaturity(maturity$get_id())
-population$SetGrowth(ewaa_growth$get_id())
-population$SetRecruitment(recruitment$get_id())
+  population$SetMaturity(maturity_module$get_id())
+  population$SetGrowth(growth_module$get_id())
+  population$SetRecruitment(recruitment_module$get_id())
 
-
-## make FIMS model
-success <- CreateTMBModel()
-parameters <- list(p = get_fixed())
-obj3 <- TMB::MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
-## report values for the two models
-rep3 <- obj3$report()
-
-## Parameters are in a different order but seem to match
-opt3 <- with(obj3, nlminb(par,fn,gr))
-clear()
-clear_logs()
-rep3
-rm(list = ls())
+  return(population)
+}
