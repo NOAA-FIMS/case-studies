@@ -4,14 +4,14 @@
 
 
 setup_fleets <- function(fleets,population, catchability, selectivity, data){
-  flts <- list()
+  flts <- fltindex <- fltacomp <- list()
   for(i in 1:length(fleets$names)){
     isfleet <- fleets$type[i] == 'landings'
     flts[[i]] <- methods::new(Fleet)
     flts[[i]]$nages <- length(population$ages)
     flts[[i]]$nyears <- population$nyears
-    fltindex <- methods::new(Index, nyears)
-    fltacomp <- methods::new(AgeComp, flts[[i]]$nyears, flts[[i]]$nages)
+    fltindex[[i]] <- methods::new(Index, nyears)
+    fltacomp[[i]] <- methods::new(AgeComp, flts[[i]]$nyears, flts[[i]]$nages)
     fltdat <- filter(data@data, name==fleets$names[i])
     acomp <- FIMS::m_agecomp(age_frame, fleets$names[i])
     if(isfleet){
@@ -19,21 +19,21 @@ setup_fleets <- function(fleets,population, catchability, selectivity, data){
       flts[[i]]$log_Fmort <- log(fleets$init_Fmort[[i]])
       flts[[i]]$estimate_F <- fleets$estimate_F[i]
       flts[[i]]$random_F <- fleets$reFmort[i]
-      fltindex$index_data <- FIMS::m_landings(data)
+      fltindex[[i]]$index_data <- FIMS::m_landings(data)
       flts[[i]]$log_obs_error <- log(filter(fltdat, type=='landings')$uncertainty)
-      fltacomp$age_comp_data <- acomp * filter(fltdat, type=='age')$uncertainty
+      fltacomp[[i]]$age_comp_data <- acomp * filter(fltdat, type=='age')$uncertainty
     } else {
       flts[[i]]$is_survey <- TRUE
       flts[[i]]$log_q <- catchability$init_pars[i]
       flts[[i]]$estimate_q <- is.na(catchability$fix_pars[i])
       flts[[i]]$random_q <- FALSE# catchability$re[i]!='none'
-      fltindex$index_data <- FIMS::m_index(data, fleets$names[i])
+      fltindex[[i]]$index_data <- FIMS::m_index(data, fleets$names[i])
       flts[[i]]$log_obs_error <- log(filter(fltdat, type=='index')$uncertainty)
-      fltacomp$age_comp_data <- acomp * filter(fltdat, type=='age')$uncertainty
+      fltacomp[[i]]$age_comp_data <- acomp * filter(fltdat, type=='age')$uncertainty
     }
     ## Set Index, AgeComp, and Selectivity using the IDs from the modules defined above
-    flts[[i]]$SetObservedIndexData(fltindex$get_id())
-    flts[[i]]$SetObservedAgeCompData(fltacomp$get_id())
+    flts[[i]]$SetObservedIndexData(fltindex[[i]]$get_id())
+    flts[[i]]$SetObservedAgeCompData(fltacomp[[i]]$get_id())
     flts[[i]]$SetSelectivity(selectivity[[i]]$get_id())
   }
   message("Finished setting up fleets")
