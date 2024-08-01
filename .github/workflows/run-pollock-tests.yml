@@ -1,7 +1,8 @@
+name: Run pollock tests
+
 on:
   workflow_dispatch:
-
-name: Run pollock tests (by fleet)
+  push:
 
 jobs:
   build-deploy:
@@ -19,7 +20,7 @@ jobs:
       - name: Run pollock tests 
         run: |
           # Names of required packages
-          packages <- c("dplyr", "tidyr", "ggplot2", "TMB", "reshape2", "here", "remotes", "lubridate")
+          packages <- c("dplyr", "tidyr", "ggplot2", "TMB", "reshape2", "here", "devtools", "lubridate")
 
           # Install packages not yet installed
           installed_packages <- packages %in% rownames(installed.packages())
@@ -27,13 +28,11 @@ jobs:
             install.packages(packages[!installed_packages], repos = "http://cran.us.r-project.org")
           }
           
-          install.packages("FIMS", repos = c("https://noaa-fims.r-universe.dev", "https://cloud.r-project.org"))
-
+          # install.packages("FIMS", repos = c("https://noaa-fims.r-universe.dev", "https://cloud.r-project.org"))
+          devtools::install_github("NOAA-FIMS/FIMS")
+          
           # Load packages
           invisible(lapply(packages, library, character.only = TRUE))
 
-          source(file.path(getwd(), "content", "run_pollock_tests_by_fleet.R"))
+          source(file.path(getwd(), "content", "run_pollock_tests.R"))
         shell: Rscript {0}
-      
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
