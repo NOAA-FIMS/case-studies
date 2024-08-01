@@ -13,7 +13,8 @@ ages <- 1:nages
 ## This will fit the models bridging to FIMS (simplifying)
 ## source("fit_bridge_models.R")
 ## compare changes to model
-source("R/pk_prepare_dat.R")
+# source("R/pk_prepare_dat.R")
+source(file.path(getwd(), "content", "R", "pk_prepare_dat.R"))
 ## Some global settings which I Think we can ignore for now
 estimate_fish_selex <- TRUE
 estimate_survey_selex <- TRUE
@@ -27,7 +28,8 @@ estimate_recdevs <- TRUE
 
 clear()
 clear_logs()
-source("R/pk_prepare_FIMS_inputs.R")
+# source("R/pk_prepare_FIMS_inputs.R")
+source(file.path(getwd(), "content", "R", "pk_prepare_FIMS_inputs.R"))
 ## make FIMS model
 success <- CreateTMBModel()
 parameters <- list(p = get_fixed())
@@ -38,7 +40,8 @@ rep1 <- obj1$report()
 ## Organize input lists by process
 clear()
 clear_logs()
-source("R/pk_prepare_FIMS_inputs_by_process.R")
+# source("R/pk_prepare_FIMS_inputs_by_process.R")
+source(file.path(getwd(), "content", "R", "pk_prepare_FIMS_inputs_by_process.R"))
 ## make FIMS model
 success <- CreateTMBModel()
 parameters <- list(p = get_fixed())
