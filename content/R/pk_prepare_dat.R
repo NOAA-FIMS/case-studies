@@ -2,14 +2,12 @@
 
 ## build a FIMS and PK data set that match
 
-pkfitfinal <- readRDS("data_files/pkfitfinal.RDS")
-pkfit0 <- readRDS("data_files/pkfit0.RDS")
+pkfitfinal <- readRDS(file.path(getwd(), "content", "data_files", "pkfitfinal.RDS"))
+pkfit0 <- readRDS(file.path(getwd(), "content", "data_files", "pkfit0.RDS"))
 parfinal <- pkfitfinal$obj$env$parList()
-pkinput0 <- readRDS('data_files/pkinput0.RDS')
+pkinput0 <- readRDS(file.path(getwd(), "content", "data_files", "pkinput0.RDS"))
 fimsdat <- pkdat0 <- pkinput0$dat
-pkinput <- readRDS('data_files/pkinput.RDS')
-
-
+pkinput <- readRDS(file.path(getwd(), "content", "data_files", "pkinput.RDS"))
 
 ##  need to fill missing years with -999 so it's ignored in FIMS
 ind2 <- 0 * pkfit0$rep$Eindxsurv2 - 999
