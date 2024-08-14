@@ -1,15 +1,11 @@
-
-
 ## build a FIMS and PK data set that match
 
-pkfitfinal <- readRDS("data_files/pkfitfinal.RDS")
-pkfit0 <- readRDS("data_files/pkfit0.RDS")
+pkfitfinal <- readRDS(file.path(getwd(), "content", "data_files", "pkfitfinal.RDS"))
+pkfit0 <- readRDS(file.path(getwd(), "content", "data_files", "pkfit0.RDS"))
 parfinal <- pkfitfinal$obj$env$parList()
-pkinput0 <- readRDS('data_files/pkinput0.RDS')
+pkinput0 <- readRDS(file.path(getwd(), "content", "data_files", "pkinput0.RDS"))
 fimsdat <- pkdat0 <- pkinput0$dat
-pkinput <- readRDS('data_files/pkinput.RDS')
-
-
+pkinput <- readRDS(file.path(getwd(), "content", "data_files", "pkinput.RDS"))
 
 ##  need to fill missing years with -999 so it's ignored in FIMS
 ind2 <- 0 * pkfit0$rep$Eindxsurv2 - 999
@@ -163,20 +159,3 @@ res <- rbind(res, landings, index, catchage, indexage)
 ## rm(landings, index, catchage, indexage)
 
 age_frame <- FIMS::FIMSFrame(res)
-fishery_catch <- FIMS::m_landings(age_frame)
-fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1")
-survey_index2 <- FIMS::m_index(age_frame, "survey2")
-survey_agecomp2 <- FIMS::m_agecomp(age_frame, "survey2")
-survey_index3 <- FIMS::m_index(age_frame, "survey3")
-survey_agecomp3 <- FIMS::m_agecomp(age_frame, "survey3")
-survey_index6 <- FIMS::m_index(age_frame, "survey6")
-survey_agecomp6 <- FIMS::m_agecomp(age_frame, "survey6")
-# need to think about how to deal with multiple fleets - only using 1 fleeet for now
-fish_index <- methods::new(Index, nyears)
-fish_age_comp <- methods::new(AgeComp, nyears, nages)
-fish_index$index_data <- fishery_catch
-fish_age_comp$age_comp_data <-
-  fishery_agecomp * catchage$uncertainty#rep(Ncaa, each=nages)
-
-
-FIMS::m_index(age_frame, 'survey2')
