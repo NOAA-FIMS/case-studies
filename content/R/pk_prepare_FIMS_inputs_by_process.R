@@ -129,53 +129,5 @@ setup_population <- function(population, matout, growthout, recout){
   message("Finished setting up population and linking maturity, growth, recruitment")
 }
 
-## Order of parameters for DL is asc inf, asc slop, desc inf,
-## desc slope
-mle <- parfinal
-data <- age_frame
-myNA <- rep(NA,3)
-pop <- list(ages=ages, nfleets=4, nyears=nyears,
-            years=years, nages=length(ages),
-            M=as.numeric(t(matrix(rep(pkfitfinal$rep$M, each=nyears), nrow=nyears))),
-            init_naa= exp(c(log(pkfitfinal$rep$recruit[1]), log(pkfitfinal$rep$initN)) + log(1e9)),
-            fix_naa=TRUE)
-fleets <- list(names=c('fleet1', 'survey2', 'survey3', 'survey6'),
-               type=c('landings', rep('index',3)),
-               estimate_Fmort=c(TRUE, myNA),
-               init_Fmort=list(pkfitfinal$rep$F, myNA),
-               reFmort=c(FALSE, myNA))
-
-sel_init_pars <- list(c(mle$inf1_fsh_mean, exp(mle$log_slp1_fsh_mean), mle$inf2_fsh_mean, exp(mle$log_slp2_fsh_mean)),
-                      c(mle$inf1_srv2, exp(mle$log_slp1_srv2), mle$inf2_srv2, exp(mle$log_slp2_srv2)),
-                      c(mle$inf1_srv3, exp(mle$log_slp1_srv3)),
-                      c(mle$inf1_srv6, exp(mle$log_slp1_srv6), mle$inf2_srv6, exp(mle$log_slp2_srv6)))
-sel <- list(names=fleets$names,
-              form=c('DoubleLogistic', 'DoubleLogistic', 'Logistic', 'DoubleLogistic'),
-              fix_pars=list(NA, 3:4, NA, 1:2),
-              re=rep('none',4),
-              init_pars=sel_init_pars)
-catchability <- list(names=fleets$names,
-                     form=c('none', rep('linear', times=3)),
-                     re=rep('none', 4),
-                     init_pars=c(NA, mle$log_q2_mean, mle$log_q3_mean, mle$log_q6),
-                     ## init_repars=c('rho'=.8, 'sd'=.1),
-                     fix_pars=c(NA,myNA),
-                     fix_repars=c(NA,myNA))
-recruitment <- list(type='BevertonHolt',
-                    ## R0, steepness, sigmaR
-                    init_pars=c(exp(parfinal$mean_log_recruit + log(1e9)), .99999, parfinal$sigmaR),
-                    fix_pars=c(2:3),
-                    init_recdevs=parfinal$dev_log_recruit[-1],
-                    re=c('none', 'none'))
-growth <- list(type='EWAA', waa=pkinput$dat$wt_srv1[1,])
-maturity <- list(type='logistic', init_pars=c(4.5, 1.5), fix_pars=1:2)
-
-selexout <- setup_selex(sel)
-setup_fleets(fleets, pop, catchability, selectivity=selexout, data=age_frame)
-recout <- setup_recruitment(recruitment)
-growthout <- setup_growth(growth)
-matout <- setup_maturity(maturity)
-setup_population(pop, matout, growthout, recout)
-
 
 
