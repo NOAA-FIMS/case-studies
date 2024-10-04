@@ -24,8 +24,8 @@ website:
         href: https://nmfs-opensci.github.io
         text: "NMFS Open Science"
       - icon: github
-        href: https://github.com/nmfs-opensci
-        text: "NMFS OpenSci"
+        href: https://github.com/NOAA-FIMS/case-studies
+        text: "NOAA FIMS case studies"
 
     style: "docked"
     search: true
