@@ -77,8 +77,8 @@ source("R/get_ss3_data.R")
 # by assigning to fleet -1, these get filtered by get_ss3_data()
 
 # only include age comps with fleet = -4 or 1:
-ss3dat$agecomp <- ss3dat$agecomp |> dplyr::filter(FltSvy %in% c(-4, 1))
-ss3dat$agecomp$FltSvy <- abs(ss3dat$agecomp$FltSvy)
+ss3dat$agecomp <- ss3dat$agecomp |> dplyr::filter(fleet %in% c(-4, 1))
+ss3dat$agecomp$fleet <- abs(ss3dat$agecomp$fleet)
 
 # convert SS3 data into FIMS format using function defined in the R directory
 mydat <- get_ss3_data(ss3dat, fleets = c(1,4), ages = ages)

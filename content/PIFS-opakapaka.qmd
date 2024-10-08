@@ -53,8 +53,13 @@ load(file.path(getwd(), "data_files", "opaka_model.RDS"))
 ## Should now have ss3dat, ss3ctl, and ss3rep in environment
 ## RDS file can also be found at
 #githubURL <- "https://github.com/MOshima-PIFSC/Opaka-FIMS-Case-Study/blob/main/Model/FIMS-em/1/em/opaka_model.RDS"
+# replace ss3dat and ss3ctl loaded from RDS file with new versions 
+# using current r4ss to read ss_new files from github
+opaka_input <- r4ss::SS_read("https://raw.githubusercontent.com/MOshima-PIFSC/Opaka-FIMS-Case-Study/refs/heads/main/Model/FIMS-em/1/em/", ss_new = TRUE)
+ss3dat <- opaka_input$dat
+ss3ctl <- opaka_input$ctl
 
-## Function written by Ian Taylor to get SS3 data into FIMSFrame format
+## Function written by Ian Taylor and Meg Oshima to get SS3 data into FIMSFrame format
 source("./R/get_ss3_data.R")
 
 # Define the dimensions ----
