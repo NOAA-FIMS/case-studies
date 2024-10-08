@@ -102,22 +102,22 @@ get_ss3_data <- function(dat, fleets, ages) {
   # further processing
   age_info <-
     dat$agecomp |>
-    dplyr::filter(FltSvy %in% fleets) |> # filter by requested fleets
-    dplyr::mutate(FltSvy = abs(FltSvy)) |> # convert any negative fleet to positive
-    dplyr::select(!dplyr::starts_with("m", ignore.case = FALSE)) |> # exclude male comps
+    dplyr::filter(fleet %in% fleets) |> # filter by requested fleets
+    dplyr::mutate(fleet = abs(fleet)) |> # convert any negative fleet to positive
+    dplyr::select(!dplyr::matches("^m[0-9]")) |> # exclude male comps
     tidyr::pivot_longer( # convert columns f1...f17 to values in a new "age" colum of a longer table
-      cols = dplyr::starts_with(c("f", "a"), ignore.case = FALSE),
+      cols = dplyr::matches("^f[0-9]") | dplyr::matches("^a[0-9]"), # 2-sex model uses f1, f2, ...; 1-sex model uses a1, a2, ...
       names_to = "age",
       values_to = "value"
     ) |>
     dplyr::mutate(age = as.numeric(substring(age, first = 2))) |> # convert "f17" to 17
-    dplyr::select(Yr, FltSvy, Nsamp, age, value)
+    dplyr::select(year, fleet, Nsamp, age, value)
 
   # add -999 for missing years
   # create empty data frame for all combinations of year, fleet, and age
   age_info_empty <- tidyr::expand_grid(
-    Yr = years,
-    FltSvy = fleets,
+    year = years,
+    fleet = fleets,
     age = ages
   ) |> dplyr::mutate(Nsamp = 1, value = -999 - 0.001)
   # combine the two data frames and remove redundant rows
@@ -125,16 +125,16 @@ get_ss3_data <- function(dat, fleets, ages) {
   # were years with multiple observations from the same fleet
   # due to multiple ageing error matrices
   age_info <- rbind(age_info, age_info_empty) |>
-    dplyr::distinct(Yr, FltSvy, age, .keep_all = TRUE) |>
-    dplyr::arrange(FltSvy, Yr, age)
+    dplyr::distinct(year, fleet, age, .keep_all = TRUE) |>
+    dplyr::arrange(fleet, year, age)
 
   # finish converting age comps to FIMSFrame format
   agecomps <- data.frame(
     type = "age",
-    name = paste0("fleet", abs(age_info$FltSvy)), # abs to include fleet == -4
+    name = paste0("fleet", abs(age_info$fleet)), # abs to include fleet == -4
     age = age_info$age,
-    datestart = paste0(age_info$Yr, "-01-01"),
-    dateend = paste0(age_info$Yr, "-12-31"),
+    datestart = paste0(age_info$year, "-01-01"),
+    dateend = paste0(age_info$year, "-12-31"),
     value = age_info$value + 0.001, # add constant to avoid 0 values
     unit = "",
     # Q: should uncertainty here be the total sample size across bins, or the samples within the bin?
