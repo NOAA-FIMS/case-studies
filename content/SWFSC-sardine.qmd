@@ -330,7 +330,7 @@ ewaa_growth <- methods::new(EWAAgrowth)
 ewaa_growth$ages <- ages
 # NOTE: getting weight-at-age vector from
 # petrale_output$wtatage |>
-#   dplyr::filter(Sex == 1 & Fleet == -1 & Yr == 1876) |>
+#   dplyr::filter(sex == 1 & fleet == -1 & year == 1876) |>
 #   dplyr::select(paste(0:40)) |>
 #   round(4)
 # ewaa_growth$weights <- c(0.019490,0.077760,0.108865,
@@ -338,7 +338,7 @@ ewaa_growth$ages <- ages
 #                          0.196460,0.214155)
 
 
-ewaa_growth$weights <- wtatage %>% filter(Fleet == 1, Yr == 2010) %>% select(as.character(0:10))  %>% t %>%
+ewaa_growth$weights <- wtatage %>% filter(fleet == 1, year == 2010) %>% select(as.character(0:10))  %>% t %>%
   as.vector
 
 # maturity
