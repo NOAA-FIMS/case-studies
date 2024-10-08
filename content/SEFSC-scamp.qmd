@@ -370,7 +370,6 @@ population$log_M <-
 population$estimate_M <- FALSE
 population$log_init_naa <- log(sca$N.age[1, ])
 population$estimate_init_naa <- FALSE
-# population$proportion_female <- rep(1.0,nages) #For scamp, assuming all females (see maturity note above)
 population$nages <- nages
 population$ages <- ages
 population$nfleets <- 3 # 2 fleets and 1 survey
@@ -713,8 +712,8 @@ if ```FIMS::m_landings``` took fleet as an argument, similar to ```FIMS::m_ageco
 
 ## List any issues that you ran into or found
 
-The FIMS feature to assign proportion female at age is not yet functional. FIMS accepts proportion female at age
-as input, but does not use that input and instead hard-codes a 50:50 sex ratio. Many stocks
+The FIMS feature to assign proportion female at age is not yet functional and
+it is hard-coded using a 50:50 sex ratio. Many stocks
 in the southeast are protogynous hermphrodites, such that individuals start life as females and later convert to males.
 This life history creates a sex ratio that is tilted toward females for younger ages and males for older ages.
 
