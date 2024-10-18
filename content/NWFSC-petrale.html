@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.55">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -136,7 +136,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>
       <div class="sidebar-tools-main tools-wide">
     <a href="https://nmfs-opensci.github.io" title="NMFS Open Science" class="quarto-navigation-tool px-1" aria-label="NMFS Open Science"><i class="bi bi-globe"></i></a>
-    <a href="https://github.com/nmfs-opensci" title="NMFS OpenSci" class="quarto-navigation-tool px-1" aria-label="NMFS OpenSci"><i class="bi bi-github"></i></a>
+    <a href="https://github.com/NOAA-FIMS/case-studies" title="NOAA FIMS case studies" class="quarto-navigation-tool px-1" aria-label="NOAA FIMS case studies"><i class="bi bi-github"></i></a>
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div>
@@ -303,9 +303,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li>R version: R version 4.4.1 (2024-06-14)<br>
 </li>
-<li>TMB version: 1.9.14<br>
+<li>TMB version: 1.9.15<br>
 </li>
-<li>FIMS commit: 081972c<br>
+<li>FIMS commit: f0d4e76<br>
 </li>
 <li>Stock name: West Coast Petrale Sole<br>
 </li>
@@ -371,8 +371,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co"># by assigning to fleet -1, these get filtered by get_ss3_data()</span></span>
 <span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="co"># only include age comps with fleet = -4 or 1:</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>ss3dat<span class="sc">$</span>agecomp <span class="ot">&lt;-</span> ss3dat<span class="sc">$</span>agecomp <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(FltSvy <span class="sc">%in%</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="dv">1</span>))</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>ss3dat<span class="sc">$</span>agecomp<span class="sc">$</span>FltSvy <span class="ot">&lt;-</span> <span class="fu">abs</span>(ss3dat<span class="sc">$</span>agecomp<span class="sc">$</span>FltSvy)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>ss3dat<span class="sc">$</span>agecomp <span class="ot">&lt;-</span> ss3dat<span class="sc">$</span>agecomp <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(fleet <span class="sc">%in%</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="dv">1</span>))</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>ss3dat<span class="sc">$</span>agecomp<span class="sc">$</span>fleet <span class="ot">&lt;-</span> <span class="fu">abs</span>(ss3dat<span class="sc">$</span>agecomp<span class="sc">$</span>fleet)</span>
 <span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co"># convert SS3 data into FIMS format using function defined in the R directory</span></span>
 <span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>mydat <span class="ot">&lt;-</span> <span class="fu">get_ss3_data</span>(ss3dat, <span class="at">fleets =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">4</span>), <span class="at">ages =</span> ages)</span>

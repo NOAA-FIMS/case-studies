@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.55">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -136,7 +136,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>
       <div class="sidebar-tools-main tools-wide">
     <a href="https://nmfs-opensci.github.io" title="NMFS Open Science" class="quarto-navigation-tool px-1" aria-label="NMFS Open Science"><i class="bi bi-globe"></i></a>
-    <a href="https://github.com/nmfs-opensci" title="NMFS OpenSci" class="quarto-navigation-tool px-1" aria-label="NMFS OpenSci"><i class="bi bi-github"></i></a>
+    <a href="https://github.com/NOAA-FIMS/case-studies" title="NOAA FIMS case studies" class="quarto-navigation-tool px-1" aria-label="NOAA FIMS case studies"><i class="bi bi-github"></i></a>
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div>
@@ -307,9 +307,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li>R version: R version 4.4.1 (2024-06-14)<br>
 </li>
-<li>TMB version: 1.9.14<br>
+<li>TMB version: 1.9.15<br>
 </li>
-<li>FIMS commit: 081972c<br>
+<li>FIMS commit: f0d4e76<br>
 </li>
 <li>Stock name: Pacific sardine northern subpopulation<br>
 </li>
@@ -612,7 +612,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-251"><a href="#cb5-251" aria-hidden="true" tabindex="-1"></a>ewaa_growth<span class="sc">$</span>ages <span class="ot">&lt;-</span> ages</span>
 <span id="cb5-252"><a href="#cb5-252" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: getting weight-at-age vector from</span></span>
 <span id="cb5-253"><a href="#cb5-253" aria-hidden="true" tabindex="-1"></a><span class="co"># petrale_output$wtatage |&gt;</span></span>
-<span id="cb5-254"><a href="#cb5-254" aria-hidden="true" tabindex="-1"></a><span class="co">#   dplyr::filter(Sex == 1 &amp; Fleet == -1 &amp; Yr == 1876) |&gt;</span></span>
+<span id="cb5-254"><a href="#cb5-254" aria-hidden="true" tabindex="-1"></a><span class="co">#   dplyr::filter(sex == 1 &amp; fleet == -1 &amp; year == 1876) |&gt;</span></span>
 <span id="cb5-255"><a href="#cb5-255" aria-hidden="true" tabindex="-1"></a><span class="co">#   dplyr::select(paste(0:40)) |&gt;</span></span>
 <span id="cb5-256"><a href="#cb5-256" aria-hidden="true" tabindex="-1"></a><span class="co">#   round(4)</span></span>
 <span id="cb5-257"><a href="#cb5-257" aria-hidden="true" tabindex="-1"></a><span class="co"># ewaa_growth$weights &lt;- c(0.019490,0.077760,0.108865,</span></span>
@@ -620,7 +620,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-259"><a href="#cb5-259" aria-hidden="true" tabindex="-1"></a><span class="co">#                          0.196460,0.214155)</span></span>
 <span id="cb5-260"><a href="#cb5-260" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-261"><a href="#cb5-261" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-262"><a href="#cb5-262" aria-hidden="true" tabindex="-1"></a>ewaa_growth<span class="sc">$</span>weights <span class="ot">&lt;-</span> wtatage <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Fleet <span class="sc">==</span> <span class="dv">1</span>, Yr <span class="sc">==</span> <span class="dv">2010</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="fu">as.character</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>))  <span class="sc">%&gt;%</span> t <span class="sc">%&gt;%</span></span>
+<span id="cb5-262"><a href="#cb5-262" aria-hidden="true" tabindex="-1"></a>ewaa_growth<span class="sc">$</span>weights <span class="ot">&lt;-</span> wtatage <span class="sc">%&gt;%</span> <span class="fu">filter</span>(fleet <span class="sc">==</span> <span class="dv">1</span>, year <span class="sc">==</span> <span class="dv">2010</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="fu">as.character</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>))  <span class="sc">%&gt;%</span> t <span class="sc">%&gt;%</span></span>
 <span id="cb5-263"><a href="#cb5-263" aria-hidden="true" tabindex="-1"></a>  as.vector</span>
 <span id="cb5-264"><a href="#cb5-264" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-265"><a href="#cb5-265" aria-hidden="true" tabindex="-1"></a><span class="co"># maturity</span></span>
