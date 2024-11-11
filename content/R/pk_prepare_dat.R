@@ -155,7 +155,25 @@ indexage <- rbind(indexage2, indexage3, indexage6)
 index <- rbind(index2, index3, index6)
 ## indexage=indexage2
 ## index=index2
-res <- rbind(res, landings, index, catchage, indexage)
-## rm(landings, index, catchage, indexage)
+
+timingfishery <- data.frame(
+  datestart = rep(paste0(
+    seq(fimsdat$styr, fimsdat$endyr), "-01-01"
+  ), each = nages),
+  dateend = rep(paste0(
+    seq(fimsdat$styr, fimsdat$endyr), "-12-31"
+  ), each = nages)
+)
+weightsfishery <- data.frame(
+  type = "weight-at-age",
+  name = "fleet1",
+  age = seq(1, nages),
+  value = pkinput$dat$wt_srv1[1,],
+  uncertainty = NA,
+  unit = "mt"
+)
+weightatage_data <- merge(timingfishery, weightsfishery)
+
+res <- rbind(res, landings, index, catchage, indexage, weightatage_data)
 
 age_frame <- FIMS::FIMSFrame(res)
