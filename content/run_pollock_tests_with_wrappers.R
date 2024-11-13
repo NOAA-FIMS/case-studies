@@ -1,20 +1,15 @@
-# .rs.restartR()
 # options("install.lock" = FALSE)
-# 
 # remove.packages("FIMS")
 # detach("package:FIMS", unload = TRUE)
-# install.packages("FIMS", repos = c("https://noaa-fims.r-universe.dev", "https://cloud.r-project.org"), 
-#                  lib = "C:/Users/bai.li/AppData/Local/R/win-library/4.4")
-# library(FIMS, lib.loc = "C:/Users/bai.li/AppData/Local/R/win-library/4.4")
+# install.packages("FIMS", repos = c("https://noaa-fims.r-universe.dev", "https://cloud.r-project.org"))
+# library(FIMS)
 # source(file.path("content", "run_pollock_tests.R"))
-# save(parameters, rep1, file = file.path("content", "data_files", "pollock_output_rep1.RData"))
+# save(parameters, rep1, obj1, file = file.path("content", "data_files", "pollock_output_rep1.RData"))
 # rm(list = ls())
-# 
-# .rs.restartR()
-# options("install.lock" = FALSE)
-# 
-# detach("package:FIMS", unload = TRUE)
-# remove.packages("FIMS")
+
+options("install.lock" = FALSE)
+detach("package:FIMS", unload = TRUE)
+remove.packages("FIMS")
 remotes::install_github(
   repo = "NOAA-FIMS/FIMS",
   ref = "dev-r-setup-wrapper-functions"
@@ -58,7 +53,6 @@ fleets <- list(
   survey3 = survey3,
   survey6 = survey6
 )
-
 
 # Create default parameters
 default_parameters <- fims_frame |>
@@ -126,7 +120,7 @@ parameters_wrapper <- default_parameters |>
         BevertonHoltRecruitment.log_rzero.value = parfinal$mean_log_recruit + log(1e9),
         BevertonHoltRecruitment.logit_steep.value = -log(1.0 - .99999) + log(.99999 - 0.2),
         BevertonHoltRecruitment.log_devs.value = parfinal$dev_log_recruit[-1],
-        TMBDnormDistribution.log_sd.value = log(parfinal$sigmaR)
+        TMBDnormDistribution.log_sd.value = parfinal$sigmaR
       )
     )
   ) |>
@@ -162,7 +156,15 @@ rep_wrappers <- fit@report
 
 load(file.path(getwd(), "content", "data_files", "pollock_output_rep1.RData"))
 all.equal(parameters$p, fit@input$parameters$p)
-all.equal(rep1, rep_wrappers)
-cbind(parameters$p, fit@input$parameters$p, parameters$p-fit@input$parameters$p)
+all.equal(unname(obj1$par), fit@estimates$value[fit@estimates$name == "p"])
+
+rep1_names <- names(rep1)
+filtered_names <- rep1_names[!grepl("nll", rep1_names)]
+for (name in filtered_names){
+  all.equal(rep1[[name]], rep_wrappers[[name]])
+}
+
+c(rep1$age_comp_nll, rep1$index_nll, rep1$rec_nll, rep1$jnll)
+c(rep_wrappers$nll_components, rep_wrappers$jnll)
 
 clear()
