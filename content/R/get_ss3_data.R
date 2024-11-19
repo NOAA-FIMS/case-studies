@@ -29,26 +29,27 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
   #    m_landings() doesn't accept a fleet name.
 
   # aggregate landings across fleets
-  catch_by_year <- dat$catch |>
-    dplyr::group_by(year) |>
-    dplyr::summarize(catch = sum(catch), uncertainty = mean(catch_se)) |> 
-    dplyr::filter(year != -999)
+  catch_by_year_fleet <- dat$catch |>
+    #dplyr::group_by(year) |>
+    #dplyr::summarize(catch = sum(catch), uncertainty = mean(catch_se)) |> 
+    dplyr::filter(year != -999)  |> 
+    dplyr::filter(fleet %in% fleets)
 
   # convert landings to FIMSFrame format
   landings <- data.frame(
     type = "landings",
-    name = paste0("fleet1"), # landings aggregated to fleet 1
+    name = paste0("fleet", catch_by_year_fleet$fleet), # landings aggregated to fleet 1
     age = NA,
-    datestart = paste0(catch_by_year$year, "-01-01"),
-    dateend = paste0(catch_by_year$year, "-12-31"),
-    value = catch_by_year$catch,
+    datestart = paste0(catch_by_year_fleet$year, "-01-01"),
+    dateend = paste0(catch_by_year_fleet$year, "-12-31"),
+    value = catch_by_year_fleet$catch,
     unit = "mt",
-    uncertainty = catch_by_year$uncertainty
+    uncertainty = catch_by_year_fleet$catch_se
   )
 
   # check for any gaps in landings time series
-  years <- min(catch_by_year$year):max(catch_by_year$year)
-  if (!all(years %in% catch_by_year$year)) {
+  years <- min(catch_by_year_fleet$year):max(catch_by_year_fleet$year)
+  if (!all(years %in% catch_by_year_fleet$year)) {
     stop("missing years in landings")
   }
 
