@@ -27,6 +27,7 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
 
   # Q: is it true that we can only have a single landings fleet? 
   #    m_landings() doesn't accept a fleet name.
+  # Meg comment: I modified the catch to give from all `fleets` and can index them like in SEFSC scamp case study example for now.
 
   # aggregate landings across fleets
   catch_by_year_fleet <- dat$catch |>
