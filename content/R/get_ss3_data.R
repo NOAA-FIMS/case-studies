@@ -182,7 +182,7 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
 
   # finish converting age comps to FIMSFrame format
   lencomps <- data.frame(
-    type = "length",
+    type = "length-comp",
     name = paste0("fleet", abs(len_info$fleet)), # abs to include fleet == -4
     age = NA,
     datestart = paste0(len_info$year, "-01-01"),
