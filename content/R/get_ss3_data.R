@@ -161,8 +161,8 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
     #leaving out the re-scaling part for females to 1
     len_info <-
     dat$lencomp |>
-    dplyr::filter(FltSvy %in% fleets) |> # filter by requested fleets
-    dplyr::mutate(fleet = abs(FltSvy)) |> # convert any negative fleet to positive
+    dplyr::filter(fleet %in% fleets) |> # filter by requested fleets
+    dplyr::mutate(fleet = abs(fleet)) |> # convert any negative fleet to positive
     dplyr::select(!dplyr::matches("^m[0-9]")) |> # exclude male comps
     tidyr::pivot_longer( # convert columns f1...f17 to values in a new "length" colum of a longer table
       cols = dplyr::matches("^f[0-9]") | dplyr::matches("^l[0-9]"), # 2-sex model uses f1, f2, ...; 1-sex model uses a1, a2, ...
@@ -170,7 +170,6 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
       values_to = "value"
     ) |>
     dplyr::mutate(length = as.numeric(substring(length, first = 2))) |> # convert "l17" to 17
-    dplyr::rename("year" = "Yr") |> 
     dplyr::select(year, fleet, Nsamp, length, value)
 
   # add -999 for missing years
