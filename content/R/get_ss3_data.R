@@ -18,6 +18,7 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
     type = character(),
     name = character(),
     age = integer(),
+    length = integer(),
     datestart = character(),
     dateend = character(),
     value = double(),
@@ -41,6 +42,7 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
     type = "landings",
     name = paste0("fleet", catch_by_year_fleet$fleet), # landings aggregated to fleet 1
     age = NA,
+    length = NA, 
     datestart = paste0(catch_by_year_fleet$year, "-01-01"),
     dateend = paste0(catch_by_year_fleet$year, "-12-31"),
     value = catch_by_year_fleet$catch,
@@ -74,6 +76,7 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
     type = "index",
     name = paste0("fleet", index_info$index),
     age = NA,
+    length = NA, 
     datestart = paste0(index_info$year, "-01-01"),
     dateend = paste0(index_info$year, "-12-31"),
     value = index_info$obs,
@@ -138,6 +141,7 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
     type = "age",
     name = paste0("fleet", abs(age_info$fleet)), # abs to include fleet == -4
     age = age_info$age,
+    length = NA, 
     datestart = paste0(age_info$year, "-01-01"),
     dateend = paste0(age_info$year, "-12-31"),
     value = age_info$value + 0.001, # add constant to avoid 0 values
@@ -157,8 +161,8 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
     #leaving out the re-scaling part for females to 1
     len_info <-
     dat$lencomp |>
-    dplyr::filter(fleet %in% fleets) |> # filter by requested fleets
-    dplyr::mutate(fleet = abs(fleet)) |> # convert any negative fleet to positive
+    dplyr::filter(FltSvy %in% fleets) |> # filter by requested fleets
+    dplyr::mutate(fleet = abs(FltSvy)) |> # convert any negative fleet to positive
     dplyr::select(!dplyr::matches("^m[0-9]")) |> # exclude male comps
     tidyr::pivot_longer( # convert columns f1...f17 to values in a new "length" colum of a longer table
       cols = dplyr::matches("^f[0-9]") | dplyr::matches("^l[0-9]"), # 2-sex model uses f1, f2, ...; 1-sex model uses a1, a2, ...
@@ -166,6 +170,7 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
       values_to = "value"
     ) |>
     dplyr::mutate(length = as.numeric(substring(length, first = 2))) |> # convert "l17" to 17
+    dplyr::rename("year" = "Yr") |> 
     dplyr::select(year, fleet, Nsamp, length, value)
 
   # add -999 for missing years
@@ -182,9 +187,10 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
 
   # finish converting age comps to FIMSFrame format
   lencomps <- data.frame(
-    type = "length-comp",
+    type = "length-comp", #will likely need to change name 
     name = paste0("fleet", abs(len_info$fleet)), # abs to include fleet == -4
     age = NA,
+    length = len_info$length,
     datestart = paste0(len_info$year, "-01-01"),
     dateend = paste0(len_info$year, "-12-31"),
     value = len_info$value + 0.001, # add constant to avoid 0 values
