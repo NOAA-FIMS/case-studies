@@ -1,0 +1,400 @@
+---
+title: PIFSC Opakapaka Case Study with Length Data
+format:
+  html:
+    code-fold: true
+---
+
+## The setup
+
+```{r}
+#| echo: false
+R_version <- version$version.string
+TMB_version <- packageDescription("TMB")$Version
+FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
+r4ss_version <- packageVersion('r4ss')
+```
+
+* R version = `R_version`
+* TMB version = `TMB_version`
+* FIMS commit = `FIMS_commit`
+* `r4ss` version = `r4ss_version`  
+* Stock name: Main Hawaiian Islands Opakapaka
+* Region: Pacific Islands
+* Analyst: Meg Oshima
+
+## Simplifications made to the model
+
+* Removed size-frequency data
+* Removed super-periods for length composition data
+* Removed data weighting
+* Removed initial depletion estimation
+* Removed growth platoons
+* Fix selectivity for commercial fishery
+
+## Running FIMS
+
+#### Initial setup 
+This step involves reading in the SS3 model information (data, control, and report files), converting the data to FIMS format, and defining the dimensions.
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(FIMS)
+library(TMB)
+library(r4ss)
+load(file.path(getwd(), "content", "data_files", "opaka_length.RDS"))
+## Should now have opaka_dat, opaka_ctl, and rep in environment
+## Function written by Ian Taylor and Meg Oshima to get SS3 data into FIMSFrame format
+source("./content/R/get_ss3_data.R")
+
+# Define the dimensions ----
+### years from 1 to 75
+years <- seq(opaka_dat$styr, opaka_dat$endyr)
+nyears <- length(years)
+nseasons <- 1
+ages <- seq(1, 21)
+nages <- length(ages)
+lengths <- opaka_dat$lbin_vector
+nlengths <- length(lengths)
+
+# Data prep ----
+## Use R/get_ss3_data function to get from data.ss to FIMSFrame
+opaka_dat_fims <- get_ss3_data(opaka_dat, fleets = c(1,2,3,4), ages = ages, lengths = lengths)
+## length-at-age conversion matrix 
+#Growth function values to create length age conversion matrix from model
+#comparison project
+mg_pars <- rep$parameters  |> 
+dplyr::filter(stringr::str_detect(Label, "_GP_"))
+Linf <- mg_pars$Value[3]
+K <- mg_pars$Value[4]
+a0 <- -0.29
+amax <- 21
+cv <- mg_pars$Value[5]
+
+L2Wa <- mg_pars$Value[7]
+L2Wb <- mg_pars$Value[8]
+
+AtoL <- function(a,Linf,K,a_0){
+  L <- Linf*(1-exp(-K*(a-a_0)))
+}
+
+ages <- 1:amax
+len_bins <- lengths
+
+#Create length at age conversion matrix and fill proportions using above 
+#growth parameters
+length_age_conversion <- matrix(NA,nrow=length(ages),ncol=length(len_bins))
+for(i in seq_along(ages)){
+  #Calculate mean length at age to spread lengths around
+  mean_length <- AtoL(ages[i],Linf,K,a0)
+  #mean_length <- AtoLSchnute(ages[i],L1,L2,a1,a2,Ks)
+  #Calculate the cumulative proportion shorter than each composition length
+  temp_len_probs<-pnorm(q=len_bins,mean=mean_length,sd=mean_length*cv)
+  #Reset the first length proportion to zero so the first bin includes all
+  #density smaller than that bin
+  temp_len_probs[1]<-0
+  #subtract the offset length probabilities to calculate the proportion in each
+  #bin. For each length bin the proportion is how many fish are larger than this
+  #length but shorter than the next bin length.
+  temp_len_probs <- c(temp_len_probs[-1],1)-temp_len_probs
+  length_age_conversion[i,] <- temp_len_probs
+}
+colnames(length_age_conversion) <- len_bins
+rownames(length_age_conversion) <- ages
+
+#Extract years and fleets from milestone 1 data
+start_date <- unique(opaka_dat_fims$datestart[opaka_dat_fims$type=="landings"])
+end_date <- unique(opaka_dat_fims$dateend[opaka_dat_fims$type=="landings"])
+observers <- unique(opaka_dat_fims$name[opaka_dat_fims$type=="length-comp"])
+
+#Create data frame for new fleet and year specific length at age conversion proportions
+#These are identical across years and fleets in this default example
+length_age_data <- opaka_dat_fims[rep(1,length(ages)*
+                                    length(len_bins)*
+                                    length(start_date)*
+                                    length(observers)),]
+
+row_index <- 1
+for(k in seq_along(start_date)){
+  for(l in seq_along(observers)){
+    for(i in seq_along(ages)){
+      for(j in seq_along(len_bins)){
+        length_age_data[row_index,] <- c("length-at-age",
+                                         observers[l],
+                                         ages[i],
+                                         len_bins[j],
+                                         start_date[k],
+                                         end_date[k],
+                                         length_age_conversion[i,j],
+                                         "proportion",
+                                         30) #is this neff? can it vary by year?
+        row_index <- row_index + 1
+      }
+    }
+  }
+}
+opaka_dat_fims <- rbind(opaka_dat_fims, length_age_data)
+
+```
+
+#### Set up FIMS model  
+
+```{r}
+length_frame <- FIMS::FIMSFrame(opaka_dat_fims)
+
+# fishery data ----
+fims_landings <- FIMS::m_landings(length_frame)
+# commercial fishery
+commercial_landings <- methods::new(Index, nyears)
+commercial_landings$index_data <- fims_landings[1:nyears]
+commercial_cpue <- methods::new(Index, nyears)
+commercial_cpue$index_data <- FIMS::m_index(length_frame, "fleet1")
+# non-commercial fishery
+non_comm_landings <- methods::new(Index, nyears)
+non_comm_landings$index_data <- fims_landings[(nyears+1):length(fims_landings)]
+
+# survey data ----
+# camera survey
+camera_index <- methods::new(Index, nyears)
+camera_index$index_data <- FIMS::m_index(length_frame, "fleet2")
+
+# camera_agecomp <- methods::new(AgeComp, nyears, nages)
+# camera_agecomp$age_comp_data <- FIMS::m_agecomp(length_frame, "fleet2")
+
+camera_lencomp <- methods::new(LengthComp, nyears, nlengths)
+camera_lencomp$length_comp_data <- FIMS::m_lengthcomp(length_frame, "fleet2")
+camera_length_at_age <- FIMS::m_length_at_age(length_frame, "fleet2")
+
+# fishing survey
+resfish_index <- methods::new(Index, nyears)
+resfish_index$index_data <- as.numeric(FIMS::m_index(length_frame, "fleet4")) #not sure why it is being converted to character so putting as.numeric for now to get it to correct type
+
+# resfish_agecomp <- methods::new(AgeComp, nyears, nages)
+# resfish_agecomp$age_comp_data <- FIMS::m_agecomp(length_frame, "fleet4")
+
+resfish_lencomp <- methods::new(LengthComp, nyears, nlengths)
+resfish_lencomp$length_comp_data <- as.numeric(FIMS::m_lengthcomp(length_frame, "fleet4"))
+resfish_length_at_age <- FIMS::m_length_at_age(length_frame, "fleet4")
+
+# selectivity ----
+selex_ss <- rep$parameters |> filter(stringr::str_detect(Label, "Size"))
+
+commercial_selectivity <- methods::new(LogisticSelectivity)
+commercial_selectivity$inflection_point[1]$value <- selex_ss$Value[1]
+commercial_selectivity$inflection_point[1]$is_random_effect <- FALSE
+commercial_selectivity$inflection_point[1]$estimated <- FALSE
+commercial_selectivity$slope[1]$value <- selex_ss$Value[2]
+commercial_selectivity$slope[1]$is_random_effect <- FALSE
+commercial_selectivity$slope[1]$estimated <- FALSE
+
+non_comm_selectivity <- methods::new(LogisticSelectivity)
+non_comm_selectivity$inflection_point[1]$value <- selex_ss$Value[5]
+non_comm_selectivity$inflection_point[1]$is_random_effect <- FALSE
+non_comm_selectivity$inflection_point[1]$estimated <- FALSE
+non_comm_selectivity$slope[1]$value <- selex_ss$Value[6]
+non_comm_selectivity$slope[1]$is_random_effect <- FALSE
+non_comm_selectivity$slope[1]$estimated <- FALSE
+
+camera_selectivity <- methods::new(LogisticSelectivity)
+camera_selectivity$inflection_point[1]$value <- selex_ss$Value[3]
+camera_selectivity$inflection_point[1]$is_random_effect <- FALSE
+camera_selectivity$inflection_point[1]$estimated <- TRUE
+camera_selectivity$slope[1]$value <- selex_ss$Value[4]
+camera_selectivity$slope[1]$is_random_effect <- FALSE
+camera_selectivity$slope[1]$estimated <- TRUE
+
+resfish_selectivity <- methods::new(DoubleLogisticSelectivity)
+resfish_selectivity$inflection_point_asc[1]$value <- selex_ss$Value[7]
+resfish_selectivity$inflection_point_asc[1]$is_random_effect <- FALSE  
+resfish_selectivity$inflection_point_asc[1]$estimated <- TRUE
+
+resfish_selectivity$inflection_point_desc[1]$value <- 40
+resfish_selectivity$inflection_point_desc[1]$is_random_effect <- FALSE
+resfish_selectivity$inflection_point_desc[1]$estimated <- TRUE
+
+resfish_selectivity$slope_asc[1]$value <- exp(selex_ss$Value[9]) #not sure if this is correct based on SS3 user manual 
+resfish_selectivity$slope_asc[1]$is_random_effect <- FALSE 
+resfish_selectivity$slope_asc[1]$estimated <- TRUE
+
+resfish_selectivity$slope_desc[1]$value <- .4 #not sure how to translate ss values 
+resfish_selectivity$slope_desc[1]$is_random_effect <- FALSE
+resfish_selectivity$slope_desc[1]$estimated <- TRUE
+
+# fleet objects ----
+
+# commercial fleet 
+commercial_fleet <- methods::new(Fleet)
+# Set nyears and nages
+commercial_fleet$nages <- nages
+commercial_fleet$nyears <- nyears
+# Set values for log_Fmort
+commercial_fleet$log_Fmort <- new(ParameterVector, log(rep$exploitation$FRS), nyears) # 
+# Turn on estimation for F
+commercial_fleet$log_Fmort$set_all_estimable(TRUE)
+commercial_fleet$log_q[1]$value <- log(1.0)
+commercial_fleet$estimate_q <- FALSE
+commercial_fleet$random_q <- FALSE
+commercial_fleet$SetObservedIndexData(commercial_landings$get_id())
+commercial_fleet$SetSelectivity(commercial_selectivity$get_id())
+# non_commercial fleet 
+non_commercial_fleet <- methods::new(Fleet)
+# Set nyears and nages
+non_commercial_fleet$nages <- nages
+non_commercial_fleet$nyears <- nyears
+# Set values for log_Fmort
+non_commercial_fleet$log_Fmort <- new(ParameterVector, log(rep$exploitation$Non_comm), nyears) # 
+# Turn on estimation for F
+non_commercial_fleet$log_Fmort$set_all_estimable(TRUE)
+non_commercial_fleet$log_q[1]$value <- log(1.0)
+non_commercial_fleet$estimate_q <- FALSE
+non_commercial_fleet$random_q <- FALSE
+non_commercial_fleet$SetObservedIndexData(non_comm_landings$get_id())
+non_commercial_fleet$SetSelectivity(non_comm_selectivity$get_id())
+
+# survey objects ----
+# camera survey 
+camera_survey <- methods::new(Fleet)
+camera_survey$is_survey <- TRUE
+camera_survey$nages <- nages
+camera_survey$nyears <- nyears
+camera_survey$nlengths <- nlengths
+camera_survey$log_q[1]$value <- -4.12772 #rep$parameters  |> filter(stringr::str_detect(Label, "LnQ_base_BFISH(2)")) |> pull(Value)
+camera_survey$estimate_q <- TRUE
+camera_survey$random_q <- FALSE
+camera_survey$SetObservedIndexData(camera_index$get_id())
+camera_survey$SetSelectivity(camera_selectivity$get_id())
+camera_survey$SetObservedLengthCompData(camera_lencomp$get_id())
+
+# research fishing survey 
+resfish_survey <- methods::new(Fleet)
+resfish_survey$is_survey <- TRUE
+resfish_survey$nages <- nages
+resfish_survey$nyears <- nyears
+resfish_survey$nlengths <- nlengths
+resfish_survey$log_q[1]$value <- -5.67861 #rep$parameters  |> filter(stringr::str_detect(Label, "LnQ_base_BFISH_ResFish")) |> pull(Value)
+resfish_survey$estimate_q <- TRUE
+resfish_survey$random_q <- FALSE
+resfish_survey$SetObservedIndexData(resfish_index$get_id())
+resfish_survey$SetSelectivity(resfish_selectivity$get_id())
+resfish_survey$SetObservedLengthCompData(resfish_lencomp$get_id())
+
+# distributions ---- 
+# commercial cpue
+commercial_fleet_index_distribution <- new_data_distribution(
+  module = commercial_fleet,
+  family = lognormal(link = "log"),
+  sd = list(
+    value = rep(sqrt(log(0.01^2 + 1)), nyears),
+    estimated = FALSE
+  ),
+  data_type = "index"
+)
+
+# length comps
+camera_survey_lengthcomp_distribution <- new_data_distribution(
+  module = camera_survey,
+  family = multinomial(link = "logit"),
+  data_type = "lengthcomp"
+)
+
+resfish_survey_survey_lengthcomp_distribution <- new_data_distribution(
+  module = resfish_survey,
+  family = multinomial(link = "logit"),
+  data_type = "lengthcomp"
+)
+#Set length-at-age conversion matrix
+camera_survey$age_length_conversion_matrix <- new(ParameterVector,as.numeric(camera_length_at_age),nages*nlengths)
+resfish_survey$age_length_conversion_matrix <- new(ParameterVector,as.numeric(resfish_length_at_age),nages*nlengths)
+# Turn off estimation for length-at-age
+camera_survey$age_length_conversion_matrix$set_all_estimable(FALSE)
+camera_survey$age_length_conversion_matrix$set_all_random(FALSE)
+resfish_survey$age_length_conversion_matrix$set_all_estimable(FALSE)
+resfish_survey$age_length_conversion_matrix$set_all_random(FALSE)
+
+# population ---- 
+#Recruitment
+recruitment <- methods::new(BevertonHoltRecruitment)
+#There are two parameters we need to set-up: *log_rzero*, and *logit_steep*.
+recruitment$log_rzero[1]$value <- opaka_ctl$SR_parms["SR_LN(R0)", "INIT"]
+recruitment$log_rzero[1]$is_random_effect <- FALSE
+recruitment$log_rzero[1]$estimated <- TRUE
+recruitment$logit_steep[1]$value <- -log(1.0 - 0.76) + log(0.76 - 0.2)
+recruitment$logit_steep[1]$is_random_effect <- FALSE
+recruitment$logit_steep[1]$estimated <- FALSE
+recdevs <- rep$parameters |> filter(stringr::str_detect(Label, "RecrDev")) |> select(Label, Value)
+recruitment$log_devs <- new(ParameterVector, c(0, as.numeric(recdevs$Value)), nyears)
+#distribution to estimate log_devs
+recruitment_distribution <- new_process_distribution(
+  module = recruitment,
+  par = "log_devs",
+  family = gaussian(),
+  sd = list(value = 0.52, estimated = FALSE),
+  is_random_effect = FALSE
+)
+
+# growth 
+ewaa_growth <- methods::new(EWAAgrowth)
+ewaa_growth$ages <- ages
+weights <- rep$wtatage |> 
+dplyr::filter(sex == 1 & fleet == 1 & year == 1949) |> 
+dplyr::select(paste(1:21)) |> 
+round(4)
+ewaa_growth$weights <- unlist(weights)
+
+# maturity
+maturity <- new(LogisticMaturity)
+# approximate age-based equivalent to length-based maturity in petrale model
+# based on looking at ss3rep$endgrowth |> dplyr::filter(Sex == 1) |> dplyr::select(Age_Beg, Len_Mat)
+maturity$inflection_point[1]$value <- 3.5
+maturity$inflection_point[1]$is_random_effect <- FALSE
+maturity$inflection_point[1]$estimated <- FALSE
+maturity$slope[1]$value <- 2 # arbitrary guess, not sure how to relate this to SS value of -2.26
+maturity$slope[1]$is_random_effect <- FALSE
+maturity$slope[1]$estimated <- FALSE
+
+population <- new(Population)
+
+M_value <- opaka_ctl$MG_parms["NatM_p_1_Fem_GP_1", "INIT"]
+population$log_M <- new(ParameterVector, rep(log(M_value), nyears * nages), nyears * nages)
+population$log_M$set_all_estimable(FALSE)
+# initial numbers at age based on R0 + mortality
+init_naa <- exp(recruitment$log_rzero[1]$value) * exp(-(ages - 1) * M_value)
+init_naa[nages] <- init_naa[nages] / M_value # sum of infinite series
+population$log_init_naa <- new(ParameterVector, log(init_naa), nages)
+population$log_init_naa$set_all_estimable(TRUE)
+population$nages <- nages
+population$ages <- ages
+population$nfleets <- 4 # fleet plus surveys
+population$nseasons <- 1
+population$nyears <- nyears
+
+population$SetMaturity(maturity$get_id())
+population$SetGrowth(ewaa_growth$get_id())
+population$SetRecruitment(recruitment$get_id())
+
+# create FIMS model
+success <- CreateTMBModel()
+parameters <- list(p = get_fixed())
+obj <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
+opt <- nlminb(obj$par, obj$fn, obj$gr, control = list(eval.max = 10000, iter.max = 10000))
+#print(opt)
+report <- obj$report()
+
+```
+
+## Add your comparison figures
+
+## Add comparison tables
+
+## What was your experience using FIMS? What could we do to improve usability?
+
+## List any issues that you ran into or found
+
+Please [open an issue](https://github.com/NOAA-FIMS/FIMS/issues/new/choose) if you found something new.
+
+## What features are most important to add based on this case study?
+
+## Add your pages to the project
+
+* Add the files to `_quarto.yml`
