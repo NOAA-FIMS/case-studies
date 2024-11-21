@@ -43,6 +43,7 @@ library(ggplot2)
 library(FIMS)
 library(TMB)
 library(r4ss)
+clear()
 load(file.path(getwd(), "content", "data_files", "opaka_length.RDS"))
 ## Should now have opaka_dat, opaka_ctl, and rep in environment
 ## Function written by Ian Taylor and Meg Oshima to get SS3 data into FIMSFrame format
@@ -120,15 +121,16 @@ for(k in seq_along(start_date)){
   for(l in seq_along(observers)){
     for(i in seq_along(ages)){
       for(j in seq_along(len_bins)){
-        length_age_data[row_index,] <- c("length-at-age",
-                                         observers[l],
-                                         ages[i],
-                                         len_bins[j],
-                                         start_date[k],
-                                         end_date[k],
-                                         length_age_conversion[i,j],
-                                         "proportion",
-                                         30) #is this neff? can it vary by year?
+        length_age_data[row_index,] <- data.frame(
+                                        type = "length-at-age",
+                                        name = observers[l],
+                                        age = ages[i],
+                                        length = len_bins[j],
+                                        datestart = start_date[k],
+                                        dateend = end_date[k],
+                                        value = length_age_conversion[i,j],
+                                        unit = "proportion",
+                                        uncertainty = 30) #is this neff? can it vary by year?
         row_index <- row_index + 1
       }
     }
@@ -148,8 +150,8 @@ fims_landings <- FIMS::m_landings(length_frame)
 # commercial fishery
 commercial_landings <- methods::new(Index, nyears)
 commercial_landings$index_data <- fims_landings[1:nyears]
-commercial_cpue <- methods::new(Index, nyears)
-commercial_cpue$index_data <- FIMS::m_index(length_frame, "fleet1")
+#commercial_cpue <- methods::new(Index, nyears)
+#commercial_cpue$index_data <- FIMS::m_index(length_frame, "fleet1")
 # non-commercial fishery
 non_comm_landings <- methods::new(Index, nyears)
 non_comm_landings$index_data <- fims_landings[(nyears+1):length(fims_landings)]
@@ -280,12 +282,42 @@ resfish_survey$SetSelectivity(resfish_selectivity$get_id())
 resfish_survey$SetObservedLengthCompData(resfish_lencomp$get_id())
 
 # distributions ---- 
-# commercial cpue
+# index
 commercial_fleet_index_distribution <- new_data_distribution(
   module = commercial_fleet,
   family = lognormal(link = "log"),
   sd = list(
     value = rep(sqrt(log(0.01^2 + 1)), nyears),
+    estimated = FALSE
+  ),
+  data_type = "index"
+)
+
+non_commercial_fleet_index_distribution <- new_data_distribution(
+  module = non_commercial_fleet,
+  family = lognormal(link = "log"),
+  sd = list(
+    value = rep(sqrt(log(0.01^2 + 1)), nyears),
+    estimated = FALSE
+  ),
+  data_type = "index"
+)
+
+camera_survey_index_distribution <- new_data_distribution(
+  module = camera_survey,
+  family = lognormal(link = "log"),
+  sd = list(
+    value = rep(sqrt(log(0.2^2 + 1)), nyears),
+    estimated = FALSE
+  ),
+  data_type = "index"
+)
+
+resfish_survey_index_distribution <- new_data_distribution(
+  module = resfish_survey,
+  family = lognormal(link = "log"),
+  sd = list(
+    value = rep(sqrt(log(0.2^2 + 1)), nyears),
     estimated = FALSE
   ),
   data_type = "index"
@@ -298,7 +330,7 @@ camera_survey_lengthcomp_distribution <- new_data_distribution(
   data_type = "lengthcomp"
 )
 
-resfish_survey_survey_lengthcomp_distribution <- new_data_distribution(
+resfish_survey_lengthcomp_distribution <- new_data_distribution(
   module = resfish_survey,
   family = multinomial(link = "logit"),
   data_type = "lengthcomp"
