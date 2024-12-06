@@ -3,9 +3,9 @@ on:
     branches: main
   workflow_dispatch:
   schedule: 
-    - cron: '05 23 * * 5'
+    - cron: '0 0 * * 0' # runs At 00:00 on Sunday
 
-name: Render on pull request
+name: Render
 
 jobs:
   build-deploy:
