@@ -1,9 +1,9 @@
----
-title: "Untitled"
-format: html
----
-
-```{r fims1, warning=FALSE, message=FALSE}
+#' ---
+#' title: "Untitled"
+#' format: html
+#' ---
+#' 
+## ----fims1, warning=FALSE, message=FALSE-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # automatically loads fims Rcpp module
 remotes::install_github("NOAA-FIMS/FIMS", ref = "dev-length-wrapper-and-test")
 library(FIMS)
@@ -14,9 +14,9 @@ library(r4ss)
 # clear memory
 clear()
 
-```
-## Setting up Data
-```{r fims-dims}
+
+#' ## Setting up Data
+## ----fims-dims---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 load(here::here("content", "data_files", "opaka_length.RDS"))
 include_age_comps <- FALSE
 include_length_comps <- TRUE
@@ -29,13 +29,13 @@ if(include_length_comps){
   comp_lengths <- opaka_dat$lbin_vector # length vector.
   nlengths <- length(comp_lengths) # the number of length bins.
 }
-```
 
-### Preparing Data using FIMSFrame
-
- We will be reading data into the model using the FIMSFrame S4 R class set up in [R/fimsframe.R](https://github.com/NOAA-FIMS/FIMS/blob/main/R/fimsframe.R)
-
-```{r fimsframe}
+#' 
+#' ### Preparing Data using FIMSFrame
+#' 
+#'  We will be reading data into the model using the FIMSFrame S4 R class set up in [R/fimsframe.R](https://github.com/NOAA-FIMS/FIMS/blob/main/R/fimsframe.R)
+#' 
+## ----fimsframe---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # use FIMS data frame
 
 source(here::here("content", "R", "get_ss3_data.R"))
@@ -131,6 +131,7 @@ length_age_data <- data.frame(
   unit = rep("proportion",length(len_bins)*length(ages)*length(observers)*length(start_date)),
   uncertainty = rep(30,length(len_bins)*length(ages)*length(observers)*length(start_date)))
 
+
 # remove the CPUE indices for fleet1 and fleet3. Perhaps they can be renamed to 
 # represent different fleets and then included as indices.
 opaka_dat_fims <- opaka_dat_fims |>
@@ -153,18 +154,17 @@ dplyr::bind_rows(opaka_dat_fims)
 # load(file = here::here("content", "opaka_dat_fims.RData"))
 fims_frame <- FIMSFrame(opaka_dat_fims)
 
-```
-
-The `fims_frame` object contains a `@data` slot that holds a long data frame with:
-* 3 fleets: commercial fishery (fleet1), survey (fleet2), non-commercial fishery (fleet3)
-* landings for fleets 1 
-* cpue for fleets 1 and 2
-* length composition data for fleet 2
-
-
-### Prepare Parameters using `create_default_parameters()`
-
-```{r, max.height='100px', attr.output='.numberLines'}
+#' 
+#' The `fims_frame` object contains a `@data` slot that holds a long data frame with:
+#' * 3 fleets: commercial fishery (fleet1), survey (fleet2), non-commercial fishery (fleet3)
+#' * landings for fleets 1 and 3
+#' * cpue for fleets 1 and 2
+#' * length composition data for fleet 2
+#' 
+#' 
+#' ### Prepare Parameters using `create_default_parameters()`
+#' 
+## ----max.height='100px', attr.output='.numberLines'--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Define fleet specifications for fleet1 and survey1
 fleet1 <- list(
   selectivity = list(form = "LogisticSelectivity"),
@@ -184,7 +184,6 @@ fleet2 <- list(
   )
 )
 
-
 # fleet1 <- fleet2 <- fleet3 <- list(
 #   selectivity = list(form = "LogisticSelectivity"),
 #   data_distribution = c(
@@ -200,9 +199,9 @@ default_parameters <- fims_frame |>
   create_default_parameters(
     fleets = list(fleet1 = fleet1, fleet2 = fleet2)
   )
-```
 
-```{r modify-default-parameters}
+#' 
+## ----modify-default-parameters-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 recdevs <- rep$parameters |> filter(stringr::str_detect(Label, "RecrDev")) |> select(Label, Value)
 init_naa <- exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"]) * exp(-(ages - 1) * 0.135)
@@ -256,23 +255,23 @@ parameters <- default_parameters |>
   )
 
 
-```
 
-## Initialize modules and fit the model
-
-With data and parameters in place, we can now initialize modules using `initialize_fims()` and fit the model using `fit_fims()`.
-```{r, max.height='100px', attr.output='.numberLines', fit-fims, eval = TRUE}
+#' 
+#' ## Initialize modules and fit the model
+#' 
+#' With data and parameters in place, we can now initialize modules using `initialize_fims()` and fit the model using `fit_fims()`.
+## ----max.height='100px', attr.output='.numberLines', fit-fims, eval = TRUE---------------------------------------------------------------------------------------------------------------------------------
 # Run the model without optimization to help ensure a viable model
+fims_initialization <- initialize_fims(data = fims_frame, parameters = parameters)
 test_fit <- parameters |>
   initialize_fims(data = fims_frame) |>
   fit_fims(optimize = FALSE)
 
 # Run the  model with optimization
-fims_initialization <- initialize_fims(data = fims_frame, parameters = parameters)
 fit <- parameters |>
   initialize_fims(data = fims_frame) |>
   fit_fims(optimize = TRUE)
 
 # Clear memory post-run
 clear()
-```
+
