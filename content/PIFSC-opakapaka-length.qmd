@@ -61,7 +61,7 @@ nlengths <- length(lengths)
 
 # Data prep ----
 ## Use R/get_ss3_data function to get from data.ss to FIMSFrame
-opaka_dat_fims <- get_ss3_data(opaka_dat, fleets = c(1,2,3,4), ages = ages, lengths = lengths)
+opaka_dat_fims <- get_ss3_data(opaka_dat, fleets = c(1,2), ages = ages, lengths = lengths)
 ## length-at-age conversion matrix 
 #Growth function values to create length age conversion matrix from model
 #comparison project
@@ -125,7 +125,7 @@ for(k in seq_along(start_date)){
                                         type = "length-at-age",
                                         name = observers[l],
                                         age = ages[i],
-                                        length = len_bins[j],
+                                        len = len_bins[j],
                                         datestart = start_date[k],
                                         dateend = end_date[k],
                                         value = length_age_conversion[i,j],
