@@ -5,7 +5,7 @@ format: html
 
 ```{r fims1, warning=FALSE, message=FALSE}
 # automatically loads fims Rcpp module
-remotes::install_github("NOAA-FIMS/FIMS", ref = "dev-length-wrapper-and-test")
+remotes::install_github("NOAA-FIMS/FIMS", ref = "dev")
 library(FIMS)
 library(TMB)
 library(dplyr)
@@ -18,6 +18,7 @@ clear()
 ## Setting up Data
 ```{r fims-dims}
 load(here::here("content", "data_files", "opaka_length.RDS"))
+load(file.path(getwd(), "data_files", "opaka_model.RDS"))
 include_age_comps <- FALSE
 include_length_comps <- TRUE
 years <- seq(opaka_dat$styr, opaka_dat$endyr)
@@ -144,11 +145,32 @@ opaka_dat_fims <- type.convert(
   as.is = TRUE
 )
 
+#TODO: convert units to mt
+weight_at_age_data <- ss3rep[["wtatage"]] |> 
+  dplyr::filter(Sex == 1 & Fleet == 1 & Yr == 1) |> 
+  dplyr::select(dplyr::matches("[0-9]+")) |>
+  round(4) |>
+  tidyr::pivot_longer(names_to = "age", cols = dplyr::everything()) |>
+  dplyr::filter(age %in% ages) |>
+  tidyr::expand_grid(
+    opaka_dat_fims |> dplyr::select(datestart) |> dplyr::distinct()
+  ) |>
+  dplyr::left_join(
+    opaka_dat_fims |> dplyr::select(datestart, dateend) |> dplyr::distinct(),
+    by = "datestart"
+  ) |>
+  dplyr::mutate(
+    type = "weight-at-age",
+    name = "fleet1",
+    unit = "mt",
+    age = as.integer(age)
+  )
 opaka_dat_fims <- opaka_dat_fims |> 
-dplyr::filter(name == "fleet2") |> 
-dplyr::filter(type == "length" | type == "age")  |>
-dplyr::mutate(name = "fleet1") |> 
-dplyr::bind_rows(opaka_dat_fims)
+  dplyr::filter(name == "fleet2") |> 
+  dplyr::filter(type == "length" | type == "age")  |>
+  dplyr::mutate(name = "fleet1") |> 
+  dplyr::bind_rows(opaka_dat_fims) |>
+  dplyr::bind_rows(weight_at_age_data)
 # save(list = "opaka_dat_fims", file = file.path(getwd(), "content", "opaka_dat_fims.RData"))
 # load(file = here::here("content", "opaka_dat_fims.RData"))
 fims_frame <- FIMSFrame(opaka_dat_fims)
@@ -204,7 +226,7 @@ default_parameters <- fims_frame |>
 
 ```{r modify-default-parameters}
 
-recdevs <- rep$parameters |> filter(stringr::str_detect(Label, "RecrDev")) |> select(Label, Value)
+recdevs <- rep$parameters |> dplyr::filter(stringr::str_detect(Label, "RecrDev")) |> dplyr::select(Label, Value)
 init_naa <- exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"]) * exp(-(ages - 1) * 0.135)
 init_naa[nages] <- init_naa[nages] / 0.135
 
@@ -268,7 +290,6 @@ test_fit <- parameters |>
   fit_fims(optimize = FALSE)
 
 # Run the  model with optimization
-fims_initialization <- initialize_fims(data = fims_frame, parameters = parameters)
 fit <- parameters |>
   initialize_fims(data = fims_frame) |>
   fit_fims(optimize = TRUE)
