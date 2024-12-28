@@ -18,11 +18,11 @@ clear()
 ## Setting up Data
 ```{r fims-dims}
 load(here::here("content", "data_files", "opaka_length.RDS"))
-load(file.path(getwd(), "data_files", "opaka_model.RDS"))
+#load(file.path(getwd(), "content", "data_files", "opaka_model.RDS"))
 include_age_comps <- FALSE
 include_length_comps <- TRUE
 years <- seq(opaka_dat$styr, opaka_dat$endyr)
-nyears <- 75 # the number of years which we have data for.
+nyears <- length(years) # the number of years which we have data for.
 nseasons <- 1 # the number of seasons in each year. FIMS currently defaults to 1
 ages <- seq(1, 21) # age vector.
 nages <- length(ages) # the number of age groups.
@@ -40,7 +40,7 @@ if(include_length_comps){
 # use FIMS data frame
 
 source(here::here("content", "R", "get_ss3_data.R"))
-opaka_dat_fims <- get_ss3_data(opaka_dat, fleets = c(1,2), ages = ages, lengths = comp_lengths)
+opaka_dat_fims <- get_ss3_data(opaka_dat, fleets = c(1,2,3), ages = ages, lengths = comp_lengths)
 
 if (!include_age_comps){
   opaka_dat_fims <- opaka_dat_fims |>
@@ -94,33 +94,6 @@ end_date <- unique(opaka_dat_fims$dateend[opaka_dat_fims$type=="landings"])
 observers <- unique(opaka_dat_fims$name[opaka_dat_fims$type=="length"])
 
 #Create data frame for new fleet and year specific length at age conversion proportions
-#These are identical across years and fleets in this default example
-# length_age_data <- opaka_dat_fims[rep(1,length(ages)*
-#                                     length(len_bins)*
-#                                     length(start_date)*
-#                                     length(observers)),]
-# 
-# row_index <- 1
-# for(k in seq_along(start_date)){
-#   for(l in seq_along(observers)){
-#     for(i in seq_along(ages)){
-#       for(j in seq_along(len_bins)){
-#         length_age_data[row_index,] <- data.frame(
-#                                         type = "age-to-length-conversion",
-#                                         name = observers[l],
-#                                         age = ages[i],
-#                                         length = len_bins[j],
-#                                         datestart = start_date[k],
-#                                         dateend = end_date[k],
-#                                         value = length_age_conversion[i,j],
-#                                         unit = "proportion",
-#                                         uncertainty = 30) #is this neff? can it vary by year?
-#         row_index <- row_index + 1
-#       }
-#     }
-#   }
-# }
-
 length_age_data <- data.frame(
   type = rep("age-to-length-conversion",length(len_bins)*length(ages)*length(observers)*length(start_date)),
   name = rep(sort(rep(observers,length(len_bins)*length(ages))),length(start_date)),
@@ -132,22 +105,22 @@ length_age_data <- data.frame(
   unit = rep("proportion",length(len_bins)*length(ages)*length(observers)*length(start_date)),
   uncertainty = rep(30,length(len_bins)*length(ages)*length(observers)*length(start_date)))
 
-# remove the CPUE indices for fleet1 and fleet3. Perhaps they can be renamed to 
+# remove the CPUE indices for fleet1 and missing age/length data. Perhaps they can be renamed to 
 # represent different fleets and then included as indices.
 opaka_dat_fims <- opaka_dat_fims |>
-  dplyr::filter(!(type == "index" & name == "fleet1")) |>
-  dplyr::filter(!(type == "index" & name == "fleet3")) |>
-  dplyr::filter(!(name == "fleet1" & value == -999 & type == "length")) |>
-  dplyr::filter(!(name == "fleet1" & value == -999 & type == "age"))
+  dplyr::filter(!(type == "index" & name == "fleet1"))
+  #dplyr::filter(!(type == "index" & name == "fleet3")) |>
+  # dplyr::filter(!(name == "fleet1" & value == -999 & type == "length")) |>
+  # dplyr::filter(!(name == "fleet1" & value == -999 & type == "age"))
 
 opaka_dat_fims <- type.convert(
   rbind(opaka_dat_fims, length_age_data),
   as.is = TRUE
 )
 
-#TODO: convert units to mt
-weight_at_age_data <- ss3rep[["wtatage"]] |> 
-  dplyr::filter(Sex == 1 & Fleet == 1 & Yr == 1) |> 
+# Get weight-at-age from SS3 report output and convert from kg to mt
+weight_at_age_data <- rep[["wtatage"]] |> 
+  dplyr::filter(sex == 1 & fleet == 1 & year == 1949) |> 
   dplyr::select(dplyr::matches("[0-9]+")) |>
   round(4) |>
   tidyr::pivot_longer(names_to = "age", cols = dplyr::everything()) |>
@@ -163,13 +136,15 @@ weight_at_age_data <- ss3rep[["wtatage"]] |>
     type = "weight-at-age",
     name = "fleet1",
     unit = "mt",
-    age = as.integer(age)
+    age = as.integer(age),
+    value = value/1000
   )
 opaka_dat_fims <- opaka_dat_fims |> 
-  dplyr::filter(name == "fleet2") |> 
-  dplyr::filter(type == "length" | type == "age")  |>
-  dplyr::mutate(name = "fleet1") |> 
-  dplyr::bind_rows(opaka_dat_fims) |>
+#adding in fake length data for fleet 1, not be neccessary
+  # dplyr::filter(name == "fleet2") |> 
+  # dplyr::filter(type == "length" | type == "age")  |>
+  # dplyr::mutate(name = "fleet1") |> 
+  # dplyr::bind_rows(opaka_dat_fims) |>
   dplyr::bind_rows(weight_at_age_data)
 # save(list = "opaka_dat_fims", file = file.path(getwd(), "content", "opaka_dat_fims.RData"))
 # load(file = here::here("content", "opaka_dat_fims.RData"))
@@ -178,9 +153,9 @@ fims_frame <- FIMSFrame(opaka_dat_fims)
 ```
 
 The `fims_frame` object contains a `@data` slot that holds a long data frame with:
-* 3 fleets: commercial fishery (fleet1), survey (fleet2), non-commercial fishery (fleet3)
-* landings for fleets 1 
-* cpue for fleets 1 and 2
+* 2 fleets: commercial fishery (fleet1) and survey (fleet2)
+* landings for fleet 1 
+* cpue for fleet 2
 * length composition data for fleet 2
 
 
@@ -188,12 +163,12 @@ The `fims_frame` object contains a `@data` slot that holds a long data frame wit
 
 ```{r, max.height='100px', attr.output='.numberLines'}
 # Define fleet specifications for fleet1 and survey1
-fleet1 <- list(
+fleet1 <- fleet3 <- list(
   selectivity = list(form = "LogisticSelectivity"),
   data_distribution = c(
-    Index = "DlnormDistribution",
-    AgeComp = "DmultinomDistribution",
-    LengthComp = "DmultinomDistribution" 
+    Index = "DlnormDistribution"
+    #AgeComp = "DmultinomDistribution",
+    #LengthComp = "DmultinomDistribution" 
   )
 )
 
@@ -201,32 +176,24 @@ fleet2 <- list(
   selectivity = list(form = "LogisticSelectivity"),
   data_distribution = c(
     Index = "DlnormDistribution",
-    AgeComp = "DmultinomDistribution", 
+    #AgeComp = "DmultinomDistribution", 
     LengthComp = "DmultinomDistribution"  
   )
 )
 
-
-# fleet1 <- fleet2 <- fleet3 <- list(
-#   selectivity = list(form = "LogisticSelectivity"),
-#   data_distribution = c(
-#     Index = "DlnormDistribution",
-#     # Remove this next line once dev has the appropriate if statement
-#     # AgeComp = "DmultinomDistribution", 
-#     LengthComp = "DmultinomDistribution"  ##CHECK
-#   )
-# )
-
 # Create default parameters
 default_parameters <- fims_frame |>
   create_default_parameters(
-    fleets = list(fleet1 = fleet1, fleet2 = fleet2)
+    fleets = list(fleet1 = fleet1, fleet2 = fleet2, fleet3 = fleet3)
   )
 ```
 
 ```{r modify-default-parameters}
 
-recdevs <- rep$parameters |> dplyr::filter(stringr::str_detect(Label, "RecrDev")) |> dplyr::select(Label, Value)
+recdevs <- rep$parameters |> 
+           dplyr::filter(stringr::str_detect(Label, "RecrDev")) |> 
+           dplyr::select(Label, Value)
+
 init_naa <- exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"]) * exp(-(ages - 1) * 0.135)
 init_naa[nages] <- init_naa[nages] / 0.135
 
@@ -235,35 +202,50 @@ parameters <- default_parameters |>
     modified_parameters = list(
       fleet1 = list(
         Fleet.log_Fmort.value = log(rep$exploitation$FRS),
-        LogisticSelectivity.inflection_point.value = 36.01,
-        LogisticSelectivity.slope.value = 3.46
+        LogisticSelectivity.inflection_point.value = 1.81, #used age selex values
+        LogisticSelectivity.inflection_point.estimated = FALSE,
+        LogisticSelectivity.slope.value = 0.0093, #used age selex values
+        LogisticSelectivity.slope.estimated = FALSE
       )
     )
   ) |>
     update_parameters(
     modified_parameters = list(
       fleet2 = list(
-        LogisticSelectivity.inflection_point.value = 2.897,
-        LogisticSelectivity.slope.value = 3.254,
+        LogisticSelectivity.inflection_point.value = 1, #used age selex values
+        LogisticSelectivity.slope.value = 3, #used age selex values
         Fleet.log_q.value = -4.12772
       )
     )
   ) |>
   update_parameters(
     modified_parameters = list(
+      fleet3 = list(
+        Fleet.log_Fmort.value = log(rep$exploitation$Non_comm),
+        LogisticSelectivity.inflection_point.value = 1.97,
+        LogisticSelectivity.inflection_point.estimated = FALSE,
+        LogisticSelectivity.slope.value = .0004,
+        LogisticSelectivity.slope.estimated = FALSE
+      )
+    )
+  ) |>
+  update_parameters(
+    modified_parameters = list(
       recruitment = list(
-        BevertonHoltRecruitment.log_rzero.value = opaka_ctl$SR_parms["SR_LN(R0)", "INIT"],
+        BevertonHoltRecruitment.log_rzero.value = log(exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"])*1000), #to deal with SS reporting R0 in thousands (from Ian's case study)
         BevertonHoltRecruitment.log_devs.value = recdevs$Value,
-        BevertonHoltRecruitment.log_devs.estimated = FALSE
+        BevertonHoltRecruitment.log_devs.estimated = FALSE,
+        BevertonHoltRecruitment.logit_steep.value = 0.76
       )
     )
   ) |>
   update_parameters(
     modified_parameters = list(
       maturity = list(
-        LogisticMaturity.inflection_point.value = 3.5,
+        LogisticMaturity.inflection_point.value = 4.5, #CHECK: does this need to be in terms of age? currently in terms of length. 
+        #if it needs to be age, ~4.5
         LogisticMaturity.inflection_point.estimated = FALSE,
-        LogisticMaturity.slope.value = 3,
+        LogisticMaturity.slope.value = 2.26, #make positive from SS value 
         LogisticMaturity.slope.estimated = FALSE
       )
     )
@@ -293,7 +275,79 @@ test_fit <- parameters |>
 fit <- parameters |>
   initialize_fims(data = fims_frame) |>
   fit_fims(optimize = TRUE)
+str(fit)
 
+fit@report$exp_index
+fit@report$exp_catch
+fit@report$F_mort[[1]]
+
+fit@report$ssb
+fit@report$biomass
+unique(fit@estimates$name)
+fit@input$parameters
+fit@estimates |>
+filter(name == "Q")
 # Clear memory post-run
 clear()
+```
+
+## Problems and Questions: 
+The scale is not matching up at all with the synthesis model. 
+How can I plot things like maturity curve, growth curve, selectivity, etc. to check those? And do those parameters need to be specified in terms of age? In our model they are length-based processes. 
+The catchability for the survey is way off from SS estimated value. 
+F is much lower than SS
+
+
+## Plotting Results
+
+```{r data-fits-plots, eval = TRUE}
+library(ggplot2)
+index_results <- data.frame(
+  observed = m_index(fims_frame, "fleet2"),
+  expected = get_report(fit)[["exp_index"]][[2]]
+) |>
+dplyr::mutate(year = years) |>
+dplyr::filter(year > 2016)
+print(index_results)
+
+ggplot2::ggplot(index_results, ggplot2::aes(x = year, y = observed)) +
+  ggplot2::geom_point() +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Index (mt)") +
+  ggplot2::geom_line(ggplot2::aes(x = year, y = expected), color = "blue") +
+  ggplot2::theme_bw()
+
+catch_results <- data.frame(
+  observed = m_landings(fims_frame, fleet = "fleet1"),
+  expected = get_report(fit)[["exp_index"]][[1]]
+) |>
+dplyr::mutate(year = years)
+print(catch_results)
+
+ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
+  ggplot2::geom_point() +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Index (mt)") +
+  ggplot2::geom_line(ggplot2::aes(x = year, y = expected), color = "blue") +
+  ggplot2::theme_bw()
+```
+
+```{r ss3-comparison-plots}
+
+biomass <- rep$timeseries |> 
+dplyr::select(Yr, SpawnBio, Bio_all) |> 
+dplyr::filter(Yr > 1947) |> ##CHECK: including "initial year" to match length with FIMS but need to check on FIMS
+dplyr::rename("SS_SpawnBio" = "SpawnBio",
+              "SS_Bio" = "Bio_all") |>
+dplyr::mutate(FIMS_SpawnBio = get_report(fit)[["ssb"]][[1]], 
+              FIMS_Bio = get_report(fit)[["biomass"]][[1]]) |> ##CHECK: Is FIMS ssb reporting nyears+1 or initial year-1?
+tidyr::pivot_longer(cols = -Yr) |>
+tidyr::separate_wider_delim(cols = "name", delim = "_", names = c("Model", "Type"))             
+
+ggplot2::ggplot(biomass, ggplot2::aes(x = Yr, y = value)) +
+  ggplot2::geom_line(ggplot2::aes(color = Model)) +
+  ggplot2::xlab("Year") +
+  ggplot2::facet_wrap(~Type, scales = "free_y") +
+  ggplot2::theme_bw()
+
 ```
