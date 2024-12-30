@@ -5,7 +5,7 @@ format: html
 
 ```{r fims1, warning=FALSE, message=FALSE}
 # automatically loads fims Rcpp module
-remotes::install_github("NOAA-FIMS/FIMS", ref = "dev")
+#remotes::install_github("NOAA-FIMS/FIMS", ref = "dev")
 library(FIMS)
 library(TMB)
 library(dplyr)
@@ -194,7 +194,7 @@ recdevs <- rep$parameters |>
            dplyr::filter(stringr::str_detect(Label, "RecrDev")) |> 
            dplyr::select(Label, Value)
 
-init_naa <- exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"]) * exp(-(ages - 1) * 0.135)
+init_naa <- (exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"])*1000) * exp(-(ages - 1) * 0.135)
 init_naa[nages] <- init_naa[nages] / 0.135
 
 parameters <- default_parameters |>
