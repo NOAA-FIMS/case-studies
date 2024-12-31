@@ -194,7 +194,7 @@ recdevs <- rep$parameters |>
            dplyr::filter(stringr::str_detect(Label, "RecrDev")) |> 
            dplyr::select(Label, Value)
 
-init_naa <- (exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"])*1000) * exp(-(ages - 1) * 0.135)
+init_naa <- (exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"])) * exp(-(ages - 1) * 0.135)
 init_naa[nages] <- init_naa[nages] / 0.135
 
 parameters <- default_parameters |>
@@ -202,6 +202,7 @@ parameters <- default_parameters |>
     modified_parameters = list(
       fleet1 = list(
         Fleet.log_Fmort.value = log(rep$exploitation$FRS),
+        Fleet.log_Fmort.estimated = FALSE,
         LogisticSelectivity.inflection_point.value = 1.81, #used age selex values
         LogisticSelectivity.inflection_point.estimated = FALSE,
         LogisticSelectivity.slope.value = 0.0093, #used age selex values
@@ -213,8 +214,11 @@ parameters <- default_parameters |>
     modified_parameters = list(
       fleet2 = list(
         LogisticSelectivity.inflection_point.value = 1, #used age selex values
+        LogisticSelectivity.inflection_point.estimated = FALSE,
         LogisticSelectivity.slope.value = 3, #used age selex values
+        LogisticSelectivity.slope.estimated = FALSE,
         Fleet.log_q.value = -4.12772
+        #Fleet.log_q.estimated = FALSE
       )
     )
   ) |>
@@ -222,6 +226,7 @@ parameters <- default_parameters |>
     modified_parameters = list(
       fleet3 = list(
         Fleet.log_Fmort.value = log(rep$exploitation$Non_comm),
+        Fleet.log_Fmort.estimated = FALSE,
         LogisticSelectivity.inflection_point.value = 1.97,
         LogisticSelectivity.inflection_point.estimated = FALSE,
         LogisticSelectivity.slope.value = .0004,
@@ -232,9 +237,11 @@ parameters <- default_parameters |>
   update_parameters(
     modified_parameters = list(
       recruitment = list(
-        BevertonHoltRecruitment.log_rzero.value = log(exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"])*1000), #to deal with SS reporting R0 in thousands (from Ian's case study)
+        BevertonHoltRecruitment.log_rzero.value = opaka_ctl$SR_parms["SR_LN(R0)", "INIT"], #log(exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"])*1000), #to deal with SS reporting R0 in thousands (from Ian's case study)
+        #BevertonHoltRecruitment.log_rzero.estimated = FALSE,
         BevertonHoltRecruitment.log_devs.value = recdevs$Value,
         BevertonHoltRecruitment.log_devs.estimated = FALSE,
+       # BevertonHoltRecruitment.estimate_log_devs = FALSE, #CHECK what is the difference between this and log_devs.estimated? 
         BevertonHoltRecruitment.logit_steep.value = 0.76
       )
     )
@@ -242,8 +249,7 @@ parameters <- default_parameters |>
   update_parameters(
     modified_parameters = list(
       maturity = list(
-        LogisticMaturity.inflection_point.value = 4.5, #CHECK: does this need to be in terms of age? currently in terms of length. 
-        #if it needs to be age, ~4.5
+        LogisticMaturity.inflection_point.value = 4.5, #CHECK: does this need to be in terms of age? currently in opaka model in terms of length so guesstimated what it would be for age based on growth
         LogisticMaturity.inflection_point.estimated = FALSE,
         LogisticMaturity.slope.value = 2.26, #make positive from SS value 
         LogisticMaturity.slope.estimated = FALSE
@@ -254,12 +260,13 @@ parameters <- default_parameters |>
     modified_parameters = list(
       population = list(
         Population.log_init_naa.value = log(init_naa),
-        Population.log_M.value = rep(0.135, get_n_years(fims_frame)*get_n_ages(fims_frame)) 
+        #Population.log_init_naa.estimated = FALSE,
+        Population.log_M.value = rep(0.135, get_n_years(fims_frame)*get_n_ages(fims_frame))
       )
     )
   )
 
-
+#str(parameters)
 ```
 
 ## Initialize modules and fit the model
@@ -286,7 +293,7 @@ fit@report$biomass
 unique(fit@estimates$name)
 fit@input$parameters
 fit@estimates |>
-filter(name == "Q")
+filter(name == "p")
 # Clear memory post-run
 clear()
 ```
@@ -318,17 +325,18 @@ ggplot2::ggplot(index_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::theme_bw()
 
 catch_results <- data.frame(
-  observed = m_landings(fims_frame, fleet = "fleet1"),
-  expected = get_report(fit)[["exp_index"]][[1]]
+  observed = c(m_landings(fims_frame, fleet = "fleet1"), m_landings(fims_frame, fleet = "fleet3")),
+  expected = c(get_report(fit)[["exp_index"]][[1]], get_report(fit)[["exp_index"]][[3]]),
+  fleet = rep(c("fleet1", "fleet3"), each = 75)
 ) |>
-dplyr::mutate(year = years)
+dplyr::mutate(year = rep(years, 2))
 print(catch_results)
 
 ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
-  ggplot2::geom_point() +
+  ggplot2::geom_point(ggplot2::aes(color = fleet)) +
   ggplot2::xlab("Year") +
-  ggplot2::ylab("Index (mt)") +
-  ggplot2::geom_line(ggplot2::aes(x = year, y = expected), color = "blue") +
+  ggplot2::ylab("Catch (mt)") +
+  ggplot2::geom_line(ggplot2::aes(x = year, y = expected, color = fleet)) +
   ggplot2::theme_bw()
 ```
 
@@ -347,6 +355,23 @@ tidyr::separate_wider_delim(cols = "name", delim = "_", names = c("Model", "Type
 ggplot2::ggplot(biomass, ggplot2::aes(x = Yr, y = value)) +
   ggplot2::geom_line(ggplot2::aes(color = Model)) +
   ggplot2::xlab("Year") +
+  ggplot2::ylab("") +
+  ggplot2::facet_wrap(~Type, scales = "free_y") +
+  ggplot2::theme_bw()
+
+recruits <- rep$recruit |> 
+  select(Yr, exp_recr, raw_dev) |>
+  dplyr::rename("SS_recruit" = "exp_recr",
+                "SS_recdev" = "raw_dev",
+                "Year" = "Yr") |> 
+  dplyr::mutate(FIMS_recruit = get_report(fit)[["recruitment"]][[1]][1:75],
+                FIMS_recdev = c(NA, get_report(fit)[["log_recruit_dev"]][[1]]),
+                SS_recruit = SS_recruit * 1000) |>
+  tidyr::pivot_longer(cols = -Year) |>
+  tidyr::separate_wider_delim(cols = "name", delim = "_", names = c("Model", "Type"))             
+
+ggplot2::ggplot(recruits, ggplot2::aes(x = Year, y = value, color = Model)) +
+  ggplot2::geom_line() + 
   ggplot2::facet_wrap(~Type, scales = "free_y") +
   ggplot2::theme_bw()
 
