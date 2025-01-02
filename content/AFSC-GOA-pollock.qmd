@@ -13,7 +13,7 @@ format:
 #| warning: false
 #| label: startup
 #| output: false
-
+library(ggplot2)
 theme_set(theme_bw())
 
 
@@ -81,7 +81,8 @@ pkinput <- readRDS('data_files/pkinput.RDS')
 #| eval: true
 
 ## set up FIMS data objects
-clear()
+library(FIMS)
+FIMS::clear()
 estimate_fish_selex <- TRUE
 estimate_survey_selex <- TRUE
 estimate_q2 <- TRUE
