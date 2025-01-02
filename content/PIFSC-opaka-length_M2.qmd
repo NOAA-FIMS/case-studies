@@ -148,6 +148,11 @@ opaka_dat_fims <- opaka_dat_fims |>
   dplyr::bind_rows(weight_at_age_data)
 # save(list = "opaka_dat_fims", file = file.path(getwd(), "content", "opaka_dat_fims.RData"))
 # load(file = here::here("content", "opaka_dat_fims.RData"))
+
+opaka_dat_fims <- opaka_dat_fims |> 
+dplyr::mutate(uncertainty = ifelse(type == "length" & name == "fleet2" & value != -999, 1, uncertainty)) |> filter(!(type == "index" & name == "fleet3"))
+
+
 fims_frame <- FIMSFrame(opaka_dat_fims)
 
 ```
@@ -194,7 +199,7 @@ recdevs <- rep$parameters |>
            dplyr::filter(stringr::str_detect(Label, "RecrDev")) |> 
            dplyr::select(Label, Value)
 
-init_naa <- (exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"])) * exp(-(ages - 1) * 0.135)
+init_naa <- (exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"]) * 1000) * exp(-(ages - 1) * 0.135)
 init_naa[nages] <- init_naa[nages] / 0.135
 
 parameters <- default_parameters |>
@@ -202,10 +207,10 @@ parameters <- default_parameters |>
     modified_parameters = list(
       fleet1 = list(
         Fleet.log_Fmort.value = log(rep$exploitation$FRS),
-        Fleet.log_Fmort.estimated = FALSE,
+        #Fleet.log_Fmort.estimated = FALSE,
         LogisticSelectivity.inflection_point.value = 1.81, #used age selex values
         LogisticSelectivity.inflection_point.estimated = FALSE,
-        LogisticSelectivity.slope.value = 0.0093, #used age selex values
+        LogisticSelectivity.slope.value = 4.5, #used age selex values
         LogisticSelectivity.slope.estimated = FALSE
       )
     )
@@ -226,10 +231,10 @@ parameters <- default_parameters |>
     modified_parameters = list(
       fleet3 = list(
         Fleet.log_Fmort.value = log(rep$exploitation$Non_comm),
-        Fleet.log_Fmort.estimated = FALSE,
+        #Fleet.log_Fmort.estimated = FALSE,
         LogisticSelectivity.inflection_point.value = 1.97,
         LogisticSelectivity.inflection_point.estimated = FALSE,
-        LogisticSelectivity.slope.value = .0004,
+        LogisticSelectivity.slope.value = 4.5,
         LogisticSelectivity.slope.estimated = FALSE
       )
     )
@@ -240,18 +245,19 @@ parameters <- default_parameters |>
         BevertonHoltRecruitment.log_rzero.value = opaka_ctl$SR_parms["SR_LN(R0)", "INIT"], #log(exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"])*1000), #to deal with SS reporting R0 in thousands (from Ian's case study)
         #BevertonHoltRecruitment.log_rzero.estimated = FALSE,
         BevertonHoltRecruitment.log_devs.value = recdevs$Value,
-        BevertonHoltRecruitment.log_devs.estimated = FALSE,
+        #BevertonHoltRecruitment.log_devs.estimated = FALSE,
        # BevertonHoltRecruitment.estimate_log_devs = FALSE, #CHECK what is the difference between this and log_devs.estimated? 
-        BevertonHoltRecruitment.logit_steep.value = 0.76
+        BevertonHoltRecruitment.logit_steep.value = -log(1.0- 0.76) + log(0.76 - 0.2)
+        #DnormDistribution.log_sd.value = (opaka_ctl$SR_parms["SR_sigmaR", "INIT"])
       )
     )
   ) |>
   update_parameters(
     modified_parameters = list(
       maturity = list(
-        LogisticMaturity.inflection_point.value = 4.5, #CHECK: does this need to be in terms of age? currently in opaka model in terms of length so guesstimated what it would be for age based on growth
+        LogisticMaturity.inflection_point.value = 7, #CHECK: does this need to be in terms of age? currently in opaka model in terms of length so guesstimated what it would be for age based on growth
         LogisticMaturity.inflection_point.estimated = FALSE,
-        LogisticMaturity.slope.value = 2.26, #make positive from SS value 
+        LogisticMaturity.slope.value = 0.5, #make positive from SS value 
         LogisticMaturity.slope.estimated = FALSE
       )
     )
@@ -287,13 +293,13 @@ str(fit)
 fit@report$exp_index
 fit@report$exp_catch
 fit@report$F_mort[[1]]
-
+fit@report$log_recruit_dev
 fit@report$ssb
 fit@report$biomass
 unique(fit@estimates$name)
-fit@input$parameters
-fit@estimates |>
-filter(name == "p")
+fit@input$parameters #q and init_naa
+fit@estimates |> filter(name == "log_rzero")
+pull(value) #negative values for init_naa??
 # Clear memory post-run
 clear()
 ```
@@ -347,7 +353,7 @@ dplyr::select(Yr, SpawnBio, Bio_all) |>
 dplyr::filter(Yr > 1947) |> ##CHECK: including "initial year" to match length with FIMS but need to check on FIMS
 dplyr::rename("SS_SpawnBio" = "SpawnBio",
               "SS_Bio" = "Bio_all") |>
-dplyr::mutate(FIMS_SpawnBio = get_report(fit)[["ssb"]][[1]], 
+dplyr::mutate(FIMS_SpawnBio = get_report(fit)[["ssb"]][[1]] , 
               FIMS_Bio = get_report(fit)[["biomass"]][[1]]) |> ##CHECK: Is FIMS ssb reporting nyears+1 or initial year-1?
 tidyr::pivot_longer(cols = -Yr) |>
 tidyr::separate_wider_delim(cols = "name", delim = "_", names = c("Model", "Type"))             
@@ -374,5 +380,27 @@ ggplot2::ggplot(recruits, ggplot2::aes(x = Year, y = value, color = Model)) +
   ggplot2::geom_line() + 
   ggplot2::facet_wrap(~Type, scales = "free_y") +
   ggplot2::theme_bw()
+
+```
+
+
+```{r}
+
+pcnal <- matrix(data = fit@report$pcnal[[2]], nrow = nlengths)
+
+prop.dat <- opaka_dat_fims |> 
+filter(type == "length" & name == "fleet2") |> 
+group_by(datestart) |>
+reframe(prop = value/sum(value)) 
+pcnal.obs <- matrix(data = prop.dat$prop, nrow = nlengths)
+head(pcnal.obs)
+
+plot(x = 1:nlengths, y = pcnal.obs[,73], pch = 16,  ylim = c(0,1))
+lines(x = 1:nlengths, y = pcnal[,73])
+pcnal[,69]
+
+head(fit@report$naa[[1]])
+naa_mat <- matrix(data = fit@report$naa[[1]], nrow = nages)
+head(naa_mat)
 
 ```
