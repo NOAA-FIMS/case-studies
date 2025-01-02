@@ -13,13 +13,7 @@ format:
 #| warning: false
 #| label: startup
 #| output: false
-
-theme_set(theme_bw())
-
-
-# R_version <- version$version.string
-# TMB_version <- packageDescription("TMB")$Version
-# FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
+ggplot2::theme_set(theme_bw())
 ```
 
 -   R version: `r R_version`\
@@ -61,7 +55,6 @@ nyears <- length(years)
 nseasons <- 1
 nages <- 10
 ages <- 1:nages
-## nfleets <- 1
 ## This will fit the models bridging to FIMS (simplifying)
 ## source("fit_bridge_models.R")
 ## compare changes to model
@@ -73,7 +66,7 @@ fimsdat <- pkdat0 <- pkinput0$dat
 pkinput <- readRDS('data_files/pkinput.RDS')
 ```
 
-## Run FIMS model
+## Run FIMS model without using wrapper functions
 ```{r}
 #| warning: false
 #| label: run-FIMS
@@ -81,8 +74,7 @@ pkinput <- readRDS('data_files/pkinput.RDS')
 #| eval: true
 
 ## set up FIMS data objects
-clear()
-clear_logs()
+FIMS::clear()
 estimate_fish_selex <- TRUE
 estimate_survey_selex <- TRUE
 estimate_q2 <- TRUE
@@ -90,20 +82,36 @@ estimate_q3 <- TRUE
 estimate_q6 <- TRUE
 estimate_F <- TRUE
 estimate_recdevs <- TRUE
+
+# Set up a FIMS model without wrapper functions
 source("R/pk_prepare_FIMS_inputs.R")
+
 ## make FIMS model
 success <- CreateTMBModel()
 parameters <- list(p = get_fixed())
-obj <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
+obj <- TMB::MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
 ## report values for the two models
 rep0 <- pkfitfinal$rep
 rep1 <- obj$report() # FIMS initial values
 ## try fitting the model
-opt <- TMBhelper::fit_tmb(obj, getsd=FALSE, newtonsteps=0, control=list(trace=100))
-## opt <- with(obj, nlminb(start=par, objective=fn, gradient=gr))
+# use nlminb() to match FIMS::fit_fims()
+# opt <- TMBhelper::fit_tmb(obj, getsd=FALSE, newtonsteps=0, control=list(trace=100))
+opt <- with(obj, nlminb(
+  start = par,
+  objective = fn,
+  gradient = gr,
+  control = list(
+    eval.max = 10000,
+    iter.max = 10000,
+    trace = 0
+  )
+))
 max(abs(obj$gr())) # from Cole, can use TMBhelper::fit_tmb to get val to <1e-10
 rep2 <- obj$report(obj$env$last.par.best) ## FIMS after estimation
+```
 
+## Output plotting
+```{r}
 ## Output plotting
 out1 <- get_long_outputs(rep1, rep0) %>%
   mutate(platform=ifelse(platform=='FIMS', 'FIMS init', 'TMB'))
@@ -188,6 +196,9 @@ Two extra analyses are demonstrated. First is a likelihood profile over lnR0, sh
 #| output: false
 
 ## Try a likelihood profile
+# TODO: Received the following note when running the code below:
+# "Note that `getReportCovariance=FALSE` causes an error in `TMB::sdreport` when no ADREPORTed variables are present".
+# Flag this for Cole to verify.
 i <- 68 # this will break if model is changed at all
 map <- parameters
 map$p[i] <- NA # map off R0 specified below
@@ -200,8 +211,13 @@ for(j in 1:length(xseq)){
   obj2 <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE, map=map)
   opt2 <- TMBhelper::fit_tmb(obj2, getsd=FALSE, newtonsteps=0, control=list(trace=0))
   out <- obj2$report(obj2$env$last.par.best)
-  res[[j]] <- data.frame(j=j, lnR0=xseq[j], total=out$jnll, index=out$index_nll,
-                         age=out$age_comp_nll,recruit=out$rec_nll, maxgrad=max(abs(obj$gr())))
+  nll_components <- out$nll_components
+  index_nll <- sum(nll_components[seq(2, length(nll_components), by = 2)])
+  age_comp_nll <- sum(nll_components[seq(3, length(nll_components), by = 2)])
+  res[[j]] <- data.frame(
+    j = j, lnR0 = xseq[j], total = out$jnll, index = index_nll,
+    age = age_comp_nll, recruit = out$nll_components[1], maxgrad = max(abs(obj$gr()))
+  )
 }
 res <- bind_rows(res) %>%
   pivot_longer( cols=c(total, index, age, recruit)) %>%
@@ -251,6 +267,138 @@ ggsave('figures/AFSC_PK_ssb_posterior.png', g, width=7, height=4, units='in')
 ![Likelihood Profile](figures/AFSC_PK_like_profile_R0.png){width=7in}
 ![SSB Posterior](figures/AFSC_PK_ssb_posterior.png){width=7in}
 
+## Run FIMS model using wrapper functions
+```{r}
+FIMS::clear()
+# set up selectivities for fleets and survey
+fleet1 <- survey2 <- survey6 <- list(
+  selectivity = list(form = "DoubleLogisticSelectivity"),
+  data_distribution = c(
+    Index = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
+  )
+)
+
+survey3 <- list(
+  selectivity = list(form = "LogisticSelectivity"),
+  data_distribution = c(
+    Index = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
+  )
+)
+
+fleets <- list(
+  fleet1 = fleet1,
+  survey2 = survey2,
+  survey3 = survey3,
+  survey6 = survey6
+)
+
+# Create parameters list and update default values for parameters
+parameters_with_wrappers <- data_4_model |>
+  create_default_parameters(fleets = fleets) |>
+  update_parameters(
+    modified_parameters = list(
+      fleet1 = list(
+        DoubleLogisticSelectivity.inflection_point_asc.value = parfinal$inf1_fsh_mean,
+        DoubleLogisticSelectivity.slope_asc.value = exp(parfinal$log_slp1_fsh_mean),
+        DoubleLogisticSelectivity.inflection_point_desc.value = parfinal$inf2_fsh_mean,
+        DoubleLogisticSelectivity.slope_desc.value = exp(parfinal$log_slp2_fsh_mean),
+        Fleet.log_Fmort.value = log(pkfitfinal$rep$F)
+      )
+    )
+  ) |>
+  update_parameters(
+    modified_parameters = list(
+      survey2 = list(
+        DoubleLogisticSelectivity.inflection_point_asc.value = parfinal$inf1_srv2,
+        DoubleLogisticSelectivity.slope_asc.value = exp(parfinal$log_slp1_srv2),
+        DoubleLogisticSelectivity.inflection_point_desc.value = parfinal$inf2_srv2,
+        DoubleLogisticSelectivity.inflection_point_desc.estimated = FALSE,
+        DoubleLogisticSelectivity.slope_desc.value = exp(parfinal$log_slp2_srv2),
+        DoubleLogisticSelectivity.slope_desc.estimated = FALSE,
+        Fleet.log_q.value = parfinal$log_q2_mean
+      )
+    )
+  ) |>
+  update_parameters(
+    modified_parameters = list(
+      survey3 = list(
+        LogisticSelectivity.inflection_point.value = parfinal$inf1_srv3,
+        LogisticSelectivity.slope.value = exp(parfinal$log_slp1_srv3),
+        Fleet.log_q.value = parfinal$log_q3_mean
+      )
+    )
+  ) |>
+  update_parameters(
+    modified_parameters = list(
+      survey6 = list(
+        DoubleLogisticSelectivity.inflection_point_asc.value = parfinal$inf1_srv6,
+        DoubleLogisticSelectivity.inflection_point_asc.estimated = FALSE,
+        DoubleLogisticSelectivity.slope_asc.value = exp(parfinal$log_slp1_srv6),
+        DoubleLogisticSelectivity.slope_asc.estimated = FALSE,
+        DoubleLogisticSelectivity.inflection_point_desc.value = parfinal$inf2_srv6,
+        DoubleLogisticSelectivity.slope_desc.value = exp(parfinal$log_slp2_srv6),
+        Fleet.log_q.value = parfinal$log_q6
+      )
+    )
+  ) |>
+  update_parameters(
+    modified_parameters = list(
+      recruitment = list(
+        BevertonHoltRecruitment.log_rzero.value = parfinal$mean_log_recruit + log(1e9),
+        BevertonHoltRecruitment.logit_steep.value = -log(1.0 - .99999) + log(.99999 - 0.2),
+        BevertonHoltRecruitment.log_devs.value = parfinal$dev_log_recruit[-1],
+        DnormDistribution.log_sd.value = parfinal$sigmaR
+      )
+    )
+  ) |>
+  update_parameters(
+    modified_parameters = list(
+      maturity = list(
+        LogisticMaturity.inflection_point.value = 4.5,
+        LogisticMaturity.inflection_point.estimated = FALSE,
+        LogisticMaturity.slope.value = 1.5,
+        LogisticMaturity.slope.estimated = FALSE
+      )
+    )
+  ) |>
+  update_parameters(
+    modified_parameters = list(
+      population = list(
+        Population.log_M.value = log(as.numeric(t(matrix(
+          rep(pkfitfinal$rep$M, each = data_4_model@n_years),
+          nrow = data_4_model@n_years
+        )))),
+        Population.log_init_naa.value = c(log(pkfitfinal$rep$recruit[1]), log(pkfitfinal$rep$initN)) + log(1e9),
+        Population.log_init_naa.estimated = FALSE
+      )
+    )
+  )
+
+# Put it all together, creating the FIMS model and making the TMB fcn
+# Run the model without optimization to help ensure a viable model
+test_fit <- parameters_with_wrappers  |>
+  initialize_fims(data = data_4_model) |>
+  fit_fims(optimize = FALSE)
+get_obj(test_fit)$report()$nll_components |> length()
+get_data(data_4_model) |> dplyr::filter(name == "fleet1", type == "age") |> print(n = 300)
+# Run the  model with optimization
+fit <- parameters_with_wrappers  |>
+  initialize_fims(data = data_4_model) |>
+  fit_fims(optimize = TRUE)
+
+## report values for models
+rep1_with_wrappers <- test_fit@report # FIMS initial values
+fit@max_gradient # from Cole, can use TMBhelper::fit_tmb to get val to <1e-10
+rep2_with_wrappers <- fit@report
+
+# TODO: Review differences between rep2 and rep2_with_wrappers. 
+# Flag this for Cole to verify.
+# cbind(rep2$ssb[[1]], rep2_with_wrappers$ssb[[1]])
+# cbind(rep2$nll_components, rep2_with_wrappers$nll_components)
+```
+
 ## Comparison table
 
 The likelihood components from the TMB model do not include constants and thus are not directly comparable. To be fixed later. Relative differences between the modified TMB model and FIMS implementation are given in the figure above.
@@ -271,5 +419,5 @@ To do
 
 ```{r}
 # Clear C++ objects from memory
-clear()
+FIMS::clear()
 ```
