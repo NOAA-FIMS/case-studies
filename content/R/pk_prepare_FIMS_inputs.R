@@ -1,4 +1,4 @@
-
+library(FIMS)
 
 ## build a FIMS and PK data set that match
 ##  need to fill missing years with -999 so it's ignored in FIMS
@@ -226,56 +226,94 @@ fish_fleet$log_Fmort$set_all_estimable(TRUE)
 fish_fleet$log_q[1]$value <- 0 # why is this length two in Chris' case study?
 fish_fleet$estimate_q <- FALSE
 fish_fleet$random_q <- FALSE
-fish_fleet$log_obs_error <- log(landings$uncertainty)
-## fish_fleet$log_obs_error$estimated <- FALSE
-# Next two lines not currently used by FIMS
-fish_fleet$SetAgeCompLikelihood(1)
-fish_fleet$SetIndexLikelihood(1)
-# Set Index, AgeComp, and Selectivity using the IDs from the modules defined above
-fish_fleet$SetObservedIndexData(fish_index$get_id())
-fish_fleet$SetObservedAgeCompData(fish_age_comp$get_id())
-fish_fleet$SetSelectivity(fish_selex$get_id())
+
+# Set up fishery index data using the lognormal
+fish_fleet_index_distribution <- methods::new(DlnormDistribution)
+# lognormal observation error transformed on the log scale
+fish_fleet_index_distribution$log_sd$resize(om_input[["nyr"]])
+for (y in 1:om_input[["nyr"]]) {
+  # Compute lognormal SD from OM coefficient of variation (CV)
+  fish_fleet_index_distribution$log_sd[y]$value <- log(landings$uncertainty[y])
+}
+fish_fleet_index_distribution$log_sd$set_all_estimable(FALSE)
+# Set Data using the IDs from the modules defined above
+fish_fleet_index_distribution$set_observed_data(fish_fleet$GetObservedIndexDataID())
+fish_fleet_index_distribution$set_distribution_links("data", fish_fleet$log_expected_index$get_id())
+
+# Set up fishery age composition data using the multinomial
+fish_fleet_agecomp_distribution <- methods::new(DmultinomDistribution)
+fish_fleet_agecomp_distribution$set_observed_data(fish_fleet$GetObservedAgeCompDataID())
+fish_fleet_agecomp_distribution$set_distribution_links("data", fish_fleet$proportion_catch_numbers_at_age$get_id())
+
+# fish_fleet$log_obs_error <- log(landings$uncertainty)
+# ## fish_fleet$log_obs_error$estimated <- FALSE
+# # Next two lines not currently used by FIMS
+# fish_fleet$SetAgeCompLikelihood(1)
+# fish_fleet$SetIndexLikelihood(1)
+# # Set Index, AgeComp, and Selectivity using the IDs from the modules defined above
+ fish_fleet$SetObservedIndexData(fish_index$get_id())
+ fish_fleet$SetObservedAgeCompData(fish_age_comp$get_id())
+ fish_fleet$SetSelectivity(fish_selex$get_id())
 
 
-## Setup survey 2
-survey_fleet_index <- methods::new(Index, nyears)
-survey_age_comp <- methods::new(AgeComp, nyears, nages)
-survey_fleet_index$index_data <- survey_index2
-survey_age_comp$age_comp_data <-
-  survey_agecomp2 * indexage2$uncertainty
-## survey selectivity: ascending logistic
-## methods::show(DoubleLogisticSelectivity)
-survey_selex <- methods::new(DoubleLogisticSelectivity)
-survey_selex$inflection_point_asc$value <- parfinal$inf1_srv2
-survey_selex$inflection_point_asc$is_random_effect <- FALSE
-survey_selex$inflection_point_asc$estimated <- estimate_survey_selex
-survey_selex$slope_asc$value <- exp(parfinal$log_slp1_srv2)
-survey_selex$slope_asc$is_random_effect <- FALSE
-survey_selex$slope_asc$estimated <- estimate_survey_selex
-## not estimated to make it ascending only, fix at input values
-survey_selex$inflection_point_desc$value <- parfinal$inf2_srv2
-survey_selex$inflection_point_desc$is_random_effect <- FALSE
-survey_selex$inflection_point_desc$estimated <- FALSE
-survey_selex$slope_desc$value <- exp(parfinal$log_slp2_srv2)
-survey_selex$slope_desc$is_random_effect <- FALSE
-survey_selex$slope_desc$estimated <- FALSE
-survey_fleet <- methods::new(Fleet)
-survey_fleet$is_survey <- TRUE
-survey_fleet$nages <- nages
-survey_fleet$nyears <- nyears
-survey_fleet$estimate_F <- FALSE
-survey_fleet$random_F <- FALSE
-survey_fleet$log_q <- parfinal$log_q2_mean
-survey_fleet$estimate_q <- estimate_q2
-survey_fleet$random_q <- FALSE
-# sd = sqrt(log(cv^2 + 1)), sd is log transformed
-survey_fleet$log_obs_error <- log(index2$uncertainty)
-## survey_fleet$log_obs_error$estimated <- FALSE
-survey_fleet$SetAgeCompLikelihood(1)
-survey_fleet$SetIndexLikelihood(1)
-survey_fleet$SetSelectivity(survey_selex$get_id())
-survey_fleet$SetObservedIndexData(survey_fleet_index$get_id())
-survey_fleet$SetObservedAgeCompData(survey_age_comp$get_id())
+ ## Setup survey 2
+ survey_fleet_index <- methods::new(Index, nyears)
+ survey_age_comp <- methods::new(AgeComp, nyears, nages)
+ survey_fleet_index$index_data <- survey_index2
+ survey_age_comp$age_comp_data <-
+   survey_agecomp2 * indexage2$uncertainty
+ ## survey selectivity: ascending logistic
+ ## methods::show(DoubleLogisticSelectivity)
+ survey_selex <- methods::new(DoubleLogisticSelectivity)
+ survey_selex$inflection_point_asc[1]$value <- parfinal$inf1_srv2
+ survey_selex$inflection_point_asc[1]$is_random_effect <- FALSE
+ survey_selex$inflection_point_asc[1]$estimated <- estimate_survey_selex
+ survey_selex$slope_asc[1]$value <- exp(parfinal$log_slp1_srv2)
+ survey_selex$slope_asc[1]$is_random_effect <- FALSE
+ survey_selex$slope_asc[1]$estimated <- estimate_survey_selex
+ ## not estimated to make it ascending only, fix at input values
+ survey_selex$inflection_point_desc[1]$value <- parfinal$inf2_srv2
+ survey_selex$inflection_point_desc[1]$is_random_effect <- FALSE
+ survey_selex$inflection_point_desc[1]$estimated <- FALSE
+ survey_selex$slope_desc[1]$value <- exp(parfinal$log_slp2_srv2)
+ survey_selex$slope_desc[1]$is_random_effect <- FALSE
+ survey_selex$slope_desc[1]$estimated <- FALSE
+ survey_fleet <- methods::new(Fleet)
+ survey_fleet$is_survey <- TRUE
+ survey_fleet$nages <- nages
+ survey_fleet$nyears <- nyears
+ #survey_fleet$estimate_F <- FALSE
+ #survey_fleet$random_F <- FALSE
+ survey_fleet$log_q[1]$value <- parfinal$log_q2_mean
+ #survey_fleet$estimate_q <- estimate_q2
+ survey_fleet$log_q[1]$estimated <- TRUE
+ survey_fleet$random_q <- FALSE
+ survey_fleet_index_distribution <- methods::new(DlnormDistribution)
+ # lognormal observation error transformed on the log scale
+ survey_fleet_index_distribution$log_sd$resize(om_input[["nyr"]])
+ for (y in 1:om_input[["nyr"]]) {
+   # Compute lognormal SD from OM coefficient of variation (CV)
+   survey_fleet_index_distribution$log_sd[y]$value <- log(index2$uncertainty)[y]
+ }
+ survey_fleet_index_distribution$log_sd$set_all_estimable(FALSE)
+ # Set Data using the IDs from the modules defined above
+ survey_fleet_index_distribution$set_observed_data(survey_fleet$GetObservedIndexDataID())
+ survey_fleet_index_distribution$set_distribution_links("data", survey_fleet$log_expected_index$get_id())
+ # Set up fishery age composition data using the multinomial
+ survey_fleet_agecomp_distribution <- methods::new(DmultinomDistribution)
+ survey_fleet_agecomp_distribution$set_observed_data(survey_fleet$GetObservedAgeCompDataID())
+ survey_fleet_agecomp_distribution$set_distribution_links("data", survey_fleet$proportion_catch_numbers_at_age$get_id())
+ # # sd = sqrt(log(cv^2 + 1)), sd is log transformed
+ # survey_fleet$log_obs_error <- log(index2$uncertainty)
+ # ## survey_fleet$log_obs_error$estimated <- FALSE
+ # survey_fleet$SetAgeCompLikelihood(1)
+ # survey_fleet$SetIndexLikelihood(1)
+ survey_fleet$SetSelectivity(survey_selex$get_id())
+ survey_fleet$SetObservedIndexData(survey_fleet_index$get_id())
+ survey_fleet$SetObservedAgeCompData(survey_age_comp$get_id())
+
+
+
 
 ## Setup survey 3
 survey_fleet_index <- methods::new(Index, nyears)
@@ -286,29 +324,47 @@ survey_age_comp$age_comp_data <-
 ## survey selectivity: ascending logistic
 ## methods::show(LogisticSelectivity)
 survey_selex <- methods::new(LogisticSelectivity)
-survey_selex$inflection_point$value <- parfinal$inf1_srv3
-survey_selex$inflection_point$is_random_effect <- FALSE
-survey_selex$inflection_point$estimated <- estimate_survey_selex
-survey_selex$slope$value <- exp(parfinal$log_slp1_srv3)
-survey_selex$slope$is_random_effect <- FALSE
-survey_selex$slope$estimated <- estimate_survey_selex
+survey_selex$inflection_point[1]$value <- parfinal$inf1_srv3
+survey_selex$inflection_point[1]$is_random_effect <- FALSE
+survey_selex$inflection_point[1]$estimated <- estimate_survey_selex
+survey_selex$slope[1]$value <- exp(parfinal$log_slp1_srv3)
+survey_selex$slope[1]$is_random_effect <- FALSE
+survey_selex$slope[1]$estimated <- estimate_survey_selex
 survey_fleet <- methods::new(Fleet)
 survey_fleet$is_survey <- TRUE
 survey_fleet$nages <- nages
 survey_fleet$nyears <- nyears
-survey_fleet$estimate_F <- FALSE
-survey_fleet$random_F <- FALSE
-survey_fleet$log_q <- parfinal$log_q3_mean
-survey_fleet$estimate_q <- estimate_q3
+#survey_fleet$estimate_F <- FALSE
+#survey_fleet$random_F <- FALSE
+survey_fleet$log_q[1]$value <- parfinal$log_q3_mean
+#survey_fleet$estimate_q <- estimate_q3
+survey_fleet$log_q[1]$estimated <- TRUE
 survey_fleet$random_q <- FALSE
 # sd = sqrt(log(cv^2 + 1)), sd is log transformed
-survey_fleet$log_obs_error <- log(index3$uncertainty)
-## survey_fleet$log_obs_error$estimated <- FALSE
-survey_fleet$SetAgeCompLikelihood(2)
-survey_fleet$SetIndexLikelihood(2)
+survey_fleet_index_distribution <- methods::new(DlnormDistribution)
+# lognormal observation error transformed on the log scale
+survey_fleet_index_distribution$log_sd$resize(om_input[["nyr"]])
+for (y in 1:om_input[["nyr"]]) {
+  # Compute lognormal SD from OM coefficient of variation (CV)
+  survey_fleet_index_distribution$log_sd[y]$value <- log(index3$uncertainty)[y]
+}
+survey_fleet_index_distribution$log_sd$set_all_estimable(FALSE)
+# Set Data using the IDs from the modules defined above
+survey_fleet_index_distribution$set_observed_data(survey_fleet$GetObservedIndexDataID())
+survey_fleet_index_distribution$set_distribution_links("data", survey_fleet$log_expected_index$get_id())
+# Set up fishery age composition data using the multinomial
+survey_fleet_agecomp_distribution <- methods::new(DmultinomDistribution)
+survey_fleet_agecomp_distribution$set_observed_data(survey_fleet$GetObservedAgeCompDataID())
+survey_fleet_agecomp_distribution$set_distribution_links("data", survey_fleet$proportion_catch_numbers_at_age$get_id())
+# survey_fleet$log_obs_error <- log(index3$uncertainty)
+# ## survey_fleet$log_obs_error$estimated <- FALSE
+# survey_fleet$SetAgeCompLikelihood(2)
+# survey_fleet$SetIndexLikelihood(2)
 survey_fleet$SetSelectivity(survey_selex$get_id())
 survey_fleet$SetObservedIndexData(survey_fleet_index$get_id())
 survey_fleet$SetObservedAgeCompData(survey_age_comp$get_id())
+
+
 
 ## Setup survey 6
 survey_fleet_index <- methods::new(Index, nyears)
@@ -319,34 +375,50 @@ survey_age_comp$age_comp_data <-
 ## survey selectivity: ascending logistic
 ## methods::show(DoubleLogisticSelectivity)
 survey_selex <- methods::new(DoubleLogisticSelectivity)
-survey_selex$inflection_point_asc$value <- parfinal$inf1_srv6
-survey_selex$inflection_point_asc$is_random_effect <- FALSE
-survey_selex$inflection_point_asc$estimated <- FALSE
-survey_selex$slope_asc$value <- exp(parfinal$log_slp1_srv6)
-survey_selex$slope_asc$is_random_effect <- FALSE
-survey_selex$slope_asc$estimated <- FALSE
+survey_selex$inflection_point_asc[1]$value <- parfinal$inf1_srv6
+survey_selex$inflection_point_asc[1]$is_random_effect <- FALSE
+survey_selex$inflection_point_asc[1]$estimated <- FALSE
+survey_selex$slope_asc[1]$value <- exp(parfinal$log_slp1_srv6)
+survey_selex$slope_asc[1]$is_random_effect <- FALSE
+survey_selex$slope_asc[1]$estimated <- FALSE
 ## not estimated to make it ascending only, fix at input values
-survey_selex$inflection_point_desc$value <- parfinal$inf2_srv6
-survey_selex$inflection_point_desc$is_random_effect <- FALSE
-survey_selex$inflection_point_desc$estimated <-
+survey_selex$inflection_point_desc[1]$value <- parfinal$inf2_srv6
+survey_selex$inflection_point_desc[1]$is_random_effect <- FALSE
+survey_selex$inflection_point_desc[1]$estimated <-
   estimate_survey_selex
-survey_selex$slope_desc$value <- exp(parfinal$log_slp2_srv6)
-survey_selex$slope_desc$is_random_effect <- FALSE
-survey_selex$slope_desc$estimated <- estimate_survey_selex
+survey_selex$slope_desc[1]$value <- exp(parfinal$log_slp2_srv6)
+survey_selex$slope_desc[1]$is_random_effect <- FALSE
+survey_selex$slope_desc[1]$estimated <- estimate_survey_selex
 survey_fleet <- methods::new(Fleet)
 survey_fleet$is_survey <- TRUE
 survey_fleet$nages <- nages
 survey_fleet$nyears <- nyears
-survey_fleet$estimate_F <- FALSE
-survey_fleet$random_F <- FALSE
-survey_fleet$log_q <- parfinal$log_q6
-survey_fleet$estimate_q <- estimate_q6
+#survey_fleet$estimate_F <- FALSE
+#survey_fleet$random_F <- FALSE
+survey_fleet$log_q[1]$value <- parfinal$log_q6
+survey_fleet$log_q[1]$estimated <- TRUE
+#survey_fleet$estimate_q <- estimate_q6
 survey_fleet$random_q <- FALSE
-# sd = sqrt(log(cv^2 + 1)), sd is log transformed
-survey_fleet$log_obs_error <- log(index6$uncertainty)
-## survey_fleet$log_obs_error$estimated <- FALSE
-survey_fleet$SetAgeCompLikelihood(3)
-survey_fleet$SetIndexLikelihood(3)
+survey_fleet_index_distribution <- methods::new(DlnormDistribution)
+# lognormal observation error transformed on the log scale
+survey_fleet_index_distribution$log_sd$resize(om_input[["nyr"]])
+for (y in 1:om_input[["nyr"]]) {
+  # Compute lognormal SD from OM coefficient of variation (CV)
+  survey_fleet_index_distribution$log_sd[y]$value <- log(index6$uncertainty)[y]
+}
+survey_fleet_index_distribution$log_sd$set_all_estimable(FALSE)
+# Set Data using the IDs from the modules defined above
+survey_fleet_index_distribution$set_observed_data(survey_fleet$GetObservedIndexDataID())
+survey_fleet_index_distribution$set_distribution_links("data", survey_fleet$log_expected_index$get_id())
+# Set up fishery age composition data using the multinomial
+survey_fleet_agecomp_distribution <- methods::new(DmultinomDistribution)
+survey_fleet_agecomp_distribution$set_observed_data(survey_fleet$GetObservedAgeCompDataID())
+survey_fleet_agecomp_distribution$set_distribution_links("data", survey_fleet$proportion_catch_numbers_at_age$get_id())
+# # sd = sqrt(log(cv^2 + 1)), sd is log transformed
+# survey_fleet$log_obs_error <- log(index6$uncertainty)
+# ## survey_fleet$log_obs_error$estimated <- FALSE
+# survey_fleet$SetAgeCompLikelihood(3)
+# survey_fleet$SetIndexLikelihood(3)
 survey_fleet$SetSelectivity(survey_selex$get_id())
 survey_fleet$SetObservedIndexData(survey_fleet_index$get_id())
 survey_fleet$SetObservedAgeCompData(survey_age_comp$get_id())
@@ -357,17 +429,30 @@ survey_fleet$SetObservedAgeCompData(survey_age_comp$get_id())
 # recruitment
 recruitment <- methods::new(BevertonHoltRecruitment)
 ## methods::show(BevertonHoltRecruitment)
-recruitment$log_sigma_recruit$value <- log(parfinal$sigmaR)
-recruitment$log_rzero$value <- parfinal$mean_log_recruit + log(1e9)
-recruitment$log_rzero$is_random_effect <- FALSE
-recruitment$log_rzero$estimated <- TRUE
+#recruitment$log_sigma_recruit[1]$value <- log(parfinal$sigmaR)
+recruitment$log_rzero[1]$value <- parfinal$mean_log_recruit + log(1e9)
+recruitment$log_rzero[1]$is_random_effect <- FALSE
+recruitment$log_rzero[1]$estimated <- TRUE
 ## note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run
-recruitment$logit_steep$value <-
+recruitment$logit_steep[1]$value <-
   -log(1.0 - .99999) + log(.99999 - 0.2)
-recruitment$logit_steep$is_random_effect <- FALSE
-recruitment$logit_steep$estimated <- FALSE
+recruitment$logit_steep[1]$is_random_effect <- FALSE
+recruitment$logit_steep[1]$estimated <- FALSE
 recruitment$estimate_log_devs <- estimate_recdevs
-recruitment$log_devs <-  parfinal$dev_log_recruit[-1]
+recruitment$log_devs$resize(om_input[["nyr"]] - 1)
+for (y in 1:(om_input[["nyr"]] - 1)) {
+  recruitment$log_devs[y]$value <- parfinal$dev_log_recruit[y + 1]
+}
+#recruitment$log_devs <-  parfinal$dev_log_recruit[-1]
+recruitment_distribution <- methods::new(DnormDistribution)
+# set up logR_sd using the normal log_sd parameter
+# logR_sd is NOT logged. It needs to enter the model logged b/c the exp() is
+# taken before the likelihood calculation
+recruitment_distribution$log_sd <- methods::new(ParameterVector, 1)
+recruitment_distribution$log_sd[1]$value <- log(parfinal$sigmaR)
+recruitment_distribution$log_sd[1]$estimated <- FALSE
+
+
 
 ## growth  -- assumes single WAA vector for everything, based on
 ## Srv1 above
@@ -381,28 +466,50 @@ ewaa_growth$weights <- waa[1, ]
 ## timing of SSB calculation part of FIMS later
 ## maturity
 ## NOTE: for now tricking FIMS into thinking age 0 is age 1, so need to adjust A50 for maturity because FIMS calculations use ages 0-5+ instead of 1-6
-maturity <- new(LogisticMaturity)
-maturity$inflection_point$value <- 4.5
-maturity$inflection_point$is_random_effect <- FALSE
-maturity$inflection_point$estimated <- FALSE
-maturity$slope$value <- 1.5
-maturity$slope$is_random_effect <- FALSE
-maturity$slope$estimated <- FALSE
 
+
+maturity <- new(LogisticMaturity)
+maturity$inflection_point[1]$value <- 4.5
+maturity$inflection_point[1]$is_random_effect <- FALSE
+maturity$inflection_point[1]$estimated <- FALSE
+maturity$slope[1]$value <- 1.5
+maturity$slope[1]$is_random_effect <- FALSE
+maturity$slope[1]$estimated <- FALSE
+
+om_input$nages <- nages
 # population
 population <- new(Population)
-population$log_M <-
+# population$log_M <-
+#   log(as.numeric(t(matrix(
+#     rep(pkfitfinal$rep$M, each = nyears), nrow = nyears
+#   ))))
+tmpM <-
   log(as.numeric(t(matrix(
     rep(pkfitfinal$rep$M, each = nyears), nrow = nyears
-  ))))
-population$estimate_M <- FALSE
-population$log_init_naa <-
-  c(log(pkfitfinal$rep$recruit[1]), log(pkfitfinal$rep$initN)) + log(1e9)
-population$estimate_init_naa <-
-  FALSE # TRUE , NOTE: fixing at ASAP estimates to test SSB calculations
+  )))) |> as.numeric()
+tmpM |> head()
+population$log_M$resize(om_input[["nyr"]] * om_input[["nages"]])
+for (i in 1:(om_input[["nyr"]] * om_input[["nages"]])) {
+  population$log_M[i]$value <- tmpM[y]
+}
+population$log_M$set_all_estimable(FALSE)
+population$log_init_naa$resize(om_input[["nages"]])
+initNAA <- c(log(pkfitfinal$rep$recruit[1]), log(pkfitfinal$rep$initN)) + log(1e9)
+for (i in 1:om_input$nages) {
+  population$log_init_naa[i]$value <- initNAA[i]
+    #log(om_output[["N.age"]][1, i])
+}
+population$log_init_naa$set_all_estimable(TRUE)
+population$nages <- om_input[["nages"]]
+#population
+population$log_M$set_all_estimable(FALSE)# estimate_M <- FALSE
+# population$log_init_naa <-
+#   c(log(pkfitfinal$rep$recruit[1]), log(pkfitfinal$rep$initN)) + log(1e9)
+population$log_init_naa$set_all_estimable(FALSE)# estimate_init_naa <-
+  #FALSE # TRUE , NOTE: fixing at ASAP estimates to test SSB calculations
 population$nages <- nages
 population$ages <- ages
-population$nfleets <- 2 # 1 fleet and 1 survey
+population$nfleets <- 4 # 1 fleet and 1 survey
 population$nseasons <- nseasons
 population$nyears <- nyears
 ## population$prop_female <- 1.0 # ASAP assumption
