@@ -152,9 +152,29 @@ index <- rbind(index2, index3, index6)
 res <- rbind(res, landings, index, catchage, indexage)
 ## rm(landings, index, catchage, indexage)
 
+timingfishery <- data.frame(
+  datestart = rep(paste0(
+    seq(fimsdat$styr, fimsdat$endyr), "-01-01"
+  ), each = nages),
+  dateend = rep(paste0(
+    seq(fimsdat$styr, fimsdat$endyr), "-12-31"
+  ), each = nages)
+)
+weightsfishery <- data.frame(
+  type = "weight-at-age",
+  name = "fleet1",
+  age = seq(1, nages),
+  value = pkinput$dat$wt_srv1[1,],
+  uncertainty = NA,
+  unit = "mt"
+)
+weightatage_data <- merge(timingfishery, weightsfishery)
+
+res <- rbind(res, weightatage_data)
 
 age_frame <- FIMS::FIMSFrame(res)
-fishery_catch <- FIMS::m_landings(age_frame)
+
+fishery_catch <- FIMS::m_landings(age_frame, 'fleet1')
 fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1")
 survey_index2 <- FIMS::m_index(age_frame, "survey2")
 survey_agecomp2 <- FIMS::m_agecomp(age_frame, "survey2")
@@ -175,26 +195,35 @@ fish_age_comp$age_comp_data <-
 ## slope/intercept to constant double-logistic
 ## methods::show(DoubleLogisticSelectivity)
 fish_selex <- methods::new(DoubleLogisticSelectivity)
-fish_selex$inflection_point_asc$value <- parfinal$inf1_fsh_mean
-fish_selex$inflection_point_asc$is_random_effect <- FALSE
-fish_selex$inflection_point_asc$estimated <- estimate_fish_selex
-fish_selex$inflection_point_desc$value <- parfinal$inf2_fsh_mean
-fish_selex$inflection_point_desc$is_random_effect <- FALSE
-fish_selex$inflection_point_desc$estimated <- estimate_fish_selex
-fish_selex$slope_asc$value <- exp(parfinal$log_slp1_fsh_mean)
-fish_selex$slope_asc$is_random_effect <- FALSE
-fish_selex$slope_asc$estimated <- estimate_fish_selex
-fish_selex$slope_desc$value <- exp(parfinal$log_slp2_fsh_mean)
-fish_selex$slope_desc$is_random_effect <- FALSE
-fish_selex$slope_desc$estimated <- estimate_fish_selex
+fish_selex$inflection_point_asc[1]$value <- parfinal$inf1_fsh_mean
+fish_selex$inflection_point_asc[1]$is_random_effect <- FALSE
+fish_selex$inflection_point_asc[1]$estimated <- estimate_fish_selex
+fish_selex$inflection_point_desc[1]$value <- parfinal$inf2_fsh_mean
+fish_selex$inflection_point_desc[1]$is_random_effect <- FALSE
+fish_selex$inflection_point_desc[1]$estimated <- estimate_fish_selex
+fish_selex$slope_asc[1]$value <- exp(parfinal$log_slp1_fsh_mean)
+fish_selex$slope_asc[1]$is_random_effect <- FALSE
+fish_selex$slope_asc[1]$estimated <- estimate_fish_selex
+fish_selex$slope_desc[1]$value <- exp(parfinal$log_slp2_fsh_mean)
+fish_selex$slope_desc[1]$is_random_effect <- FALSE
+fish_selex$slope_desc[1]$estimated <- estimate_fish_selex
 ## create fleet object
 fish_fleet <- methods::new(Fleet)
 fish_fleet$nages <- nages
 fish_fleet$nyears <- nyears
-fish_fleet$log_Fmort <- log(pkfitfinal$rep$F)
-fish_fleet$estimate_F <- estimate_F
-fish_fleet$random_F <- FALSE
-fish_fleet$log_q <- 0 # why is this length two in Chris' case study?
+
+
+om_input <- list(nyr=length(pkfitfinal$rep$F))
+fish_fleet$log_Fmort$resize(om_input$nyr)
+for (y in 1:om_input$nyr) {
+  # Log-transform OM fishing mortality
+  fish_fleet$log_Fmort[y]$value <- log(pkfitfinal$rep$F[y])
+}
+
+#fish_fleet$log_Fmort <- log(pkfitfinal$rep$F)
+fish_fleet$log_Fmort$set_all_estimable(TRUE)
+#fish_fleet$random_F <- FALSE
+fish_fleet$log_q[1]$value <- 0 # why is this length two in Chris' case study?
 fish_fleet$estimate_q <- FALSE
 fish_fleet$random_q <- FALSE
 fish_fleet$log_obs_error <- log(landings$uncertainty)
@@ -468,7 +497,7 @@ get_acomp_fits <- function(tmb, fims1, fims2, fleet, years) {
   } else {
     stop("bad fleet")
   }
-  
+
   lab <- c('Fishery', 'Survey 2', 'Survey 3', 'Survey 6')[fleet]
   x1 <- matrix(fims1$cnaa[[fleet]], ncol = 10, byrow = TRUE)[ind, ]
   x1 <- x1 / rowSums(x1)
