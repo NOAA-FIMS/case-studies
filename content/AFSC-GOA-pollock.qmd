@@ -95,7 +95,7 @@ source("R/pk_prepare_FIMS_inputs.R")
 ## make FIMS model
 success <- CreateTMBModel()
 parameters <- list(p = get_fixed())
-obj <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
+obj <- TMB::MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
 ## report values for the two models
 rep0 <- pkfitfinal$rep
 rep1 <- obj$report() # FIMS initial values
