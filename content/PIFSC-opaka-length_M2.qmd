@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Opakapaka Case Study"
 format: html
 ---
 
@@ -15,6 +15,25 @@ library(r4ss)
 clear()
 
 ```
+
+## The setup
+
+```{r}
+#| echo: false
+R_version <- version$version.string
+TMB_version <- packageDescription("TMB")$Version
+FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
+r4ss_version <- packageVersion('r4ss')
+```
+
+* R version = `R_version`
+* TMB version = `TMB_version`
+* FIMS commit = `FIMS_commit`
+* `r4ss` version = `r4ss_version`  
+* Stock name: Main Hawaiian Islands Opakapaka
+* Region: Pacific Islands
+* Analyst: Meg Oshima
+
 ## Setting up Data
 ```{r fims-dims}
 load(here::here("content", "data_files", "opaka_length.RDS"))
@@ -194,6 +213,7 @@ default_parameters <- fims_frame |>
   )
 ```
 
+### Modifying parameters
 ```{r modify-default-parameters}
 
 recdevs <- rep$parameters |> 
@@ -303,7 +323,12 @@ fit <- parameters |>
   initialize_fims(data = fims_frame) |>
   fit_fims(optimize = TRUE)
 str(fit)
+clear()
+```
 
+```{r}
+#| eval: false
+#| code-fold: true
 fit@report$exp_index
 fit@report$exp_catch
 fit@report$F_mort[[1]]
@@ -315,7 +340,7 @@ fit@input$parameters #q and init_naa
 fit@estimates |> filter(name == "NAA")
 pull(value) 
 # Clear memory post-run
-clear()
+
 ```
 
 ## Problems and Questions: 
@@ -331,7 +356,7 @@ index_results <- data.frame(
 ) |>
 dplyr::mutate(year = years) |>
 dplyr::filter(year > 2016)
-print(index_results)
+#print(index_results)
 
 ggplot2::ggplot(index_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::geom_point() +
@@ -346,7 +371,7 @@ cpue_results <- data.frame(
 ) |>
 dplyr::mutate(year = years) |>
 dplyr::filter(observed >0)
-print(cpue_results)
+#print(cpue_results)
 ggplot2::ggplot(cpue_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::geom_point() +
   ggplot2::xlab("Year") +
@@ -361,7 +386,7 @@ catch_results <- data.frame(
   fleet = rep(c("fleet1", "fleet3"), each = 75)
 ) |>
 dplyr::mutate(year = rep(years, 2))
-print(catch_results)
+#print(catch_results)
 
 ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::geom_point(ggplot2::aes(color = fleet)) +
@@ -410,7 +435,7 @@ ggplot2::ggplot(recruits, ggplot2::aes(x = Year, y = value, color = Model)) +
 
 
 ```{r}
-
+## Checking fit to proportion catch number at length
 pcnal <- matrix(data = fit@report$pcnal[[2]], nrow = nlengths)
 
 prop.dat <- opaka_dat_fims |> 
@@ -424,6 +449,7 @@ plot(x = 1:nlengths, y = pcnal.obs[,73], pch = 16,  ylim = c(0,1))
 lines(x = 1:nlengths, y = pcnal[,73])
 pcnal[,69]
 
+## checking estimated numbers at age
 head(fit@report$naa[[1]])
 naa_mat <- matrix(data = fit@report$naa[[1]], nrow = nages)
 head(naa_mat)
