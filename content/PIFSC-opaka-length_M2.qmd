@@ -5,7 +5,7 @@ format: html
 
 ```{r fims1, warning=FALSE, message=FALSE}
 # automatically loads fims Rcpp module
-#remotes::install_github("NOAA-FIMS/FIMS", ref = "dev")
+#remotes::install_github("NOAA-FIMS/FIMS", ref = "main")
 library(FIMS)
 library(TMB)
 library(dplyr)
@@ -108,7 +108,8 @@ length_age_data <- data.frame(
 # remove the CPUE indices for fleet1 and missing age/length data. Perhaps they can be renamed to 
 # represent different fleets and then included as indices.
 opaka_dat_fims <- opaka_dat_fims |>
-  dplyr::filter(!(type == "index" & name == "fleet1"))
+  dplyr::mutate(name = ifelse(name == "fleet1" & type == "index", "fleet4", name))
+  # dplyr::filter(!(type == "index" & name == "fleet1"))
   #dplyr::filter(!(type == "index" & name == "fleet3")) |>
   # dplyr::filter(!(name == "fleet1" & value == -999 & type == "length")) |>
   # dplyr::filter(!(name == "fleet1" & value == -999 & type == "age"))
@@ -168,7 +169,7 @@ The `fims_frame` object contains a `@data` slot that holds a long data frame wit
 
 ```{r, max.height='100px', attr.output='.numberLines'}
 # Define fleet specifications for fleet1 and survey1
-fleet1 <- fleet3 <- list(
+fleet1 <- fleet3 <- fleet4 <- list(
   selectivity = list(form = "LogisticSelectivity"),
   data_distribution = c(
     Index = "DlnormDistribution"
@@ -189,7 +190,7 @@ fleet2 <- list(
 # Create default parameters
 default_parameters <- fims_frame |>
   create_default_parameters(
-    fleets = list(fleet1 = fleet1, fleet2 = fleet2, fleet3 = fleet3)
+    fleets = list(fleet1 = fleet1, fleet2 = fleet2, fleet3 = fleet3, fleet4=fleet4)
   )
 ```
 
@@ -215,6 +216,19 @@ parameters <- default_parameters |>
       )
     )
   ) |>
+    update_parameters(
+      modified_parameters = list(
+        fleet4 = list(
+          #Fleet.log_Fmort.value = log(rep$exploitation$FRS),
+          #Fleet.log_Fmort.estimated = FALSE,
+          LogisticSelectivity.inflection_point.value = 1.81, #used age selex values
+          LogisticSelectivity.inflection_point.estimated = FALSE,
+          LogisticSelectivity.slope.value = 4.5, #used age selex values
+          LogisticSelectivity.slope.estimated = FALSE,
+          Fleet.log_q.value = -3.90281 #value from SS
+        )
+      )
+    ) |>
     update_parameters(
     modified_parameters = list(
       fleet2 = list(
@@ -266,8 +280,8 @@ parameters <- default_parameters |>
     modified_parameters = list(
       population = list(
         Population.log_init_naa.value = log(init_naa),
-        #Population.log_init_naa.estimated = FALSE,
-        Population.log_M.value = rep(0.135, get_n_years(fims_frame)*get_n_ages(fims_frame))
+        Population.log_init_naa.estimated = FALSE,
+        Population.log_M.value = rep(log(0.135), get_n_years(fims_frame)*get_n_ages(fims_frame))
       )
     )
   )
@@ -298,18 +312,14 @@ fit@report$ssb
 fit@report$biomass
 unique(fit@estimates$name)
 fit@input$parameters #q and init_naa
-fit@estimates |> filter(name == "log_rzero")
-pull(value) #negative values for init_naa??
+fit@estimates |> filter(name == "NAA")
+pull(value) 
 # Clear memory post-run
 clear()
 ```
 
 ## Problems and Questions: 
-The scale is not matching up at all with the synthesis model. 
-How can I plot things like maturity curve, growth curve, selectivity, etc. to check those? And do those parameters need to be specified in terms of age? In our model they are length-based processes. 
-The catchability for the survey is way off from SS estimated value. 
-F is much lower than SS
-
+How can I plot things like maturity curve, growth curve, selectivity, etc. to check those? In our model they are length-based processes so I converted (aka eye-balled logistic curves that look like they match for ages) to values that I think would be roughly equivalent in ages. Eventually, having length-based processes would be necessary for this model. 
 
 ## Plotting Results
 
@@ -329,6 +339,21 @@ ggplot2::ggplot(index_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::ylab("Index (mt)") +
   ggplot2::geom_line(ggplot2::aes(x = year, y = expected), color = "blue") +
   ggplot2::theme_bw()
+
+cpue_results <- data.frame(
+  observed = m_index(fims_frame, "fleet4"),
+  expected = get_report(fit)[["exp_index"]][[2]]
+) |>
+dplyr::mutate(year = years) |>
+dplyr::filter(observed >0)
+print(cpue_results)
+ggplot2::ggplot(cpue_results, ggplot2::aes(x = year, y = observed)) +
+  ggplot2::geom_point() +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("CPUE") +
+  ggplot2::geom_line(ggplot2::aes(x = year, y = expected), color = "blue") +
+  ggplot2::theme_bw()
+
 
 catch_results <- data.frame(
   observed = c(m_landings(fims_frame, fleet = "fleet1"), m_landings(fims_frame, fleet = "fleet3")),
