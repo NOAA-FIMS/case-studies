@@ -344,7 +344,11 @@ pull(value)
 ```
 
 ## Problems and Questions: 
-How can I plot things like maturity curve, growth curve, selectivity, etc. to check those? In our model they are length-based processes so I converted (aka eye-balled logistic curves that look like they match for ages) to values that I think would be roughly equivalent in ages. Eventually, having length-based processes would be necessary for this model. 
+
+* How can I plot things like maturity curve, growth curve, selectivity, etc. to check those? In our model they are length-based processes so I converted (aka eye-balled logistic curves that look like they match for ages) to values that I think would be roughly equivalent in ages. Eventually, having length-based processes would be necessary for this model.   
+* The scale of the fitted CPUE is lower than the observed values.  
+* If I don't fix the initial numbers-at-age, the model puts a really large number of individuals in age-0 bin and then 0 fish in the rest of the ages. Not sure what is happening here.  
+
 
 ## Plotting Results
 
