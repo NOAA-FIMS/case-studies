@@ -263,7 +263,9 @@ default_parameters <- data_4_model |>
       # Recruitment
       recruitment = list(
         BevertonHoltRecruitment.log_rzero.value = sca$parm.cons$log_R0[8],
-        BevertonHoltRecruitment.logit_steep.value = 0.999, # Scamp used the null recruitment model -log(1.0 - 0.75) + log(0.75 - 0.2)
+        # FIX: transform to logit steepness
+        BevertonHoltRecruitment.logit_steep.value = -log(1.0 - 0.99) + log(0.99 - 0.2), # Scamp used the null recruitment model -log(1.0 - 0.75) + log(0.75 - 0.2)
+        # BevertonHoltRecruitment.logit_steep.value = 0.999, # Scamp used the null recruitment model -log(1.0 - 0.75) + log(0.75 - 0.2)
         DnormDistribution.log_sd.value = sca$parm.cons$rec_sigma[8], # did not log it
         BevertonHoltRecruitment.log_devs.estimated = TRUE, # KFJ added
         BevertonHoltRecruitment.log_devs.value = sca$t.series$logR.dev[-53] # KFJ cut off last b/c it must be length n_years - 1
