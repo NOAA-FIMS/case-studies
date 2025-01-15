@@ -13,7 +13,7 @@ format:
 #| warning: false
 #| label: startup
 #| output: false
-theme_set(theme_bw())
+ggplot2::theme_set(theme_bw())
 ```
 -   R version: `r R_version`\
 -   TMB version: `r TMB_version`\
@@ -70,7 +70,7 @@ commercial in pounds and recreational in numbers.\
 
 # clear memory
 clear()
-graphics.off()
+grDevices::graphics.off()
 
 sca <- dget("data_files/scamp32o.rdat") # get scamp data and output from simplified version of BAM
 
@@ -85,55 +85,42 @@ nages <- length(ages) # the number of age groups.
 
 # Prepare data; initialize all values with -999 (missing)
 # fleet1 is commercial, fleet2 is recreational
-fleet1_landings <- fleet2_landings <- rep(-999, nyears)
-fleet1_landings_cv <- fleet2_landings_cv <- rep(-999, nyears)
-survey_index <- rep(-999, nyears)
-survey_index_cv <- rep(-999, nyears)
 fleet1_ac <- fleet2_ac <- survey_ac <- matrix(-999, nrow = nyears, ncol = nages)
-fleet1_ac_n <- fleet2_ac_n <- survey_ac_n <- rep(-999, nyears)
 
+# Previously used log(sqrt(log(1.0 + fleet1_landings_cv^2)))
+# CV is arithmetic space is what is used to fit in BAM
+# the above code converts it to standard deviation in log space
+# create_default_DlnormDistribution takes the log of it for you
+# so we want sqrt(log(1.0 + fleet1_landings_cv^2))
+# KFJ These values might be the uncertainty in catch rather than in F, where
+# they are used for F
 fleet1_landings <- sca$t.series$L.COM.ob
 fleet1_landings_cv <- sca$t.series$cv.L.COM
-fleet1_landings_logSD <- log(sqrt(log(1.0 + fleet1_landings_cv^2)))
+fleet1_landings_logSD <- sqrt(log(1.0 + fleet1_landings_cv^2))
 fleet2_landings <- sca$t.series$L.REC.ob
 fleet2_landings_cv <- sca$t.series$cv.L.REC
-fleet2_landings_logSD <- log(sqrt(log(1.0 + fleet2_landings_cv^2)))
+fleet2_landings_logSD <- sqrt(log(1.0 + fleet2_landings_cv^2))
 
-survey_index <- sca$t.series$U.CVT.ob
-survey_index <- replace_na(survey_index, -999)
+survey_index <- sca$t.series$U.CVT.ob |>
+  tidyr::replace_na(-999)
 survey_index_cv <- sca$t.series$cv.U.CVT
-survey_index_logSD <- log(sqrt(log(1.0 + survey_index_cv^2)))
-survey_index_logSD <- replace_na(survey_index_logSD, -999)
-survey_index_logSD[nyears - 1] <- -999 # manually replacing the 2020 CV as a missing value
+survey_index_logSD <- sqrt(log(1.0 + survey_index_cv^2)) |>
+  tidyr::replace_na(100)
 
-
-# COMMENT: These multinomial entries are not whole numbers and many <1.This is not technically
-# correct, but it does not seem to make a difference based on my testing.
-fleet1_ac_n <- sca$t.series$acomp.COM.n
-fleet1_ac_n <- replace_na(fleet1_ac_n, -999)
-fleet2_ac_n <- sca$t.series$acomp.REC.n
-fleet2_ac_n <- replace_na(fleet2_ac_n, -999)
-survey_ac_n <- sca$t.series$acomp.CVT.n
-survey_ac_n <- replace_na(survey_ac_n, -999)
+# COMMENT: These multinomial entries are not whole numbers and many <1. This is not
+# technically correct, but it does not seem to make a difference based on testing.
+fleet1_ac_n <- sca$t.series$acomp.COM.n |> 
+  tidyr::replace_na(-999)
+fleet2_ac_n <- sca$t.series$acomp.REC.n |>
+  tidyr::replace_na(-999)
+survey_ac_n <- sca$t.series$acomp.CVT.n |>
+  tidyr::replace_na(-999)
 
 fleet1_ac[!is.na(sca$t.series$acomp.COM.n), ] <- sca$comp.mats$acomp.COM.ob * fleet1_ac_n[!is.na(sca$t.series$acomp.COM.n)]
 fleet2_ac[!is.na(sca$t.series$acomp.REC.n), ] <- sca$comp.mats$acomp.REC.ob * fleet2_ac_n[!is.na(sca$t.series$acomp.REC.n)]
 survey_ac[!is.na(sca$t.series$acomp.CVT.n), ] <- sca$comp.mats$acomp.CVT.ob * survey_ac_n[!is.na(sca$t.series$acomp.CVT.n)]
 
-
-
 ## put data into fims friendly form
-res <- data.frame(
-  type = character(),
-  name = character(),
-  age = integer(),
-  datestart = character(),
-  dateend = character(),
-  value = double(),
-  unit = character(),
-  uncertainty = double()
-)
-
 fleet1_landings_df <- data.frame(
   type = "landings",
   name = "fleet1",
@@ -200,241 +187,180 @@ survey_ac_df <- data.frame(
   uncertainty = rep(survey_ac_n, each = nages)
 )
 
+weight_at_age <- data.frame(
+  type = "weight-at-age",
+  name = "fleet1",
+  age = seq(nages),
+  datestart = rep(paste0(styr, "-01-01"), nages),
+  dateend = rep(paste0(styr, "-12-31"), nages),
+  value = sca$a.series$wgt.mt,
+  unit = "mt",
+  uncertainty = NA
+)
+
 landings <- rbind(fleet1_landings_df, fleet2_landings_df)
 index <- survey_index_df
 agecomps <- rbind(fleet1_ac_df, fleet2_ac_df, survey_ac_df)
 
-res <- rbind(res, landings, index, agecomps)
-
-fims_frame <- FIMS::FIMSFrame(res)
-# COMMENT: m_landings concatenates fleets' landings, and does not take fleet as an argument, as m_index or m_agecomp do
-# This seems error-prone as it requires specifying landings through hard indexing (see lines 221 and 223) 
-fims_fleets_landings <- FIMS::m_landings(fims_frame)
-fims_survey1_index <- FIMS::m_index(fims_frame, "survey1")
-fims_fleet1_agecomp <- FIMS::m_agecomp(fims_frame, "fleet1")
-fims_fleet2_agecomp <- FIMS::m_agecomp(fims_frame, "fleet2")
-fims_survey1_agecomp <- FIMS::m_agecomp(fims_frame, "survey1")
-
-####################################################################################
-# COMMENT: It's confusing to specify landings as an Index (lines 220 and 222)
-spp_fleet1_landings <- methods::new(Index, nyears)
-spp_fleet1_landings$index_data <- fims_fleets_landings[1:nyears] # NOTE: This poor coding appears necessary bc m_landings doesn't take fleet as an argument
-spp_fleet2_landings <- methods::new(Index, nyears)
-spp_fleet2_landings$index_data <- fims_fleets_landings[(nyears + 1):(2 * nyears)] # NOTE: See note two lines above.
-spp_survey1_index <- methods::new(Index, nyears)
-spp_survey1_index$index_data <- fims_survey1_index
-
-spp_fleet1_ac <- methods::new(AgeComp, nyears, nages)
-spp_fleet1_ac$age_comp_data <- fims_fleet1_agecomp
-spp_fleet2_ac <- methods::new(AgeComp, nyears, nages)
-spp_fleet2_ac$age_comp_data <- fims_fleet2_agecomp
-spp_survey1_ac <- methods::new(AgeComp, nyears, nages)
-spp_survey1_ac$age_comp_data <- fims_survey1_agecomp
+res <- rbind(landings, index, agecomps, weight_at_age)
+data_4_model <- FIMS::FIMSFrame(res)
 
 ####################################################################################
 # set up selectivities for fleets and survey
-spp_fleet1_selectivity <- methods::new(LogisticSelectivity)
-spp_fleet1_selectivity$inflection_point$value <- sca$parm.cons$selpar_A50_COM2[8]
-spp_fleet1_selectivity$inflection_point$is_random_effect <- FALSE
-spp_fleet1_selectivity$inflection_point$estimated <- TRUE
-spp_fleet1_selectivity$slope$value <- sca$parm.cons$selpar_slope_COM2[8]
-spp_fleet1_selectivity$slope$is_random_effect <- FALSE
-spp_fleet1_selectivity$slope$estimated <- TRUE
+spp_fleet1_selectivity <- spp_fleet2_selectivity <- spp_survey1_selectivity <- list(
+  selectivity = list(form = "LogisticSelectivity"),
+  data_distribution = c(
+    Index = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
+  )
+)
 
-spp_fleet2_selectivity <- methods::new(LogisticSelectivity)
-spp_fleet2_selectivity$inflection_point$value <- sca$parm.cons$selpar_A50_REC2[8]
-spp_fleet2_selectivity$inflection_point$is_random_effect <- FALSE
-spp_fleet2_selectivity$inflection_point$estimated <- TRUE
-spp_fleet2_selectivity$slope$value <- sca$parm.cons$selpar_slope1_REC2[8]
-spp_fleet2_selectivity$slope$is_random_effect <- FALSE
-spp_fleet2_selectivity$slope$estimated <- TRUE
-
-spp_survey1_selectivity <- methods::new(LogisticSelectivity)
-spp_survey1_selectivity$inflection_point$value <- sca$parm.cons$selpar_A501_CVT[8]
-spp_survey1_selectivity$inflection_point$is_random_effect <- FALSE
-spp_survey1_selectivity$inflection_point$estimated <- TRUE
-spp_survey1_selectivity$slope$value <- sca$parm.cons$selpar_slope1_CVT[8]
-spp_survey1_selectivity$slope$is_random_effect <- FALSE
-spp_survey1_selectivity$slope$estimated <- TRUE
-
-####################################################################################
-# Create the fleet1 object
-# See all fields with show(Fleet1)
-spp_fleet1 <- methods::new(Fleet)
-# Set nyears and nages
-spp_fleet1$nages <- nages
-spp_fleet1$nyears <- nyears
-# Set values for log_Fmort
-spp_fleet1$log_Fmort <- log(sca$t.series$F.COM) # rep(0, nyears)
-# Turn on estimation for F
-spp_fleet1$estimate_F <- TRUE
-spp_fleet1$random_F <- FALSE
-spp_fleet1$log_obs_error <- fleet1_landings_logSD
-spp_fleet1$estimate_obs_error <- FALSE
-# Next two lines not currently used by FIMS
-spp_fleet1$SetAgeCompLikelihood(1)
-spp_fleet1$SetIndexLikelihood(1)
-# Set Index, AgeComp, and Selectivity using the IDs from the modules defined above
-spp_fleet1$SetObservedIndexData(spp_fleet1_landings$get_id())
-spp_fleet1$SetObservedAgeCompData(spp_fleet1_ac$get_id())
-spp_fleet1$SetSelectivity(spp_fleet1_selectivity$get_id())
-
-####################################################################################
-# Create the fleet2 object
-# See all fields with show(fleet2)
-spp_fleet2 <- methods::new(Fleet)
-# Set nyears and nages
-spp_fleet2$nages <- nages
-spp_fleet2$nyears <- nyears
-# Set values for log_Fmort
-spp_fleet2$log_Fmort <- log(sca$t.series$F.REC) # rep(0, nyears)
-# Turn on estimation for F
-spp_fleet2$estimate_F <- TRUE
-spp_fleet2$random_F <- FALSE
-spp_fleet2$log_obs_error <- fleet2_landings_logSD
-spp_fleet2$estimate_obs_error <- FALSE
-# Next two lines not currently used by FIMS
-spp_fleet2$SetAgeCompLikelihood(1)
-spp_fleet2$SetIndexLikelihood(1)
-# Set Index, AgeComp, and Selectivity using the IDs from the modules defined above
-spp_fleet2$SetObservedIndexData(spp_fleet2_landings$get_id())
-spp_fleet2$SetObservedAgeCompData(spp_fleet2_ac$get_id())
-spp_fleet2$SetSelectivity(spp_fleet2_selectivity$get_id())
-
-####################################################################################
-# Create the survey object
-spp_survey1 <- methods::new(Fleet) # COMMENT: it is confusing to specify surveys as "Fleet" (line 306)
-spp_survey1$is_survey <- TRUE
-spp_survey1$nages <- nages
-spp_survey1$nyears <- nyears
-spp_survey1$estimate_F <- FALSE
-spp_survey1$random_F <- FALSE
-spp_survey1$log_q <- log(sca$parms$q.CVT)
-spp_survey1$estimate_q <- TRUE
-spp_survey1$random_q <- FALSE
-spp_survey1$log_obs_error <- survey_index_logSD
-spp_survey1$estimate_obs_error <- FALSE
-spp_survey1$SetAgeCompLikelihood(1)
-spp_survey1$SetIndexLikelihood(1)
-spp_survey1$SetSelectivity(spp_survey1_selectivity$get_id())
-spp_survey1$SetObservedIndexData(spp_survey1_index$get_id())
-spp_survey1$SetObservedAgeCompData(spp_survey1_ac$get_id())
-
-####################################################################################
-# Create population
-
-# Recruitment
-recruitment <- methods::new(BevertonHoltRecruitment)
-# methods::show(BevertonHoltRecruitment)
-
-recruitment$log_sigma_recruit$value <- log(sca$parm.cons$rec_sigma[8])
-recruitment$log_rzero$value <- sca$parm.cons$log_R0[8]
-recruitment$log_rzero$is_random_effect <- FALSE
-recruitment$log_rzero$estimated <- TRUE
-recruitment$logit_steep$value <- 0.999 # Scamp used the null recruitment model -log(1.0 - 0.75) + log(0.75 - 0.2)
-recruitment$logit_steep$is_random_effect <- FALSE
-recruitment$logit_steep$estimated <- FALSE
-
-recruitment$estimate_log_devs <- TRUE
-recruitment$log_devs <- sca$t.series$logR.dev # rep(0, nyears)
-
-# Growth (here, empirical weight at age)
-# NOTE: Use the same units as landings and ssb (here, mt)
-ewaa_growth <- methods::new(EWAAgrowth)
-ewaa_growth$ages <- ages
-ewaa_growth$weights <- sca$a.series$wgt.mt
-
-
-# Maturity
-# NOTE, to match FIMS for a protogynous stock, these maturity values were obtained by fitting a logistic fcn to the age vector,
-# mat.female*prop.female + mat.male*prop.male and then assuming an all female population 
-
-maturity <- new(LogisticMaturity)
-maturity$inflection_point$value <- 2.254187
-maturity$inflection_point$is_random_effect <- FALSE
-maturity$inflection_point$estimated <- FALSE
-maturity$slope$value <- 1.659077
-maturity$slope$is_random_effect <- FALSE
-maturity$slope$estimated <- FALSE
-
-# Population
-population <- new(Population)
-
-# M is vector of age1 M X nyrs then age2 M X nyrs
-population$log_M <-
-  log(as.numeric(matrix(
-    rep(sca$a.series$M, each = nyears),
-    nrow = nyears
-  )))
-
-population$estimate_M <- FALSE
-population$log_init_naa <- log(sca$N.age[1, ])
-population$estimate_init_naa <- FALSE
-population$nages <- nages
-population$ages <- ages
-population$nfleets <- 3 # 2 fleets and 1 survey
-population$nseasons <- nseasons
-population$nyears <- nyears
-
-# Link recruitment, growth, and maturity modules to this new popn module
-population$SetMaturity(maturity$get_id())
-population$SetGrowth(ewaa_growth$get_id())
-population$SetRecruitment(recruitment$get_id())
+default_parameters <- data_4_model |>
+  create_default_parameters(
+    fleets = list(
+      fleet1 = spp_fleet1_selectivity,
+      fleet2 = spp_fleet2_selectivity,
+      survey1 = spp_survey1_selectivity)
+  ) |>
+  update_parameters(
+    modified_parameters = list(
+      fleet1 = list(
+        LogisticSelectivity.inflection_point.value = sca$parm.cons$selpar_A50_COM2[8],
+        LogisticSelectivity.slope.value = sca$parm.cons$selpar_slope_COM2[8],
+        Fleet.log_Fmort.value = log(sca$t.series$F.COM),
+        # COMMENT: Users should not have to reset the uncertainty for a fleet when this
+        #          information is already in the data, it should be stored and pulled out
+        #          automatically in create_default_parameters(). For index data too.
+        # COMMENT: Why are we inputting uncertainty in catch when we don't use it, will
+        #          we ever use it?
+        DlnormDistribution.log_sd.value = get_data(data_4_model) |>
+          dplyr::filter(name == "fleet1", type == "landings") |>
+          dplyr::pull(uncertainty) |>
+          log()
+      ),
+      fleet2 = list(
+        LogisticSelectivity.inflection_point.value = sca$parm.cons$selpar_A50_REC2[8],
+        LogisticSelectivity.slope.value = sca$parm.cons$selpar_slope1_REC2[8],
+        Fleet.log_Fmort.value = log(sca$t.series$F.REC),
+        DlnormDistribution.log_sd.value = get_data(data_4_model) |>
+          dplyr::filter(name == "fleet2", type == "landings") |>
+          dplyr::pull(uncertainty) |>
+          log()
+      ),
+      survey1 = list(
+        LogisticSelectivity.inflection_point.value = sca$parm.cons$selpar_A501_CVT[8],
+        LogisticSelectivity.slope.value = sca$parm.cons$selpar_slope1_CVT[8],
+        Fleet.log_q.value = log(sca$parms$q.CVT),
+        DlnormDistribution.log_sd.value = get_data(data_4_model) |>
+          dplyr::filter(name == "survey1", type == "index") |>
+          dplyr::pull(uncertainty) |>
+          log()
+      )
+    )
+  ) |>
+  update_parameters(
+    modified_parameters = list(
+      # Recruitment
+      recruitment = list(
+        BevertonHoltRecruitment.log_rzero.value = sca$parm.cons$log_R0[8],
+        # Transformed 0.999 to logit where a previous version just used 0.999
+        # Wondering if we should use logit(0.75) as noted previously for scamp
+        # as the null recruitment model?
+        BevertonHoltRecruitment.logit_steep.value = -log(1.0 - 0.99) + log(0.99 - 0.2),
+        DnormDistribution.log_sd.value = sca$parm.cons$rec_sigma[8],
+        # The last value of the initial numbers at age is the first
+        # recruitment deviation
+        BevertonHoltRecruitment.log_devs.value = sca$t.series$logR.dev[-1]
+      ),
+      # Maturity
+      # NOTE, to match FIMS for a protogynous stock, these maturity values were obtained by fitting a logistic fcn to the age vector,
+      # mat.female*prop.female + mat.male*prop.male and then assuming an all female population 
+      maturity = list(
+        LogisticMaturity.inflection_point.value = 2.254187,
+        LogisticMaturity.inflection_point.estimated = FALSE,
+        LogisticMaturity.slope.value = 1.659077,
+        LogisticMaturity.slope.estimated = FALSE
+      ),
+      population = list(
+        # M is vector of age1 M X nyrs then age2 M X nyrs
+        Population.log_M.value = log(as.numeric(matrix(
+          rep(sca$a.series$M, each = nyears),
+          nrow = nyears
+        ))),
+        Population.log_init_naa.value = log(sca$N.age[1, ]),
+        Population.log_init_naa.estimated = FALSE
+      )
+    )
+  )
+# FIX
+# $Population.log_M.estimated
+# [1] 1
 
 ####################################################################################
 # Put it all together, creating the FIMS model and making the TMB fcn
-success <- CreateTMBModel()
-parameters <- list(p = get_fixed())
-obj <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
+# Run the model without optimization to help ensure a viable model
+test_fit <- default_parameters |>
+  initialize_fims(data = data_4_model) |>
+  fit_fims(optimize = FALSE)
 
-# Fitting the model
-opt <- nlminb(obj$par, obj$fn, obj$gr,
-  control = list(eval.max = 800, iter.max = 800)
-) # , method = "BFGS",
-#   control = list(maxit=1000000, reltol = 1e-15))
-
-# print(opt)
-
+# Run the  model with optimization
+fit <- default_parameters |>
+  initialize_fims(data = data_4_model) |>
+  fit_fims(optimize = TRUE)
 
 # TMB reporting
-sdr <- TMB::sdreport(obj)
+sdr <- get_sdreport(fit)
 sdr_fixed <- summary(sdr, "fixed")
-report <- obj$report(obj$env$last.par.best)
+report <- get_report(fit)
 
 # print(sdr_fixed)
 
 ######################################################################
 # Plot results
 library(colorspace)
-cols <- sequential_hcl(5, "Viridis")
+cols <- colorspace::sequential_hcl(5, "Viridis")
 out.folder <- "figures"
 dir.create(out.folder, showWarnings = FALSE)
 plot.type <- "png"
 
+get_parameter <- function(fit, x) {
+  good <- dplyr::filter(get_estimates(fit), grepl(pattern = x, name))
+  out <- dplyr::pull(good, value)
+  names(out) <- dplyr::pull(good, name)
+  return(out)
+}
+
 selex.bam.fleet1 <- 1 / (1 + exp(-sca$parm.cons$selpar_slope_COM2[8] * (ages - sca$parm.cons$selpar_A50_COM2[8])))
-selex.fims.fleet1 <- 1 / (1 + exp(-opt$par[2] * (ages - opt$par[1])))
+selex.fims.fleet1 <- 1 / (1 + exp(-get_parameter(fit, "slope.*\\.1") * (ages - get_parameter(fit, "inflection.*\\.1"))))
 selex.bam.fleet2 <- 1 / (1 + exp(-sca$parm.cons$selpar_slope1_REC2[8] * (ages - sca$parm.cons$selpar_A50_REC2[8])))
-selex.fims.fleet2 <- 1 / (1 + exp(-opt$par[4] * (ages - opt$par[3])))
+selex.fims.fleet2 <- 1 / (1 + exp(-get_parameter(fit, "slope.*\\.2") * (ages - get_parameter(fit, "inflection.*\\.2"))))
 selex.bam.survey <- 1 / (1 + exp(-sca$parm.cons$selpar_slope1_CVT[8] * (ages - sca$parm.cons$selpar_A501_CVT[8])))
-selex.fims.survey <- 1 / (1 + exp(-opt$par[6] * (ages - opt$par[5])))
+selex.fims.survey <- 1 / (1 + exp(-get_parameter(fit, "slope.*\\.3") * (ages - get_parameter(fit, "inflection.*\\.3"))))
 
 
 index_results_allyr <- data.frame(
   yr = styr:endyr,
-  observed = spp_survey1_index$index_data,
+  observed = get_data(data_4_model) |>
+    dplyr::filter(type == "index", name == "survey1") |>
+    dplyr::pull(value),
   fims.expected = report$exp_index[[3]],
   bam.expected = sca$t.series$U.CVT.pr
 )
-index_results <- index_results_allyr %>% filter(observed != -999.00)
+index_results <- index_results_allyr |>
+  dplyr::filter(observed != -999.00)
 fleet1_landings_results <- data.frame(
   yr = styr:endyr,
-  observed = spp_fleet1_landings$index_data,
+  observed = get_data(data_4_model) |>
+    dplyr::filter(type == "landings", name == "fleet1") |>
+    dplyr::pull(value),
   fims.expected = report$exp_index[[1]],
   bam.expected = sca$t.series$L.COM.pr
 )
 fleet2_landings_results <- data.frame(
   yr = styr:endyr,
-  observed = spp_fleet2_landings$index_data,
+  observed = get_data(data_4_model) |>
+    dplyr::filter(type == "landings", name == "fleet2") |>
+    dplyr::pull(value),
   fims.expected = report$exp_index[[2]],
   bam.expected = sca$t.series$L.REC.pr
 )

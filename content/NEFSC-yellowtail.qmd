@@ -126,14 +126,37 @@ get_asap_data <- function(rdat){
     }
   }
   
-  res <- rbind(res, landings, allinds, catchage, allindsage)
+  # Weight at age is in rdat$WAA.mats$WAA.catch.all but for yellowtail the data
+  # is time-invariant. Could just use the first row but the code below shows how
+  # to use values for every year/age combination.
+  weight_at_age <- data.frame(
+    type = "weight-at-age",
+    name = "fleet1",
+    age = seq(rdat[["parms"]][["nages"]]),
+    datestart = rep(
+      paste0(
+        seq(rdat[["parms"]][["styr"]], rdat[["parms"]][["endyr"]]),
+        "-01-01"
+      ),
+      each = rdat[["parms"]][["nages"]]
+    ),
+    dateend = rep(
+      paste0(
+        seq(rdat[["parms"]][["styr"]], rdat[["parms"]][["endyr"]]),
+        "-12-31"
+      ),
+      each = rdat[["parms"]][["nages"]]
+    ),
+    value = c(t(rdat[["WAA.mats"]][["WAA.catch.all"]])),
+    unit = "mt",
+    uncertainty = NA
+  )
+
+  res <- rbind(res, landings, allinds, catchage, allindsage, weight_at_age)
   return(res)
 }
 
 mydat <- get_asap_data(rdat)
-
-myfimsframe <- FIMS::FIMSFrame(mydat)
-#str(myfimsframe)
 
 # define the dimensions
 nyears <- rdat$parms$nyears
@@ -146,163 +169,94 @@ ages <- 1:nages # ASAP starts at age 1
 # set up FIMS data objects
 age_frame <- FIMS::FIMSFrame(mydat)
 
-fishery_catch <- FIMS::m_landings(age_frame)
-fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1")
-survey_index <- list()
-survey_agecomp <- list()
-for (i in 1:rdat$parms$nindices){
-  survey_index[[i]] <- FIMS::m_index(age_frame, paste0("survey", i))
-  survey_agecomp[[i]] <- FIMS::m_agecomp(age_frame, paste0("survey", i))
-}
+# set up selectivities for fleets and survey
+fleet1 <- survey1 <- survey2 <- list(
+  selectivity = list(form = "LogisticSelectivity"),
+  data_distribution = c(
+    Index = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
+  )
+)
+
+default_parameters <- age_frame |>
+  create_default_parameters(
+    fleets = list(
+      fleet1 = fleet1,
+      survey1 = survey1,
+      survey2 = survey2
+    )
+  ) |>
+  update_parameters(
+    modified_parameters = list(
+      fleet1 = list(
+        Fleet.log_Fmort.value = log(rep(rdat$initial.guesses$Fmult.year1.init[1], nyears)), # ASAP assumes Fmult devs = 0
+        Fleet.log_Fmort.estimated = TRUE,
+        # FIX: Users should not have to reset the uncertainty for a fleet when this information
+        #      is already in the data, it should be stored and pulled out automatically in
+        #      create_default_parameters(). For index data too.
+        DlnormDistribution.log_sd.value = rep(log(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), nyears)
+      ),
+      survey1 = list(
+        Fleet.log_q.value = log(rdat$initial.guesses$q.year1.init[1]),
+        # sd = sqrt(log(cv^2 + 1)), sd is log transformed
+        DlnormDistribution.log_sd.value = rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[1]], na.rm=TRUE)^2 + 1)))), nyears)
+      ),
+      survey2 = list(
+        Fleet.log_q.value = log(rdat$initial.guesses$q.year1.init[2]),
+        DlnormDistribution.log_sd.value = rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[2]], na.rm=TRUE)^2 + 1)))), nyears)
+      )
+    )
+  ) |>
+  update_parameters(
+    modified_parameters = list(
+      # Recruitment
+      recruitment = list(
+        # ASAP can enter either R0 or SSB0, need to make sure use R0 in input file
+        BevertonHoltRecruitment.log_rzero.value = log(rdat$initial.guesses$SR.inits$SR.scaler.init),
+        BevertonHoltRecruitment.log_devs.estimated = TRUE,
+        # note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run
+        BevertonHoltRecruitment.logit_steep.value = -log(1.0 - rdat$initial.guesses$SR.inits$SR_steepness.init) + log(rdat$initial.guesses$SR.inits$SR_steepness.init - 0.2),
+        DnormDistribution.log_sd.value = mean(rdat$control.parms$recruit.cv), # typically enter same value for every year in ASAP,
+        # Unrealistically setting these from the ASAP run
+        BevertonHoltRecruitment.log_devs.value = rdat$SR.resids$logR.dev[-1]
+      ),
+      # Maturity
+      # NOTE, to match FIMS for a protogynous stock, these maturity values were obtained by fitting a logistic fcn to the age vector,
+      # mat.female*prop.female + mat.male*prop.male and then assuming an all female population 
+      maturity = list(
+        LogisticMaturity.inflection_point.value =  1.8, # hardwired for now, need to figure out a better way than this
+        LogisticMaturity.inflection_point.estimated = FALSE,
+        LogisticMaturity.slope.value = 4, # hardwired for now, need to figure out a better way than this
+        LogisticMaturity.slope.estimated = FALSE
+      ),
+      population = list(
+        # M is vector of age1 M X nyrs then age2 M X nyrs
+        Population.log_M.value = log(as.numeric(t(rdat$M.age))),
+        Population.log_init_naa.value = log(rdat$N.age[1,]), # log(rdat$initial.guesses$NAA.year1.init)
+        # Does not really matter if you estimate these or not when
+        # distributions are fixed
+        Population.log_init_naa.estimated = FALSE
+      )
+    )
+  )
+
+# Put it all together, creating the FIMS model and making the TMB fcn
+# Run the model without optimization to help ensure a viable model
+test_fit <- default_parameters |>
+  initialize_fims(data = age_frame) |>
+  fit_fims(optimize = FALSE)
+# Run the  model with optimization
+fit <- default_parameters |>
+  initialize_fims(data = age_frame) |>
+  fit_fims(optimize = TRUE)
 
 # eventually change to allow multiple fishing fleets similar to multiple indices - only using 1 fishing fleet for now
-fishing_fleet_index <- methods::new(Index, nyears)
-fishing_fleet_age_comp <- methods::new(AgeComp, nyears, nages)
-fishing_fleet_index$index_data <- fishery_catch
-fishing_fleet_age_comp$age_comp_data <- fishery_agecomp * rep(rdat$fleet.catch.Neff.init[1,], each=rdat$parms$nages)
-
-
-# fleet selectivity
-#methods::show(LogisticSelectivity)
-fishing_fleet_selectivity <- methods::new(LogisticSelectivity)
-fishing_fleet_selectivity$inflection_point$value <- rdat$sel.input.mats$fleet.sel.ini[nages+1,1] # hardwired to assume only 1 fleet and logistic selectivity used
-fishing_fleet_selectivity$inflection_point$is_random_effect <- FALSE
-fishing_fleet_selectivity$inflection_point$estimated <- TRUE
-fishing_fleet_selectivity$slope$value <- rdat$sel.input.mats$fleet.sel.ini[nages+2,1] # hardwired to assume only 1 fleet and logistic selectivity used
-fishing_fleet_selectivity$slope$is_random_effect <- FALSE
-fishing_fleet_selectivity$slope$estimated <- TRUE
-
-# create fleet object
-fishing_fleet <- methods::new(Fleet)
-fishing_fleet$nages <- nages
-fishing_fleet$nyears <- nyears
-fishing_fleet$log_Fmort <- log(rep(rdat$initial.guesses$Fmult.year1.init[1], nyears)) # ASAP assumes Fmult devs = 0
-fishing_fleet$estimate_F <- TRUE
-fishing_fleet$random_F <- FALSE
-fishing_fleet$log_q <- log(rdat$initial.guesses$q.year1.init[1])
-fishing_fleet$estimate_q <- FALSE
-fishing_fleet$random_q <- FALSE
-fishing_fleet$log_obs_error <- rep(log(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), nyears)
-fishing_fleet$estimate_obs_error <- FALSE
-# Next two lines not currently used by FIMS
-fishing_fleet$SetAgeCompLikelihood(1)
-fishing_fleet$SetIndexLikelihood(1)
-# Set Index, AgeComp, and Selectivity using the IDs from the modules defined above
-fishing_fleet$SetObservedIndexData(fishing_fleet_index$get_id()) 
-fishing_fleet$SetObservedAgeCompData(fishing_fleet_age_comp$get_id())
-fishing_fleet$SetSelectivity(fishing_fleet_selectivity$get_id())
-
-# survey module now can handle multiple indices
-for (i in 1:rdat$parms$nindices){
-  survey_fleet_index <- methods::new(Index, nyears)
-  survey_fleet_age_comp <- methods::new(AgeComp, nyears, nages)
-  survey_fleet_index$index_data <- survey_index[[i]]
-  survey_fleet_age_comp$age_comp_data <- survey_agecomp[[i]] * rep(rdat$index.Neff.init[i,], each=rdat$parms$nages)
-  
-  # survey selectivity
-  survey_fleet_selectivity <- new(LogisticSelectivity)
-  survey_fleet_selectivity$inflection_point$value <- rdat$sel.input.mats$index.sel.ini[(i+1)*(nages+2+4)+nages+1,1] # hardwired for this example
-  survey_fleet_selectivity$inflection_point$is_random_effect <- FALSE
-  survey_fleet_selectivity$inflection_point$estimated <- TRUE
-  survey_fleet_selectivity$inflection_point$value <- rdat$sel.input.mats$index.sel.ini[(i+1)*(nages+2+4)+nages+1,1] # hardwired for this example
-  survey_fleet_selectivity$slope$is_random_effect <- FALSE
-  survey_fleet_selectivity$slope$estimated <- TRUE
-  
-  survey_fleet <- methods::new(Fleet)
-  survey_fleet$is_survey <- TRUE
-  survey_fleet$nages <- nages
-  survey_fleet$nyears <- nyears
-  survey_fleet$estimate_F <- FALSE
-  survey_fleet$random_F <- FALSE
-  survey_fleet$log_q <- log(rdat$initial.guesses$q.year1.init[i]) 
-  survey_fleet$estimate_q <- TRUE
-  survey_fleet$random_q <- FALSE
-  # sd = sqrt(log(cv^2 + 1)), sd is log transformed
-  survey_fleet$log_obs_error <- rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[i]], na.rm=TRUE)^2 + 1)))), nyears)
-  survey_fleet$estimate_obs_error <- FALSE
-  survey_fleet$SetAgeCompLikelihood(i)
-  survey_fleet$SetIndexLikelihood(i)
-  survey_fleet$SetSelectivity(survey_fleet_selectivity$get_id())
-  survey_fleet$SetObservedIndexData(survey_fleet_index$get_id())
-  survey_fleet$SetObservedAgeCompData(survey_fleet_age_comp$get_id())
-}
-
-# Population module
-
-# recruitment
-recruitment <- methods::new(BevertonHoltRecruitment)
-#methods::show(BevertonHoltRecruitment)
-
-recruitment$log_sigma_recruit$value <- log(mean(rdat$control.parms$recruit.cv)) # typically enter same value for every year in ASAP
-recruitment$log_rzero$value <- log(rdat$initial.guesses$SR.inits$SR.scaler.init) # ASAP can enter either R0 or SSB0, need to make sure use R0 in input file
-recruitment$log_rzero$is_random_effect <- FALSE
-recruitment$log_rzero$estimated <- TRUE
-# note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run
-recruitment$logit_steep$value <- -log(1.0 - rdat$initial.guesses$SR.inits$SR_steepness.init) + log(rdat$initial.guesses$SR.inits$SR_steepness.init - 0.2)
-recruitment$logit_steep$is_random_effect <- FALSE
-recruitment$logit_steep$estimated <- FALSE
-
-recruitment$estimate_log_devs <- TRUE
-recruitment$log_devs <- rep(1.0, nyears) # set to no deviations (multiplier) to start, just like ASAP
-
-# growth
-ewaa_growth <- methods::new(EWAAgrowth)
-ewaa_growth$ages <- ages
-# NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now
-ewaa_growth$weights <- rdat$WAA.mats$WAA.catch.all[1,] 
-
 # NOTE: FIMS assumes SSB calculated at the start of the year, so need to adjust ASAP to do so as well for now, need to make timing of SSB calculation part of FIMS later
-
-# maturity
 # NOTE: for now tricking FIMS into thinking age 0 is age 1, so need to adjust A50 for maturity because FIMS calculations use ages 0-5+ instead of 1-6
-maturity <- new(LogisticMaturity)
-maturity$inflection_point$value <- 1.8 # hardwired for now, need to figure out a better way than this
-maturity$inflection_point$is_random_effect <- FALSE
-maturity$inflection_point$estimated <- FALSE
-maturity$slope$value <- 4 # hardwired for now, need to figure out a better way than this
-maturity$slope$is_random_effect <- FALSE
-maturity$slope$estimated <- FALSE
 
-# population
-population <- new(Population)
-population$log_M <- log(as.numeric(t(rdat$M.age)))
-population$estimate_M <- FALSE
-population$log_init_naa <- log(rdat$N.age[1,]) # log(rdat$initial.guesses$NAA.year1.init)
-population$estimate_init_naa <- FALSE # TRUE , NOTE: fixing at ASAP estimates to test SSB calculations
-population$nages <- nages
-population$ages <- ages
-population$nfleets <- rdat$parms$nfleets + rdat$parms$nindices # fleets plus surveys
-population$nseasons <- nseasons
-population$nyears <- nyears
-#population$prop_female <- 1.0 # ASAP assumption
-
-population$SetMaturity(maturity$get_id())
-population$SetGrowth(ewaa_growth$get_id())
-population$SetRecruitment(recruitment$get_id())
-
-# make FIMS model
-sucess <- CreateTMBModel()
-parameters <- list(p = get_fixed())
-obj <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
-
-
-# fitting the model
-opt <- nlminb(start=obj$par, objective=obj$fn, gradient=obj$gr,
-              control = list(eval.max = 8000, iter.max = 800))
-#  method = "BFGS",
-#   control = list(maxit=1000000, reltol = 1e-15))
-#print(opt)
-
-
-#max(abs(obj$gr())) # from Cole, can use TMBhelper::fit_tmb to get val to <1e-10
-
-#opt <- TMBhelper::fit_tmb(obj, newtonsteps=3, quiet = TRUE) # don't understand why quiet flag does not work in Quarto
-
-#max(abs(obj$gr()))
-
-sdr <- TMB::sdreport(obj)
+sdr <- get_sdreport(fit)
 sdr_fixed <- summary(sdr, "fixed")
-report <- obj$report(obj$env$last.par.best)
+report <- get_report(fit)
 
 ### Plotting
 
@@ -324,32 +278,34 @@ for (i in 1:rdat$parms$nindices){
 }
 #print(allinds_results)
 
-comp_index <- ggplot(allinds_results, aes(x = year, y = observed)) +
-  geom_point() +
-  geom_line(aes(x = year, y = FIMS), color = "blue") +
-  geom_line(aes(x = year, y = ASAP), color = "red") +
-  facet_wrap(~survey, scales = "free_y", nrow = 2) +
-  xlab("Year") +
-  ylab("Index") +
-  ggtitle("Blue=FIMS, Red=ASAP") +
-  theme_bw()
+comp_index <- ggplot2::ggplot(allinds_results, ggplot2::aes(x = year, y = observed)) +
+  ggplot2::geom_point() +
+  ggplot2::geom_line(ggplot2::aes(x = year, y = FIMS), color = "blue") +
+  ggplot2::geom_line(ggplot2::aes(x = year, y = ASAP), color = "red") +
+  ggplot2::facet_wrap(~survey, scales = "free_y", nrow = 2) +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Index") +
+  ggplot2::ggtitle("Blue=FIMS, Red=ASAP") +
+  ggplot2::theme_bw()
 #print(comp_index)
 
 catch_results <- data.frame(
-  observed = fishing_fleet_index$index_data,
+  observed = get_data(age_frame) |>
+    dplyr::filter(type == "index", name == "survey1") |>
+    dplyr::pull(value),
   FIMS = report$exp_index[[1]],
   ASAP = as.numeric(rdat$catch.pred[1,])
 )
 #print(catch_results)
 
-comp_catch <- ggplot(catch_results, aes(x = years, y = observed)) +
-  geom_point() +
-  xlab("Year") +
-  ylab("Catch (mt)") +
-  geom_line(aes(x = years, y = FIMS), color = "blue") +
-  geom_line(aes(x = years, y = ASAP), color = "red") +
-  ggtitle("Blue=FIMS, Red=ASAP") +
-  theme_bw()
+comp_catch <- ggplot2::ggplot(catch_results, ggplot2::aes(x = years, y = observed)) +
+  ggplot2::geom_point() +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Catch (mt)") +
+  ggplot2::geom_line(ggplot2::aes(x = years, y = FIMS), color = "blue") +
+  ggplot2::geom_line(ggplot2::aes(x = years, y = ASAP), color = "red") +
+  ggplot2::ggtitle("Blue=FIMS, Red=ASAP") +
+  ggplot2::theme_bw()
 #print(comp_catch)
 
 pop_results <- data.frame(
@@ -384,11 +340,11 @@ pop_results_3 <- rbind(pop_results, orig_pop_results)
 #   theme_bw() +
 #   scale_color_manual(values = mycols)
 
-comp_FRSSB3 <- ggplot(pop_results_3, aes(x=Year, y=Value, color=Model)) +
-  geom_line() +
-  facet_wrap(~Metric, ncol=1, scales = "free_y") +
-  theme_bw() +
-  scale_color_manual(values = mycols)
+comp_FRSSB3 <- ggplot2::ggplot(pop_results_3, ggplot2::aes(x=Year, y=Value, color=Model)) +
+  ggplot2::geom_line() +
+  ggplot2::facet_wrap(~Metric, ncol=1, scales = "free_y") +
+  ggplot2::theme_bw() +
+  ggplot2::scale_color_manual(values = mycols)
 #print(comp_FRSSB3)
 
 FIMS_naa_results <- data.frame(
@@ -424,12 +380,13 @@ naa_results <- rbind(FIMS_naa_results, ASAP_naa_results, orig_naa_results)
 #   theme_bw() +
 #   scale_color_manual(values = mycols)
 
-comp_naa2 <- ggplot(filter(naa_results, Year <= 2019, Model %in% c("ASAP", "FIMS")), aes(x=Year, y=Value, color=Model)) +
-  geom_line() +
-  facet_wrap(~Age, ncol=1, scales = "free_y") +
-  ylab("NAA") +
-  theme_bw() +
-  scale_color_manual(values = mycols)
+comp_naa2 <- ggplot2::ggplot(
+  dplyr::filter(naa_results, Year <= 2019, Model %in% c("ASAP", "FIMS")), ggplot2::aes(x=Year, y=Value, color=Model)) +
+  ggplot2::geom_line() +
+  ggplot2::facet_wrap(~Age, ncol=1, scales = "free_y") +
+  ggplot2::ylab("NAA") +
+  ggplot2::theme_bw() +
+  ggplot2::scale_color_manual(values = mycols)
 #print(comp_naa2)
 
 # ggplot(filter(naa_results, Year == 1973, Model %in% c("ASAP", "FIMS")), aes(x=Age, y=Value, color=Model)) +
@@ -441,10 +398,10 @@ comp_naa2 <- ggplot(filter(naa_results, Year <= 2019, Model %in% c("ASAP", "FIMS
 
 saveplots <- TRUE
 if(saveplots){
-  ggsave(filename = "figures/NEFSC_YT_compare_index.png", plot = comp_index, width = 4, height = 4, units = "in")
-  ggsave(filename = "figures/NEFSC_YT_compare_catch.png", plot = comp_catch, width = 4, height = 4, units = "in")
-  ggsave(filename = "figures/NEFSC_YT_compare_FRSSB3.png", plot = comp_FRSSB3, width = 5, height = 6.5, units = "in")
-  ggsave(filename = "figures/NEFSC_YT_compare_NAA2.png", plot = comp_naa2, width = 5, height = 6.5, units = "in")
+  ggplot2::ggsave(filename = "figures/NEFSC_YT_compare_index.png", plot = comp_index, width = 4, height = 4, units = "in")
+  ggplot2::ggsave(filename = "figures/NEFSC_YT_compare_catch.png", plot = comp_catch, width = 4, height = 4, units = "in")
+  ggplot2::ggsave(filename = "figures/NEFSC_YT_compare_FRSSB3.png", plot = comp_FRSSB3, width = 5, height = 6.5, units = "in")
+  ggplot2::ggsave(filename = "figures/NEFSC_YT_compare_NAA2.png", plot = comp_naa2, width = 5, height = 6.5, units = "in")
 }
 
 ```
@@ -460,12 +417,22 @@ The likelihood components from FIMS and ASAP for the same data are shown in the 
 
 ```{r}
 #| label: comparison-table
-jnlltab <- data.frame(Component=c("Total","Index","Age Comp", "Rec"),
-                      FIMS = c(report$jnll, report$index_nll, report$age_comp_nll, report$rec_nll),
-                      ASAP = c(rdat$like$lk.total,
-                               (rdat$like$lk.catch.total + rdat$like$lk.index.fit.total),
-                               (rdat$like$lk.catch.age.comp + rdat$like$lk.index.age.comp),
-                               rdat$like$lk.Recruit.devs))
+nll_components <- report[["nll_components"]]
+jnlltab <- data.frame(
+  Component=c("Total","Index","Age Comp", "Rec"),
+  FIMS = c(
+    report[["jnll"]],
+    sum(nll_components[seq(2, length(nll_components), by = 2)]),
+    sum(nll_components[seq(3, length(nll_components), by = 2)]),
+    nll_components[1]
+  ),
+  ASAP = c(
+    rdat$like$lk.total,
+    (rdat$like$lk.catch.total + rdat$like$lk.index.fit.total),
+    (rdat$like$lk.catch.age.comp + rdat$like$lk.index.age.comp),
+    rdat$like$lk.Recruit.devs
+  )
+)
 print(jnlltab)
 ```
 
