@@ -3,7 +3,7 @@ on:
     branches: main
   workflow_dispatch:
   schedule: 
-    - cron: '0 0 * * 0' # runs At 00:00 on Sunday
+    - cron: '30 0 * * 0' # runs At 00:00 on Sunday
 
 name: Render
 
