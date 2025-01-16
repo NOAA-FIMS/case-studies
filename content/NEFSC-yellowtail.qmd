@@ -162,13 +162,15 @@ fleet1 <- survey1 <- survey2 <- list(
     AgeComp = "DmultinomDistribution"
   )
 )
+# Should selectivity of survey2 be double logistic?
 
 default_parameters <- age_frame |>
   create_default_parameters(
     fleets = list(
       fleet1 = fleet1,
       survey1 = survey1,
-      survey2 = survey2)
+      survey2 = survey2
+    )
   ) |>
   update_parameters(
     modified_parameters = list(
@@ -181,19 +183,13 @@ default_parameters <- age_frame |>
         #      create_default_parameters(). For index data too.
         # DlnormDistribution.log_sd.value = rep(log(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), nyears)
         # KFJ: removed the log
-        # FIX: old code did not estimate observation error around the F
         DlnormDistribution.log_sd.value = rep(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1)), nyears)
-        # FIX: The below code doesn't match what is up above
-        # DlnormDistribution.log_sd.value = get_data(age_frame) |>
-        #   dplyr::filter(name == "fleet1", type == "landings") |>
-        #   dplyr::pull(uncertainty)
       ),
       survey1 = list(
-        LogisticSelectivity.inflection_point.value = rdat$sel.input.mats$index.sel.ini[(1+1)*(nages+2+4)+nages+1,1], # hardwired for this example
         # FIX: A bug in previous example where inflection.point was set twice rather
         #      than setting slope, copy and paste error so I am not sure where to get
-        #      the true slope value from
-        LogisticSelectivity.slope.value = rdat$sel.input.mats$index.sel.ini[(1+1)*(nages+2+4)+nages+1,1],
+        #      the true slope value from and the inflection point initial value does
+        #      seem to be correct so I am using the default values
         Fleet.log_q.value = log(rdat$initial.guesses$q.year1.init[1]),
         # sd = sqrt(log(cv^2 + 1)), sd is log transformed
         # KFJ Removed the log, also I do not think that we have to repeat the value
@@ -201,11 +197,7 @@ default_parameters <- age_frame |>
         DlnormDistribution.log_sd.value = rep(sqrt(log(as.numeric(mean(rdat$index.cv[[1]], na.rm=TRUE)^2 + 1))), nyears)
       ),
       survey2 = list(
-        LogisticSelectivity.inflection_point.value = rdat$sel.input.mats$index.sel.ini[(2+1)*(nages+2+4)+nages+1,1], # hardwired for this example
-        # FIX: A bug in previous example where inflection.point was set twice rather
-        #      than setting slope, copy and paste error so I am not sure where to get
-        #      the true slope value from
-        LogisticSelectivity.slope.value = rdat$sel.input.mats$index.sel.ini[(1+2)*(nages+2+4)+nages+1,1],
+        # KFJ: A bug in previous code where the selectivity of survey2 was mapped on top of survey1
         Fleet.log_q.value = log(rdat$initial.guesses$q.year1.init[2]),
         # sd = sqrt(log(cv^2 + 1)), sd is log transformed
         # KFJ Removed the log, also I do not think that we have to repeat the value
@@ -219,7 +211,7 @@ default_parameters <- age_frame |>
       # Recruitment
       recruitment = list(
         # ASAP can enter either R0 or SSB0, need to make sure use R0 in input file
-        BevertonHoltRecruitment.log_rzero.value =  log(rdat$initial.guesses$SR.inits$SR.scaler.init),
+        BevertonHoltRecruitment.log_rzero.value = log(rdat$initial.guesses$SR.inits$SR.scaler.init),
         # note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run
         BevertonHoltRecruitment.logit_steep.value = -log(1.0 - rdat$initial.guesses$SR.inits$SR_steepness.init) + log(rdat$initial.guesses$SR.inits$SR_steepness.init - 0.2),
         # KFJ: did not log it
@@ -291,15 +283,15 @@ for (i in 1:rdat$parms$nindices){
 }
 #print(allinds_results)
 
-comp_index <- ggplot(allinds_results, aes(x = year, y = observed)) +
-  geom_point() +
-  geom_line(aes(x = year, y = FIMS), color = "blue") +
-  geom_line(aes(x = year, y = ASAP), color = "red") +
-  facet_wrap(~survey, scales = "free_y", nrow = 2) +
-  xlab("Year") +
-  ylab("Index") +
-  ggtitle("Blue=FIMS, Red=ASAP") +
-  theme_bw()
+comp_index <- ggplot2::ggplot(allinds_results, ggplot2::aes(x = year, y = observed)) +
+  ggplot2::geom_point() +
+  ggplot2::geom_line(ggplot2::aes(x = year, y = FIMS), color = "blue") +
+  ggplot2::geom_line(ggplot2::aes(x = year, y = ASAP), color = "red") +
+  ggplot2::facet_wrap(~survey, scales = "free_y", nrow = 2) +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Index") +
+  ggplot2::ggtitle("Blue=FIMS, Red=ASAP") +
+  ggplot2::theme_bw()
 #print(comp_index)
 
 catch_results <- data.frame(
@@ -311,14 +303,14 @@ catch_results <- data.frame(
 )
 #print(catch_results)
 
-comp_catch <- ggplot(catch_results, aes(x = years, y = observed)) +
-  geom_point() +
-  xlab("Year") +
-  ylab("Catch (mt)") +
-  geom_line(aes(x = years, y = FIMS), color = "blue") +
-  geom_line(aes(x = years, y = ASAP), color = "red") +
-  ggtitle("Blue=FIMS, Red=ASAP") +
-  theme_bw()
+comp_catch <- ggplot2::ggplot(catch_results, ggplot2::aes(x = years, y = observed)) +
+  ggplot2::geom_point() +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Catch (mt)") +
+  ggplot2::geom_line(ggplot2::aes(x = years, y = FIMS), color = "blue") +
+  ggplot2::geom_line(ggplot2::aes(x = years, y = ASAP), color = "red") +
+  ggplot2::ggtitle("Blue=FIMS, Red=ASAP") +
+  ggplot2::theme_bw()
 #print(comp_catch)
 
 pop_results <- data.frame(
