@@ -4,12 +4,7 @@ format: html
 ---
 
 ```{r fims1, warning=FALSE, message=FALSE}
-# automatically loads fims Rcpp module
 #remotes::install_github("NOAA-FIMS/FIMS", ref = "main")
-library(FIMS)
-library(TMB)
-library(dplyr)
-library(tidyr)
 library(r4ss)
 # clear memory
 clear()
@@ -36,8 +31,7 @@ r4ss_version <- packageVersion('r4ss')
 
 ## Setting up Data
 ```{r fims-dims}
-load(here::here("content", "data_files", "opaka_length.RDS"))
-#load(file.path(getwd(), "content", "data_files", "opaka_model.RDS"))
+load(file.path(getwd(), "content", "data_files", "opaka_model.RDS"))
 include_age_comps <- FALSE
 include_length_comps <- TRUE
 years <- seq(opaka_dat$styr, opaka_dat$endyr)
@@ -124,14 +118,9 @@ length_age_data <- data.frame(
   unit = rep("proportion",length(len_bins)*length(ages)*length(observers)*length(start_date)),
   uncertainty = rep(30,length(len_bins)*length(ages)*length(observers)*length(start_date)))
 
-# remove the CPUE indices for fleet1 and missing age/length data. Perhaps they can be renamed to 
-# represent different fleets and then included as indices.
+# Changing the CPUE indices for fleet1 to be a new fleet, fleet4. This helps with model convergence and fitting as it is the longest time series of data available along with the landings. 
 opaka_dat_fims <- opaka_dat_fims |>
   dplyr::mutate(name = ifelse(name == "fleet1" & type == "index", "fleet4", name))
-  # dplyr::filter(!(type == "index" & name == "fleet1"))
-  #dplyr::filter(!(type == "index" & name == "fleet3")) |>
-  # dplyr::filter(!(name == "fleet1" & value == -999 & type == "length")) |>
-  # dplyr::filter(!(name == "fleet1" & value == -999 & type == "age"))
 
 opaka_dat_fims <- type.convert(
   rbind(opaka_dat_fims, length_age_data),
@@ -160,18 +149,11 @@ weight_at_age_data <- rep[["wtatage"]] |>
     value = value/1000
   )
 opaka_dat_fims <- opaka_dat_fims |> 
-#adding in fake length data for fleet 1, not be neccessary
-  # dplyr::filter(name == "fleet2") |> 
-  # dplyr::filter(type == "length" | type == "age")  |>
-  # dplyr::mutate(name = "fleet1") |> 
-  # dplyr::bind_rows(opaka_dat_fims) |>
   dplyr::bind_rows(weight_at_age_data)
-# save(list = "opaka_dat_fims", file = file.path(getwd(), "content", "opaka_dat_fims.RData"))
-# load(file = here::here("content", "opaka_dat_fims.RData"))
+
 
 opaka_dat_fims <- opaka_dat_fims |> 
 dplyr::mutate(uncertainty = ifelse(type == "length" & name == "fleet2" & value != -999, 1, uncertainty)) |> filter(!(type == "index" & name == "fleet3"))
-
 
 fims_frame <- FIMSFrame(opaka_dat_fims)
 
@@ -192,16 +174,13 @@ fleet1 <- fleet3 <- fleet4 <- list(
   selectivity = list(form = "LogisticSelectivity"),
   data_distribution = c(
     Index = "DlnormDistribution"
-    #AgeComp = "DmultinomDistribution",
-    #LengthComp = "DmultinomDistribution" 
   )
 )
 
 fleet2 <- list(
   selectivity = list(form = "LogisticSelectivity"),
   data_distribution = c(
-    Index = "DlnormDistribution",
-    #AgeComp = "DmultinomDistribution", 
+    Index = "DlnormDistribution", 
     LengthComp = "DmultinomDistribution"  
   )
 )
@@ -228,7 +207,6 @@ parameters <- default_parameters |>
     modified_parameters = list(
       fleet1 = list(
         Fleet.log_Fmort.value = log(rep$exploitation$FRS),
-        #Fleet.log_Fmort.estimated = FALSE,
         LogisticSelectivity.inflection_point.value = 1.81, #used age selex values
         LogisticSelectivity.inflection_point.estimated = FALSE,
         LogisticSelectivity.slope.value = 4.5, #used age selex values
@@ -239,8 +217,6 @@ parameters <- default_parameters |>
     update_parameters(
       modified_parameters = list(
         fleet4 = list(
-          #Fleet.log_Fmort.value = log(rep$exploitation$FRS),
-          #Fleet.log_Fmort.estimated = FALSE,
           LogisticSelectivity.inflection_point.value = 1.81, #used age selex values
           LogisticSelectivity.inflection_point.estimated = FALSE,
           LogisticSelectivity.slope.value = 4.5, #used age selex values
@@ -257,7 +233,6 @@ parameters <- default_parameters |>
         LogisticSelectivity.slope.value = 3, #used age selex values
         LogisticSelectivity.slope.estimated = FALSE,
         Fleet.log_q.value = -4.12772
-        #Fleet.log_q.estimated = FALSE
       )
     )
   ) |>
@@ -265,7 +240,6 @@ parameters <- default_parameters |>
     modified_parameters = list(
       fleet3 = list(
         Fleet.log_Fmort.value = log(rep$exploitation$Non_comm),
-        #Fleet.log_Fmort.estimated = FALSE,
         LogisticSelectivity.inflection_point.value = 1.97,
         LogisticSelectivity.inflection_point.estimated = FALSE,
         LogisticSelectivity.slope.value = 4.5,
@@ -276,20 +250,16 @@ parameters <- default_parameters |>
   update_parameters(
     modified_parameters = list(
       recruitment = list(
-        BevertonHoltRecruitment.log_rzero.value = opaka_ctl$SR_parms["SR_LN(R0)", "INIT"], #log(exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"])*1000), #to deal with SS reporting R0 in thousands (from Ian's case study)
-        #BevertonHoltRecruitment.log_rzero.estimated = FALSE,
+        BevertonHoltRecruitment.log_rzero.value = opaka_ctl$SR_parms["SR_LN(R0)", "INIT"], 
         BevertonHoltRecruitment.log_devs.value = recdevs$Value,
-        #BevertonHoltRecruitment.log_devs.estimated = FALSE,
-       # BevertonHoltRecruitment.estimate_log_devs = FALSE, #CHECK what is the difference between this and log_devs.estimated? 
         BevertonHoltRecruitment.logit_steep.value = -log(1.0- 0.76) + log(0.76 - 0.2)
-        #DnormDistribution.log_sd.value = (opaka_ctl$SR_parms["SR_sigmaR", "INIT"])
       )
     )
   ) |>
   update_parameters(
     modified_parameters = list(
       maturity = list(
-        LogisticMaturity.inflection_point.value = 7, #CHECK: does this need to be in terms of age? currently in opaka model in terms of length so guesstimated what it would be for age based on growth
+        LogisticMaturity.inflection_point.value = 7, # currently in opaka model in terms of length so guesstimated what it would be for age based on growth
         LogisticMaturity.inflection_point.estimated = FALSE,
         LogisticMaturity.slope.value = 0.5, #make positive from SS value 
         LogisticMaturity.slope.estimated = FALSE
@@ -306,7 +276,6 @@ parameters <- default_parameters |>
     )
   )
 
-#str(parameters)
 ```
 
 ## Initialize modules and fit the model
@@ -345,7 +314,7 @@ pull(value)
 
 ## Problems and Questions: 
 
-* How can I plot things like maturity curve, growth curve, selectivity, etc. to check those? In our model they are length-based processes so I converted (aka eye-balled logistic curves that look like they match for ages) to values that I think would be roughly equivalent in ages. Eventually, having length-based processes would be necessary for this model.   
+* In our model maturity and selectivity are length-based processes so I converted (aka eye-balled logistic curves that look like they match for ages) to values that I think would be roughly equivalent in ages. Eventually, having length-based processes would be necessary for this model.   
 * The scale of the fitted CPUE is lower than the observed values.  
 * If I don't fix the initial numbers-at-age, the model puts a really large number of individuals in age-0 bin and then 0 fish in the rest of the ages. Not sure what is happening here.  
 
@@ -439,6 +408,9 @@ ggplot2::ggplot(recruits, ggplot2::aes(x = Year, y = value, color = Model)) +
 
 
 ```{r}
+#| eval: false
+#| code-fold: true
+
 ## Checking fit to proportion catch number at length
 pcnal <- matrix(data = fit@report$pcnal[[2]], nrow = nlengths)
 
