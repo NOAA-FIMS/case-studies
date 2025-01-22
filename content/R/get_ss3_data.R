@@ -18,6 +18,7 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
     type = character(),
     name = character(),
     age = integer(),
+    length = integer(),
     datestart = character(),
     dateend = character(),
     value = double(),
@@ -27,28 +28,31 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
 
   # Q: is it true that we can only have a single landings fleet? 
   #    m_landings() doesn't accept a fleet name.
+  # Meg comment: I modified the catch to give from all `fleets` and can index them like in SEFSC scamp case study example for now.
 
   # aggregate landings across fleets
-  catch_by_year <- dat$catch |>
-    dplyr::group_by(year) |>
-    dplyr::summarize(catch = sum(catch), uncertainty = mean(catch_se)) |> 
-    dplyr::filter(year != -999)
+  catch_by_year_fleet <- dat$catch |>
+    #dplyr::group_by(year) |>
+    #dplyr::summarize(catch = sum(catch), uncertainty = mean(catch_se)) |> 
+    dplyr::filter(year != -999)  |> 
+    dplyr::filter(fleet %in% fleets)
 
   # convert landings to FIMSFrame format
   landings <- data.frame(
     type = "landings",
-    name = paste0("fleet1"), # landings aggregated to fleet 1
+    name = paste0("fleet", catch_by_year_fleet$fleet), # landings aggregated to fleet 1
     age = NA,
-    datestart = paste0(catch_by_year$year, "-01-01"),
-    dateend = paste0(catch_by_year$year, "-12-31"),
-    value = catch_by_year$catch,
+    length = NA, 
+    datestart = paste0(catch_by_year_fleet$year, "-01-01"),
+    dateend = paste0(catch_by_year_fleet$year, "-12-31"),
+    value = catch_by_year_fleet$catch,
     unit = "mt",
-    uncertainty = catch_by_year$uncertainty
+    uncertainty = catch_by_year_fleet$catch_se
   )
 
   # check for any gaps in landings time series
-  years <- min(catch_by_year$year):max(catch_by_year$year)
-  if (!all(years %in% catch_by_year$year)) {
+  years <- min(catch_by_year_fleet$year):max(catch_by_year_fleet$year)
+  if (!all(years %in% catch_by_year_fleet$year)) {
     stop("missing years in landings")
   }
 
@@ -72,6 +76,7 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
     type = "index",
     name = paste0("fleet", index_info$index),
     age = NA,
+    length = NA, 
     datestart = paste0(index_info$year, "-01-01"),
     dateend = paste0(index_info$year, "-12-31"),
     value = index_info$obs,
@@ -136,6 +141,7 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
     type = "age",
     name = paste0("fleet", abs(age_info$fleet)), # abs to include fleet == -4
     age = age_info$age,
+    length = NA, 
     datestart = paste0(age_info$year, "-01-01"),
     dateend = paste0(age_info$year, "-12-31"),
     value = age_info$value + 0.001, # add constant to avoid 0 values
@@ -180,9 +186,10 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
 
   # finish converting age comps to FIMSFrame format
   lencomps <- data.frame(
-    type = "length",
+    type = "length", #will likely need to change name 
     name = paste0("fleet", abs(len_info$fleet)), # abs to include fleet == -4
     age = NA,
+    length = len_info$length,
     datestart = paste0(len_info$year, "-01-01"),
     dateend = paste0(len_info$year, "-12-31"),
     value = len_info$value + 0.001, # add constant to avoid 0 values
