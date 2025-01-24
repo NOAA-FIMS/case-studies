@@ -1,15 +1,27 @@
+library(FIMS)
+library(dplyr)
+library(tidyr)
+library(TMB)
+
 ## build a FIMS and PK data set that match
-##  need to fill missing years with -999 so it's ignored in FIMS
-# TODO: FIMS now supports automatically filling in missing values. 
-# We can test this feature using the case study to evaluate its functionality. 
-ind2 <- 0 * pkfit0$rep$Eindxsurv2 - 999
-ind2[which(years %in% fimsdat$srvyrs2)] <- fimsdat$indxsurv2
-CV2 <- rep(1, length = nyears) # actually SE in log space
-CV2[which(years %in% fimsdat$srvyrs2)] <- fimsdat$indxsurv_log_sd2
+
 paa2 <- pkfit0$rep$Esrvp2 * 0 - 999
 paa2[which(years %in% fimsdat$srv_acyrs2), ] <- fimsdat$srvp2
 Npaa2 <- rep(1, nyears)
 Npaa2[which(years %in% fimsdat$srv_acyrs2)] <- fimsdat$multN_srv2
+
+# try to take out -999 but it failed to run
+index2 <- data.frame(
+  type = "index",
+  name = "survey2",
+  age = NA,
+  datestart = paste0(fimsdat$srvyrs2, "-01-01"),
+  dateend = paste0(fimsdat$srvyrs2, "-12-31"),
+  value = fimsdat$indxsurv2,
+  unit = "",
+  uncertainty = fimsdat$indxsurv_log_sd2
+)
+
 
 ind3 <- 0 * pkfit0$rep$Eindxsurv3 - 999
 ind3[which(years %in% fimsdat$srvyrs3)] <- fimsdat$indxsurv3
@@ -56,16 +68,7 @@ landings <- data.frame(
   unit = "mt",
   uncertainty = fimsdat$cattot_log_sd[1]
 )
-index2 <- data.frame(
-  type = "index",
-  name = "survey2",
-  age = NA,
-  datestart = paste0(seq(fimsdat$styr, fimsdat$endyr), "-01-01"),
-  dateend = paste0(seq(fimsdat$styr, fimsdat$endyr), "-12-31"),
-  value = ifelse(ind2 > 0, ind2 * 1e9, ind2),
-  unit = "",
-  uncertainty = CV2
-)
+
 index3 <- data.frame(
   type = "index",
   name = "survey3",
@@ -180,9 +183,7 @@ survey_index3 <- FIMS::m_index(data_4_model, "survey3")
 survey_agecomp3 <- FIMS::m_agecomp(data_4_model, "survey3")
 survey_index6 <- FIMS::m_index(data_4_model, "survey6")
 survey_agecomp6 <- FIMS::m_agecomp(data_4_model, "survey6")
-# need to think about how to deal with multiple fleets - only using 1 fleet for now
-# TODO: FIMS now supports multiple fishing fleets. 
-# We can test this feature using the case study to evaluate its functionality. 
+
 fish_index <- methods::new(Index, nyears)
 fish_age_comp <- methods::new(AgeComp, nyears, nages)
 fish_index$index_data <- fishery_catch
