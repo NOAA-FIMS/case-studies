@@ -11,8 +11,17 @@ if (any(installed_packages == FALSE)) {
   install.packages(packages[!installed_packages], repos = "http://cran.us.r-project.org")
 }
 
-remotes::install_github("NOAA-FIMS/FIMS")
+# Install FIMS: main branch version if on main, dev version on any other branch
+on_main_branch <- system("git branch --show-current") == "main"
+if (on_main_branch){
+  remotes::install_github("NOAA-FIMS/FIMS")
+} else {
+  remotes::install_github("NOAA-FIMS/FIMS", ref = "dev")
+}
+
+)
 remotes::install_github("r4ss/r4ss")
+
 
 # Load packages
 invisible(lapply(packages, library, character.only = TRUE))
