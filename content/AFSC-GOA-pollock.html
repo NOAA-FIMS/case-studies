@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.40">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -71,12 +71,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ea72dc5fed832574809a9c94082fbbb.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-9e72ac8c0fa0889dc4268d09450d81fb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-27db0be693dafcb0b03cfe5a4a6ef901.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -197,7 +197,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../content/PIFS-opakapaka.html" class="sidebar-item-text sidebar-link">
+  <a href="../content/PIFSC-opakapaka.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">PIFSC Opakapaka case study</span></a>
   </div>
 </li>
@@ -232,10 +232,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#the-setup" id="toc-the-setup" class="nav-link active" data-scroll-target="#the-setup">The setup</a></li>
   <li><a href="#simplifications-to-the-original-assessment" id="toc-simplifications-to-the-original-assessment" class="nav-link" data-scroll-target="#simplifications-to-the-original-assessment">Simplifications to the original assessment</a></li>
   <li><a href="#script-to-prepare-data-for-building-fims-object" id="toc-script-to-prepare-data-for-building-fims-object" class="nav-link" data-scroll-target="#script-to-prepare-data-for-building-fims-object">Script to prepare data for building FIMS object</a></li>
-  <li><a href="#run-fims-model" id="toc-run-fims-model" class="nav-link" data-scroll-target="#run-fims-model">Run FIMS model</a></li>
+  <li><a href="#run-fims-model-without-using-wrapper-functions" id="toc-run-fims-model-without-using-wrapper-functions" class="nav-link" data-scroll-target="#run-fims-model-without-using-wrapper-functions">Run FIMS model without using wrapper functions</a></li>
+  <li><a href="#output-plotting" id="toc-output-plotting" class="nav-link" data-scroll-target="#output-plotting">Output plotting</a></li>
   <li><a href="#comparison-figures-for-basic-model" id="toc-comparison-figures-for-basic-model" class="nav-link" data-scroll-target="#comparison-figures-for-basic-model">Comparison figures for basic model</a></li>
   <li><a href="#extra-analyses" id="toc-extra-analyses" class="nav-link" data-scroll-target="#extra-analyses">Extra analyses</a></li>
   <li><a href="#plots-for-extra-analyses" id="toc-plots-for-extra-analyses" class="nav-link" data-scroll-target="#plots-for-extra-analyses">Plots for extra analyses</a></li>
+  <li><a href="#run-fims-model-using-wrapper-functions" id="toc-run-fims-model-using-wrapper-functions" class="nav-link" data-scroll-target="#run-fims-model-using-wrapper-functions">Run FIMS model using wrapper functions</a></li>
   <li><a href="#comparison-table" id="toc-comparison-table" class="nav-link" data-scroll-target="#comparison-table">Comparison table</a></li>
   <li><a href="#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability" id="toc-what-was-your-experience-using-fims-what-could-we-do-to-improve-usability" class="nav-link" data-scroll-target="#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability">What was your experience using FIMS? What could we do to improve usability?</a></li>
   <li><a href="#list-any-issues-that-you-ran-into-or-found" id="toc-list-any-issues-that-you-ran-into-or-found" class="nav-link" data-scroll-target="#list-any-issues-that-you-ran-into-or-found">List any issues that you ran into or found</a></li>
@@ -282,32 +284,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>
 The downloaded binary packages are in
-    /var/folders/q5/6nls1_g145s2fl1lbvx2zby40000gn/T//RtmpKx0QqR/downloaded_packages</code></pre>
+    /var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T//RtmpNlQzz1/downloaded_packages</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"kaskr/TMB_contrib_R/TMBhelper"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>RcppParallel (NA -&gt; 5.1.9     ) [CRAN]
+<pre><code>RcppParallel (NA -&gt; 5.1.10    ) [CRAN]
 numDeriv     (NA -&gt; 2016.8-1.1) [CRAN]
-ps           (NA -&gt; 1.8.0     ) [CRAN]
+ps           (NA -&gt; 1.8.1     ) [CRAN]
 distribut... (NA -&gt; 0.5.0     ) [CRAN]
 tensorA      (NA -&gt; 0.36.2.1  ) [CRAN]
 abind        (NA -&gt; 1.4-8     ) [CRAN]
 backports    (NA -&gt; 1.5.0     ) [CRAN]
-processx     (NA -&gt; 3.8.4     ) [CRAN]
+processx     (NA -&gt; 3.8.5     ) [CRAN]
 desc         (NA -&gt; 1.4.3     ) [CRAN]
 callr        (NA -&gt; 3.7.6     ) [CRAN]
 posterior    (NA -&gt; 1.6.0     ) [CRAN]
-matrixStats  (NA -&gt; 1.4.1     ) [CRAN]
+matrixStats  (NA -&gt; 1.5.0     ) [CRAN]
 checkmate    (NA -&gt; 2.3.2     ) [CRAN]
-BH           (NA -&gt; 1.84.0-0  ) [CRAN]
-QuickJSR     (NA -&gt; 1.4.0     ) [CRAN]
-pkgbuild     (NA -&gt; 1.4.4     ) [CRAN]
+BH           (NA -&gt; 1.87.0-1  ) [CRAN]
+QuickJSR     (NA -&gt; 1.5.1     ) [CRAN]
+pkgbuild     (NA -&gt; 1.4.6     ) [CRAN]
 loo          (NA -&gt; 2.8.0     ) [CRAN]
 gridExtra    (NA -&gt; 2.3       ) [CRAN]
-inline       (NA -&gt; 0.3.19    ) [CRAN]
+inline       (NA -&gt; 0.3.21    ) [CRAN]
 StanHeaders  (NA -&gt; 2.32.10   ) [CRAN]
 rstan        (NA -&gt; 2.32.6    ) [CRAN]
 tmbstan      (NA -&gt; 1.0.91    ) [CRAN]</code></pre>
@@ -315,9 +317,9 @@ tmbstan      (NA -&gt; 1.0.91    ) [CRAN]</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 The downloaded binary packages are in
-    /var/folders/q5/6nls1_g145s2fl1lbvx2zby40000gn/T//RtmpKx0QqR/downloaded_packages
+    /var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T//RtmpNlQzz1/downloaded_packages
 ── R CMD build ─────────────────────────────────────────────────────────────────
-* checking for file ‘/private/var/folders/q5/6nls1_g145s2fl1lbvx2zby40000gn/T/RtmpKx0QqR/remotes11b64e824194/kaskr-TMB_contrib_R-d275e52/TMBhelper/DESCRIPTION’ ... OK
+* checking for file ‘/private/var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T/RtmpNlQzz1/remotes15da4a99744c/kaskr-TMB_contrib_R-d275e52/TMBhelper/DESCRIPTION’ ... OK
 * preparing ‘TMBhelper’:
 * checking DESCRIPTION meta-information ... OK
 * checking for LF line-endings in source and make files and shell scripts
@@ -331,32 +333,32 @@ The downloaded binary packages are in
 <div class="cell-output cell-output-stdout">
 <pre><code>
 ── R CMD build ─────────────────────────────────────────────────────────────────
-* checking for file ‘/private/var/folders/q5/6nls1_g145s2fl1lbvx2zby40000gn/T/RtmpKx0QqR/remotes11b6253f88a2/NOAA-FIMS-FIMS-f0d4e76/DESCRIPTION’ ... OK
+* checking for file ‘/private/var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T/RtmpNlQzz1/remotes15da61f8f0ed/NOAA-FIMS-FIMS-eca8095/DESCRIPTION’ ... OK
 * preparing ‘FIMS’:
 * checking DESCRIPTION meta-information ... OK
 * cleaning src
 * checking for LF line-endings in source and make files and shell scripts
 * checking for empty or unneeded directories
-* building ‘FIMS_0.2.0.0.tar.gz’</code></pre>
+* building ‘FIMS_0.3.0.1.tar.gz’</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"r4ss/r4ss"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>systemfonts (NA -&gt; 1.1.0   ) [CRAN]
+<pre><code>systemfonts (NA -&gt; 1.2.1   ) [CRAN]
 sys         (NA -&gt; 3.4.3   ) [CRAN]
 askpass     (NA -&gt; 1.2.1   ) [CRAN]
-openssl     (NA -&gt; 2.2.2   ) [CRAN]
-curl        (NA -&gt; 5.2.3   ) [CRAN]
-parallelly  (NA -&gt; 1.38.0  ) [CRAN]
+openssl     (NA -&gt; 2.3.1   ) [CRAN]
+curl        (NA -&gt; 6.2.0   ) [CRAN]
+parallelly  (NA -&gt; 1.42.0  ) [CRAN]
 listenv     (NA -&gt; 0.9.1   ) [CRAN]
 globals     (NA -&gt; 0.16.3  ) [CRAN]
 svglite     (NA -&gt; 2.1.3   ) [CRAN]
-rstudioapi  (NA -&gt; 0.17.0  ) [CRAN]
+rstudioapi  (NA -&gt; 0.17.1  ) [CRAN]
 xml2        (NA -&gt; 1.3.6   ) [CRAN]
 ini         (NA -&gt; 0.3.1   ) [CRAN]
-httr2       (NA -&gt; 1.0.5   ) [CRAN]
+httr2       (NA -&gt; 1.1.0   ) [CRAN]
 gitcreds    (NA -&gt; 0.1.2   ) [CRAN]
 future      (NA -&gt; 1.34.0  ) [CRAN]
 viridis     (NA -&gt; 0.6.5   ) [CRAN]
@@ -370,14 +372,14 @@ coda        (NA -&gt; 0.19-4.1) [CRAN]</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 The downloaded binary packages are in
-    /var/folders/q5/6nls1_g145s2fl1lbvx2zby40000gn/T//RtmpKx0QqR/downloaded_packages
+    /var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T//RtmpNlQzz1/downloaded_packages
 ── R CMD build ─────────────────────────────────────────────────────────────────
-* checking for file ‘/private/var/folders/q5/6nls1_g145s2fl1lbvx2zby40000gn/T/RtmpKx0QqR/remotes11b633286784/r4ss-r4ss-47f6659/DESCRIPTION’ ... OK
+* checking for file ‘/private/var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T/RtmpNlQzz1/remotes15da7710b6a9/r4ss-r4ss-fc438ba/DESCRIPTION’ ... OK
 * preparing ‘r4ss’:
 * checking DESCRIPTION meta-information ... OK
 * checking for LF line-endings in source and make files and shell scripts
 * checking for empty or unneeded directories
-* building ‘r4ss_1.50.0.tar.gz’</code></pre>
+* building ‘r4ss_1.51.0.tar.gz’</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -395,20 +397,15 @@ The downloaded binary packages are in
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_bw</span>())</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># R_version &lt;- version$version.string</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># TMB_version &lt;- packageDescription("TMB")$Version</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># FIMS_commit &lt;- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_set</span>(<span class="fu">theme_bw</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <ul>
-<li>R version: R version 4.4.1 (2024-06-14)<br>
+<li>R version: R version 4.4.2 (2024-10-31)<br>
 </li>
-<li>TMB version: 1.9.15<br>
+<li>TMB version: 1.9.16<br>
 </li>
-<li>FIMS commit: f0d4e76<br>
+<li>FIMS commit: eca8095<br>
 </li>
 <li>Stock name: Gulf of Alaska (GOA) Walleye Pollock<br>
 </li>
@@ -448,116 +445,138 @@ The downloaded binary packages are in
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>nseasons <span class="ot">&lt;-</span> <span class="dv">1</span></span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>nages <span class="ot">&lt;-</span> <span class="dv">10</span></span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>ages <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>nages</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="do">## nfleets &lt;- 1</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="do">## This will fit the models bridging to FIMS (simplifying)</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="do">## source("fit_bridge_models.R")</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="do">## compare changes to model</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>pkfitfinal <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data_files/pkfitfinal.RDS"</span>)</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>pkfit0 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data_files/pkfit0.RDS"</span>)</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>parfinal <span class="ot">&lt;-</span> pkfitfinal<span class="sc">$</span>obj<span class="sc">$</span>env<span class="sc">$</span><span class="fu">parList</span>()</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>pkinput0 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">'data_files/pkinput0.RDS'</span>)</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>fimsdat <span class="ot">&lt;-</span> pkdat0 <span class="ot">&lt;-</span> pkinput0<span class="sc">$</span>dat</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>pkinput <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">'data_files/pkinput.RDS'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="do">## This will fit the models bridging to FIMS (simplifying)</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="do">## source("fit_bridge_models.R")</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="do">## compare changes to model</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>pkfitfinal <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data_files/pkfitfinal.RDS"</span>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>pkfit0 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data_files/pkfit0.RDS"</span>)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>parfinal <span class="ot">&lt;-</span> pkfitfinal<span class="sc">$</span>obj<span class="sc">$</span>env<span class="sc">$</span><span class="fu">parList</span>()</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>pkinput0 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">'data_files/pkinput0.RDS'</span>)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>fimsdat <span class="ot">&lt;-</span> pkdat0 <span class="ot">&lt;-</span> pkinput0<span class="sc">$</span>dat</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>pkinput <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">'data_files/pkinput.RDS'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
-<section id="run-fims-model" class="level2">
-<h2 class="anchored" data-anchor-id="run-fims-model">Run FIMS model</h2>
+<section id="run-fims-model-without-using-wrapper-functions" class="level2">
+<h2 class="anchored" data-anchor-id="run-fims-model-without-using-wrapper-functions">Run FIMS model without using wrapper functions</h2>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">## set up FIMS data objects</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">clear</span>()</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">clear_logs</span>()</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>estimate_fish_selex <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>estimate_survey_selex <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>estimate_q2 <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>estimate_q3 <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>estimate_q6 <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>estimate_F <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>estimate_recdevs <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/pk_prepare_FIMS_inputs.R"</span>)</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="do">## make FIMS model</span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>success <span class="ot">&lt;-</span> <span class="fu">CreateTMBModel</span>()</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">p =</span> <span class="fu">get_fixed</span>())</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>obj <span class="ot">&lt;-</span> <span class="fu">MakeADFun</span>(<span class="at">data =</span> <span class="fu">list</span>(), parameters, <span class="at">DLL =</span> <span class="st">"FIMS"</span>, <span class="at">silent =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="do">## report values for the two models</span></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>rep0 <span class="ot">&lt;-</span> pkfitfinal<span class="sc">$</span>rep</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>rep1 <span class="ot">&lt;-</span> obj<span class="sc">$</span><span class="fu">report</span>() <span class="co"># FIMS initial values</span></span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="do">## try fitting the model</span></span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>opt <span class="ot">&lt;-</span> TMBhelper<span class="sc">::</span><span class="fu">fit_tmb</span>(obj, <span class="at">getsd=</span><span class="cn">FALSE</span>, <span class="at">newtonsteps=</span><span class="dv">0</span>, <span class="at">control=</span><span class="fu">list</span>(<span class="at">trace=</span><span class="dv">100</span>))</span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="do">## opt &lt;- with(obj, nlminb(start=par, objective=fn, gradient=gr))</span></span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(<span class="fu">abs</span>(obj<span class="sc">$</span><span class="fu">gr</span>())) <span class="co"># from Cole, can use TMBhelper::fit_tmb to get val to &lt;1e-10</span></span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>rep2 <span class="ot">&lt;-</span> obj<span class="sc">$</span><span class="fu">report</span>(obj<span class="sc">$</span>env<span class="sc">$</span>last.par.best) <span class="do">## FIMS after estimation</span></span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Output plotting</span></span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>out1 <span class="ot">&lt;-</span> <span class="fu">get_long_outputs</span>(rep1, rep0) <span class="sc">%&gt;%</span></span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">platform=</span><span class="fu">ifelse</span>(platform<span class="sc">==</span><span class="st">'FIMS'</span>, <span class="st">'FIMS init'</span>, <span class="st">'TMB'</span>))</span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>out2 <span class="ot">&lt;-</span> <span class="fu">get_long_outputs</span>(rep2, rep0) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(platform<span class="sc">==</span><span class="st">'FIMS'</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">platform=</span><span class="st">'FIMS opt'</span>)</span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">rbind</span>(out1,out2)</span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(out, <span class="fu">aes</span>(year, value, <span class="at">color=</span>platform)) <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="st">'name'</span>, <span class="at">scales=</span><span class="st">'free'</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="cn">NULL</span>, <span class="at">y=</span><span class="cn">NULL</span>)</span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">'figures/AFSC_PK_ts_comparison.png'</span>, g, <span class="at">width=</span><span class="dv">9</span>, <span class="at">height=</span><span class="dv">5</span>, <span class="at">units=</span><span class="st">'in'</span>)</span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">filter</span>(out, platform<span class="sc">!=</span><span class="st">'TMB'</span>), <span class="fu">aes</span>(year, relerror, <span class="at">color=</span>platform)) <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="st">'name'</span>, <span class="at">scales=</span><span class="st">'free'</span>) <span class="sc">+</span></span>
-<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="cn">NULL</span>, <span class="at">y=</span><span class="st">'Relative difference'</span>) <span class="sc">+</span> <span class="fu">coord_cartesian</span>(<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">5</span>,.<span class="dv">5</span>))</span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">'figures/AFSC_PK_ts_comparison_relerror.png'</span>, g, <span class="at">width=</span><span class="dv">9</span>, <span class="at">height=</span><span class="dv">5</span>, <span class="at">units=</span><span class="st">'in'</span>)</span>
-<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a><span class="do">## Quick check on age comp fits</span></span>
-<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">get_acomp_fits</span>(rep0, rep1, rep2, <span class="at">fleet=</span><span class="dv">1</span>, <span class="at">years=</span>pkdat0<span class="sc">$</span>fshyrs)</span>
-<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(p1, <span class="fu">aes</span>(age, paa, <span class="at">color=</span>platform)) <span class="sc">+</span> <span class="fu">facet_wrap</span>(<span class="st">'year'</span>) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
-<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">'figures/AFSC_PK_age_comp_fits_1.png'</span>, g, <span class="at">width=</span><span class="dv">9</span>, <span class="at">height=</span><span class="dv">8</span>, <span class="at">units=</span><span class="st">'in'</span>)</span>
-<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">get_acomp_fits</span>(rep0, rep1, rep2, <span class="at">fleet=</span><span class="dv">2</span>, <span class="at">years=</span>pkdat0<span class="sc">$</span>srv_acyrs2)</span>
-<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(p2, <span class="fu">aes</span>(age, paa, <span class="at">color=</span>platform)) <span class="sc">+</span> <span class="fu">facet_wrap</span>(<span class="st">'year'</span>) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
-<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">'figures/AFSC_PK_age_comp_fits_2.png'</span>, g, <span class="at">width=</span><span class="dv">9</span>, <span class="at">height=</span><span class="dv">8</span>, <span class="at">units=</span><span class="st">'in'</span>)</span>
-<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a><span class="do">## p3 &lt;- get_acomp_fits(rep0, rep1, rep2, fleet=3, years=pkdat0$srv_acyrs3)</span></span>
-<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a><span class="do">## g &lt;- ggplot(p3, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()</span></span>
-<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a><span class="do">## p6 &lt;- get_acomp_fits(rep0, rep1, rep2, fleet=4, years=pkdat0$srv_acyrs6)</span></span>
-<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a><span class="do">## g &lt;- ggplot(p6, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()</span></span>
-<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a><span class="do">## index fits</span></span>
-<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a>addsegs <span class="ot">&lt;-</span> <span class="cf">function</span>(yrs, obs, CV){</span>
-<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a>  getlwr <span class="ot">&lt;-</span> <span class="cf">function</span>(obs, CV) <span class="fu">qlnorm</span>(<span class="at">p=</span>.<span class="dv">025</span>, <span class="at">meanlog=</span><span class="fu">log</span>(obs), <span class="at">sdlog=</span><span class="fu">sqrt</span>(<span class="fu">log</span>(<span class="dv">1</span><span class="sc">+</span>CV<span class="sc">^</span><span class="dv">2</span>)))</span>
-<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a>  getupr <span class="ot">&lt;-</span> <span class="cf">function</span>(obs, CV) <span class="fu">qlnorm</span>(<span class="at">p=</span>.<span class="dv">975</span>, <span class="at">meanlog=</span><span class="fu">log</span>(obs), <span class="at">sdlog=</span><span class="fu">sqrt</span>(<span class="fu">log</span>(<span class="dv">1</span><span class="sc">+</span>CV<span class="sc">^</span><span class="dv">2</span>)))</span>
-<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">segments</span>(yrs, <span class="at">y0=</span><span class="fu">getlwr</span>(obs,CV), <span class="at">y1=</span><span class="fu">getupr</span>(obs,CV))</span>
-<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">points</span>(yrs, obs, <span class="at">pch=</span><span class="dv">22</span>, <span class="at">bg=</span><span class="st">'white'</span>)</span>
-<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="st">'figures/AFSC_PK_index_fits.png'</span>, <span class="at">res=</span><span class="dv">300</span>, <span class="at">width=</span><span class="dv">6</span>, <span class="at">height=</span><span class="dv">7</span>, <span class="at">units=</span><span class="st">'in'</span>)</span>
-<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>), <span class="at">mar=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,.<span class="dv">5</span>,.<span class="dv">5</span>), <span class="at">mgp=</span><span class="fu">c</span>(<span class="fl">1.5</span>,.<span class="dv">5</span>,<span class="dv">0</span>), <span class="at">tck=</span><span class="sc">-</span><span class="fl">0.02</span>)</span>
-<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(years, rep0<span class="sc">$</span>Eindxsurv2, <span class="at">type=</span><span class="st">'l'</span>,</span>
-<span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">2</span>), <span class="at">lwd=</span><span class="fl">5.5</span>,</span>
-<span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab=</span><span class="cn">NA</span>, <span class="at">ylab=</span><span class="st">'Biomass (million t)'</span>)</span>
-<span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> out1 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name<span class="sc">==</span><span class="st">'Index2'</span> <span class="sc">&amp;</span> platform<span class="sc">==</span><span class="st">'FIMS init'</span>)</span>
-<span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> out2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name<span class="sc">==</span><span class="st">'Index2'</span> <span class="sc">&amp;</span> platform<span class="sc">==</span><span class="st">'FIMS opt'</span>)</span>
-<span id="cb14-66"><a href="#cb14-66" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(years,x1<span class="sc">$</span>value, <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="fl">1.5</span>)</span>
-<span id="cb14-67"><a href="#cb14-67" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(years,x2<span class="sc">$</span>value, <span class="at">col=</span><span class="dv">3</span>, <span class="at">lwd=</span><span class="fl">1.5</span>)</span>
-<span id="cb14-68"><a href="#cb14-68" aria-hidden="true" tabindex="-1"></a><span class="fu">addsegs</span>(<span class="at">yrs=</span>pkdat0<span class="sc">$</span>srvyrs2, <span class="at">obs=</span>pkdat0<span class="sc">$</span>indxsurv2, <span class="at">CV=</span>pkdat0<span class="sc">$</span>indxsurv_log_sd2)</span>
-<span id="cb14-69"><a href="#cb14-69" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">'topright'</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'TMB'</span>, <span class="st">'FIMS init'</span>, <span class="st">'FIMS opt'</span>), <span class="at">lty=</span><span class="dv">1</span>, <span class="at">col=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
-<span id="cb14-70"><a href="#cb14-70" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'Survey 2'</span>, <span class="at">line=</span><span class="sc">-</span><span class="fl">1.5</span>)</span>
-<span id="cb14-71"><a href="#cb14-71" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(years, rep0<span class="sc">$</span>Eindxsurv3, <span class="at">type=</span><span class="st">'l'</span>,</span>
-<span id="cb14-72"><a href="#cb14-72" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,.<span class="dv">6</span>), <span class="at">lwd=</span><span class="fl">5.5</span>,</span>
-<span id="cb14-73"><a href="#cb14-73" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab=</span><span class="cn">NA</span>, <span class="at">ylab=</span><span class="st">'Biomass (million t)'</span>)</span>
-<span id="cb14-74"><a href="#cb14-74" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> out1 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name<span class="sc">==</span><span class="st">'Index3'</span> <span class="sc">&amp;</span> platform<span class="sc">==</span><span class="st">'FIMS init'</span>)</span>
-<span id="cb14-75"><a href="#cb14-75" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> out2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name<span class="sc">==</span><span class="st">'Index3'</span> <span class="sc">&amp;</span> platform<span class="sc">==</span><span class="st">'FIMS opt'</span>)</span>
-<span id="cb14-76"><a href="#cb14-76" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(years,x1<span class="sc">$</span>value, <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="fl">1.5</span>)</span>
-<span id="cb14-77"><a href="#cb14-77" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(years,x2<span class="sc">$</span>value, <span class="at">col=</span><span class="dv">3</span>, <span class="at">lwd=</span><span class="fl">1.5</span>)</span>
-<span id="cb14-78"><a href="#cb14-78" aria-hidden="true" tabindex="-1"></a><span class="fu">addsegs</span>(<span class="at">yrs=</span>pkdat0<span class="sc">$</span>srvyrs3, <span class="at">obs=</span>pkdat0<span class="sc">$</span>indxsurv3, <span class="at">CV=</span>pkdat0<span class="sc">$</span>indxsurv_log_sd3)</span>
-<span id="cb14-79"><a href="#cb14-79" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'Survey 3'</span>, <span class="at">line=</span><span class="sc">-</span><span class="fl">1.5</span>)</span>
-<span id="cb14-80"><a href="#cb14-80" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">'topright'</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'TMB'</span>, <span class="st">'FIMS init'</span>, <span class="st">'FIMS opt'</span>), <span class="at">lty=</span><span class="dv">1</span>, <span class="at">col=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
-<span id="cb14-81"><a href="#cb14-81" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(years, rep0<span class="sc">$</span>Eindxsurv6, <span class="at">type=</span><span class="st">'l'</span>,</span>
-<span id="cb14-82"><a href="#cb14-82" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">2.6</span>), <span class="at">lwd=</span><span class="fl">5.5</span>,</span>
-<span id="cb14-83"><a href="#cb14-83" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab=</span><span class="cn">NA</span>, <span class="at">ylab=</span><span class="st">'Biomass (million t)'</span>)</span>
-<span id="cb14-84"><a href="#cb14-84" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> out1 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name<span class="sc">==</span><span class="st">'Index6'</span> <span class="sc">&amp;</span> platform<span class="sc">==</span><span class="st">'FIMS init'</span>)</span>
-<span id="cb14-85"><a href="#cb14-85" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> out2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name<span class="sc">==</span><span class="st">'Index6'</span> <span class="sc">&amp;</span> platform<span class="sc">==</span><span class="st">'FIMS opt'</span>)</span>
-<span id="cb14-86"><a href="#cb14-86" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(years,x1<span class="sc">$</span>value, <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="fl">1.5</span>)</span>
-<span id="cb14-87"><a href="#cb14-87" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(years,x2<span class="sc">$</span>value, <span class="at">col=</span><span class="dv">3</span>, <span class="at">lwd=</span><span class="fl">1.5</span>)</span>
-<span id="cb14-88"><a href="#cb14-88" aria-hidden="true" tabindex="-1"></a><span class="fu">addsegs</span>(<span class="at">yrs=</span>pkdat0<span class="sc">$</span>srvyrs6, <span class="at">obs=</span>pkdat0<span class="sc">$</span>indxsurv6, <span class="at">CV=</span>pkdat0<span class="sc">$</span>indxsurv_log_sd6)</span>
-<span id="cb14-89"><a href="#cb14-89" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'Survey 6'</span>, <span class="at">line=</span><span class="sc">-</span><span class="fl">1.5</span>)</span>
-<span id="cb14-90"><a href="#cb14-90" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">'topright'</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'TMB'</span>, <span class="st">'FIMS init'</span>, <span class="st">'FIMS opt'</span>), <span class="at">lty=</span><span class="dv">1</span>, <span class="at">col=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
-<span id="cb14-91"><a href="#cb14-91" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>FIMS<span class="sc">::</span><span class="fu">clear</span>()</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>estimate_fish_selex <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>estimate_survey_selex <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>estimate_q2 <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>estimate_q3 <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>estimate_q6 <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>estimate_F <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>estimate_recdevs <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up a FIMS model without wrapper functions</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/pk_prepare_FIMS_inputs.R"</span>)</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="do">## make FIMS model</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>success <span class="ot">&lt;-</span> <span class="fu">CreateTMBModel</span>()</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">p =</span> <span class="fu">get_fixed</span>())</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>obj <span class="ot">&lt;-</span> TMB<span class="sc">::</span><span class="fu">MakeADFun</span>(<span class="at">data =</span> <span class="fu">list</span>(), parameters, <span class="at">DLL =</span> <span class="st">"FIMS"</span>, <span class="at">silent =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="do">## report values for the two models</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>rep0 <span class="ot">&lt;-</span> pkfitfinal<span class="sc">$</span>rep</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>rep1 <span class="ot">&lt;-</span> obj<span class="sc">$</span><span class="fu">report</span>() <span class="co"># FIMS initial values</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="do">## try fitting the model</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="co"># use nlminb() to match FIMS::fit_fims()</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="co"># opt &lt;- TMBhelper::fit_tmb(obj, getsd=FALSE, newtonsteps=0, control=list(trace=100))</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>opt <span class="ot">&lt;-</span> <span class="fu">with</span>(obj, <span class="fu">nlminb</span>(</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">start =</span> par,</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">objective =</span> fn,</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">gradient =</span> gr,</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">list</span>(</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">eval.max =</span> <span class="dv">10000</span>,</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">iter.max =</span> <span class="dv">10000</span>,</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">trace =</span> <span class="dv">0</span></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(<span class="fu">abs</span>(obj<span class="sc">$</span><span class="fu">gr</span>())) <span class="co"># from Cole, can use TMBhelper::fit_tmb to get val to &lt;1e-10</span></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>rep2 <span class="ot">&lt;-</span> obj<span class="sc">$</span><span class="fu">report</span>(obj<span class="sc">$</span>env<span class="sc">$</span>last.par.best) <span class="do">## FIMS after estimation</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+</div>
+</section>
+<section id="output-plotting" class="level2">
+<h2 class="anchored" data-anchor-id="output-plotting">Output plotting</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Output plotting</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>out1 <span class="ot">&lt;-</span> <span class="fu">get_long_outputs</span>(rep1, rep0) <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">platform=</span><span class="fu">ifelse</span>(platform<span class="sc">==</span><span class="st">'FIMS'</span>, <span class="st">'FIMS init'</span>, <span class="st">'TMB'</span>))</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>out2 <span class="ot">&lt;-</span> <span class="fu">get_long_outputs</span>(rep2, rep0) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(platform<span class="sc">==</span><span class="st">'FIMS'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">platform=</span><span class="st">'FIMS opt'</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">rbind</span>(out1,out2)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(out, <span class="fu">aes</span>(year, value, <span class="at">color=</span>platform)) <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="st">'name'</span>, <span class="at">scales=</span><span class="st">'free'</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="cn">NULL</span>, <span class="at">y=</span><span class="cn">NULL</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">'figures/AFSC_PK_ts_comparison.png'</span>, g, <span class="at">width=</span><span class="dv">9</span>, <span class="at">height=</span><span class="dv">5</span>, <span class="at">units=</span><span class="st">'in'</span>)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">filter</span>(out, platform<span class="sc">!=</span><span class="st">'TMB'</span>), <span class="fu">aes</span>(year, relerror, <span class="at">color=</span>platform)) <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="st">'name'</span>, <span class="at">scales=</span><span class="st">'free'</span>) <span class="sc">+</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="cn">NULL</span>, <span class="at">y=</span><span class="st">'Relative difference'</span>) <span class="sc">+</span> <span class="fu">coord_cartesian</span>(<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">5</span>,.<span class="dv">5</span>))</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">'figures/AFSC_PK_ts_comparison_relerror.png'</span>, g, <span class="at">width=</span><span class="dv">9</span>, <span class="at">height=</span><span class="dv">5</span>, <span class="at">units=</span><span class="st">'in'</span>)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Quick check on age comp fits</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">get_acomp_fits</span>(rep0, rep1, rep2, <span class="at">fleet=</span><span class="dv">1</span>, <span class="at">years=</span>pkdat0<span class="sc">$</span>fshyrs)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(p1, <span class="fu">aes</span>(age, paa, <span class="at">color=</span>platform)) <span class="sc">+</span> <span class="fu">facet_wrap</span>(<span class="st">'year'</span>) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">'figures/AFSC_PK_age_comp_fits_1.png'</span>, g, <span class="at">width=</span><span class="dv">9</span>, <span class="at">height=</span><span class="dv">8</span>, <span class="at">units=</span><span class="st">'in'</span>)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">get_acomp_fits</span>(rep0, rep1, rep2, <span class="at">fleet=</span><span class="dv">2</span>, <span class="at">years=</span>pkdat0<span class="sc">$</span>srv_acyrs2)</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(p2, <span class="fu">aes</span>(age, paa, <span class="at">color=</span>platform)) <span class="sc">+</span> <span class="fu">facet_wrap</span>(<span class="st">'year'</span>) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">'figures/AFSC_PK_age_comp_fits_2.png'</span>, g, <span class="at">width=</span><span class="dv">9</span>, <span class="at">height=</span><span class="dv">8</span>, <span class="at">units=</span><span class="st">'in'</span>)</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="do">## p3 &lt;- get_acomp_fits(rep0, rep1, rep2, fleet=3, years=pkdat0$srv_acyrs3)</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="do">## g &lt;- ggplot(p3, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()</span></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="do">## p6 &lt;- get_acomp_fits(rep0, rep1, rep2, fleet=4, years=pkdat0$srv_acyrs6)</span></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="do">## g &lt;- ggplot(p6, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()</span></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="do">## index fits</span></span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>addsegs <span class="ot">&lt;-</span> <span class="cf">function</span>(yrs, obs, CV){</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>  getlwr <span class="ot">&lt;-</span> <span class="cf">function</span>(obs, CV) <span class="fu">qlnorm</span>(<span class="at">p=</span>.<span class="dv">025</span>, <span class="at">meanlog=</span><span class="fu">log</span>(obs), <span class="at">sdlog=</span><span class="fu">sqrt</span>(<span class="fu">log</span>(<span class="dv">1</span><span class="sc">+</span>CV<span class="sc">^</span><span class="dv">2</span>)))</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>  getupr <span class="ot">&lt;-</span> <span class="cf">function</span>(obs, CV) <span class="fu">qlnorm</span>(<span class="at">p=</span>.<span class="dv">975</span>, <span class="at">meanlog=</span><span class="fu">log</span>(obs), <span class="at">sdlog=</span><span class="fu">sqrt</span>(<span class="fu">log</span>(<span class="dv">1</span><span class="sc">+</span>CV<span class="sc">^</span><span class="dv">2</span>)))</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">segments</span>(yrs, <span class="at">y0=</span><span class="fu">getlwr</span>(obs,CV), <span class="at">y1=</span><span class="fu">getupr</span>(obs,CV))</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">points</span>(yrs, obs, <span class="at">pch=</span><span class="dv">22</span>, <span class="at">bg=</span><span class="st">'white'</span>)</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="st">'figures/AFSC_PK_index_fits.png'</span>, <span class="at">res=</span><span class="dv">300</span>, <span class="at">width=</span><span class="dv">6</span>, <span class="at">height=</span><span class="dv">7</span>, <span class="at">units=</span><span class="st">'in'</span>)</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>), <span class="at">mar=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,.<span class="dv">5</span>,.<span class="dv">5</span>), <span class="at">mgp=</span><span class="fu">c</span>(<span class="fl">1.5</span>,.<span class="dv">5</span>,<span class="dv">0</span>), <span class="at">tck=</span><span class="sc">-</span><span class="fl">0.02</span>)</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(years, rep0<span class="sc">$</span>Eindxsurv2, <span class="at">type=</span><span class="st">'l'</span>,</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">2</span>), <span class="at">lwd=</span><span class="fl">5.5</span>,</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab=</span><span class="cn">NA</span>, <span class="at">ylab=</span><span class="st">'Biomass (million t)'</span>)</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> out1 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name<span class="sc">==</span><span class="st">'Index2'</span> <span class="sc">&amp;</span> platform<span class="sc">==</span><span class="st">'FIMS init'</span>)</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> out2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name<span class="sc">==</span><span class="st">'Index2'</span> <span class="sc">&amp;</span> platform<span class="sc">==</span><span class="st">'FIMS opt'</span>)</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(years,x1<span class="sc">$</span>value, <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="fl">1.5</span>)</span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(years,x2<span class="sc">$</span>value, <span class="at">col=</span><span class="dv">3</span>, <span class="at">lwd=</span><span class="fl">1.5</span>)</span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a><span class="fu">addsegs</span>(<span class="at">yrs=</span>pkdat0<span class="sc">$</span>srvyrs2, <span class="at">obs=</span>pkdat0<span class="sc">$</span>indxsurv2, <span class="at">CV=</span>pkdat0<span class="sc">$</span>indxsurv_log_sd2)</span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">'topright'</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'TMB'</span>, <span class="st">'FIMS init'</span>, <span class="st">'FIMS opt'</span>), <span class="at">lty=</span><span class="dv">1</span>, <span class="at">col=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'Survey 2'</span>, <span class="at">line=</span><span class="sc">-</span><span class="fl">1.5</span>)</span>
+<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(years, rep0<span class="sc">$</span>Eindxsurv3, <span class="at">type=</span><span class="st">'l'</span>,</span>
+<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,.<span class="dv">6</span>), <span class="at">lwd=</span><span class="fl">5.5</span>,</span>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab=</span><span class="cn">NA</span>, <span class="at">ylab=</span><span class="st">'Biomass (million t)'</span>)</span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> out1 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name<span class="sc">==</span><span class="st">'Index3'</span> <span class="sc">&amp;</span> platform<span class="sc">==</span><span class="st">'FIMS init'</span>)</span>
+<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> out2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name<span class="sc">==</span><span class="st">'Index3'</span> <span class="sc">&amp;</span> platform<span class="sc">==</span><span class="st">'FIMS opt'</span>)</span>
+<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(years,x1<span class="sc">$</span>value, <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="fl">1.5</span>)</span>
+<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(years,x2<span class="sc">$</span>value, <span class="at">col=</span><span class="dv">3</span>, <span class="at">lwd=</span><span class="fl">1.5</span>)</span>
+<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a><span class="fu">addsegs</span>(<span class="at">yrs=</span>pkdat0<span class="sc">$</span>srvyrs3, <span class="at">obs=</span>pkdat0<span class="sc">$</span>indxsurv3, <span class="at">CV=</span>pkdat0<span class="sc">$</span>indxsurv_log_sd3)</span>
+<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'Survey 3'</span>, <span class="at">line=</span><span class="sc">-</span><span class="fl">1.5</span>)</span>
+<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">'topright'</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'TMB'</span>, <span class="st">'FIMS init'</span>, <span class="st">'FIMS opt'</span>), <span class="at">lty=</span><span class="dv">1</span>, <span class="at">col=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
+<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(years, rep0<span class="sc">$</span>Eindxsurv6, <span class="at">type=</span><span class="st">'l'</span>,</span>
+<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">2.6</span>), <span class="at">lwd=</span><span class="fl">5.5</span>,</span>
+<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab=</span><span class="cn">NA</span>, <span class="at">ylab=</span><span class="st">'Biomass (million t)'</span>)</span>
+<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> out1 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name<span class="sc">==</span><span class="st">'Index6'</span> <span class="sc">&amp;</span> platform<span class="sc">==</span><span class="st">'FIMS init'</span>)</span>
+<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> out2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name<span class="sc">==</span><span class="st">'Index6'</span> <span class="sc">&amp;</span> platform<span class="sc">==</span><span class="st">'FIMS opt'</span>)</span>
+<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(years,x1<span class="sc">$</span>value, <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="fl">1.5</span>)</span>
+<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(years,x2<span class="sc">$</span>value, <span class="at">col=</span><span class="dv">3</span>, <span class="at">lwd=</span><span class="fl">1.5</span>)</span>
+<span id="cb15-64"><a href="#cb15-64" aria-hidden="true" tabindex="-1"></a><span class="fu">addsegs</span>(<span class="at">yrs=</span>pkdat0<span class="sc">$</span>srvyrs6, <span class="at">obs=</span>pkdat0<span class="sc">$</span>indxsurv6, <span class="at">CV=</span>pkdat0<span class="sc">$</span>indxsurv_log_sd6)</span>
+<span id="cb15-65"><a href="#cb15-65" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">'Survey 6'</span>, <span class="at">line=</span><span class="sc">-</span><span class="fl">1.5</span>)</span>
+<span id="cb15-66"><a href="#cb15-66" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">'topright'</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'TMB'</span>, <span class="st">'FIMS init'</span>, <span class="st">'FIMS opt'</span>), <span class="at">lty=</span><span class="dv">1</span>, <span class="at">col=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
+<span id="cb15-67"><a href="#cb15-67" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
 </div>
 </section>
 <section id="comparison-figures-for-basic-model" class="level2">
@@ -570,69 +589,551 @@ The downloaded binary packages are in
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Try a likelihood profile</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>i <span class="ot">&lt;-</span> <span class="dv">68</span> <span class="co"># this will break if model is changed at all</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>map <span class="ot">&lt;-</span> parameters</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>map<span class="sc">$</span>p[i] <span class="ot">&lt;-</span> <span class="cn">NA</span> <span class="co"># map off R0 specified below</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>map<span class="sc">$</span>p <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(map<span class="sc">$</span>p)</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>xseq <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">c</span>(opt<span class="sc">$</span>par[i],  <span class="fu">seq</span>(<span class="dv">22</span>,<span class="dv">24</span>, <span class="at">len=</span><span class="dv">30</span>)))</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(xseq)){</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(j)</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  parameters<span class="sc">$</span>p[i] <span class="ot">&lt;-</span> xseq[j]</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  obj2 <span class="ot">&lt;-</span> <span class="fu">MakeADFun</span>(<span class="at">data =</span> <span class="fu">list</span>(), parameters, <span class="at">DLL =</span> <span class="st">"FIMS"</span>, <span class="at">silent =</span> <span class="cn">TRUE</span>, <span class="at">map=</span>map)</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  opt2 <span class="ot">&lt;-</span> TMBhelper<span class="sc">::</span><span class="fu">fit_tmb</span>(obj2, <span class="at">getsd=</span><span class="cn">FALSE</span>, <span class="at">newtonsteps=</span><span class="dv">0</span>, <span class="at">control=</span><span class="fu">list</span>(<span class="at">trace=</span><span class="dv">0</span>))</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> obj2<span class="sc">$</span><span class="fu">report</span>(obj2<span class="sc">$</span>env<span class="sc">$</span>last.par.best)</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  res[[j]] <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">j=</span>j, <span class="at">lnR0=</span>xseq[j], <span class="at">total=</span>out<span class="sc">$</span>jnll, <span class="at">index=</span>out<span class="sc">$</span>index_nll,</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>                         <span class="at">age=</span>out<span class="sc">$</span>age_comp_nll,<span class="at">recruit=</span>out<span class="sc">$</span>rec_nll, <span class="at">maxgrad=</span><span class="fu">max</span>(<span class="fu">abs</span>(obj<span class="sc">$</span><span class="fu">gr</span>())))</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(res) <span class="sc">%&gt;%</span></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>( <span class="at">cols=</span><span class="fu">c</span>(total, index, age, recruit)) <span class="sc">%&gt;%</span></span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">deltaNLL=</span>value<span class="sc">-</span><span class="fu">min</span>(value))</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(res, <span class="fu">aes</span>(lnR0, deltaNLL, <span class="at">color=</span>name)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> g<span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data=</span><span class="fu">filter</span>(res, deltaNLL<span class="sc">==</span><span class="dv">0</span>), <span class="at">size=</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y=</span><span class="st">'Delta NLL'</span>, <span class="at">color=</span><span class="st">'NLL component'</span>)</span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">'figures/AFSC_PK_like_profile_R0.png'</span>, g, <span class="at">width=</span><span class="dv">7</span>, <span class="at">height=</span><span class="fl">3.5</span>)</span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="do">## ## Try Bayesian</span></span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="do">## library(tmbstan)</span></span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a><span class="do">## library(shinystan)</span></span>
-<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a><span class="do">## ## Some paraemters wandering off to Inf so fix those (need</span></span>
-<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a><span class="do">## ## priors). Needs a ton of work but is proof of concept. Major</span></span>
-<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a><span class="do">## ## problem is parallel fails.</span></span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a><span class="do">## map &lt;- parameters</span></span>
-<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a><span class="do">## ## parameters$p[65:66]</span></span>
-<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a><span class="do">## map$p[65:66] &lt;- NA # map off R0 specified below</span></span>
-<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a><span class="do">## map$p &lt;- as.factor(map$p)</span></span>
-<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a><span class="do">## obj3 &lt;- MakeADFun(data = list(), parameters, DLL = "FIMS", silent=TRUE, map=map)</span></span>
-<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a><span class="do">## opt3 &lt;- TMBhelper::fit_tmb(obj3, getsd=FALSE, newtonsteps=0, control=list(trace=0))</span></span>
-<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a><span class="do">## ## Fails when trying to do this in parallel unfortunately</span></span>
-<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a><span class="do">## fit &lt;- tmbstan(obj3, chains=1, cores=1, open_progress=FALSE,</span></span>
-<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a><span class="do">##                init='last.par.best', control=list(max_treedepth=10))</span></span>
-<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a><span class="do">## launch_shinystan(fit)</span></span>
-<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a><span class="do">## df &lt;- as.data.frame(fit)</span></span>
-<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a><span class="do">## df &lt;- df[,-ncol(df)] # drop lp__</span></span>
-<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a><span class="do">## ## for each posterior draw, report to get SSB</span></span>
-<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a><span class="do">## postreps &lt;- list()</span></span>
-<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a><span class="do">## for(ii in 1:nrow(df)){</span></span>
-<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a><span class="do">##   if(ii %% 10==0) print(ii)</span></span>
-<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a><span class="do">##   postreps[[ii]] &lt;- obj3$rep(df[ii,])</span></span>
-<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a><span class="do">## }</span></span>
-<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a><span class="do">## ssbpost &lt;- lapply(postreps, function(x) data.frame(year=years, ssb=x$ssb[[1]][-55]))%&gt;%</span></span>
-<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a><span class="do">##   bind_rows %&gt;% mutate(rep=rep(1:nrow(df), each=54))</span></span>
-<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a><span class="do">## saveRDS(ssbpost, file='pk_SSB_posteriors.RDS')</span></span>
-<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a>ssbpost <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">'data_files/pk_pollock_SSB_posteriors.RDS'</span>)</span>
-<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ssbpost, <span class="fu">aes</span>(year, ssb<span class="sc">/</span><span class="fl">1e9</span>, <span class="at">group=</span>rep)) <span class="sc">+</span> <span class="fu">geom_line</span>(<span class="at">alpha=</span>.<span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="cn">NA</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">x=</span><span class="cn">NULL</span>, <span class="at">y=</span><span class="st">'SSB (M t)'</span>, <span class="at">title=</span><span class="st">'Posterior demo (unconverged!)'</span>)</span>
-<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">'figures/AFSC_PK_ssb_posterior.png'</span>, g, <span class="at">width=</span><span class="dv">7</span>, <span class="at">height=</span><span class="dv">4</span>, <span class="at">units=</span><span class="st">'in'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Try a likelihood profile</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: Received the following note when running the code below:</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># "Note that `getReportCovariance=FALSE` causes an error in `TMB::sdreport` when no ADREPORTed variables are present".</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Flag this for Cole to verify.</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>i <span class="ot">&lt;-</span> <span class="dv">68</span> <span class="co"># this will break if model is changed at all</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>map <span class="ot">&lt;-</span> parameters</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>map<span class="sc">$</span>p[i] <span class="ot">&lt;-</span> <span class="cn">NA</span> <span class="co"># map off R0 specified below</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>map<span class="sc">$</span>p <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(map<span class="sc">$</span>p)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>xseq <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">c</span>(opt<span class="sc">$</span>par[i],  <span class="fu">seq</span>(<span class="dv">22</span>,<span class="dv">24</span>, <span class="at">len=</span><span class="dv">30</span>)))</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(xseq)){</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(j)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  parameters<span class="sc">$</span>p[i] <span class="ot">&lt;-</span> xseq[j]</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  obj2 <span class="ot">&lt;-</span> <span class="fu">MakeADFun</span>(<span class="at">data =</span> <span class="fu">list</span>(), parameters, <span class="at">DLL =</span> <span class="st">"FIMS"</span>, <span class="at">silent =</span> <span class="cn">TRUE</span>, <span class="at">map=</span>map)</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  opt2 <span class="ot">&lt;-</span> TMBhelper<span class="sc">::</span><span class="fu">fit_tmb</span>(obj2, <span class="at">getsd=</span><span class="cn">FALSE</span>, <span class="at">newtonsteps=</span><span class="dv">0</span>, <span class="at">control=</span><span class="fu">list</span>(<span class="at">trace=</span><span class="dv">0</span>))</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> obj2<span class="sc">$</span><span class="fu">report</span>(obj2<span class="sc">$</span>env<span class="sc">$</span>last.par.best)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  nll_components <span class="ot">&lt;-</span> out<span class="sc">$</span>nll_components</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  index_nll <span class="ot">&lt;-</span> <span class="fu">sum</span>(nll_components[<span class="fu">seq</span>(<span class="dv">2</span>, <span class="fu">length</span>(nll_components), <span class="at">by =</span> <span class="dv">2</span>)])</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  age_comp_nll <span class="ot">&lt;-</span> <span class="fu">sum</span>(nll_components[<span class="fu">seq</span>(<span class="dv">3</span>, <span class="fu">length</span>(nll_components), <span class="at">by =</span> <span class="dv">2</span>)])</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>  res[[j]] <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">j =</span> j, <span class="at">lnR0 =</span> xseq[j], <span class="at">total =</span> out<span class="sc">$</span>jnll, <span class="at">index =</span> index_nll,</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">age =</span> age_comp_nll, <span class="at">recruit =</span> out<span class="sc">$</span>nll_components[<span class="dv">1</span>], <span class="at">maxgrad =</span> <span class="fu">max</span>(<span class="fu">abs</span>(obj<span class="sc">$</span><span class="fu">gr</span>()))</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(res) <span class="sc">%&gt;%</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>( <span class="at">cols=</span><span class="fu">c</span>(total, index, age, recruit)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">deltaNLL=</span>value<span class="sc">-</span><span class="fu">min</span>(value))</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(res, <span class="fu">aes</span>(lnR0, deltaNLL, <span class="at">color=</span>name)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> g<span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data=</span><span class="fu">filter</span>(res, deltaNLL<span class="sc">==</span><span class="dv">0</span>), <span class="at">size=</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y=</span><span class="st">'Delta NLL'</span>, <span class="at">color=</span><span class="st">'NLL component'</span>)</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">'figures/AFSC_PK_like_profile_R0.png'</span>, g, <span class="at">width=</span><span class="dv">7</span>, <span class="at">height=</span><span class="fl">3.5</span>)</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a><span class="do">## ## Try Bayesian</span></span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a><span class="do">## library(tmbstan)</span></span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a><span class="do">## library(shinystan)</span></span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a><span class="do">## ## Some paraemters wandering off to Inf so fix those (need</span></span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a><span class="do">## ## priors). Needs a ton of work but is proof of concept. Major</span></span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a><span class="do">## ## problem is parallel fails.</span></span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a><span class="do">## map &lt;- parameters</span></span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a><span class="do">## ## parameters$p[65:66]</span></span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a><span class="do">## map$p[65:66] &lt;- NA # map off R0 specified below</span></span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a><span class="do">## map$p &lt;- as.factor(map$p)</span></span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a><span class="do">## obj3 &lt;- MakeADFun(data = list(), parameters, DLL = "FIMS", silent=TRUE, map=map)</span></span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a><span class="do">## opt3 &lt;- TMBhelper::fit_tmb(obj3, getsd=FALSE, newtonsteps=0, control=list(trace=0))</span></span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a><span class="do">## ## Fails when trying to do this in parallel unfortunately</span></span>
+<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a><span class="do">## fit &lt;- tmbstan(obj3, chains=1, cores=1, open_progress=FALSE,</span></span>
+<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a><span class="do">##                init='last.par.best', control=list(max_treedepth=10))</span></span>
+<span id="cb17-50"><a href="#cb17-50" aria-hidden="true" tabindex="-1"></a><span class="do">## launch_shinystan(fit)</span></span>
+<span id="cb17-51"><a href="#cb17-51" aria-hidden="true" tabindex="-1"></a><span class="do">## df &lt;- as.data.frame(fit)</span></span>
+<span id="cb17-52"><a href="#cb17-52" aria-hidden="true" tabindex="-1"></a><span class="do">## df &lt;- df[,-ncol(df)] # drop lp__</span></span>
+<span id="cb17-53"><a href="#cb17-53" aria-hidden="true" tabindex="-1"></a><span class="do">## ## for each posterior draw, report to get SSB</span></span>
+<span id="cb17-54"><a href="#cb17-54" aria-hidden="true" tabindex="-1"></a><span class="do">## postreps &lt;- list()</span></span>
+<span id="cb17-55"><a href="#cb17-55" aria-hidden="true" tabindex="-1"></a><span class="do">## for(ii in 1:nrow(df)){</span></span>
+<span id="cb17-56"><a href="#cb17-56" aria-hidden="true" tabindex="-1"></a><span class="do">##   if(ii %% 10==0) print(ii)</span></span>
+<span id="cb17-57"><a href="#cb17-57" aria-hidden="true" tabindex="-1"></a><span class="do">##   postreps[[ii]] &lt;- obj3$rep(df[ii,])</span></span>
+<span id="cb17-58"><a href="#cb17-58" aria-hidden="true" tabindex="-1"></a><span class="do">## }</span></span>
+<span id="cb17-59"><a href="#cb17-59" aria-hidden="true" tabindex="-1"></a><span class="do">## ssbpost &lt;- lapply(postreps, function(x) data.frame(year=years, ssb=x$ssb[[1]][-55]))%&gt;%</span></span>
+<span id="cb17-60"><a href="#cb17-60" aria-hidden="true" tabindex="-1"></a><span class="do">##   bind_rows %&gt;% mutate(rep=rep(1:nrow(df), each=54))</span></span>
+<span id="cb17-61"><a href="#cb17-61" aria-hidden="true" tabindex="-1"></a><span class="do">## saveRDS(ssbpost, file='pk_SSB_posteriors.RDS')</span></span>
+<span id="cb17-62"><a href="#cb17-62" aria-hidden="true" tabindex="-1"></a>ssbpost <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">'data_files/pk_pollock_SSB_posteriors.RDS'</span>)</span>
+<span id="cb17-63"><a href="#cb17-63" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ssbpost, <span class="fu">aes</span>(year, ssb<span class="sc">/</span><span class="fl">1e9</span>, <span class="at">group=</span>rep)) <span class="sc">+</span> <span class="fu">geom_line</span>(<span class="at">alpha=</span>.<span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb17-64"><a href="#cb17-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="cn">NA</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">x=</span><span class="cn">NULL</span>, <span class="at">y=</span><span class="st">'SSB (M t)'</span>, <span class="at">title=</span><span class="st">'Posterior demo (unconverged!)'</span>)</span>
+<span id="cb17-65"><a href="#cb17-65" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">'figures/AFSC_PK_ssb_posterior.png'</span>, g, <span class="at">width=</span><span class="dv">7</span>, <span class="at">height=</span><span class="dv">4</span>, <span class="at">units=</span><span class="st">'in'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section id="plots-for-extra-analyses" class="level2">
 <h2 class="anchored" data-anchor-id="plots-for-extra-analyses">Plots for extra analyses</h2>
 <p><img src="figures/AFSC_PK_like_profile_R0.png" class="img-fluid" style="width:7in" alt="Likelihood Profile"> <img src="figures/AFSC_PK_ssb_posterior.png" class="img-fluid" style="width:7in" alt="SSB Posterior"></p>
+</section>
+<section id="run-fims-model-using-wrapper-functions" class="level2">
+<h2 class="anchored" data-anchor-id="run-fims-model-using-wrapper-functions">Run FIMS model using wrapper functions</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>FIMS<span class="sc">::</span><span class="fu">clear</span>()</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># set up selectivities for fleets and survey</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>fleet1 <span class="ot">&lt;-</span> survey2 <span class="ot">&lt;-</span> survey6 <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">selectivity =</span> <span class="fu">list</span>(<span class="at">form =</span> <span class="st">"DoubleLogisticSelectivity"</span>),</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">data_distribution =</span> <span class="fu">c</span>(</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Index =</span> <span class="st">"DlnormDistribution"</span>,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">AgeComp =</span> <span class="st">"DmultinomDistribution"</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>survey3 <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">selectivity =</span> <span class="fu">list</span>(<span class="at">form =</span> <span class="st">"LogisticSelectivity"</span>),</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">data_distribution =</span> <span class="fu">c</span>(</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">Index =</span> <span class="st">"DlnormDistribution"</span>,</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">AgeComp =</span> <span class="st">"DmultinomDistribution"</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>fleets <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">fleet1 =</span> fleet1,</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">survey2 =</span> survey2,</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">survey3 =</span> survey3,</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">survey6 =</span> survey6</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Create parameters list and update default values for parameters</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>parameters_with_wrappers <span class="ot">&lt;-</span> data_4_model <span class="sc">|&gt;</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_default_parameters</span>(<span class="at">fleets =</span> fleets) <span class="sc">|&gt;</span></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>(</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet1 =</span> <span class="fu">list</span>(</span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.inflection_point_asc.value =</span> parfinal<span class="sc">$</span>inf1_fsh_mean,</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.slope_asc.value =</span> <span class="fu">exp</span>(parfinal<span class="sc">$</span>log_slp1_fsh_mean),</span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.inflection_point_desc.value =</span> parfinal<span class="sc">$</span>inf2_fsh_mean,</span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.slope_desc.value =</span> <span class="fu">exp</span>(parfinal<span class="sc">$</span>log_slp2_fsh_mean),</span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_Fmort.value =</span> <span class="fu">log</span>(pkfitfinal<span class="sc">$</span>rep<span class="sc">$</span>F)</span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>(</span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>      <span class="at">survey2 =</span> <span class="fu">list</span>(</span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.inflection_point_asc.value =</span> parfinal<span class="sc">$</span>inf1_srv2,</span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.slope_asc.value =</span> <span class="fu">exp</span>(parfinal<span class="sc">$</span>log_slp1_srv2),</span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.inflection_point_desc.value =</span> parfinal<span class="sc">$</span>inf2_srv2,</span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.inflection_point_desc.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.slope_desc.value =</span> <span class="fu">exp</span>(parfinal<span class="sc">$</span>log_slp2_srv2),</span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.slope_desc.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_q.value =</span> parfinal<span class="sc">$</span>log_q2_mean</span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb18-53"><a href="#cb18-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>(</span>
+<span id="cb18-54"><a href="#cb18-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb18-55"><a href="#cb18-55" aria-hidden="true" tabindex="-1"></a>      <span class="at">survey3 =</span> <span class="fu">list</span>(</span>
+<span id="cb18-56"><a href="#cb18-56" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.value =</span> parfinal<span class="sc">$</span>inf1_srv3,</span>
+<span id="cb18-57"><a href="#cb18-57" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.value =</span> <span class="fu">exp</span>(parfinal<span class="sc">$</span>log_slp1_srv3),</span>
+<span id="cb18-58"><a href="#cb18-58" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_q.value =</span> parfinal<span class="sc">$</span>log_q3_mean</span>
+<span id="cb18-59"><a href="#cb18-59" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb18-60"><a href="#cb18-60" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb18-61"><a href="#cb18-61" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb18-62"><a href="#cb18-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>(</span>
+<span id="cb18-63"><a href="#cb18-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb18-64"><a href="#cb18-64" aria-hidden="true" tabindex="-1"></a>      <span class="at">survey6 =</span> <span class="fu">list</span>(</span>
+<span id="cb18-65"><a href="#cb18-65" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.inflection_point_asc.value =</span> parfinal<span class="sc">$</span>inf1_srv6,</span>
+<span id="cb18-66"><a href="#cb18-66" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.inflection_point_asc.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-67"><a href="#cb18-67" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.slope_asc.value =</span> <span class="fu">exp</span>(parfinal<span class="sc">$</span>log_slp1_srv6),</span>
+<span id="cb18-68"><a href="#cb18-68" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.slope_asc.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-69"><a href="#cb18-69" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.inflection_point_desc.value =</span> parfinal<span class="sc">$</span>inf2_srv6,</span>
+<span id="cb18-70"><a href="#cb18-70" aria-hidden="true" tabindex="-1"></a>        <span class="at">DoubleLogisticSelectivity.slope_desc.value =</span> <span class="fu">exp</span>(parfinal<span class="sc">$</span>log_slp2_srv6),</span>
+<span id="cb18-71"><a href="#cb18-71" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_q.value =</span> parfinal<span class="sc">$</span>log_q6</span>
+<span id="cb18-72"><a href="#cb18-72" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb18-73"><a href="#cb18-73" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb18-74"><a href="#cb18-74" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb18-75"><a href="#cb18-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>(</span>
+<span id="cb18-76"><a href="#cb18-76" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb18-77"><a href="#cb18-77" aria-hidden="true" tabindex="-1"></a>      <span class="at">recruitment =</span> <span class="fu">list</span>(</span>
+<span id="cb18-78"><a href="#cb18-78" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.log_rzero.value =</span> parfinal<span class="sc">$</span>mean_log_recruit <span class="sc">+</span> <span class="fu">log</span>(<span class="fl">1e9</span>),</span>
+<span id="cb18-79"><a href="#cb18-79" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.logit_steep.value =</span> <span class="sc">-</span><span class="fu">log</span>(<span class="fl">1.0</span> <span class="sc">-</span> .<span class="dv">99999</span>) <span class="sc">+</span> <span class="fu">log</span>(.<span class="dv">99999</span> <span class="sc">-</span> <span class="fl">0.2</span>),</span>
+<span id="cb18-80"><a href="#cb18-80" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.log_devs.value =</span> parfinal<span class="sc">$</span>dev_log_recruit[<span class="sc">-</span><span class="dv">1</span>],</span>
+<span id="cb18-81"><a href="#cb18-81" aria-hidden="true" tabindex="-1"></a>        <span class="at">DnormDistribution.log_sd.value =</span> parfinal<span class="sc">$</span>sigmaR</span>
+<span id="cb18-82"><a href="#cb18-82" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb18-83"><a href="#cb18-83" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb18-84"><a href="#cb18-84" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb18-85"><a href="#cb18-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>(</span>
+<span id="cb18-86"><a href="#cb18-86" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb18-87"><a href="#cb18-87" aria-hidden="true" tabindex="-1"></a>      <span class="at">maturity =</span> <span class="fu">list</span>(</span>
+<span id="cb18-88"><a href="#cb18-88" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.inflection_point.value =</span> <span class="fl">4.5</span>,</span>
+<span id="cb18-89"><a href="#cb18-89" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.inflection_point.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-90"><a href="#cb18-90" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.slope.value =</span> <span class="fl">1.5</span>,</span>
+<span id="cb18-91"><a href="#cb18-91" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.slope.estimated =</span> <span class="cn">FALSE</span></span>
+<span id="cb18-92"><a href="#cb18-92" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb18-93"><a href="#cb18-93" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb18-94"><a href="#cb18-94" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb18-95"><a href="#cb18-95" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>(</span>
+<span id="cb18-96"><a href="#cb18-96" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb18-97"><a href="#cb18-97" aria-hidden="true" tabindex="-1"></a>      <span class="at">population =</span> <span class="fu">list</span>(</span>
+<span id="cb18-98"><a href="#cb18-98" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_M.value =</span> <span class="fu">log</span>(<span class="fu">as.numeric</span>(<span class="fu">t</span>(<span class="fu">matrix</span>(</span>
+<span id="cb18-99"><a href="#cb18-99" aria-hidden="true" tabindex="-1"></a>          <span class="fu">rep</span>(pkfitfinal<span class="sc">$</span>rep<span class="sc">$</span>M, <span class="at">each =</span> data_4_model<span class="sc">@</span>n_years),</span>
+<span id="cb18-100"><a href="#cb18-100" aria-hidden="true" tabindex="-1"></a>          <span class="at">nrow =</span> data_4_model<span class="sc">@</span>n_years</span>
+<span id="cb18-101"><a href="#cb18-101" aria-hidden="true" tabindex="-1"></a>        )))),</span>
+<span id="cb18-102"><a href="#cb18-102" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_init_naa.value =</span> <span class="fu">c</span>(<span class="fu">log</span>(pkfitfinal<span class="sc">$</span>rep<span class="sc">$</span>recruit[<span class="dv">1</span>]), <span class="fu">log</span>(pkfitfinal<span class="sc">$</span>rep<span class="sc">$</span>initN)) <span class="sc">+</span> <span class="fu">log</span>(<span class="fl">1e9</span>),</span>
+<span id="cb18-103"><a href="#cb18-103" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_init_naa.estimated =</span> <span class="cn">FALSE</span></span>
+<span id="cb18-104"><a href="#cb18-104" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb18-105"><a href="#cb18-105" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb18-106"><a href="#cb18-106" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-107"><a href="#cb18-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-108"><a href="#cb18-108" aria-hidden="true" tabindex="-1"></a><span class="co"># Put it all together, creating the FIMS model and making the TMB fcn</span></span>
+<span id="cb18-109"><a href="#cb18-109" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the model without optimization to help ensure a viable model</span></span>
+<span id="cb18-110"><a href="#cb18-110" aria-hidden="true" tabindex="-1"></a>test_fit <span class="ot">&lt;-</span> parameters_with_wrappers  <span class="sc">|&gt;</span></span>
+<span id="cb18-111"><a href="#cb18-111" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initialize_fims</span>(<span class="at">data =</span> data_4_model) <span class="sc">|&gt;</span></span>
+<span id="cb18-112"><a href="#cb18-112" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit_fims</span>(<span class="at">optimize =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb18-113"><a href="#cb18-113" aria-hidden="true" tabindex="-1"></a><span class="fu">get_obj</span>(test_fit)<span class="sc">$</span><span class="fu">report</span>()<span class="sc">$</span>nll_components <span class="sc">|&gt;</span> <span class="fu">length</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_data</span>(data_4_model) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(name <span class="sc">==</span> <span class="st">"fleet1"</span>, type <span class="sc">==</span> <span class="st">"age"</span>) <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 540 × 9
+    type  name     age datestart  dateend         value unit  uncertainty  year
+    &lt;chr&gt; &lt;chr&gt;  &lt;int&gt; &lt;date&gt;     &lt;date&gt;          &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;
+  1 age   fleet1     1 1970-01-01 1970-12-31 -999       ""          1      1970
+  2 age   fleet1     2 1970-01-01 1970-12-31 -999       ""          1      1970
+  3 age   fleet1     3 1970-01-01 1970-12-31 -999       ""          1      1970
+  4 age   fleet1     4 1970-01-01 1970-12-31 -999       ""          1      1970
+  5 age   fleet1     5 1970-01-01 1970-12-31 -999       ""          1      1970
+  6 age   fleet1     6 1970-01-01 1970-12-31 -999       ""          1      1970
+  7 age   fleet1     7 1970-01-01 1970-12-31 -999       ""          1      1970
+  8 age   fleet1     8 1970-01-01 1970-12-31 -999       ""          1      1970
+  9 age   fleet1     9 1970-01-01 1970-12-31 -999       ""          1      1970
+ 10 age   fleet1    10 1970-01-01 1970-12-31 -999       ""          1      1970
+ 11 age   fleet1     1 1971-01-01 1971-12-31 -999       ""          1      1971
+ 12 age   fleet1     2 1971-01-01 1971-12-31 -999       ""          1      1971
+ 13 age   fleet1     3 1971-01-01 1971-12-31 -999       ""          1      1971
+ 14 age   fleet1     4 1971-01-01 1971-12-31 -999       ""          1      1971
+ 15 age   fleet1     5 1971-01-01 1971-12-31 -999       ""          1      1971
+ 16 age   fleet1     6 1971-01-01 1971-12-31 -999       ""          1      1971
+ 17 age   fleet1     7 1971-01-01 1971-12-31 -999       ""          1      1971
+ 18 age   fleet1     8 1971-01-01 1971-12-31 -999       ""          1      1971
+ 19 age   fleet1     9 1971-01-01 1971-12-31 -999       ""          1      1971
+ 20 age   fleet1    10 1971-01-01 1971-12-31 -999       ""          1      1971
+ 21 age   fleet1     1 1972-01-01 1972-12-31 -999       ""          1      1972
+ 22 age   fleet1     2 1972-01-01 1972-12-31 -999       ""          1      1972
+ 23 age   fleet1     3 1972-01-01 1972-12-31 -999       ""          1      1972
+ 24 age   fleet1     4 1972-01-01 1972-12-31 -999       ""          1      1972
+ 25 age   fleet1     5 1972-01-01 1972-12-31 -999       ""          1      1972
+ 26 age   fleet1     6 1972-01-01 1972-12-31 -999       ""          1      1972
+ 27 age   fleet1     7 1972-01-01 1972-12-31 -999       ""          1      1972
+ 28 age   fleet1     8 1972-01-01 1972-12-31 -999       ""          1      1972
+ 29 age   fleet1     9 1972-01-01 1972-12-31 -999       ""          1      1972
+ 30 age   fleet1    10 1972-01-01 1972-12-31 -999       ""          1      1972
+ 31 age   fleet1     1 1973-01-01 1973-12-31 -999       ""          1      1973
+ 32 age   fleet1     2 1973-01-01 1973-12-31 -999       ""          1      1973
+ 33 age   fleet1     3 1973-01-01 1973-12-31 -999       ""          1      1973
+ 34 age   fleet1     4 1973-01-01 1973-12-31 -999       ""          1      1973
+ 35 age   fleet1     5 1973-01-01 1973-12-31 -999       ""          1      1973
+ 36 age   fleet1     6 1973-01-01 1973-12-31 -999       ""          1      1973
+ 37 age   fleet1     7 1973-01-01 1973-12-31 -999       ""          1      1973
+ 38 age   fleet1     8 1973-01-01 1973-12-31 -999       ""          1      1973
+ 39 age   fleet1     9 1973-01-01 1973-12-31 -999       ""          1      1973
+ 40 age   fleet1    10 1973-01-01 1973-12-31 -999       ""          1      1973
+ 41 age   fleet1     1 1974-01-01 1974-12-31 -999       ""          1      1974
+ 42 age   fleet1     2 1974-01-01 1974-12-31 -999       ""          1      1974
+ 43 age   fleet1     3 1974-01-01 1974-12-31 -999       ""          1      1974
+ 44 age   fleet1     4 1974-01-01 1974-12-31 -999       ""          1      1974
+ 45 age   fleet1     5 1974-01-01 1974-12-31 -999       ""          1      1974
+ 46 age   fleet1     6 1974-01-01 1974-12-31 -999       ""          1      1974
+ 47 age   fleet1     7 1974-01-01 1974-12-31 -999       ""          1      1974
+ 48 age   fleet1     8 1974-01-01 1974-12-31 -999       ""          1      1974
+ 49 age   fleet1     9 1974-01-01 1974-12-31 -999       ""          1      1974
+ 50 age   fleet1    10 1974-01-01 1974-12-31 -999       ""          1      1974
+ 51 age   fleet1     1 1975-01-01 1975-12-31    0       ""          0.369  1975
+ 52 age   fleet1     2 1975-01-01 1975-12-31    0.0236  ""          0.369  1975
+ 53 age   fleet1     3 1975-01-01 1975-12-31    0.544   ""          0.369  1975
+ 54 age   fleet1     4 1975-01-01 1975-12-31    0.169   ""          0.369  1975
+ 55 age   fleet1     5 1975-01-01 1975-12-31    0.142   ""          0.369  1975
+ 56 age   fleet1     6 1975-01-01 1975-12-31    0.0668  ""          0.369  1975
+ 57 age   fleet1     7 1975-01-01 1975-12-31    0.0277  ""          0.369  1975
+ 58 age   fleet1     8 1975-01-01 1975-12-31    0.0270  ""          0.369  1975
+ 59 age   fleet1     9 1975-01-01 1975-12-31    0       ""          0.369  1975
+ 60 age   fleet1    10 1975-01-01 1975-12-31    0       ""          0.369  1975
+ 61 age   fleet1     1 1976-01-01 1976-12-31    0       ""          8.11   1976
+ 62 age   fleet1     2 1976-01-01 1976-12-31    0.00887 ""          8.11   1976
+ 63 age   fleet1     3 1976-01-01 1976-12-31    0.108   ""          8.11   1976
+ 64 age   fleet1     4 1976-01-01 1976-12-31    0.577   ""          8.11   1976
+ 65 age   fleet1     5 1976-01-01 1976-12-31    0.187   ""          8.11   1976
+ 66 age   fleet1     6 1976-01-01 1976-12-31    0.0780  ""          8.11   1976
+ 67 age   fleet1     7 1976-01-01 1976-12-31    0.0172  ""          8.11   1976
+ 68 age   fleet1     8 1976-01-01 1976-12-31    0.0134  ""          8.11   1976
+ 69 age   fleet1     9 1976-01-01 1976-12-31    0.00918 ""          8.11   1976
+ 70 age   fleet1    10 1976-01-01 1976-12-31    0.00111 ""          8.11   1976
+ 71 age   fleet1     1 1977-01-01 1977-12-31    0.00023 ""         70.8    1977
+ 72 age   fleet1     2 1977-01-01 1977-12-31    0.0357  ""         70.8    1977
+ 73 age   fleet1     3 1977-01-01 1977-12-31    0.0601  ""         70.8    1977
+ 74 age   fleet1     4 1977-01-01 1977-12-31    0.138   ""         70.8    1977
+ 75 age   fleet1     5 1977-01-01 1977-12-31    0.522   ""         70.8    1977
+ 76 age   fleet1     6 1977-01-01 1977-12-31    0.151   ""         70.8    1977
+ 77 age   fleet1     7 1977-01-01 1977-12-31    0.0566  ""         70.8    1977
+ 78 age   fleet1     8 1977-01-01 1977-12-31    0.0147  ""         70.8    1977
+ 79 age   fleet1     9 1977-01-01 1977-12-31    0.0130  ""         70.8    1977
+ 80 age   fleet1    10 1977-01-01 1977-12-31    0.00921 ""         70.8    1977
+ 81 age   fleet1     1 1978-01-01 1978-12-31    0.00186 ""         73.7    1978
+ 82 age   fleet1     2 1978-01-01 1978-12-31    0.0659  ""         73.7    1978
+ 83 age   fleet1     3 1978-01-01 1978-12-31    0.210   ""         73.7    1978
+ 84 age   fleet1     4 1978-01-01 1978-12-31    0.148   ""         73.7    1978
+ 85 age   fleet1     5 1978-01-01 1978-12-31    0.147   ""         73.7    1978
+ 86 age   fleet1     6 1978-01-01 1978-12-31    0.285   ""         73.7    1978
+ 87 age   fleet1     7 1978-01-01 1978-12-31    0.0823  ""         73.7    1978
+ 88 age   fleet1     8 1978-01-01 1978-12-31    0.0350  ""         73.7    1978
+ 89 age   fleet1     9 1978-01-01 1978-12-31    0.0130  ""         73.7    1978
+ 90 age   fleet1    10 1978-01-01 1978-12-31    0.0120  ""         73.7    1978
+ 91 age   fleet1     1 1979-01-01 1979-12-31    0.00049 ""         73.7    1979
+ 92 age   fleet1     2 1979-01-01 1979-12-31    0.0179  ""         73.7    1979
+ 93 age   fleet1     3 1979-01-01 1979-12-31    0.282   ""         73.7    1979
+ 94 age   fleet1     4 1979-01-01 1979-12-31    0.462   ""         73.7    1979
+ 95 age   fleet1     5 1979-01-01 1979-12-31    0.0736  ""         73.7    1979
+ 96 age   fleet1     6 1979-01-01 1979-12-31    0.0490  ""         73.7    1979
+ 97 age   fleet1     7 1979-01-01 1979-12-31    0.0670  ""         73.7    1979
+ 98 age   fleet1     8 1979-01-01 1979-12-31    0.0308  ""         73.7    1979
+ 99 age   fleet1     9 1979-01-01 1979-12-31    0.0120  ""         73.7    1979
+100 age   fleet1    10 1979-01-01 1979-12-31    0.00445 ""         73.7    1979
+101 age   fleet1     1 1980-01-01 1980-12-31    0.00271 ""         73.7    1980
+102 age   fleet1     2 1980-01-01 1980-12-31    0.0545  ""         73.7    1980
+103 age   fleet1     3 1980-01-01 1980-12-31    0.154   ""         73.7    1980
+104 age   fleet1     4 1980-01-01 1980-12-31    0.324   ""         73.7    1980
+105 age   fleet1     5 1980-01-01 1980-12-31    0.234   ""         73.7    1980
+106 age   fleet1     6 1980-01-01 1980-12-31    0.0771  ""         73.7    1980
+107 age   fleet1     7 1980-01-01 1980-12-31    0.0596  ""         73.7    1980
+108 age   fleet1     8 1980-01-01 1980-12-31    0.0542  ""         73.7    1980
+109 age   fleet1     9 1980-01-01 1980-12-31    0.0274  ""         73.7    1980
+110 age   fleet1    10 1980-01-01 1980-12-31    0.0131  ""         73.7    1980
+111 age   fleet1     1 1981-01-01 1981-12-31    0.00106 ""         73.7    1981
+112 age   fleet1     2 1981-01-01 1981-12-31    0.0226  ""         73.7    1981
+113 age   fleet1     3 1981-01-01 1981-12-31    0.166   ""         73.7    1981
+114 age   fleet1     4 1981-01-01 1981-12-31    0.343   ""         73.7    1981
+115 age   fleet1     5 1981-01-01 1981-12-31    0.276   ""         73.7    1981
+116 age   fleet1     6 1981-01-01 1981-12-31    0.110   ""         73.7    1981
+117 age   fleet1     7 1981-01-01 1981-12-31    0.0316  ""         73.7    1981
+118 age   fleet1     8 1981-01-01 1981-12-31    0.0274  ""         73.7    1981
+119 age   fleet1     9 1981-01-01 1981-12-31    0.0195  ""         73.7    1981
+120 age   fleet1    10 1981-01-01 1981-12-31    0.00319 ""         73.7    1981
+121 age   fleet1     1 1982-01-01 1982-12-31    0.00015 ""         73.7    1982
+122 age   fleet1     2 1982-01-01 1982-12-31    0.0348  ""         73.7    1982
+123 age   fleet1     3 1982-01-01 1982-12-31    0.152   ""         73.7    1982
+124 age   fleet1     4 1982-01-01 1982-12-31    0.338   ""         73.7    1982
+125 age   fleet1     5 1982-01-01 1982-12-31    0.265   ""         73.7    1982
+126 age   fleet1     6 1982-01-01 1982-12-31    0.157   ""         73.7    1982
+127 age   fleet1     7 1982-01-01 1982-12-31    0.0400  ""         73.7    1982
+128 age   fleet1     8 1982-01-01 1982-12-31    0.00625 ""         73.7    1982
+129 age   fleet1     9 1982-01-01 1982-12-31    0.00401 ""         73.7    1982
+130 age   fleet1    10 1982-01-01 1982-12-31    0.00295 ""         73.7    1982
+131 age   fleet1     1 1983-01-01 1983-12-31    0       ""         73.7    1983
+132 age   fleet1     2 1983-01-01 1983-12-31    0.0195  ""         73.7    1983
+133 age   fleet1     3 1983-01-01 1983-12-31    0.119   ""         73.7    1983
+134 age   fleet1     4 1983-01-01 1983-12-31    0.229   ""         73.7    1983
+135 age   fleet1     5 1983-01-01 1983-12-31    0.342   ""         73.7    1983
+136 age   fleet1     6 1983-01-01 1983-12-31    0.167   ""         73.7    1983
+137 age   fleet1     7 1983-01-01 1983-12-31    0.0930  ""         73.7    1983
+138 age   fleet1     8 1983-01-01 1983-12-31    0.0245  ""         73.7    1983
+139 age   fleet1     9 1983-01-01 1983-12-31    0.00478 ""         73.7    1983
+140 age   fleet1    10 1983-01-01 1983-12-31    0.002   ""         73.7    1983
+141 age   fleet1     1 1984-01-01 1984-12-31    0.00176 ""         73.7    1984
+142 age   fleet1     2 1984-01-01 1984-12-31    0.0131  ""         73.7    1984
+143 age   fleet1     3 1984-01-01 1984-12-31    0.155   ""         73.7    1984
+144 age   fleet1     4 1984-01-01 1984-12-31    0.166   ""         73.7    1984
+145 age   fleet1     5 1984-01-01 1984-12-31    0.203   ""         73.7    1984
+146 age   fleet1     6 1984-01-01 1984-12-31    0.302   ""         73.7    1984
+147 age   fleet1     7 1984-01-01 1984-12-31    0.109   ""         73.7    1984
+148 age   fleet1     8 1984-01-01 1984-12-31    0.0370  ""         73.7    1984
+149 age   fleet1     9 1984-01-01 1984-12-31    0.0123  ""         73.7    1984
+150 age   fleet1    10 1984-01-01 1984-12-31    0.00176 ""         73.7    1984
+151 age   fleet1     1 1985-01-01 1985-12-31    0.00061 ""         73.7    1985
+152 age   fleet1     2 1985-01-01 1985-12-31    0.0348  ""         73.7    1985
+153 age   fleet1     3 1985-01-01 1985-12-31    0.0223  ""         73.7    1985
+154 age   fleet1     4 1985-01-01 1985-12-31    0.109   ""         73.7    1985
+155 age   fleet1     5 1985-01-01 1985-12-31    0.118   ""         73.7    1985
+156 age   fleet1     6 1985-01-01 1985-12-31    0.212   ""         73.7    1985
+157 age   fleet1     7 1985-01-01 1985-12-31    0.352   ""         73.7    1985
+158 age   fleet1     8 1985-01-01 1985-12-31    0.110   ""         73.7    1985
+159 age   fleet1     9 1985-01-01 1985-12-31    0.0309  ""         73.7    1985
+160 age   fleet1    10 1985-01-01 1985-12-31    0.0105  ""         73.7    1985
+161 age   fleet1     1 1986-01-01 1986-12-31    0.0120  ""         32.1    1986
+162 age   fleet1     2 1986-01-01 1986-12-31    0.0727  ""         32.1    1986
+163 age   fleet1     3 1986-01-01 1986-12-31    0.176   ""         32.1    1986
+164 age   fleet1     4 1986-01-01 1986-12-31    0.106   ""         32.1    1986
+165 age   fleet1     5 1986-01-01 1986-12-31    0.234   ""         32.1    1986
+166 age   fleet1     6 1986-01-01 1986-12-31    0.0994  ""         32.1    1986
+167 age   fleet1     7 1986-01-01 1986-12-31    0.108   ""         32.1    1986
+168 age   fleet1     8 1986-01-01 1986-12-31    0.131   ""         32.1    1986
+169 age   fleet1     9 1986-01-01 1986-12-31    0.0523  ""         32.1    1986
+170 age   fleet1    10 1986-01-01 1986-12-31    0.0089  ""         32.1    1986
+171 age   fleet1     1 1987-01-01 1987-12-31    0       ""         10.3    1987
+172 age   fleet1     2 1987-01-01 1987-12-31    0.0593  ""         10.3    1987
+173 age   fleet1     3 1987-01-01 1987-12-31    0.0897  ""         10.3    1987
+174 age   fleet1     4 1987-01-01 1987-12-31    0.0799  ""         10.3    1987
+175 age   fleet1     5 1987-01-01 1987-12-31    0.0929  ""         10.3    1987
+176 age   fleet1     6 1987-01-01 1987-12-31    0.175   ""         10.3    1987
+177 age   fleet1     7 1987-01-01 1987-12-31    0.150   ""         10.3    1987
+178 age   fleet1     8 1987-01-01 1987-12-31    0.0985  ""         10.3    1987
+179 age   fleet1     9 1987-01-01 1987-12-31    0.218   ""         10.3    1987
+180 age   fleet1    10 1987-01-01 1987-12-31    0.0369  ""         10.3    1987
+181 age   fleet1     1 1988-01-01 1988-12-31    0.0102  ""         12.2    1988
+182 age   fleet1     2 1988-01-01 1988-12-31    0.106   ""         12.2    1988
+183 age   fleet1     3 1988-01-01 1988-12-31    0.151   ""         12.2    1988
+184 age   fleet1     4 1988-01-01 1988-12-31    0.229   ""         12.2    1988
+185 age   fleet1     5 1988-01-01 1988-12-31    0.192   ""         12.2    1988
+186 age   fleet1     6 1988-01-01 1988-12-31    0.127   ""         12.2    1988
+187 age   fleet1     7 1988-01-01 1988-12-31    0.0706  ""         12.2    1988
+188 age   fleet1     8 1988-01-01 1988-12-31    0.0324  ""         12.2    1988
+189 age   fleet1     9 1988-01-01 1988-12-31    0.00479 ""         12.2    1988
+190 age   fleet1    10 1988-01-01 1988-12-31    0.0773  ""         12.2    1988
+191 age   fleet1     1 1989-01-01 1989-12-31    0.0275  ""         27.3    1989
+192 age   fleet1     2 1989-01-01 1989-12-31    0.0124  ""         27.3    1989
+193 age   fleet1     3 1989-01-01 1989-12-31    0.0338  ""         27.3    1989
+194 age   fleet1     4 1989-01-01 1989-12-31    0.322   ""         27.3    1989
+195 age   fleet1     5 1989-01-01 1989-12-31    0.367   ""         27.3    1989
+196 age   fleet1     6 1989-01-01 1989-12-31    0.127   ""         27.3    1989
+197 age   fleet1     7 1989-01-01 1989-12-31    0.0487  ""         27.3    1989
+198 age   fleet1     8 1989-01-01 1989-12-31    0.0248  ""         27.3    1989
+199 age   fleet1     9 1989-01-01 1989-12-31    0.0101  ""         27.3    1989
+200 age   fleet1    10 1989-01-01 1989-12-31    0.0264  ""         27.3    1989
+201 age   fleet1     1 1990-01-01 1990-12-31    0       ""         40.6    1990
+202 age   fleet1     2 1990-01-01 1990-12-31    0.0138  ""         40.6    1990
+203 age   fleet1     3 1990-01-01 1990-12-31    0.0174  ""         40.6    1990
+204 age   fleet1     4 1990-01-01 1990-12-31    0.0256  ""         40.6    1990
+205 age   fleet1     5 1990-01-01 1990-12-31    0.149   ""         40.6    1990
+206 age   fleet1     6 1990-01-01 1990-12-31    0.470   ""         40.6    1990
+207 age   fleet1     7 1990-01-01 1990-12-31    0.168   ""         40.6    1990
+208 age   fleet1     8 1990-01-01 1990-12-31    0.0951  ""         40.6    1990
+209 age   fleet1     9 1990-01-01 1990-12-31    0.0230  ""         40.6    1990
+210 age   fleet1    10 1990-01-01 1990-12-31    0.0385  ""         40.6    1990
+211 age   fleet1     1 1991-01-01 1991-12-31    0       ""         60.8    1991
+212 age   fleet1     2 1991-01-01 1991-12-31    0.0123  ""         60.8    1991
+213 age   fleet1     3 1991-01-01 1991-12-31    0.0878  ""         60.8    1991
+214 age   fleet1     4 1991-01-01 1991-12-31    0.0470  ""         60.8    1991
+215 age   fleet1     5 1991-01-01 1991-12-31    0.0415  ""         60.8    1991
+216 age   fleet1     6 1991-01-01 1991-12-31    0.0800  ""         60.8    1991
+217 age   fleet1     7 1991-01-01 1991-12-31    0.368   ""         60.8    1991
+218 age   fleet1     8 1991-01-01 1991-12-31    0.0406  ""         60.8    1991
+219 age   fleet1     9 1991-01-01 1991-12-31    0.207   ""         60.8    1991
+220 age   fleet1    10 1991-01-01 1991-12-31    0.116   ""         60.8    1991
+221 age   fleet1     1 1992-01-01 1992-12-31    0.00104 ""         51.2    1992
+222 age   fleet1     2 1992-01-01 1992-12-31    0.0151  ""         51.2    1992
+223 age   fleet1     3 1992-01-01 1992-12-31    0.0322  ""         51.2    1992
+224 age   fleet1     4 1992-01-01 1992-12-31    0.205   ""         51.2    1992
+225 age   fleet1     5 1992-01-01 1992-12-31    0.218   ""         51.2    1992
+226 age   fleet1     6 1992-01-01 1992-12-31    0.115   ""         51.2    1992
+227 age   fleet1     7 1992-01-01 1992-12-31    0.0833  ""         51.2    1992
+228 age   fleet1     8 1992-01-01 1992-12-31    0.173   ""         51.2    1992
+229 age   fleet1     9 1992-01-01 1992-12-31    0.0529  ""         51.2    1992
+230 age   fleet1    10 1992-01-01 1992-12-31    0.104   ""         51.2    1992
+231 age   fleet1     1 1993-01-01 1993-12-31    0.00032 ""         53.5    1993
+232 age   fleet1     2 1993-01-01 1993-12-31    0.0196  ""         53.5    1993
+233 age   fleet1     3 1993-01-01 1993-12-31    0.0672  ""         53.5    1993
+234 age   fleet1     4 1993-01-01 1993-12-31    0.159   ""         53.5    1993
+235 age   fleet1     5 1993-01-01 1993-12-31    0.380   ""         53.5    1993
+236 age   fleet1     6 1993-01-01 1993-12-31    0.133   ""         53.5    1993
+237 age   fleet1     7 1993-01-01 1993-12-31    0.0573  ""         53.5    1993
+238 age   fleet1     8 1993-01-01 1993-12-31    0.0545  ""         53.5    1993
+239 age   fleet1     9 1993-01-01 1993-12-31    0.0774  ""         53.5    1993
+240 age   fleet1    10 1993-01-01 1993-12-31    0.0523  ""         53.5    1993
+241 age   fleet1     1 1994-01-01 1994-12-31    0.00059 ""         57.1    1994
+242 age   fleet1     2 1994-01-01 1994-12-31    0.00826 ""         57.1    1994
+243 age   fleet1     3 1994-01-01 1994-12-31    0.0390  ""         57.1    1994
+244 age   fleet1     4 1994-01-01 1994-12-31    0.0711  ""         57.1    1994
+245 age   fleet1     5 1994-01-01 1994-12-31    0.312   ""         57.1    1994
+246 age   fleet1     6 1994-01-01 1994-12-31    0.279   ""         57.1    1994
+247 age   fleet1     7 1994-01-01 1994-12-31    0.112   ""         57.1    1994
+248 age   fleet1     8 1994-01-01 1994-12-31    0.0494  ""         57.1    1994
+249 age   fleet1     9 1994-01-01 1994-12-31    0.0442  ""         57.1    1994
+250 age   fleet1    10 1994-01-01 1994-12-31    0.0836  ""         57.1    1994
+251 age   fleet1     1 1995-01-01 1995-12-31    0       ""         36.5    1995
+252 age   fleet1     2 1995-01-01 1995-12-31    0.00365 ""         36.5    1995
+253 age   fleet1     3 1995-01-01 1995-12-31    0.0271  ""         36.5    1995
+254 age   fleet1     4 1995-01-01 1995-12-31    0.0757  ""         36.5    1995
+255 age   fleet1     5 1995-01-01 1995-12-31    0.149   ""         36.5    1995
+256 age   fleet1     6 1995-01-01 1995-12-31    0.345   ""         36.5    1995
+257 age   fleet1     7 1995-01-01 1995-12-31    0.214   ""         36.5    1995
+258 age   fleet1     8 1995-01-01 1995-12-31    0.0676  ""         36.5    1995
+259 age   fleet1     9 1995-01-01 1995-12-31    0.0323  ""         36.5    1995
+260 age   fleet1    10 1995-01-01 1995-12-31    0.0860  ""         36.5    1995
+261 age   fleet1     1 1996-01-01 1996-12-31    0       ""         23.6    1996
+262 age   fleet1     2 1996-01-01 1996-12-31    0.0175  ""         23.6    1996
+263 age   fleet1     3 1996-01-01 1996-12-31    0.0425  ""         23.6    1996
+264 age   fleet1     4 1996-01-01 1996-12-31    0.0314  ""         23.6    1996
+265 age   fleet1     5 1996-01-01 1996-12-31    0.0893  ""         23.6    1996
+266 age   fleet1     6 1996-01-01 1996-12-31    0.123   ""         23.6    1996
+267 age   fleet1     7 1996-01-01 1996-12-31    0.238   ""         23.6    1996
+268 age   fleet1     8 1996-01-01 1996-12-31    0.255   ""         23.6    1996
+269 age   fleet1     9 1996-01-01 1996-12-31    0.0835  ""         23.6    1996
+270 age   fleet1    10 1996-01-01 1996-12-31    0.120   ""         23.6    1996
+271 age   fleet1     1 1997-01-01 1997-12-31    0       ""         50.9    1997
+272 age   fleet1     2 1997-01-01 1997-12-31    0.0208  ""         50.9    1997
+273 age   fleet1     3 1997-01-01 1997-12-31    0.0905  ""         50.9    1997
+274 age   fleet1     4 1997-01-01 1997-12-31    0.0513  ""         50.9    1997
+275 age   fleet1     5 1997-01-01 1997-12-31    0.0539  ""         50.9    1997
+276 age   fleet1     6 1997-01-01 1997-12-31    0.104   ""         50.9    1997
+277 age   fleet1     7 1997-01-01 1997-12-31    0.155   ""         50.9    1997
+278 age   fleet1     8 1997-01-01 1997-12-31    0.236   ""         50.9    1997
+279 age   fleet1     9 1997-01-01 1997-12-31    0.173   ""         50.9    1997
+280 age   fleet1    10 1997-01-01 1997-12-31    0.116   ""         50.9    1997
+281 age   fleet1     1 1998-01-01 1998-12-31    0.00421 ""         51.6    1998
+282 age   fleet1     2 1998-01-01 1998-12-31    0.00146 ""         51.6    1998
+283 age   fleet1     3 1998-01-01 1998-12-31    0.147   ""         51.6    1998
+284 age   fleet1     4 1998-01-01 1998-12-31    0.251   ""         51.6    1998
+285 age   fleet1     5 1998-01-01 1998-12-31    0.110   ""         51.6    1998
+286 age   fleet1     6 1998-01-01 1998-12-31    0.0650  ""         51.6    1998
+287 age   fleet1     7 1998-01-01 1998-12-31    0.0738  ""         51.6    1998
+288 age   fleet1     8 1998-01-01 1998-12-31    0.0860  ""         51.6    1998
+289 age   fleet1     9 1998-01-01 1998-12-31    0.125   ""         51.6    1998
+290 age   fleet1    10 1998-01-01 1998-12-31    0.137   ""         51.6    1998
+291 age   fleet1     1 1999-01-01 1999-12-31    0       ""         73.7    1999
+292 age   fleet1     2 1999-01-01 1999-12-31    0.00724 ""         73.7    1999
+293 age   fleet1     3 1999-01-01 1999-12-31    0.0253  ""         73.7    1999
+294 age   fleet1     4 1999-01-01 1999-12-31    0.222   ""         73.7    1999
+295 age   fleet1     5 1999-01-01 1999-12-31    0.333   ""         73.7    1999
+296 age   fleet1     6 1999-01-01 1999-12-31    0.0975  ""         73.7    1999
+297 age   fleet1     7 1999-01-01 1999-12-31    0.0728  ""         73.7    1999
+298 age   fleet1     8 1999-01-01 1999-12-31    0.0387  ""         73.7    1999
+299 age   fleet1     9 1999-01-01 1999-12-31    0.0600  ""         73.7    1999
+300 age   fleet1    10 1999-01-01 1999-12-31    0.143   ""         73.7    1999
+# ℹ 240 more rows</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the  model with optimization</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> parameters_with_wrappers  <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initialize_fims</span>(<span class="at">data =</span> data_4_model) <span class="sc">|&gt;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit_fims</span>(<span class="at">optimize =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Starting optimization ...
+ℹ Restarting optimizer 3 times to improve gradient.
+ℹ Maximum gradient went from 0.00794 to 0.00021 after 3 steps.
+✔ Finished optimization
+✔ Finished sdreport
+ℹ FIMS model version: 0.3.0.1
+ℹ Total run time was 3.00326 seconds
+ℹ Number of parameters: total=121, fixed_effects=121, and random_effects=0
+ℹ Maximum gradient= 0.00021
+ℹ Negative log likelihood (NLL):
+• Marginal NLL= 3248.81864
+• Total NLL= 3248.81864
+ℹ Terminal SB=</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="do">## report values for models</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>rep1_with_wrappers <span class="ot">&lt;-</span> test_fit<span class="sc">@</span>report <span class="co"># FIMS initial values</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">@</span>max_gradient <span class="co"># from Cole, can use TMBhelper::fit_tmb to get val to &lt;1e-10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0002109227</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>rep2_with_wrappers <span class="ot">&lt;-</span> fit<span class="sc">@</span>report</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: Review differences between rep2 and rep2_with_wrappers. </span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Flag this for Cole to verify.</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="co"># cbind(rep2$ssb[[1]], rep2_with_wrappers$ssb[[1]])</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="co"># cbind(rep2$nll_components, rep2_with_wrappers$nll_components)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 </section>
 <section id="comparison-table" class="level2">
 <h2 class="anchored" data-anchor-id="comparison-table">Comparison table</h2>
@@ -658,12 +1159,9 @@ The downloaded binary packages are in
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clear C++ objects from memory</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">clear</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clear C++ objects from memory</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>FIMS<span class="sc">::</span><span class="fu">clear</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>NULL</code></pre>
-</div>
 </div>
 
 
@@ -896,8 +1394,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -1008,7 +1504,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
