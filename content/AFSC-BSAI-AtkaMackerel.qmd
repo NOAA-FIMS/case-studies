@@ -166,15 +166,8 @@ fimsdat<-get_amak_data(atka_dat,atka_rep)
 #| eval: true
 #| 
 
-age_frame <- FIMS::FIMSFrame(fimsdat)
-fishery_catch <- FIMS::m_landings(age_frame)
-fishery_agecomp <- FIMS::m_agecomp(age_frame, "fleet1")
-survey_index <- FIMS::m_index(age_frame, "survey")
-survey_agecomp <- FIMS::m_agecomp(age_frame, "survey")
-# need to think about how to deal with multiple fleets - only using 1 fleeet for now
-fish_index <- methods::new(Index, nyears)
-fish_age_comp <- methods::new(AgeComp, nyears, nages)
-fish_index$index_data <- fishery_catch
-fish_age_comp$age_comp_data <- fishery_agecomp * fimsdat$catchage$uncertainty#rep(Ncaa, each=nages)
+# Needs weight-at-age data before it will work
+# age_frame <- FIMS::FIMSFrame(fimsdat)
+
 
 ```
