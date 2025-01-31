@@ -49,16 +49,14 @@ For both the FIMS model and the simplified SS3 model, I made the following chang
 #| output: false
 
 # read SS3 input files from petrale sole assessment on github
-petrale_input <- r4ss::SS_read("https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/")
-
-# # reading SS3 output doesn't work from github, so just using hard-wired values from model output
-# petrale_output <- r4ss::SS_output("https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/")
-# # reading from Ian's computer to create RDS file
-# petrale_output <- r4ss::SS_output("c:/SS/petrale/Petrale2023/petrale/models/2023.a034.001/")
-# saveRDS(petrale_output, file.path("data_files", "petrale_output_from_SS3.RDS"))
-
-# load output from SS3 model (RDS file created using commented-out commands above)
-petrale_output <- readRDS(file.path("data_files", "petrale_output_from_SS3.RDS"))
+petrale_input <- r4ss::SS_read(
+  "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/"
+)
+petrale_output <- r4ss::SS_output(
+  "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001",
+  printstats = FALSE,
+  verbose = FALSE
+)
   
 # generic names for SS3 data and control files could be useful in future generalized version of this code
 ss3dat <- petrale_input$dat
@@ -75,7 +73,7 @@ nseasons <- 1
 # ages <- 0:ss3dat$Nages # population ages in SS3, starts at age 0
 ages <- 1:17 # same as data bins
 nages <- length(ages)
-lengths <- petrale_output
+lengths <- petrale_output[["lbins"]]
 nlengths <- length(lengths)
 
 # source function to simplify data and convert from SS3 format
@@ -89,25 +87,30 @@ source("R/get_ss3_data.R")
 # by assigning to fleet -1, these get filtered by get_ss3_data()
 
 # only include age comps with fleet = -4 or 1:
-ss3dat$agecomp <- ss3dat$agecomp |> dplyr::filter(fleet %in% c(-4, 1))
+ss3dat$agecomp <- ss3dat$agecomp |>
+  dplyr::filter(fleet %in% c(-4, 1))
 ss3dat$agecomp$fleet <- abs(ss3dat$agecomp$fleet)
 
 # convert SS3 data into FIMS format using function defined in the R directory
-mydat <- get_ss3_data(ss3dat, fleets = c(1,4), ages = ages, lengths = petrale_input$dat$lbin_vector)
-
-# rename fleet4 as fleet2 (fleets 2 and 3 already removed above)
-mydat <- mydat |>
+mydat <- get_ss3_data(
+  ss3dat,
+  fleets = c(1, 4),
+  ages = ages,
+  lengths = petrale_input[["dat"]][["lbin_vector"]]
+) |>
+  # rename fleet4 as fleet2 (fleets 2 and 3 already removed above)
   dplyr::mutate(name = dplyr::case_when(
     name == "fleet1" ~ name,
     name == "fleet4" ~ "survey1" # change fleet4 to survey1 to match yellowtail case-study
-  ))
+  )) |>
+  dplyr::filter(value != -999)
 
 # Weight-at-age code copied directly from PIFSC-opakapaka.qmd
 # Get weight-at-age from SS3 report output and convert from kg to mt
 weight_at_age_data <- petrale_output[["wtatage"]] |> 
   dplyr::filter(sex == 1 & fleet == 1 & year == 1949) |> 
   dplyr::select(dplyr::matches("[0-9]+")) |>
-  round(4) |>
+  # round(4) |>
   tidyr::pivot_longer(names_to = "age", cols = dplyr::everything()) |>
   dplyr::filter(age %in% ages) |>
   tidyr::expand_grid(
@@ -159,14 +162,17 @@ default_parameters <- fims_frame |>
 ```{r modify-default-parameters}
 
 recdevs <- rep$recruitpars |> # $recruitpars is a subset of $parameters with Yr as an additional column
-           dplyr::filter(Yr %in% years[-1]) |> # filter out initial numbers parameters
-           dplyr::select(Yr, Value)
+  dplyr::filter(Yr %in% years[-1]) |> # filter out initial numbers parameters
+  dplyr::select(Yr, Value)
 
-init_naa <- rep$natage |> 
+init_naa <- rep$natage |>
   dplyr::filter(Time == min(years), Sex == 1) |>  # numbers at age in FIMS start year, not SS3 model
   dplyr::select(paste(ages)) |> 
-  as.numeric() #*1000 # TODO: figure out if *1000 is needed
+  as.numeric() # TODO: figure out if *1000 is needed
+init_naa <- exp(rep$parameters |> dplyr::filter(grepl("R0", Label)) |> dplyr::pull(Init)) * 1000 * exp(-(ages - 1) * rep$parameters |> dplyr::filter(grepl("NatM.*Fem", Label)) |> dplyr::pull(Value))
+init_naa[nages] <- init_naa[nages] / rep$parameters |> dplyr::filter(grepl("NatM.*Fem", Label)) |> dplyr::pull(Value) # sum of infinite series
 
+# TODO: Move this to the R folder or FIMS
 steepness_transform <- function(h) {
   # function to convert steepness into required parameter space
   -log(1.0 - h) + log(h - 0.2)
@@ -179,9 +185,11 @@ parameters <- default_parameters |>
   update_parameters(
     modified_parameters = list(
       fleet1 = list(
+        Fleet.log_Fmort.estimated = FALSE,
         Fleet.log_Fmort.value = rep$exploitation |> 
           dplyr::filter(Yr %in% years) |> 
-          dplyr::pull(North), # "North" is the SS3 fleet name
+          dplyr::pull(North) |>
+          log(), # "North" is the SS3 fleet name
         LogisticSelectivity.inflection_point.value = 10, 
         LogisticSelectivity.inflection_point.estimated = TRUE,
         LogisticSelectivity.slope.value = 2, #used age selex values
@@ -198,10 +206,11 @@ parameters <- default_parameters |>
   update_parameters(
     modified_parameters = list(
       recruitment = list(
-        BevertonHoltRecruitment.log_rzero.value = ss3ctl$SR_parms["SR_LN(R0)", "INIT"], 
+        BevertonHoltRecruitment.log_rzero.value = ss3ctl$SR_parms["SR_LN(R0)", "INIT"],
         BevertonHoltRecruitment.log_devs.value = recdevs$Value,
         BevertonHoltRecruitment.logit_steep.value = ss3ctl$SR_parms["SR_BH_steep", "INIT"] |>
-          steepness_transform()
+          steepness_transform(),
+        DnormDistribution.log_sd.value = 0.5
       )
     )
   ) |>
@@ -210,9 +219,9 @@ parameters <- default_parameters |>
       # approximate age-based equivalent to length-based maturity in petrale model
       # based on looking at model$endgrowth |> dplyr::filter(Sex == 1) |> dplyr::select(Age_Beg, Len_Mat)
       maturity = list(
-        LogisticMaturity.inflection_point.value = 6.5, 
+        LogisticMaturity.inflection_point.value = 20.5, 
         LogisticMaturity.inflection_point.estimated = FALSE,
-        LogisticMaturity.slope.value = 2, # arbitrary guess
+        LogisticMaturity.slope.value = 1.8, # arbitrary guess
         LogisticMaturity.slope.estimated = FALSE
       )
     )
@@ -221,13 +230,12 @@ parameters <- default_parameters |>
     modified_parameters = list(
       population = list(
         Population.log_init_naa.value = log(init_naa),
-        Population.log_init_naa.estimated = FALSE, 
-        # TODO: changing this to TRUE resulted in worse estimates and warning:
-        #   Warning messages:
-        #   1: In sqrt(diag(cov)) : NaNs produced
-        #   2: In sqrt(diag(object$cov.fixed)) : NaNs produced
-        Population.log_M.value = rep(log(rep$parameters["NatM_uniform_Fem_GP_1", "Value"]), 
-          get_n_years(fims_frame)*get_n_ages(fims_frame))
+        Population.log_init_naa.estimated = TRUE,
+        Population.log_M.value = rep(
+          log(rep$parameters["NatM_uniform_Fem_GP_1", "Value"]),
+          get_n_years(fims_frame) * get_n_ages(fims_frame)
+        ),
+        Population.log_M.estimated = FALSE
       )
     )
   )
@@ -309,14 +317,21 @@ ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
 
 # gather biomass info from FIMS and SS3
 biomass <- rep$timeseries |> 
-dplyr::select(Yr, SpawnBio, Bio_all) |> 
-dplyr::filter(Yr %in% years) |> 
-dplyr::rename("SS3_SpawnBio" = "SpawnBio",
-              "SS3_Bio" = "Bio_all") |>
-dplyr::mutate(FIMS_SpawnBio = get_report(fit)[["ssb"]][[1]][-1] , 
-              FIMS_Bio = get_report(fit)[["biomass"]][[1]][-1]) |> ##CHECK: Is FIMS ssb reporting nyears+1 or initial year-1?
-tidyr::pivot_longer(cols = -Yr) |>
-tidyr::separate_wider_delim(cols = "name", delim = "_", names = c("Model", "Type"))             
+  dplyr::select(Yr, SpawnBio, Bio_all) |> 
+  dplyr::filter(Yr %in% years) |> 
+  dplyr::rename(
+    "SS3_SpawnBio" = "SpawnBio",
+    "SS3_Bio" = "Bio_all"
+  ) |>
+  dplyr::mutate(
+    FIMS_SpawnBio = get_report(fit)[["ssb"]][[1]][-1] , 
+    FIMS_Bio = get_report(fit)[["biomass"]][[1]][-1]
+  ) |> ##CHECK: Is FIMS ssb reporting nyears+1 or initial year-1?
+  tidyr::pivot_longer(cols = -Yr) |>
+  tidyr::separate_wider_delim(
+    cols = "name",
+    delim = "_", names = c("Model", "Type")
+  )
 
 # plot comparison of spawning biomass and total biomass time series
 ggplot2::ggplot(biomass, ggplot2::aes(x = Yr, y = value)) +
