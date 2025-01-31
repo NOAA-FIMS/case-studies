@@ -31,16 +31,13 @@ The operational petrale sole stock assessment used Stock Synthesis (SS3) and inc
 For both the FIMS model and the simplified SS3 model, I made the following changes:
 
 * Remove data
-  * Remove lengths
-  * Remove male ages
+  * Remove male lengths and ages
   * Remove discard fractions and discard comps
 * Simplify selectivity
   * Remove length-based retention functions
   * Convert to age-based logistic (from length-based double-normal, fixed asymptotic)
 * Remove parameter priors (on M and h)
-* Use female mean weight at age as calculated from the parametric growth curves
-* Varying Index CV to constant over time
-* Varying Catch ESS to constant over time
+* Use female mean weight at age from wtatage file
 
 ## Script to prepare data for building FIMS object
 ```{r}
@@ -52,25 +49,26 @@ For both the FIMS model and the simplified SS3 model, I made the following chang
 petrale_input <- r4ss::SS_read(
   "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/"
 )
+# add wtatage file to list of input files
+petrale_input[["wtatage"]] <- r4ss::SS_readwtatage(
+  "https://raw.githubusercontent.com/pfmc-assessments/petrale/refs/heads/main/models/2023.a034.001/wtatage.ss_new"
+)
+
 petrale_output <- r4ss::SS_output(
   "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001",
   printstats = FALSE,
   verbose = FALSE
 )
   
-# generic names for SS3 data and control files could be useful in future generalized version of this code
-ss3dat <- petrale_input$dat
-ss3ctl <- petrale_input$ctl
-
 # define the dimensions based on the range in the data
 # for petrale, the north fleet catch begins in 1896, 
 # not the start year of the model 1876 (which is when the southern fleet catch begins,
 # but for simplicity this petrale example only uses the northern catch)
-# years <- seq(ss3dat$styr, ss3dat$endyr)
-years <- seq(1896, ss3dat$endyr)
+years <- seq(petrale_input$dat$styr, petrale_input$dat$endyr)
+# years <- seq(1896, petrale_input$dat$endyr)
 nyears <- length(years)
 nseasons <- 1
-# ages <- 0:ss3dat$Nages # population ages in SS3, starts at age 0
+# ages <- 0:petrale_input$dat$Nages # population ages in SS3, starts at age 0
 ages <- 1:17 # same as data bins
 nages <- length(ages)
 lengths <- petrale_output[["lbins"]]
@@ -87,13 +85,13 @@ source("R/get_ss3_data.R")
 # by assigning to fleet -1, these get filtered by get_ss3_data()
 
 # only include age comps with fleet = -4 or 1:
-ss3dat$agecomp <- ss3dat$agecomp |>
+petrale_input$dat$agecomp <- petrale_input$dat$agecomp |>
   dplyr::filter(fleet %in% c(-4, 1))
-ss3dat$agecomp$fleet <- abs(ss3dat$agecomp$fleet)
+petrale_input$dat$agecomp$fleet <- abs(petrale_input$dat$agecomp$fleet)
 
 # convert SS3 data into FIMS format using function defined in the R directory
 mydat <- get_ss3_data(
-  ss3dat,
+  ss3_inputs = petrale_input,
   fleets = c(1, 4),
   ages = ages,
   lengths = petrale_input[["dat"]][["lbin_vector"]]
@@ -103,32 +101,7 @@ mydat <- get_ss3_data(
     name == "fleet1" ~ name,
     name == "fleet4" ~ "survey1" # change fleet4 to survey1 to match yellowtail case-study
   )) |>
-  dplyr::filter(value != -999)
-
-# Weight-at-age code copied directly from PIFSC-opakapaka.qmd
-# Get weight-at-age from SS3 report output and convert from kg to mt
-weight_at_age_data <- petrale_output[["wtatage"]] |> 
-  dplyr::filter(sex == 1 & fleet == 1 & year == 1949) |> 
-  dplyr::select(dplyr::matches("[0-9]+")) |>
-  # round(4) |>
-  tidyr::pivot_longer(names_to = "age", cols = dplyr::everything()) |>
-  dplyr::filter(age %in% ages) |>
-  tidyr::expand_grid(
-    mydat |> dplyr::select(datestart) |> dplyr::distinct()
-  ) |>
-  dplyr::left_join(
-    mydat |> dplyr::select(datestart, dateend) |> dplyr::distinct(),
-    by = "datestart"
-  ) |>
-  dplyr::mutate(
-    type = "weight-at-age",
-    name = "fleet1",
-    unit = "mt",
-    age = as.integer(age),
-    value = value/1000
-  )
-mydat <- mydat |> 
-  dplyr::bind_rows(weight_at_age_data)
+  dplyr::filter(dateend |> lubridate::as_date() |> lubridate::year() %in% years) # filter out forecast years
 
 # set up FIMS data objects
 fims_frame <- FIMS::FIMSFrame(mydat)
@@ -213,9 +186,9 @@ parameters <- default_parameters |>
   update_parameters(
     modified_parameters = list(
       recruitment = list(
-        BevertonHoltRecruitment.log_rzero.value = ss3ctl$SR_parms["SR_LN(R0)", "INIT"],
+        BevertonHoltRecruitment.log_rzero.value = petrale_input$ctl$SR_parms["SR_LN(R0)", "INIT"],
         BevertonHoltRecruitment.log_devs.value = recdevs$Value,
-        BevertonHoltRecruitment.logit_steep.value = ss3ctl$SR_parms["SR_BH_steep", "INIT"] |>
+        BevertonHoltRecruitment.logit_steep.value = petrale_input$ctl$SR_parms["SR_BH_steep", "INIT"] |>
           steepness_transform(),
         DnormDistribution.log_sd.value = 0.5
       )
