@@ -82,7 +82,6 @@ How I simplified my assessment:
 
 # clear memory
 clear()
-clear_logs()
 estimate_fish_selex <- TRUE
 estimate_survey_selex <- TRUE
 estimate_q2 <- TRUE
