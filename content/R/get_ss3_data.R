@@ -3,16 +3,49 @@
 #' Uses output from `r4ss::SS_read()` or `r4ss::SS_readdat()` and does
 #' filtering, simplifying, and reformatting.
 #'
-#' @param dat The `dat` element of the list created by `r4ss::SS_read()` or the
-#' output from running `r4ss::SS_readdat()` directly.
+#' @param ss3_inputs A list containing `dat` and `wtatage` such as that
+#' created by `r4ss::SS_read()` or by running `r4ss::SS_readdat()` and
+#' `r4ss::SS_readwtatage()` and combining the results in a list.
+#' Note: if the SS3 model has parametric growth then `r4ss::SS_read()` won't
+#' read the `wtatage.ss` file and it needs to be added to the list by
+#' separately running `r4ss::SS_readwtatage()` or taking it from the list
+#' created by `r4ss::SS_output()`.
+#'
 #' @param fleets Which fleets to include in the processed output.
-#' @param ages Vector of ages to index.
-#' @param lengths Vector of lengths to index.
+#' Note that the only start year population weight-at-age is read from the
+#' `wtatage` element (fleet = 0). NULL will default to including all fleets
+#' from the SS3 model.
+#' @param ages Vector of ages to index. NULL will default to using
+#' all age data bins from the SS3 model.
+#' @param lengths Vector of lengths to index. NULL will default to using
+#' all length data bins from the SS3 model.
 #' @return A data frame that can be passed to `FIMS::FIMSFrame()`
-#' @author Ian G. Taylor, Megumi Oshima
+#' @author Ian G. Taylor, Megumi Oshima, Kelli F. Johnson
 #' @export
 
-get_ss3_data <- function(dat, fleets, ages, lengths) {
+get_ss3_data <- function(ss3_inputs, fleets = NULL, ages = NULL, lengths = NULL) {
+  # check inputs for necessary elements
+  if (!is.list(ss3_inputs) || !"dat" %in% names(ss3_inputs)) {
+    cli::cli_abort("`ss3_inputs` should be a list containing both 'dat' and 'wtatage'")
+  }
+  if (!"wtatage" %in% names(ss3_inputs)) {
+    cli::cli_abort("'ss3_inputs' is missing element 'wtatage'. You may have to add it by running 'r4ss::SS_readwtatage()'")
+  }
+
+  # pull out dat element from the list to simplify code
+  dat <- ss3_inputs$dat
+
+  # fill in any missing inputs
+  if (is.null(fleets)) {
+    fleets <- seq_along(dat$fleetnames)
+  }
+  if (is.null(ages)) {
+    ages <- dat$agebin_vector
+  }
+  if (is.null(lengths)) {
+    lengths <- dat$lbin_vector
+  }
+
   # create empty data frame
   res <- data.frame(
     type = character(),
@@ -26,15 +59,9 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
     uncertainty = double()
   )
 
-  # Q: is it true that we can only have a single landings fleet?
-  #    m_landings() doesn't accept a fleet name.
-  # Meg comment: I modified the catch to give from all `fleets` and can index them like in SEFSC scamp case study example for now.
-
   # aggregate landings across fleets
   catch_by_year_fleet <- dat$catch |>
-    # dplyr::group_by(year) |>
-    # dplyr::summarize(catch = sum(catch), uncertainty = mean(catch_se)) |>
-    dplyr::filter(year != -999) |>
+    dplyr::filter(year != -999) |> # year = -999 in SS3 designates initial equilibrium catch
     dplyr::filter(fleet %in% fleets)
 
   # convert landings to FIMSFrame format
@@ -200,7 +227,25 @@ get_ss3_data <- function(dat, fleets, ages, lengths) {
     lencomps <- NULL # not sure if we need this but wanting to avoid an error if missing age or length comps
   }
 
+  ## Weight-at-age data
+  wtatage <- ss3_inputs$wtatage |>
+    dplyr::filter(fleet == 0 & sex == 1 & seas == 1 & birthseas == 1) |>
+    dplyr::select("year", dplyr::matches("[0-9]+")) |>
+    tidyr::pivot_longer(names_to = "age", cols = -year) |>
+    dplyr::filter(age %in% ages) |>
+    dplyr::mutate(
+      type = "weight-at-age",
+      name = "fleet1",
+      age = as.integer(age),
+      length = NA,
+      datestart = paste0(year, "-01-01"),
+      dateend = paste0(year, "-12-31"),
+      value = value / 1000, # covert to metric tons (SS3)
+      unit = "mt",
+      uncertainty = NA
+    ) |>
+    dplyr::select(-year)
 
   # combine all data sources
-  res <- rbind(res, landings, indices, agecomps, lencomps)
+  res <- rbind(res, landings, indices, agecomps, lencomps, wtatage)
 }
