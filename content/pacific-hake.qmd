@@ -1,0 +1,400 @@
+---
+title: Pacific Hake
+format:
+  html:
+    code-fold: true
+---
+
+## The setup
+
+{{< include setup.qmd >}}
+
+```{r}
+#| warning: false
+#| label: startup
+#| output: false
+
+theme_set(theme_bw())
+```
+
+-   R version: `r R_version`\
+-   TMB version: `r TMB_version`\
+-   FIMS commit: `r FIMS_commit`\
+-   Stock name: Pacific Hake\
+-   Region: Joint Technical Committee\
+-   Analyst: Kelli F. Johnson\
+
+```{r}
+#| echo: false
+#| label: setup
+
+# base_dir <- "/srv/hake/models/2025/01-version/01-base-models/01-base"
+base_dir <- "https://raw.githubusercontent.com/pacific-hake/hake-assessment/refs/heads/model-files/models/2025"
+maturity_data <- utils::read.csv("https://raw.githubusercontent.com/pacific-hake/hake-assessment/refs/heads/master/data-tables/maturity-ogives.csv")
+# Get the latest code for get_ss3_data()
+# source("https://raw.githubusercontent.com/NOAA-FIMS/case-studies/refs/heads/main/content/R/get_ss3_data.R")
+source("https://raw.githubusercontent.com/NOAA-FIMS/case-studies/refs/heads/wtatage-from-SS3/content/R/get_ss3_data.R")
+
+hake_maturity_inflection_point <- 2.2
+hake_maturity_slope <- 1.8
+ages <- 0:15
+```
+
+```{r}
+#| echo: false
+#| label: ss3-quantities
+
+# Mt or 1,000,000 * t
+ss3_sb_median <- c(
+`1966` = 0.994896, `1967` = 1.00664, `1968` = 1.01708, `1969` = 1.162515,
+`1970` = 1.33501, `1971` = 1.36887, `1972` = 1.560225, `1973` = 1.853525,
+`1974` = 1.79134, `1975` = 1.548275, `1976` = 2.237185, `1977` = 2.15888,
+`1978` = 1.784635, `1979` = 1.92232, `1980` = 1.813545, `1981` = 1.736695,
+`1982` = 1.875015, `1983` = 2.393425, `1984` = 2.408205, `1985` = 2.40912,
+`1986` = 2.41643, `1987` = 2.4756, `1988` = 2.445505, `1989` = 2.11734,
+`1990` = 2.092725, `1991` = 1.89941, `1992` = 1.726115, `1993` = 1.34966,
+`1994` = 1.30146, `1995` = 1.159205, `1996` = 1.12109, `1997` = 1.113265,
+`1998` = 0.9282575, `1999` = 0.798846, `2000` = 0.925014, `2001` = 1.36914,
+`2002` = 1.955155, `2003` = 1.825095, `2004` = 1.48332, `2005` = 1.17802,
+`2006` = 0.9373315, `2007` = 0.7403355, `2008` = 0.6686465, `2009` = 0.6280765,
+`2010` = 0.7547615, `2011` = 0.7524495, `2012` = 0.9411375, `2013` = 1.728305,
+`2014` = 2.0092, `2015` = 1.46967, `2016` = 1.19547, `2017` = 1.640085,
+`2018` = 1.752535, `2019` = 1.439125, `2020` = 1.35688, `2021` = 1.120755,
+`2022` = 1.159235, `2023` = 1.47779, `2024` = 1.638705, `2025` = 1.736495,
+`2026` = 1.245515, `2027` = 0.865635, `2028` = 0.5916625)
+```
+
+## Simplifications to the original assessment
+
+### Weight-at-age data
+
+Weight-at-age data was taken from the .ss_new file because this file contains data for all years in the model rather than just since 1975 based on the rules supplied in the input file to the Stock Synthesis model. No simplifications were made for this assessment regarding weight-at-age data because all matrices in the Stock Synthesis model are replicates of each other, e.g., weight at age for fleet two is the same as beginning and middle of the year weight at age in this model.
+
+### Maturity
+
+Year-specific maturity ogives for Pacific Hake were translated to a single logistic curve. First, estimates of maturity at age for the maximum day of the year investigated were averaged across years. Subsequently, this ogive was plotted and several values for the inflection point and slope parameters of the logistic curve were used to find a logistic curve that matched the average curve as best as possible. This lead to a curve with an inflection of `r hake_maturity_inflection_point` and a slope of `r hake_maturity_slope`.
+
+```{r}
+#| label: maturity
+
+maturity_data |>
+  dplyr::filter(doy == max(doy)) |>
+  dplyr::group_by(age) |>
+  dplyr::summarize(empirical = mean(p_mature)) |>
+  dplyr::full_join(
+    execute_logistic(
+      # TODO: un-hard code these age values
+      ages,
+      hake_maturity_slope,
+      hake_maturity_inflection_point
+    ) |>
+      dplyr::rename(age = x, logit = value),
+    by = "age"
+  ) |>
+  tidyr::pivot_longer(cols = c("empirical", "logit")) |>
+  ggplot2::ggplot(ggplot2::aes(age, value, color = name)) +
+  ggplot2::geom_line(linewidth = 1.5) +
+  ggplot2::xlab("Age") +
+  ggplot2::ylab("Probability of being mature") +
+  ggplot2::scale_color_brewer(palette = "Dark2", name = "Method")
+```
+
+### Selectivity
+
+The logistic and double logistic selectivity curves are currently the only selectivity forms that are available in FIMS. A researcher from the Southwest Fisheries Science Center is working on adding age-specific selectivity, which will be available later this calendar year.
+
+### Age-1 index
+
+The relative age-1 index was removed from the data because FIMS currently works on biomass and does not allow for inputs in numbers. This relative index could be included after an agreed upon method to translate numbers of age-1 fish to biomass is established. This could be as simple as multiplying annual numbers of fish by weight of age-1 fish from the weight-at-age estimates from the GLMM.
+
+## Data
+
+All data for a FIMS model is contained in one data frame. Here, we call this object `fims_data`. The creation of this data set is assisted by the R function called `get_ss3_data()` written by Drs. Ian G. Taylor and Megumi C. Oshima.
+
+Because data-weighting is not available in FIMS, the input sample size for the survey age-composition data was multiplied by 10. Additionally, because non-parametric selectivity is not yet available in FIMS, the terminal year of data was removed from this data set.
+
+```{r}
+#| label: data
+
+inputs <- r4ss::SS_read(base_dir)
+inputs[["wtatage"]] <- r4ss::SS_readwtatage(file.path(base_dir, "wtatage.ss_new"))
+
+fims_data <- get_ss3_data(
+  ss3_inputs = inputs,
+  fleets = seq(inputs[["dat"]][["Nfleets"]]),
+  ages = inputs[["dat"]][["agebin_vector"]]
+) |>
+  dplyr::filter(
+    datestart <= as.Date(paste0(inputs[["dat"]][["endyr"]], "-01-01")),
+    value != -999,
+    # TODO: allow fleet3 after I figure out how to go from numbers to mt
+    name != "fleet3"
+  ) |>
+  dplyr::mutate(
+    uncertainty = ifelse(
+      test = type == "age" & name == "fleet2",
+      uncertainty * 10,
+      uncertainty
+    )
+  ) |>
+  dplyr::filter(
+    datestart != "2024-01-01"
+  ) |>
+  FIMS::FIMSFrame()
+n_ages_years <- get_n_ages(fims_data) * get_n_years(fims_data)
+```
+
+```{r}
+#| label:  data-summaries
+
+# Printing the S4 class that is returned from FIMSFrame()
+fims_data
+
+# Summary of the data types available
+FIMS::get_data(fims_data) |>
+  dplyr::filter(value != -999) |>
+  dplyr::group_by(type, name) |>
+  dplyr::count()
+```
+
+## Model
+
+### Parameterization
+
+Currently, only the multinomial distribution is available for fitting composition data in FIMS. Although, a double-logistic curve was explored for the fishery, results below are for the logistic. Survey selectivity was fixed with an inflection point at 2 years and a slope of 1.
+
+Natural mortality can be estimated in FIMS using age- and year-specific values but all values were fixed at the median estimate from Stock Synthesis for this analysis.
+
+```{r}
+#| label: parameterization
+
+fleet1 <- list(
+  selectivity = list(form = "LogisticSelectivity"),
+  # selectivity = list(form = "DoubleLogisticSelectivity"),
+  data_distribution = c(
+    Index = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
+  )
+)
+fleet2 <- list(
+  selectivity = list(form = "LogisticSelectivity"),
+  data_distribution = c(
+    Index = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
+  )
+)
+fleet3 <- list(
+  selectivity = list(form = "DoubleLogisticSelectivity"),
+  data_distribution = c(Index = "DlnormDistribution")
+)
+
+# Create default parameters
+default_parameters <- fims_data |>
+  create_default_parameters(
+    fleets = list(
+      fleet1 = fleet1,
+      fleet2 = fleet2
+      # TODO: include age-1 index data
+      # fleet3 = fleet3
+    )
+  ) |>
+  update_parameters(
+    modified_parameters = list(
+      maturity = list(
+        LogisticMaturity.inflection_point.value =
+          hake_maturity_inflection_point,
+        LogisticMaturity.inflection_point.estimated = FALSE,
+        LogisticMaturity.slope.value = hake_maturity_slope,
+        LogisticMaturity.slope.estimated = FALSE
+      ),
+      population = list(
+        # TODO: estimate M
+        Population.log_M.value = rep(log(0.235), length = n_ages_years)
+      ),
+      recruitment = list(
+        DnormDistribution.log_sd.value = 1.4
+      )
+    )
+  ) |>
+  update_parameters(
+    modified_parameters = list(
+      fleet2 = list(
+        # TODO: Estimate survey selectivity
+        LogisticSelectivity.inflection_point.value = 2,
+        LogisticSelectivity.inflection_point.estimated = FALSE,
+        LogisticSelectivity.slope.value = 1,
+        LogisticSelectivity.slope.estimated = FALSE
+      )
+    )
+  )
+```
+
+```{r parameterization-fleet3}
+#| eval: false
+#| include: false
+
+default_parameters <- default_parameters |>
+  update_parameters(
+    modified_parameters = list(
+      fleet3 = list(
+        DoubleLogisticSelectivity.inflection_point_asc.value = 0.5,
+        DoubleLogisticSelectivity.slope_asc.value = 0.1,
+        DoubleLogisticSelectivity.slope_asc.estimated = FALSE,
+        DoubleLogisticSelectivity.inflection_point_desc.value = 5,
+        DoubleLogisticSelectivity.slope_desc.value = 1,
+        DoubleLogisticSelectivity.slope_desc.estimated = FALSE,
+        Fleet.log_q.value = 0,
+        Fleet.log_q.estimated = FALSE
+      )
+    )
+  )
+```
+
+#### Time-varying parameters
+
+Parameters can vary with time, though the R interface is not currently fully developed to easily allow this. Hence, the code below.
+
+```{r}
+#| label: tv
+#| eval: false
+
+# Code to create time-varying parameters
+
+default_parameters[["parameters"]][["fleet1"]][["LogisticSelectivity.inflection_point.value"]] <-
+  rep(2.49, get_n_years(fims_data))
+default_parameters[["parameters"]][["fleet1"]][["LogisticSelectivity.inflection_point.estimated"]] <-
+  rep(TRUE, get_n_years(fims_data))
+
+# Code for time-varying Double Logistic
+
+# default_parameters[["parameters"]][["fleet1"]][["DoubleLogisticSelectivity.inflection_point_asc.value"]] <-
+#   rep(2.49, get_n_years(fims_data))
+# default_parameters[["parameters"]][["fleet1"]][["DoubleLogisticSelectivity.inflection_point_asc.estimated"]] <-
+#   rep(TRUE, get_n_years(fims_data))
+# default_parameters[["parameters"]][["fleet1"]][["DoubleLogisticSelectivity.inflection_point_desc.value"]] <-
+#   rep(10, get_n_years(fims_data))
+# default_parameters[["parameters"]][["fleet1"]][["DoubleLogisticSelectivity.inflection_point_desc.estimated"]] <-
+#   rep(TRUE, get_n_years(fims_data))
+```
+
+
+### Fit
+
+```{r}
+#| label: fit
+
+# Run the model without optimization to help ensure a viable model
+test_fit <- default_parameters |>
+  initialize_fims(data = fims_data) |>
+  fit_fims(optimize = FALSE)
+fit <- default_parameters |>
+  initialize_fims(data = fims_data) |>
+  fit_fims(optimize = TRUE)
+```
+
+### Results
+
+```{r}
+#| label: results-catch
+
+get_data(fims_data) |>
+  dplyr::filter(type == "landings") |>
+  dplyr::mutate(
+    year = dplyr::row_number() + get_start_year(fims_data) - 1,
+    expected = get_report(fit)$exp_catch[[1]]
+  ) |>
+  ggplot2::ggplot(
+    ggplot2::aes(year, value)
+  ) +
+  ggplot2::geom_point() +
+  ggplot2::geom_line(
+    ggplot2::aes(y = expected)
+  ) +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Landings (t)")
+```
+
+```{r}
+#| label: results-sb
+
+get_estimates(fit) |>
+  dplyr::filter(grepl("SB", name, ignore.case = TRUE)) |>
+  dplyr::mutate(
+    year = (get_start_year(fims_data)- 1):get_end_year(fims_data)
+  ) |>
+  ggplot2::ggplot(
+    ggplot2::aes(x = year, y = value)
+  ) +
+  ggplot2::geom_line() +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Spawning biomass (t)")
+```
+
+```{r}
+#| label: results-index
+
+# Index
+get_estimates(fit) |>
+  dplyr::filter(grepl("Index", name)) |>
+  dplyr::mutate(
+    year = rep(1:(dplyr::n() / 2), 2) + get_start_year(fims_data) - 1,
+    fleet = rep(c("Fishery estimated", "Estimated"), each = dplyr::n() / 2)
+  ) |>
+  dplyr::filter(
+    fleet == "Estimated"
+  ) |>
+  ggplot2::ggplot(
+    ggplot2::aes(year, value, group = fleet, color = as.factor(fleet))
+  ) +
+  ggplot2::geom_line() +
+  ggplot2::geom_point(
+    data = inputs[["dat"]][["CPUE"]] |>
+      dplyr::filter(index == 2) |>
+      dplyr::mutate(year = year, fleet = "Data"),
+    ggplot2::aes(y = obs, x = year)
+  ) +
+  ggplot2::scale_color_brewer(palette = "Dark2", name = "Method") +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Index of abundance (t)")
+```
+
+```{r}
+#| label: results-f
+
+# Fishing mortality
+get_estimates(fit) |>
+  dplyr::filter(grepl("Fmort", name)) |>
+  dplyr::mutate(
+    year = rep(1:dplyr::n(), 1) + get_start_year(fims_data),
+    fleet = rep(1, each = dplyr::n()),
+    F = exp(value)
+  ) |>
+  ggplot2::ggplot(
+    ggplot2::aes(year, F, group = fleet)
+  ) +
+  ggplot2::geom_line() +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Fishing mortality")
+```
+
+```{r}
+#| label: results-other
+#| echo: false
+#| eval: false
+
+get_parameter("ssb", fit) - head(ss3_sb_median, get_n_years(fims_data) + 1) * 1000000 
+
+g <- purrr::map2_df(
+  .x = get_parameter("selectivity\\.in", fit),
+  .y = get_parameter("selectivity\\.slo", fit),
+  .f = execute_logistic,
+  x = ages,
+  .id = "fleet"
+) |>
+  ggplot2::ggplot(
+    ggplot2::aes(x = x, y = value, group = fleet, color = fleet)
+  ) +
+  ggplot2::geom_line()
+get_estimates(fit) |> dplyr::count(name) |> print(n=900)
+```
+

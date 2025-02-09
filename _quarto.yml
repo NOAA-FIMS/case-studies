@@ -53,6 +53,8 @@ website:
         text: NWFSC petrale case study
       - href: content/SEFSC-scamp.qmd
         text: SEFSC scamp case study
+      - href: content/pacific-hake.qmd
+        text: Pacific Hake case study
       - href: content/acknowledgements.qmd
         text: Acknowledgements
 
