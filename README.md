@@ -22,6 +22,19 @@ SEFSC scamp | working
 
 <hr>
 
+## Main and dev branches
+
+- The `main` branch of case-studies should always work with the `main` branch of FIMS. It should always be passing GitHub Actions.
+- The `dev` branch of case-studies should work with the `dev` branch of FIMS. It may sometimes be broken.
+
+## Working off of main
+
+It may be necessary to work off of main in order to apply a "hot fix" to case-studies between FIMS releases. Create a new branch off of main that includes the word "main" somewhere in its name - the Quarto setup file will automatically install the main version of FIMS as long as the word main is somewhere in the branch name. Otherwise, the dev version of FIMS will be installed.
+
+## Working off of dev
+
+Create a branch off of dev that does NOT include the word "main" somwhere in its name.
+
 ## How to use codespaces 
 
 See the [GitHub codespaces documentation](https://docs.github.com/en/codespaces) for general codespaces help.
