@@ -215,6 +215,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../content/pacific-hake.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pacific Hake case study</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../content/acknowledgements.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Acknowledgements</span></a>
   </div>
@@ -289,7 +295,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>R_version <span class="ot">&lt;-</span> version<span class="sc">$</span>version.string</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>TMB_version <span class="ot">&lt;-</span> <span class="fu">packageDescription</span>(<span class="st">"TMB"</span>)<span class="sc">$</span>Version</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>FIMS_commit <span class="ot">&lt;-</span> <span class="fu">substr</span>(<span class="fu">packageDescription</span>(<span class="st">"FIMS"</span>)<span class="sc">$</span>GithubSHA1, <span class="dv">1</span>, <span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>FIMS_commit <span class="ot">&lt;-</span> <span class="fu">substr</span>(<span class="fu">packageDescription</span>(<span class="st">"FIMS"</span>)<span class="sc">$</span>GithubSHA1, <span class="dv">1</span>, <span class="dv">7</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">"R"</span>, <span class="st">"utils.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
@@ -572,7 +580,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>ℹ FIMS model version: 0.3.0.1
-ℹ Total run time was 17.74453 seconds
+ℹ Total run time was 19.08937 seconds
 ℹ Number of parameters: total=149, fixed_effects=149, and random_effects=0
 ℹ Maximum gradient= 0.00394
 ℹ Negative log likelihood (NLL):
@@ -599,7 +607,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb13-11"><a href="#cb13-11"></a>  .. ..$ hessian : logi FALSE</span>
 <span id="cb13-12"><a href="#cb13-12"></a>  .. ..$ method  : chr "BFGS"</span>
 <span id="cb13-13"><a href="#cb13-13"></a>  .. ..$ retape  :function (set.defaults = TRUE)  </span>
-<span id="cb13-14"><a href="#cb13-14"></a>  .. ..$ env     :&lt;environment: 0x13d5084e0&gt; </span>
+<span id="cb13-14"><a href="#cb13-14"></a>  .. ..$ env     :&lt;environment: 0x10b0ceac0&gt; </span>
 <span id="cb13-15"><a href="#cb13-15"></a>  .. ..$ report  :function (par = last.par)  </span>
 <span id="cb13-16"><a href="#cb13-16"></a>  .. ..$ simulate:function (par = last.par, complete = FALSE)  </span>
 <span id="cb13-17"><a href="#cb13-17"></a>  ..@ opt                 :List of 6</span>
@@ -667,7 +675,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb13-79"><a href="#cb13-79"></a>  .. .. .. ..$ : chr [1:149] "selectivity.inflection_point.1.0" "selectivity.slope.1.0" "selectivity.inflection_point.2.0" "selectivity.slope.2.0" ...</span>
 <span id="cb13-80"><a href="#cb13-80"></a>  .. ..$ pdHess        : logi FALSE</span>
 <span id="cb13-81"><a href="#cb13-81"></a>  .. ..$ gradient.fixed: num [1, 1:149] -5.40e-04 -3.94e-03 -7.85e-05 -3.67e-05 -6.34e-05 ...</span>
-<span id="cb13-82"><a href="#cb13-82"></a>  .. ..$ env           :&lt;environment: 0x15d99c998&gt; </span>
+<span id="cb13-82"><a href="#cb13-82"></a>  .. ..$ env           :&lt;environment: 0x119915d40&gt; </span>
 <span id="cb13-83"><a href="#cb13-83"></a>  .. ..- attr(*, "class")= chr "sdreport"</span>
 <span id="cb13-84"><a href="#cb13-84"></a>  ..@ estimates           : tibble [11,853 × 3] (S3: tbl_df/tbl/data.frame)</span>
 <span id="cb13-85"><a href="#cb13-85"></a>  .. ..$ name : chr [1:11853] "selectivity.inflection_point.1.0" "selectivity.slope.1.0" "selectivity.inflection_point.2.0" "selectivity.slope.2.0" ...</span>
@@ -675,7 +683,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb13-87"><a href="#cb13-87"></a>  .. ..$ se   : num [1:11853] 0.06958 0.00893 0.03576 0.07187 0.02158 ...</span>
 <span id="cb13-88"><a href="#cb13-88"></a>  ..@ number_of_parameters: Named int [1:3] 149 149 0</span>
 <span id="cb13-89"><a href="#cb13-89"></a>  .. ..- attr(*, "names")= chr [1:3] "total" "fixed_effects" "random_effects"</span>
-<span id="cb13-90"><a href="#cb13-90"></a>  ..@ timing              : 'difftime' Named num [1:3] 1.5426709651947 16.1980900764465 17.7445340156555</span>
+<span id="cb13-90"><a href="#cb13-90"></a>  ..@ timing              : 'difftime' Named num [1:3] 1.55739402770996 17.527312040329 19.0893709659576</span>
 <span id="cb13-91"><a href="#cb13-91"></a>  .. ..- attr(*, "names")= chr [1:3] "time_optimization" "time_sdreport" "time_total"</span>
 <span id="cb13-92"><a href="#cb13-92"></a>  .. ..- attr(*, "units")= Named chr "secs"</span>
 <span id="cb13-93"><a href="#cb13-93"></a>  .. .. ..- attr(*, "names")= chr "time_optimization"</span>

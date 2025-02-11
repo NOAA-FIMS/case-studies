@@ -215,6 +215,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../content/pacific-hake.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pacific Hake case study</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../content/acknowledgements.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Acknowledgements</span></a>
   </div>
@@ -284,7 +290,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>
 The downloaded binary packages are in
-    /var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T//RtmpNlQzz1/downloaded_packages</code></pre>
+    /var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T//RtmpM0vRmi/downloaded_packages</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -317,9 +323,9 @@ tmbstan      (NA -&gt; 1.0.91    ) [CRAN]</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 The downloaded binary packages are in
-    /var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T//RtmpNlQzz1/downloaded_packages
+    /var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T//RtmpM0vRmi/downloaded_packages
 ── R CMD build ─────────────────────────────────────────────────────────────────
-* checking for file ‘/private/var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T/RtmpNlQzz1/remotes15da4a99744c/kaskr-TMB_contrib_R-d275e52/TMBhelper/DESCRIPTION’ ... OK
+* checking for file ‘/private/var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T/RtmpM0vRmi/remotes160034a08337/kaskr-TMB_contrib_R-d275e52/TMBhelper/DESCRIPTION’ ... OK
 * preparing ‘TMBhelper’:
 * checking DESCRIPTION meta-information ... OK
 * checking for LF line-endings in source and make files and shell scripts
@@ -333,7 +339,7 @@ The downloaded binary packages are in
 <div class="cell-output cell-output-stdout">
 <pre><code>
 ── R CMD build ─────────────────────────────────────────────────────────────────
-* checking for file ‘/private/var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T/RtmpNlQzz1/remotes15da61f8f0ed/NOAA-FIMS-FIMS-eca8095/DESCRIPTION’ ... OK
+* checking for file ‘/private/var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T/RtmpM0vRmi/remotes16005df0e401/NOAA-FIMS-FIMS-eca8095/DESCRIPTION’ ... OK
 * preparing ‘FIMS’:
 * checking DESCRIPTION meta-information ... OK
 * cleaning src
@@ -349,7 +355,7 @@ The downloaded binary packages are in
 <pre><code>systemfonts (NA -&gt; 1.2.1   ) [CRAN]
 sys         (NA -&gt; 3.4.3   ) [CRAN]
 askpass     (NA -&gt; 1.2.1   ) [CRAN]
-openssl     (NA -&gt; 2.3.1   ) [CRAN]
+openssl     (NA -&gt; 2.3.2   ) [CRAN]
 curl        (NA -&gt; 6.2.0   ) [CRAN]
 parallelly  (NA -&gt; 1.42.0  ) [CRAN]
 listenv     (NA -&gt; 0.9.1   ) [CRAN]
@@ -372,9 +378,9 @@ coda        (NA -&gt; 0.19-4.1) [CRAN]</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 The downloaded binary packages are in
-    /var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T//RtmpNlQzz1/downloaded_packages
+    /var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T//RtmpM0vRmi/downloaded_packages
 ── R CMD build ─────────────────────────────────────────────────────────────────
-* checking for file ‘/private/var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T/RtmpNlQzz1/remotes15da7710b6a9/r4ss-r4ss-fc438ba/DESCRIPTION’ ... OK
+* checking for file ‘/private/var/folders/2s/h6hvv9ps03xgz_krkkstvq_r0000gn/T/RtmpM0vRmi/remotes16006bb76e42/r4ss-r4ss-b2b4418/DESCRIPTION’ ... OK
 * preparing ‘r4ss’:
 * checking DESCRIPTION meta-information ... OK
 * checking for LF line-endings in source and make files and shell scripts
@@ -391,7 +397,9 @@ The downloaded binary packages are in
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>R_version <span class="ot">&lt;-</span> version<span class="sc">$</span>version.string</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>TMB_version <span class="ot">&lt;-</span> <span class="fu">packageDescription</span>(<span class="st">"TMB"</span>)<span class="sc">$</span>Version</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>FIMS_commit <span class="ot">&lt;-</span> <span class="fu">substr</span>(<span class="fu">packageDescription</span>(<span class="st">"FIMS"</span>)<span class="sc">$</span>GithubSHA1, <span class="dv">1</span>, <span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>FIMS_commit <span class="ot">&lt;-</span> <span class="fu">substr</span>(<span class="fu">packageDescription</span>(<span class="st">"FIMS"</span>)<span class="sc">$</span>GithubSHA1, <span class="dv">1</span>, <span class="dv">7</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">"R"</span>, <span class="st">"utils.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
@@ -1107,7 +1115,7 @@ The downloaded binary packages are in
 ✔ Finished optimization
 ✔ Finished sdreport
 ℹ FIMS model version: 0.3.0.1
-ℹ Total run time was 3.00326 seconds
+ℹ Total run time was 3.52127 seconds
 ℹ Number of parameters: total=121, fixed_effects=121, and random_effects=0
 ℹ Maximum gradient= 0.00021
 ℹ Negative log likelihood (NLL):
