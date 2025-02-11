@@ -12,8 +12,11 @@ if (any(installed_packages == FALSE)) {
 }
 
 # Install FIMS: main branch version if on main, dev version on any other branch
-on_main_branch <- system("git branch --show-current") == "main"
-if (on_main_branch){
+
+branch_name <- system("git branch --show-current")
+use_fims_main <- grepl("main", branch_name)
+
+if (use_fims_main){
   remotes::install_github("NOAA-FIMS/FIMS")
 } else {
   remotes::install_github("NOAA-FIMS/FIMS", ref = "dev")
