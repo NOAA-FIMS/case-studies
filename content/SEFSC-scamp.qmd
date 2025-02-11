@@ -96,29 +96,30 @@ fleet1_ac <- fleet2_ac <- survey_ac <- matrix(-999, nrow = nyears, ncol = nages)
 # they are used for F
 fleet1_landings <- sca$t.series$L.COM.ob
 fleet1_landings_cv <- sca$t.series$cv.L.COM
-fleet1_landings_logSD <- sqrt(log(1.0 + fleet1_landings_cv^2))
+fleet1_landings_sd <- sqrt(log(1.0 + fleet1_landings_cv^2))
 fleet2_landings <- sca$t.series$L.REC.ob
 fleet2_landings_cv <- sca$t.series$cv.L.REC
-fleet2_landings_logSD <- sqrt(log(1.0 + fleet2_landings_cv^2))
+fleet2_landings_sd <- sqrt(log(1.0 + fleet2_landings_cv^2))
 
 survey_index <- sca$t.series$U.CVT.ob |>
   tidyr::replace_na(-999)
 survey_index_cv <- sca$t.series$cv.U.CVT
-survey_index_logSD <- sqrt(log(1.0 + survey_index_cv^2)) |>
-  tidyr::replace_na(100)
+survey_index_sd <- sqrt(log(1.0 + survey_index_cv^2)) |>
+  tidyr::replace_na(1) |>
+  base::replace(nyears - 1, 1) # manually replacing the 2020 CV as a missing value
 
 # COMMENT: These multinomial entries are not whole numbers and many <1. This is not
 # technically correct, but it does not seem to make a difference based on testing.
 fleet1_ac_n <- sca$t.series$acomp.COM.n |> 
-  tidyr::replace_na(-999)
+  tidyr::replace_na(1)
 fleet2_ac_n <- sca$t.series$acomp.REC.n |>
-  tidyr::replace_na(-999)
+  tidyr::replace_na(1)
 survey_ac_n <- sca$t.series$acomp.CVT.n |>
-  tidyr::replace_na(-999)
+  tidyr::replace_na(1)
 
-fleet1_ac[!is.na(sca$t.series$acomp.COM.n), ] <- sca$comp.mats$acomp.COM.ob * fleet1_ac_n[!is.na(sca$t.series$acomp.COM.n)]
-fleet2_ac[!is.na(sca$t.series$acomp.REC.n), ] <- sca$comp.mats$acomp.REC.ob * fleet2_ac_n[!is.na(sca$t.series$acomp.REC.n)]
-survey_ac[!is.na(sca$t.series$acomp.CVT.n), ] <- sca$comp.mats$acomp.CVT.ob * survey_ac_n[!is.na(sca$t.series$acomp.CVT.n)]
+fleet1_ac[!is.na(sca$t.series$acomp.COM.n), ] <- sca$comp.mats$acomp.COM.ob 
+fleet2_ac[!is.na(sca$t.series$acomp.REC.n), ] <- sca$comp.mats$acomp.REC.ob 
+survey_ac[!is.na(sca$t.series$acomp.CVT.n), ] <- sca$comp.mats$acomp.CVT.ob 
 
 ## put data into fims friendly form
 fleet1_landings_df <- data.frame(
@@ -129,7 +130,7 @@ fleet1_landings_df <- data.frame(
   dateend = paste0(seq(styr, endyr), "-12-31"),
   value = as.numeric(fleet1_landings),
   unit = "mt",
-  uncertainty = fleet1_landings_logSD
+  uncertainty = fleet1_landings_sd
 )
 
 fleet2_landings_df <- data.frame(
@@ -140,7 +141,7 @@ fleet2_landings_df <- data.frame(
   dateend = paste0(seq(styr, endyr), "-12-31"),
   value = as.numeric(fleet2_landings),
   unit = "mt",
-  uncertainty = fleet2_landings_logSD
+  uncertainty = fleet2_landings_sd
 )
 
 survey_index_df <- data.frame(
@@ -151,7 +152,7 @@ survey_index_df <- data.frame(
   dateend = paste0(seq(styr, endyr), "-12-31"),
   value = as.numeric(survey_index),
   unit = "",
-  uncertainty = survey_index_logSD
+  uncertainty = survey_index_sd
 )
 
 fleet1_ac_df <- data.frame(
@@ -227,34 +228,17 @@ default_parameters <- data_4_model |>
       fleet1 = list(
         LogisticSelectivity.inflection_point.value = sca$parm.cons$selpar_A50_COM2[8],
         LogisticSelectivity.slope.value = sca$parm.cons$selpar_slope_COM2[8],
-        Fleet.log_Fmort.value = log(sca$t.series$F.COM),
-        # COMMENT: Users should not have to reset the uncertainty for a fleet when this
-        #          information is already in the data, it should be stored and pulled out
-        #          automatically in create_default_parameters(). For index data too.
-        # COMMENT: Why are we inputting uncertainty in catch when we don't use it, will
-        #          we ever use it?
-        DlnormDistribution.log_sd.value = get_data(data_4_model) |>
-          dplyr::filter(name == "fleet1", type == "landings") |>
-          dplyr::pull(uncertainty) |>
-          log()
+        Fleet.log_Fmort.value = log(sca$t.series$F.COM)
       ),
       fleet2 = list(
         LogisticSelectivity.inflection_point.value = sca$parm.cons$selpar_A50_REC2[8],
         LogisticSelectivity.slope.value = sca$parm.cons$selpar_slope1_REC2[8],
-        Fleet.log_Fmort.value = log(sca$t.series$F.REC),
-        DlnormDistribution.log_sd.value = get_data(data_4_model) |>
-          dplyr::filter(name == "fleet2", type == "landings") |>
-          dplyr::pull(uncertainty) |>
-          log()
+        Fleet.log_Fmort.value = log(sca$t.series$F.REC)
       ),
       survey1 = list(
         LogisticSelectivity.inflection_point.value = sca$parm.cons$selpar_A501_CVT[8],
         LogisticSelectivity.slope.value = sca$parm.cons$selpar_slope1_CVT[8],
-        Fleet.log_q.value = log(sca$parms$q.CVT),
-        DlnormDistribution.log_sd.value = get_data(data_4_model) |>
-          dplyr::filter(name == "survey1", type == "index") |>
-          dplyr::pull(uncertainty) |>
-          log()
+        Fleet.log_q.value = log(sca$parms$q.CVT)
       )
     )
   ) |>
