@@ -86,17 +86,7 @@ get_ss3_data <- function(ss3_inputs, fleets = NULL, ages = NULL, lengths = NULL)
   # convert indices to FIMSFrame format
   index_info <- dat$CPUE |>
     dplyr::filter(index %in% fleets) |>
-    dplyr::select(year, index, obs, se_log)
-
-  # add -999 for missing years
-  # create empty data frame for all combinations of year and fleet
-  index_info_empty <- tidyr::expand_grid(
-    year = years,
-    index = fleets
-  ) |> dplyr::mutate(obs = -999, se_log = 1)
-  # combine the two data frames and remove redundant rows
-  index_info <- rbind(index_info, index_info_empty) |>
-    dplyr::distinct(year, index, .keep_all = TRUE) |>
+    dplyr::select(year, index, obs, se_log) |> 
     dplyr::arrange(index, year)
 
   indices <- data.frame(
@@ -145,21 +135,7 @@ get_ss3_data <- function(ss3_inputs, fleets = NULL, ages = NULL, lengths = NULL)
         values_to = "value"
       ) |>
       dplyr::mutate(age = as.numeric(substring(age, first = 2))) |> # convert "f17" to 17
-      dplyr::select(year, fleet, Nsamp, age, value)
-
-    # add -999 for missing years
-    # create empty data frame for all combinations of year, fleet, and age
-    age_info_empty <- tidyr::expand_grid(
-      year = years,
-      fleet = fleets,
-      age = ages
-    ) |> dplyr::mutate(Nsamp = 1, value = -999 - 0.001)
-    # combine the two data frames and remove redundant rows
-    # NOTE: this removes some age comp data because there
-    # were years with multiple observations from the same fleet
-    # due to multiple ageing error matrices
-    age_info <- rbind(age_info, age_info_empty) |>
-      dplyr::distinct(year, fleet, age, .keep_all = TRUE) |>
+      dplyr::select(year, fleet, Nsamp, age, value) |>
       dplyr::arrange(fleet, year, age)
 
     # finish converting age comps to FIMSFrame format
@@ -195,18 +171,7 @@ get_ss3_data <- function(ss3_inputs, fleets = NULL, ages = NULL, lengths = NULL)
         values_to = "value"
       ) |>
       dplyr::mutate(length = as.numeric(substring(length, first = 2))) |> # convert "l17" to 17
-      dplyr::select(year, fleet, Nsamp, length, value)
-
-    # add -999 for missing years
-    # create empty data frame for all combinations of year, fleet, and length
-    len_info_empty <- tidyr::expand_grid(
-      year = years,
-      fleet = fleets,
-      length = lengths
-    ) |> dplyr::mutate(Nsamp = 1, value = -999 - 0.001)
-    # combine the two data frames and remove redundant rows
-    len_info <- rbind(len_info, len_info_empty) |>
-      dplyr::distinct(year, fleet, length, .keep_all = TRUE) |>
+      dplyr::select(year, fleet, Nsamp, length, value) |> 
       dplyr::arrange(fleet, year, length)
 
     # finish converting age comps to FIMSFrame format
