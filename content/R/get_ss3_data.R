@@ -31,6 +31,13 @@ get_ss3_data <- function(ss3_inputs, fleets = NULL, ages = NULL, lengths = NULL)
   if (!"wtatage" %in% names(ss3_inputs)) {
     cli::cli_abort("'ss3_inputs' is missing element 'wtatage'. You may have to add it by running 'r4ss::SS_readwtatage()'")
   }
+  if (any(ss3_inputs[["wtatage"]][["year"]] < 0)) {
+    cli::cli_abort(c(
+      "The 'wtatage' element includes negative years which can't yet be processed by this function.",
+      "i" = "Please replace that element with the wtatage.ss_new file e.g. via",
+      "inputs[['wtatage']] <- r4ss::SS_readwtatage('wtatage.ss_new')")
+    )
+  }
 
   # pull out dat element from the list to simplify code
   dat <- ss3_inputs$dat
