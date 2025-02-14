@@ -61,8 +61,6 @@ How I simplified my assessment
 # withr::local_options(pkg.build_extra_flags = FALSE)
 #
 # library(TMB)
-# # devtools::install_github("kaskr/TMB_contrib_R/TMBhelper")
-# library(TMBhelper)
 # library(r4ss)
 #
 # #Local version of FIMS downloaded last week

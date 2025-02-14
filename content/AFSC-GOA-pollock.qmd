@@ -209,7 +209,17 @@ for(j in 1:length(xseq)){
   print(j)
   parameters$p[i] <- xseq[j]
   obj2 <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE, map=map)
-  opt2 <- TMBhelper::fit_tmb(obj2, getsd=FALSE, newtonsteps=0, control=list(trace=0))
+  opt2 <- with(
+    obj,
+    stats::nlminb(
+      start = par,
+      objective = fn,
+      gradient = gr,
+      control = list(
+        trace = 0
+      )
+    )
+  )
   out <- obj2$report(obj2$env$last.par.best)
   nll_components <- out$nll_components
   index_nll <- sum(nll_components[seq(2, length(nll_components), by = 2)])
