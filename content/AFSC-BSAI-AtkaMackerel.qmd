@@ -49,21 +49,87 @@ To get the opertional model to more closely match FIMS I:
 atka_dat <- readRDS(here::here("content","data_files","atka_dat.RDS"))
 atka_rep <- readRDS(here::here("content","data_files","atka_rep.RDS"))
 ## define the dimensions and global variables
-years <- atka_dat$styr:atka_dat$endyr
+years <- atka_dat[["stry"]]:atka_dat[["endyr"]]
 nyears <- length(years)
 nseasons <- 1
-nages <- 11
-ages <- 1:nages
-## nfleets <- 1
-## This will fit the models bridging to FIMS (simplifying)
-## source("fit_bridge_models.R")
-## compare changes to model
-#pkfitfinal <- readRDS("data_files/pkfitfinal.RDS")
-#pkfit0 <- readRDS("data_files/pkfit0.RDS")
-#parfinal <- pkfitfinal$obj$env$parList()
-#pkinput0 <- readRDS('data_files/pkinput0.RDS')
-#fimsdat <- pkdat0 <- pkinput0$dat
-#pkinput <- readRDS('data_files/pkinput.RDS')
+nages <- atka_dat[["n_ages"]]
+ages <- seq(nages)
+
+# This code only works with one fleet because I am not sure how fleet
+# structures work in AMAK given we only have this example
+catch <- data.frame(
+  type = "landings",
+  name = "fleet1",
+  datestart = paste0(years, "-01-01"),
+  dateend = paste0(years, "-12-31"),
+  value = atka_dat[["catch"]],
+  # TODO: translate cv to log sd
+  uncertainty = sqrt(log(1.0 + atka_dat[["catch_cv"]]^2)),
+  unit = "mt"
+)
+age_fishery <- atka_dat[["page_fsh"]] |>
+  as.data.frame() |>
+  dplyr::mutate(
+    type = "age",
+    name = "fleet1",
+    datestart = paste0(atka_dat[["yrs_ages_fsh"]], "-01-01"),
+    dateend = paste0(atka_dat[["yrs_ages_fsh"]], "-12-31"),
+    uncertainty = atka_dat[["sample_ages_fsh"]],
+    unit = "proportion",
+    .before = "V1"
+  ) |>
+  tidyr::pivot_longer(cols = dplyr::starts_with("V"), names_prefix = "V", names_to = "age")
+index <- data.frame(
+  type = "index",
+  name = "survey1",
+  # TODO: automate getting the date out rather than hard coding
+  datestart = paste0(atka_dat[["yrs_ind"]], "-07-15"),
+  dateend = paste0(atka_dat[["yrs_ind"]], "-07-15"),
+  value = atka_dat[["biom_ind"]],
+  # TODO: Figure out the unit conversion needed here
+  uncertainty = atka_dat$biom_std / atka_dat$biom_ind,
+  unit = "mt"
+)
+age_survey <- atka_dat[["page_ind"]] |>
+  as.data.frame() |>
+  dplyr::mutate(
+    type = "age",
+    name = "survey1",
+    # TODO: automate getting the date out rather than hard coding
+    datestart = paste0(atka_dat[["yrs_ages_ind"]], "-07-15"),
+    dateend = paste0(atka_dat[["yrs_ages_ind"]], "-07-15"),
+    uncertainty = atka_dat[["sample_ages_ind"]],
+    unit = "proportion",
+    .before = "V1"
+  ) |>
+  tidyr::pivot_longer(cols = dplyr::starts_with("V"), names_prefix = "V", names_to = "age")
+weight_at_age <- atka_dat[["wt_age_ind"]] |>
+  as.data.frame() |>
+   dplyr::mutate(
+    type = "weight-at-age",
+    name = "survey1",
+    datestart = paste0(years, "-07-15"),
+    dateend = paste0(years, "-07-15"),
+    uncertainty = 1,
+    unit = "mt",
+    .before = "V1"
+  ) |>
+  tidyr::pivot_longer(cols = dplyr::starts_with("V"), names_prefix = "V", names_to = "age") |>
+  # TODO: Double check that weight original weight at age is in g
+  dplyr::mutate(
+    value = value / 1000
+  )
+data <- dplyr::bind_rows(
+  catch,
+  age_fishery,
+  age_survey,
+  index,
+  weight_at_age
+) |>
+  dplyr::mutate(
+    age = as.numeric(age)
+  )
+fims_data <- FIMSFrame(data)
 ```
 
 
@@ -79,95 +145,113 @@ How I simplified my assessment:
 #| label: run-FIMS
 #| output: false
 #| eval: true
-
-# clear memory
-clear()
-estimate_fish_selex <- TRUE
-estimate_survey_selex <- TRUE
-estimate_q2 <- TRUE
-estimate_q3 <- TRUE
-estimate_q6 <- TRUE
-estimate_F <- TRUE
-estimate_recdevs <- TRUE
-
-get_amak_data <- function(rdat,rrep){
-  ## put into fims friendly form
-  res <- data.frame(type = character(),
-                    name = character(),
-                    age = integer(),
-                    datestart = character(),
-                    dateend = character(),
-                    value = double(),
-                    unit = character(),
-                    uncertainty = double())
-  landings <- data.frame(type = "landings",
-                         name = "fleet1",
-                         age = NA,
-                         datestart = paste0(seq(rdat$styr, rdat$endyr), "-01-01"),
-                         dateend = paste0(seq(rdat$styr, rdat$endyr), "-12-31"),
-                         value = as.numeric(rdat$catch),
-                         unit = "t",
-                         uncertainty = rdat$catch_cv)
-  ##  need to fill missing years with -999 so it's ignored in FIMS
-  indtmp <- 0*rdat$catch-999
-  indtmp[which(years %in% rdat$yrs_ind )] <- rdat$biom_ind
-  #indtmp
-  CVtmp <- rep(1, length=nyears) # actually SE in log space
-  CVtmp[which(years %in% rdat$yrs_ind)] <- rdat$biom_std/rdat$biom_ind
-  ## repeat with fish catch at age, using expected in missing years
-  #names(atka_rep)
-  caa <- 0*rrep$N[,-1]-999
-  caa[which(years %in% rdat$yrs_ages_fsh), ] <- rdat$page_fsh
-  Ncaa <- rep(1, nyears)
-  Ncaa[which(years %in% rdat$yrs_ages_fsh)] <- rdat$sample_ages_fsh
-  paa2 <-  0*rrep$N[,-1]-999
-  paa2[which(years %in% rdat$yrs_ages_ind), ] <- rdat$page_ind
-  Npaa2 <- rep(1, nyears)
-  Npaa2[which(years %in% rdat$yrs_ages_ind)] <- rdat$sample_ages_ind
-  index <- data.frame(type = "index",
-                      name = "survey",
-                      age = NA,
-                      datestart = paste0(seq(rdat$styr, rdat$endyr), "-01-01"),
-                      dateend = paste0(seq(rdat$styr, rdat$endyr), "-12-31"),
-                      value = ifelse(indtmp>0, indtmp, indtmp),
-                      unit = "",
-                      uncertainty = CVtmp)
-  ## these have -999 for missing data years
-  catchage <- data.frame(type = "age",
-                         name = "fleet1",
-                         age = rep(seq(1,nages), nyears),
-                         datestart = rep(paste0(seq(rdat$styr, rdat$endyr), "-01-01"), each=nages),
-                         dateend = rep(paste0(seq(rdat$styr, rdat$endyr), "-12-31"), each=nages),
-                         value = as.numeric(t(caa)),
-                         unit = "",
-                         uncertainty = rep(Ncaa, each=nages))
-  indexage <- data.frame(
-    type = "age",
-    name = "survey",
-    age = rep(seq(1, nages), nyears),
-    datestart = rep(paste0( seq(rdat$styr, rdat$endyr), "-01-01" ), each = nages),
-    dateend = rep(paste0( seq(rdat$styr, rdat$endyr), "-12-31" ), each = nages),
-    value = as.numeric(t(paa2)),
-    unit = "",
-    uncertainty = rep(Npaa2, each = nages)
+fleet1 <- survey1 <- list(
+  selectivity = list(form = "LogisticSelectivity"),
+  data_distribution = c(
+    Index = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
   )
-  ## indexage=indexage2
-  ## index=index2
-  res <- rbind(res, landings, index, catchage, indexage)
-  return(res)
-}
-fimsdat<-get_amak_data(atka_dat,atka_rep)
+)
 
+# Determine maturity in logistic form
+atka_dat[["maturity"]] |> 
+cbind(execute_logistic(ages, 2.25, 3.65)) |>
+ggplot2::ggplot(ggplot2::aes(x, value)) +
+ggplot2::geom_line() +
+ggplot2::geom_line(ggplot2::aes(x, `atka_dat[["maturity"]]`), color = "blue")
+
+default_parameters <- create_default_parameters(
+  fims_data,
+  fleets = list(
+    fleet1 = fleet1,
+    survey1 = survey1
+  )
+) |>
+  update_parameters(
+    modified_parameters = list(
+      maturity = list(
+        LogisticMaturity.inflection_point.value = 3.65,
+        LogisticMaturity.inflection_point.estimated = FALSE,
+        LogisticMaturity.slope.value = 2.25,
+        LogisticMaturity.slope.estimated = FALSE
+      ),
+      population = list(
+        Population.log_M.value = log(c(atka_rep[["M"]])),
+        Population.log_init_naa.estimated = TRUE
+      ),
+      recruitment = list(
+        BevertonHoltRecruitment.log_rzero.value = log(atka_rep[[8]]),
+        BevertonHoltRecruitment.logit_steep.value = -log(1.0 - atka_rep[["Steep"]][2]) +
+          log(atka_rep[["Steep"]][2] - 0.2),
+        DnormDistribution.log_sd.value = 0.5
+      ),
+      survey1 = list(
+        Fleet.log_q.value = 0,
+        Fleet.log_q.estimated = TRUE
+      )
+    )
+  )
+
+fit <- default_parameters |>
+  initialize_fims(data = fims_data) |>
+  fit_fims(optimize = TRUE)
 ```
 
 ```{r}
-#| label: run-FIMS2
+#| label: results
 #| output: false
 #| eval: true
 #| 
 
-# Needs weight-at-age data before it will work
-# age_frame <- FIMS::FIMSFrame(fimsdat)
+get_data(fims_data) |>
+  dplyr::filter(type == "landings") |>
+  dplyr::mutate(
+    year = dplyr::row_number() + get_start_year(fims_data) - 1,
+    expected = get_report(fit)$exp_catch[[1]]
+  ) |>
+  ggplot2::ggplot(
+    ggplot2::aes(year, value)
+  ) +
+  ggplot2::geom_point() +
+  ggplot2::geom_line(
+    ggplot2::aes(y = expected)
+  ) +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Landings (t)")
 
+get_estimates(fit) |>
+  dplyr::filter(grepl("SB", name, ignore.case = TRUE)) |>
+  dplyr::mutate(
+    year = (get_start_year(fims_data)- 1):get_end_year(fims_data)
+  ) |>
+  ggplot2::ggplot(
+    ggplot2::aes(x = year, y = value)
+  ) +
+  ggplot2::geom_line() +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Spawning biomass (t)")
 
+get_estimates(fit) |>
+  dplyr::filter(grepl("Index", name)) |>
+  dplyr::mutate(
+    year = rep(1:(dplyr::n() / 2), 2) + get_start_year(fims_data) - 1,
+    fleet = rep(c("Fishery estimated", "Estimated"), each = dplyr::n() / 2)
+  ) |>
+  dplyr::filter(
+    fleet == "Estimated"
+  ) |>
+  ggplot2::ggplot(
+    ggplot2::aes(year, value, group = fleet, color = as.factor(fleet))
+  ) +
+  ggplot2::geom_line() +
+  ggplot2::geom_point(
+    data = fims_data |>
+      get_data() |> 
+      dplyr::filter(type == "index", name == "survey1") |>
+      dplyr::mutate(year = year, fleet = "Data"),
+    ggplot2::aes(y = value, x = year)
+  ) +
+  ggplot2::scale_color_brewer(palette = "Dark2", name = "Method") +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Index of abundance (t)")
 ```
