@@ -284,21 +284,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(packages[<span class="sc">!</span>installed_packages], <span class="at">repos =</span> <span class="st">"http://cran.us.r-project.org"</span>)</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"kaskr/TMB_contrib_R/TMBhelper"</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"NOAA-FIMS/FIMS"</span>)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"r4ss/r4ss"</span>)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Load packages</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">lapply</span>(packages, library, <span class="at">character.only =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(FIMS)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(TMBhelper)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>R_version <span class="ot">&lt;-</span> version<span class="sc">$</span>version.string</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>TMB_version <span class="ot">&lt;-</span> <span class="fu">packageDescription</span>(<span class="st">"TMB"</span>)<span class="sc">$</span>Version</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>FIMS_commit <span class="ot">&lt;-</span> <span class="fu">substr</span>(<span class="fu">packageDescription</span>(<span class="st">"FIMS"</span>)<span class="sc">$</span>GithubSHA1, <span class="dv">1</span>, <span class="dv">7</span>)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">"R"</span>, <span class="st">"utils.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"NOAA-FIMS/FIMS"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"r4ss/r4ss"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Load packages</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">lapply</span>(packages, library, <span class="at">character.only =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(FIMS)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>R_version <span class="ot">&lt;-</span> version<span class="sc">$</span>version.string</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>TMB_version <span class="ot">&lt;-</span> <span class="fu">packageDescription</span>(<span class="st">"TMB"</span>)<span class="sc">$</span>Version</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>FIMS_commit <span class="ot">&lt;-</span> <span class="fu">substr</span>(<span class="fu">packageDescription</span>(<span class="st">"FIMS"</span>)<span class="sc">$</span>GithubSHA1, <span class="dv">1</span>, <span class="dv">7</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">"R"</span>, <span class="st">"utils.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
@@ -347,225 +345,223 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># withr::local_options(pkg.build_extra_flags = FALSE)</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># library(TMB)</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># # devtools::install_github("kaskr/TMB_contrib_R/TMBhelper")</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># library(TMBhelper)</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># library(r4ss)</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># #Local version of FIMS downloaded last week</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># # devtools::load_all("../fims_v2/FIMS")</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># # devtools::install_github("NOAA-FIMS/FIMS")</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># # pak::pkg_install("NOAA-FIMS/FIMS")</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co"># library(FIMS)</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="fu">clear</span>()</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co">#--------------------------------------------------------</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="co">#Logistic function for later use</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>logistic <span class="ot">&lt;-</span> <span class="cf">function</span>(x, slope, inflection_point){</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="dv">1</span> <span class="sc">*</span> slope <span class="sc">*</span> (x <span class="sc">-</span> inflection_point)))</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">value =</span> out)</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(out)</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#--------------------------------------------------------</span></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#Manually enter data</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># library(r4ss)</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># #Local version of FIMS downloaded last week</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># # devtools::load_all("../fims_v2/FIMS")</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># # devtools::install_github("NOAA-FIMS/FIMS")</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># # pak::pkg_install("NOAA-FIMS/FIMS")</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># library(FIMS)</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="fu">clear</span>()</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co">#--------------------------------------------------------</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co">#Logistic function for later use</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>logistic <span class="ot">&lt;-</span> <span class="cf">function</span>(x, slope, inflection_point){</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="dv">1</span> <span class="sc">*</span> slope <span class="sc">*</span> (x <span class="sc">-</span> inflection_point)))</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">value =</span> out)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(out)</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#--------------------------------------------------------</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#Manually enter data</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co"># setwd("C://Users//peter.kuriyama//SynologyDrive/Research//noaa//FIMS")</span></span>
 <span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co"># setwd("C://Users//peter.kuriyama//SynologyDrive/Research//noaa//FIMS")</span></span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="co">#-----Catch</span></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>catch <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">year =</span> <span class="dv">2005</span><span class="sc">:</span><span class="dv">2023</span>, <span class="at">catch =</span> <span class="fu">c</span>(<span class="fl">29188.50</span>, <span class="fl">53107.00</span>, <span class="fl">69929.40</span>,</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>                                                <span class="fl">56317.80</span>, <span class="fl">33546.40</span>, <span class="fl">17466.40</span>, <span class="fl">39383.10</span>, <span class="fl">2585.38</span>, <span class="fl">5705.77</span>, <span class="fl">2558.63</span>, <span class="fl">7.18</span>, <span class="fl">428.26</span>,</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>                                                <span class="fl">347.11</span>, <span class="fl">514.20</span>, <span class="fl">619.04</span>, <span class="fl">653.15</span>, <span class="fl">285.89</span>, <span class="fl">508.02</span>, <span class="fl">152.31</span>))</span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(catch, aes(x = year, y = catch)) + geom_point() +</span></span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_line() + scale_y_continuous(label = comma)</span></span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>fimscatch <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">type =</span> <span class="st">"landings"</span>, <span class="at">name =</span> <span class="st">"fleet1"</span>,</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>                    <span class="at">age =</span> <span class="cn">NA</span>, <span class="at">datestart =</span> <span class="fu">paste0</span>(catch<span class="sc">$</span>year, <span class="st">"-01-01"</span>),</span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>                    <span class="at">dateend =</span> <span class="fu">paste0</span>(catch<span class="sc">$</span>year, <span class="st">"-12-31"</span>), <span class="at">value =</span> catch<span class="sc">$</span>catch,</span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>                    <span class="at">unit =</span> <span class="st">"mt"</span>, <span class="at">uncertainty =</span> <span class="fl">0.05</span>)</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="co">#-----CPUE</span></span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>cpue <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">year =</span> <span class="dv">2005</span><span class="sc">:</span><span class="dv">2023</span>, <span class="at">obs =</span> <span class="fu">c</span>(<span class="fl">649619.0</span>, <span class="fl">899635.0</span>, <span class="fl">956354.0</span>, <span class="fl">863281.0</span>, <span class="fl">652029.0</span>,</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>                                             <span class="fl">504970.0</span>, <span class="fl">395783.0</span>, <span class="fl">293980.0</span>, <span class="fl">182417.0</span>, <span class="fl">89260.1</span>,</span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>                                             <span class="fl">46403.0</span>, <span class="fl">40704.0</span>, <span class="fl">44592.1</span>, <span class="fl">48789.1</span>, <span class="fl">53551.8</span>,</span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>                                             <span class="fl">59765.8</span>, <span class="fl">68451.7</span>, <span class="fl">71612.5</span>, <span class="fl">68957.9</span>))</span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(cpue, aes(x = year, y = obs)) + geom_point() + geom_line() +</span></span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a><span class="co">#   scale_y_continuous(label = comma)</span></span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>fimsindex <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">type =</span> <span class="st">"index"</span>, <span class="at">name =</span> <span class="st">"survey1"</span>,</span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>                    <span class="at">age =</span> <span class="cn">NA</span>, <span class="at">datestart =</span> <span class="fu">paste0</span>(cpue<span class="sc">$</span>year, <span class="st">"-01-01"</span>),</span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>                    <span class="at">dateend =</span> <span class="fu">paste0</span>(cpue<span class="sc">$</span>year, <span class="st">"-12-31"</span>),</span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>                    <span class="at">value =</span> cpue<span class="sc">$</span>obs, <span class="at">unit =</span> <span class="st">'mt'</span>, <span class="at">uncertainty =</span> .<span class="dv">3</span>)</span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>fimsindex<span class="sc">$</span>unit <span class="ot">&lt;-</span> <span class="st">""</span></span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a><span class="co">#-----Age compositions</span></span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>acomps <span class="ot">&lt;-</span> utils<span class="sc">::</span><span class="fu">read.csv</span>(<span class="st">"data_files/sardine_acomps.csv"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">value_prop =</span> value <span class="sc">/</span> Nsamp) <span class="co"># convert age-comp data to proportions, to match fims-demo.Rmd</span></span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>fimsage <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">type =</span> <span class="st">"age"</span>, <span class="at">name =</span> acomps<span class="sc">$</span>name,</span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>                  <span class="at">age =</span> acomps<span class="sc">$</span>age, <span class="at">datestart =</span> <span class="fu">paste0</span>(acomps<span class="sc">$</span>Yr, <span class="st">"-01-01"</span>),</span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>                  <span class="at">dateend =</span> <span class="fu">paste0</span>(acomps<span class="sc">$</span>Yr, <span class="st">"-12-31"</span>),</span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>                  <span class="at">value =</span> acomps<span class="sc">$</span>value_prop, <span class="at">unit =</span> <span class="st">"proportion"</span>, <span class="at">uncertainty =</span> acomps<span class="sc">$</span>Nsamp)</span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a><span class="co"># Fill in missing name/year rows with -999s for value and "" for uncertainty</span></span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>  <span class="co"># This works the same as not doing anything, but is not necessary</span></span>
-<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="co"># blank_age_grid &lt;- expand.grid(name = c("fleet1", "survey1"),</span></span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a><span class="co">#                               age = 0:8,</span></span>
-<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a><span class="co">#                               yr = 2005:2023)</span></span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a><span class="co"># blank_age &lt;- tibble::tibble(type = "age", name = blank_age_grid$name,</span></span>
-<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a><span class="co">#                     age = blank_age_grid$age,</span></span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a><span class="co">#                     datestart = paste0(blank_age_grid$yr, "-01-01"),</span></span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a><span class="co">#                     dateend = paste0(blank_age_grid$yr, "-12-31"),</span></span>
-<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a><span class="co">#                     value = -999, unit = "proportion", uncertainty = NA)</span></span>
-<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a><span class="co"># missing_ages &lt;- blank_age |&gt;</span></span>
-<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a><span class="co">#   mutate(name_date = paste0(name, datestart)) |&gt;</span></span>
-<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a><span class="co">#   filter(!(name_date %in% paste0(fimsage_init$name, fimsage_init$datestart))) |&gt;</span></span>
-<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a><span class="co">#   select(-name_date)</span></span>
-<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a><span class="co"># fimsage &lt;- rbind(fimsage, missing_ages)</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co">#-----Catch</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>catch <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">year =</span> <span class="dv">2005</span><span class="sc">:</span><span class="dv">2023</span>, <span class="at">catch =</span> <span class="fu">c</span>(<span class="fl">29188.50</span>, <span class="fl">53107.00</span>, <span class="fl">69929.40</span>,</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>                                                <span class="fl">56317.80</span>, <span class="fl">33546.40</span>, <span class="fl">17466.40</span>, <span class="fl">39383.10</span>, <span class="fl">2585.38</span>, <span class="fl">5705.77</span>, <span class="fl">2558.63</span>, <span class="fl">7.18</span>, <span class="fl">428.26</span>,</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>                                                <span class="fl">347.11</span>, <span class="fl">514.20</span>, <span class="fl">619.04</span>, <span class="fl">653.15</span>, <span class="fl">285.89</span>, <span class="fl">508.02</span>, <span class="fl">152.31</span>))</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(catch, aes(x = year, y = catch)) + geom_point() +</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_line() + scale_y_continuous(label = comma)</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>fimscatch <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">type =</span> <span class="st">"landings"</span>, <span class="at">name =</span> <span class="st">"fleet1"</span>,</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>                    <span class="at">age =</span> <span class="cn">NA</span>, <span class="at">datestart =</span> <span class="fu">paste0</span>(catch<span class="sc">$</span>year, <span class="st">"-01-01"</span>),</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>                    <span class="at">dateend =</span> <span class="fu">paste0</span>(catch<span class="sc">$</span>year, <span class="st">"-12-31"</span>), <span class="at">value =</span> catch<span class="sc">$</span>catch,</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>                    <span class="at">unit =</span> <span class="st">"mt"</span>, <span class="at">uncertainty =</span> <span class="fl">0.05</span>)</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="co">#-----CPUE</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>cpue <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">year =</span> <span class="dv">2005</span><span class="sc">:</span><span class="dv">2023</span>, <span class="at">obs =</span> <span class="fu">c</span>(<span class="fl">649619.0</span>, <span class="fl">899635.0</span>, <span class="fl">956354.0</span>, <span class="fl">863281.0</span>, <span class="fl">652029.0</span>,</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>                                             <span class="fl">504970.0</span>, <span class="fl">395783.0</span>, <span class="fl">293980.0</span>, <span class="fl">182417.0</span>, <span class="fl">89260.1</span>,</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>                                             <span class="fl">46403.0</span>, <span class="fl">40704.0</span>, <span class="fl">44592.1</span>, <span class="fl">48789.1</span>, <span class="fl">53551.8</span>,</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>                                             <span class="fl">59765.8</span>, <span class="fl">68451.7</span>, <span class="fl">71612.5</span>, <span class="fl">68957.9</span>))</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(cpue, aes(x = year, y = obs)) + geom_point() + geom_line() +</span></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a><span class="co">#   scale_y_continuous(label = comma)</span></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>fimsindex <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">type =</span> <span class="st">"index"</span>, <span class="at">name =</span> <span class="st">"survey1"</span>,</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>                    <span class="at">age =</span> <span class="cn">NA</span>, <span class="at">datestart =</span> <span class="fu">paste0</span>(cpue<span class="sc">$</span>year, <span class="st">"-01-01"</span>),</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>                    <span class="at">dateend =</span> <span class="fu">paste0</span>(cpue<span class="sc">$</span>year, <span class="st">"-12-31"</span>),</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>                    <span class="at">value =</span> cpue<span class="sc">$</span>obs, <span class="at">unit =</span> <span class="st">'mt'</span>, <span class="at">uncertainty =</span> .<span class="dv">3</span>)</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>fimsindex<span class="sc">$</span>unit <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a><span class="co">#-----Age compositions</span></span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>acomps <span class="ot">&lt;-</span> utils<span class="sc">::</span><span class="fu">read.csv</span>(<span class="st">"data_files/sardine_acomps.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">value_prop =</span> value <span class="sc">/</span> Nsamp) <span class="co"># convert age-comp data to proportions, to match fims-demo.Rmd</span></span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>fimsage <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">type =</span> <span class="st">"age"</span>, <span class="at">name =</span> acomps<span class="sc">$</span>name,</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>                  <span class="at">age =</span> acomps<span class="sc">$</span>age, <span class="at">datestart =</span> <span class="fu">paste0</span>(acomps<span class="sc">$</span>Yr, <span class="st">"-01-01"</span>),</span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>                  <span class="at">dateend =</span> <span class="fu">paste0</span>(acomps<span class="sc">$</span>Yr, <span class="st">"-12-31"</span>),</span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>                  <span class="at">value =</span> acomps<span class="sc">$</span>value_prop, <span class="at">unit =</span> <span class="st">"proportion"</span>, <span class="at">uncertainty =</span> acomps<span class="sc">$</span>Nsamp)</span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="co"># Fill in missing name/year rows with -999s for value and "" for uncertainty</span></span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>  <span class="co"># This works the same as not doing anything, but is not necessary</span></span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a><span class="co"># blank_age_grid &lt;- expand.grid(name = c("fleet1", "survey1"),</span></span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a><span class="co">#                               age = 0:8,</span></span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="co">#                               yr = 2005:2023)</span></span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a><span class="co"># blank_age &lt;- tibble::tibble(type = "age", name = blank_age_grid$name,</span></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a><span class="co">#                     age = blank_age_grid$age,</span></span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a><span class="co">#                     datestart = paste0(blank_age_grid$yr, "-01-01"),</span></span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a><span class="co">#                     dateend = paste0(blank_age_grid$yr, "-12-31"),</span></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a><span class="co">#                     value = -999, unit = "proportion", uncertainty = NA)</span></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a><span class="co"># missing_ages &lt;- blank_age |&gt;</span></span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a><span class="co">#   mutate(name_date = paste0(name, datestart)) |&gt;</span></span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a><span class="co">#   filter(!(name_date %in% paste0(fimsage_init$name, fimsage_init$datestart))) |&gt;</span></span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a><span class="co">#   select(-name_date)</span></span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a><span class="co"># fimsage &lt;- rbind(fimsage, missing_ages)</span></span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a><span class="co">#fimsage$uncertainty &lt;- 50 Leave as empirical values</span></span>
 <span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a><span class="co">#fimsage$uncertainty &lt;- 50 Leave as empirical values</span></span>
-<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>fimscatch<span class="sc">$</span>value <span class="ot">&lt;-</span> fimscatch<span class="sc">$</span>value</span>
-<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>fimsindex<span class="sc">$</span>unit <span class="ot">&lt;-</span> <span class="st">""</span></span>
-<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a><span class="co">#-----Weight-at-age</span></span>
-<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Q: What are the differences in how SS3 and FIMS process wtatage inputs/units?</span></span>
-<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>  <span class="co"># A: SS3 assumes WAA is expressed in kg, and then converts to mt for biomass calculations</span></span>
-<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>      <span class="co"># SS3 also expresses natage in terms of 1000s/fish</span></span>
-<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>    <span class="co"># FIMS assumes WAA is expressed in mt, but expresses natage in fish</span></span>
-<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>    <span class="co"># WAA input values are supplied to SS3 in kg and FIMS in mt</span></span>
-<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Model now correctly processes inputs and provides comparable NAA, WAA, and biomass outputs to SS3</span></span>
-<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>wtatage <span class="ot">&lt;-</span> r4ss<span class="sc">::</span><span class="fu">SS_readwtatage</span>(<span class="st">"data_files/sardine_wtatage.ss_new"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(fleet <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">fleet =</span> <span class="fu">ifelse</span>(fleet <span class="sc">==</span> <span class="dv">1</span>, <span class="st">"fleet1"</span>, <span class="st">"survey1"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="st">`</span><span class="at">0</span><span class="st">`</span><span class="sc">:</span><span class="st">`</span><span class="at">10</span><span class="st">`</span>, <span class="at">names_to =</span> <span class="st">"age"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(year <span class="sc">!=</span> <span class="dv">2024</span>, <span class="sc">!</span>(age <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"9"</span>, <span class="st">"10"</span>))) <span class="sc">|&gt;</span> <span class="co"># Trim ages 9 and 10 to match age-comps</span></span>
-<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">value =</span> value <span class="sc">/</span> <span class="dv">1000</span>) <span class="co"># WAA converted from kg to mt</span></span>
-<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>fimswaa <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"weight-at-age"</span>,</span>
-<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> wtatage<span class="sc">$</span>fleet,</span>
-<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> wtatage<span class="sc">$</span>age,</span>
-<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>  <span class="at">datestart =</span> <span class="fu">paste0</span>(wtatage<span class="sc">$</span>year, <span class="st">"-01-01"</span>),</span>
-<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>  <span class="at">dateend =</span> <span class="fu">paste0</span>(wtatage<span class="sc">$</span>year, <span class="st">"-12-31"</span>),</span>
-<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> wtatage<span class="sc">$</span>value,</span>
-<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>  <span class="at">unit =</span> <span class="st">"mt"</span>,</span>
-<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>  <span class="at">uncertainty =</span> <span class="cn">NA</span></span>
-<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a><span class="co">#Combine everything, format</span></span>
-<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>fimsdat <span class="ot">&lt;-</span> <span class="fu">rbind</span>(fimscatch, fimsindex, fimsage, fimswaa)</span>
-<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>fimsdat<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(fimsdat<span class="sc">$</span>age)</span>
-<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>fimsdat<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(fimsdat<span class="sc">$</span>value)</span>
-<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to FIMSFrame</span></span>
-<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>final_fimsdat <span class="ot">&lt;-</span> <span class="fu">FIMSFrame</span>(fimsdat)</span>
-<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a><span class="co"># Define fleet specifications for fleet1 and survey1</span></span>
-<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>fleet1 <span class="ot">&lt;-</span> survey1 <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>  <span class="at">selectivity =</span> <span class="fu">list</span>(<span class="at">form =</span> <span class="st">"LogisticSelectivity"</span>),</span>
-<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>  <span class="at">data_distribution =</span> <span class="fu">c</span>(</span>
-<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>    <span class="at">Index =</span> <span class="st">"DlnormDistribution"</span>,</span>
-<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a>    <span class="at">AgeComp =</span> <span class="st">"DmultinomDistribution"</span>,</span>
-<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>    <span class="at">LengthComp =</span> <span class="st">"DmultinomDistribution"</span></span>
-<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a><span class="co"># Create default recruitment, growth, and maturity parameters</span></span>
-<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>default_parameters <span class="ot">&lt;-</span> final_fimsdat <span class="sc">|&gt;</span></span>
-<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_default_parameters</span>(</span>
-<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>    <span class="at">fleets =</span> <span class="fu">list</span>(<span class="at">fleet1 =</span> fleet1, <span class="at">survey1 =</span> survey1)</span>
-<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a><span class="co"># Update parameters</span></span>
-<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Control how parameters are updated</span></span>
-<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>estimate_fish_selex <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>estimate_survey_selex <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>estimate_q <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co">#Fix at 1</span></span>
-<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>estimate_F <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>estimate_recdevs <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>estimate_init_naa <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>estimate_log_rzero <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>steep <span class="ot">&lt;-</span> <span class="fl">0.6</span> <span class="co"># sardine steepness is fixed at 0.6</span></span>
-<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>M_value <span class="ot">&lt;-</span> <span class="fl">0.8</span> <span class="co">#.8 worked pretty well</span></span>
-<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>rzero <span class="ot">&lt;-</span> <span class="dv">17</span> <span class="co">#14.2 is log(R0) in sardine simplified model</span></span>
-<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>nyears <span class="ot">&lt;-</span> <span class="fu">get_n_years</span>(final_fimsdat)</span>
-<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">get_start_year</span>(final_fimsdat)<span class="sc">:</span><span class="fu">get_end_year</span>(final_fimsdat)</span>
-<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>nages <span class="ot">&lt;-</span> <span class="fu">get_n_ages</span>(final_fimsdat)</span>
-<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>ages <span class="ot">&lt;-</span> <span class="fu">get_ages</span>(final_fimsdat)</span>
-<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>init_naa <span class="ot">&lt;-</span> <span class="fu">exp</span>(rzero) <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>(ages <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> M_value)</span>
-<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>init_naa[nages] <span class="ot">&lt;-</span> init_naa[nages] <span class="sc">/</span> M_value <span class="co"># sum of infinite series</span></span>
-<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Update parameters</span></span>
-<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> default_parameters <span class="sc">|&gt;</span></span>
-<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>( <span class="co"># update fleet1 specifications</span></span>
-<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
-<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet1 =</span> <span class="fu">list</span>(</span>
-<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.value =</span> <span class="dv">1</span>,</span>
-<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.estimated =</span> estimate_fish_selex,</span>
-<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.value =</span> <span class="dv">5</span>,</span>
-<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.estimated =</span> estimate_fish_selex,</span>
-<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_Fmort.value =</span> <span class="fu">log</span>(<span class="fu">rep</span>(<span class="fl">0.2</span>, nyears)),</span>
-<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_Fmort.estimated =</span> estimate_F,</span>
-<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>        <span class="at">DlnormDistribution.log_sd.value =</span> <span class="fu">rep</span>(<span class="fu">log</span>(<span class="fu">sqrt</span>(<span class="fu">log</span>(<span class="fl">0.01</span><span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span>))), nyears)</span>
-<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>( <span class="co"># update survey1 specifications</span></span>
-<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
-<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>      <span class="at">survey1 =</span> <span class="fu">list</span>(</span>
-<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.value =</span> <span class="fl">1.2</span>,</span>
-<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.estimated =</span> estimate_survey_selex,</span>
-<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.value =</span> <span class="dv">2</span>,</span>
-<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.estimated =</span> estimate_survey_selex,</span>
-<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_q.value =</span> <span class="dv">0</span>,</span>
-<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_q.estimated =</span> estimate_q,</span>
-<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a>        <span class="at">DlnormDistribution.log_sd.value =</span> <span class="fu">rep</span>(<span class="fu">log</span>(<span class="fu">sqrt</span>(<span class="fu">log</span>(<span class="fl">0.1</span><span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span>))), nyears)</span>
-<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>(</span>
-<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
-<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a>      <span class="at">recruitment =</span> <span class="fu">list</span>(</span>
-<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.log_rzero.value =</span> rzero,</span>
-<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.log_rzero.estimated =</span> estimate_log_rzero,</span>
-<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.logit_steep.value =</span> <span class="sc">-</span><span class="fu">log</span>(<span class="fl">1.0</span> <span class="sc">-</span> steep) <span class="sc">+</span> <span class="fu">log</span>(steep <span class="sc">-</span> <span class="fl">0.2</span>),</span>
-<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.log_devs.value =</span> <span class="fu">rep</span>(<span class="fu">log</span>(<span class="dv">1</span>), nyears<span class="dv">-1</span>),</span>
-<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a>        <span class="at">DnormDistribution.log_sd.value =</span> <span class="fu">log</span>(<span class="fl">1.2</span>)</span>
-<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>(</span>
-<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
-<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a>      <span class="at">maturity =</span> <span class="fu">list</span>(</span>
-<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.inflection_point.value =</span> <span class="fl">1.2</span>,</span>
-<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.inflection_point.estimated =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.slope.value =</span> <span class="fl">1.5</span>, <span class="co"># arbitrary guess</span></span>
-<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.slope.estimated =</span> <span class="cn">FALSE</span></span>
-<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>(</span>
-<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
-<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a>      <span class="at">population =</span> <span class="fu">list</span>(</span>
-<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_M.value =</span> <span class="fu">rep</span>(<span class="fu">log</span>(M_value), nages <span class="sc">*</span> nyears),</span>
-<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_init_naa.value =</span> <span class="fu">log</span>(init_naa),</span>
-<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_init_naa.estimated =</span> estimate_init_naa</span>
-<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the model</span></span>
-<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> parameters <span class="sc">|&gt;</span></span>
-<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initialize_fims</span>(<span class="at">data =</span> final_fimsdat) <span class="sc">|&gt;</span></span>
-<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit_fims</span>(<span class="at">optimize =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>fimscatch<span class="sc">$</span>value <span class="ot">&lt;-</span> fimscatch<span class="sc">$</span>value</span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>fimsindex<span class="sc">$</span>unit <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a><span class="co">#-----Weight-at-age</span></span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Q: What are the differences in how SS3 and FIMS process wtatage inputs/units?</span></span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>  <span class="co"># A: SS3 assumes WAA is expressed in kg, and then converts to mt for biomass calculations</span></span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>      <span class="co"># SS3 also expresses natage in terms of 1000s/fish</span></span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>    <span class="co"># FIMS assumes WAA is expressed in mt, but expresses natage in fish</span></span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>    <span class="co"># WAA input values are supplied to SS3 in kg and FIMS in mt</span></span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Model now correctly processes inputs and provides comparable NAA, WAA, and biomass outputs to SS3</span></span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>wtatage <span class="ot">&lt;-</span> r4ss<span class="sc">::</span><span class="fu">SS_readwtatage</span>(<span class="st">"data_files/sardine_wtatage.ss_new"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(fleet <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">fleet =</span> <span class="fu">ifelse</span>(fleet <span class="sc">==</span> <span class="dv">1</span>, <span class="st">"fleet1"</span>, <span class="st">"survey1"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="st">`</span><span class="at">0</span><span class="st">`</span><span class="sc">:</span><span class="st">`</span><span class="at">10</span><span class="st">`</span>, <span class="at">names_to =</span> <span class="st">"age"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(year <span class="sc">!=</span> <span class="dv">2024</span>, <span class="sc">!</span>(age <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"9"</span>, <span class="st">"10"</span>))) <span class="sc">|&gt;</span> <span class="co"># Trim ages 9 and 10 to match age-comps</span></span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">value =</span> value <span class="sc">/</span> <span class="dv">1000</span>) <span class="co"># WAA converted from kg to mt</span></span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>fimswaa <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"weight-at-age"</span>,</span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> wtatage<span class="sc">$</span>fleet,</span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> wtatage<span class="sc">$</span>age,</span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>  <span class="at">datestart =</span> <span class="fu">paste0</span>(wtatage<span class="sc">$</span>year, <span class="st">"-01-01"</span>),</span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>  <span class="at">dateend =</span> <span class="fu">paste0</span>(wtatage<span class="sc">$</span>year, <span class="st">"-12-31"</span>),</span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> wtatage<span class="sc">$</span>value,</span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>  <span class="at">unit =</span> <span class="st">"mt"</span>,</span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>  <span class="at">uncertainty =</span> <span class="cn">NA</span></span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a><span class="co">#Combine everything, format</span></span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>fimsdat <span class="ot">&lt;-</span> <span class="fu">rbind</span>(fimscatch, fimsindex, fimsage, fimswaa)</span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>fimsdat<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(fimsdat<span class="sc">$</span>age)</span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>fimsdat<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(fimsdat<span class="sc">$</span>value)</span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to FIMSFrame</span></span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a>final_fimsdat <span class="ot">&lt;-</span> <span class="fu">FIMSFrame</span>(fimsdat)</span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a><span class="co"># Define fleet specifications for fleet1 and survey1</span></span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>fleet1 <span class="ot">&lt;-</span> survey1 <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>  <span class="at">selectivity =</span> <span class="fu">list</span>(<span class="at">form =</span> <span class="st">"LogisticSelectivity"</span>),</span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>  <span class="at">data_distribution =</span> <span class="fu">c</span>(</span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>    <span class="at">Index =</span> <span class="st">"DlnormDistribution"</span>,</span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>    <span class="at">AgeComp =</span> <span class="st">"DmultinomDistribution"</span>,</span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>    <span class="at">LengthComp =</span> <span class="st">"DmultinomDistribution"</span></span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a><span class="co"># Create default recruitment, growth, and maturity parameters</span></span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a>default_parameters <span class="ot">&lt;-</span> final_fimsdat <span class="sc">|&gt;</span></span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_default_parameters</span>(</span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>    <span class="at">fleets =</span> <span class="fu">list</span>(<span class="at">fleet1 =</span> fleet1, <span class="at">survey1 =</span> survey1)</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a><span class="co"># Update parameters</span></span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Control how parameters are updated</span></span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a>estimate_fish_selex <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>estimate_survey_selex <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>estimate_q <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co">#Fix at 1</span></span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>estimate_F <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>estimate_recdevs <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>estimate_init_naa <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>estimate_log_rzero <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>steep <span class="ot">&lt;-</span> <span class="fl">0.6</span> <span class="co"># sardine steepness is fixed at 0.6</span></span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>M_value <span class="ot">&lt;-</span> <span class="fl">0.8</span> <span class="co">#.8 worked pretty well</span></span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>rzero <span class="ot">&lt;-</span> <span class="dv">17</span> <span class="co">#14.2 is log(R0) in sardine simplified model</span></span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>nyears <span class="ot">&lt;-</span> <span class="fu">get_n_years</span>(final_fimsdat)</span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">get_start_year</span>(final_fimsdat)<span class="sc">:</span><span class="fu">get_end_year</span>(final_fimsdat)</span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>nages <span class="ot">&lt;-</span> <span class="fu">get_n_ages</span>(final_fimsdat)</span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>ages <span class="ot">&lt;-</span> <span class="fu">get_ages</span>(final_fimsdat)</span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>init_naa <span class="ot">&lt;-</span> <span class="fu">exp</span>(rzero) <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>(ages <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> M_value)</span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>init_naa[nages] <span class="ot">&lt;-</span> init_naa[nages] <span class="sc">/</span> M_value <span class="co"># sum of infinite series</span></span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Update parameters</span></span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> default_parameters <span class="sc">|&gt;</span></span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>( <span class="co"># update fleet1 specifications</span></span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet1 =</span> <span class="fu">list</span>(</span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.value =</span> <span class="dv">1</span>,</span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.estimated =</span> estimate_fish_selex,</span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.value =</span> <span class="dv">5</span>,</span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.estimated =</span> estimate_fish_selex,</span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_Fmort.value =</span> <span class="fu">log</span>(<span class="fu">rep</span>(<span class="fl">0.2</span>, nyears)),</span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_Fmort.estimated =</span> estimate_F,</span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>        <span class="at">DlnormDistribution.log_sd.value =</span> <span class="fu">rep</span>(<span class="fu">log</span>(<span class="fu">sqrt</span>(<span class="fu">log</span>(<span class="fl">0.01</span><span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span>))), nyears)</span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>( <span class="co"># update survey1 specifications</span></span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>      <span class="at">survey1 =</span> <span class="fu">list</span>(</span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.value =</span> <span class="fl">1.2</span>,</span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.estimated =</span> estimate_survey_selex,</span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.value =</span> <span class="dv">2</span>,</span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.estimated =</span> estimate_survey_selex,</span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_q.value =</span> <span class="dv">0</span>,</span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_q.estimated =</span> estimate_q,</span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>        <span class="at">DlnormDistribution.log_sd.value =</span> <span class="fu">rep</span>(<span class="fu">log</span>(<span class="fu">sqrt</span>(<span class="fu">log</span>(<span class="fl">0.1</span><span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span>))), nyears)</span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>(</span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a>      <span class="at">recruitment =</span> <span class="fu">list</span>(</span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.log_rzero.value =</span> rzero,</span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.log_rzero.estimated =</span> estimate_log_rzero,</span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.logit_steep.value =</span> <span class="sc">-</span><span class="fu">log</span>(<span class="fl">1.0</span> <span class="sc">-</span> steep) <span class="sc">+</span> <span class="fu">log</span>(steep <span class="sc">-</span> <span class="fl">0.2</span>),</span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.log_devs.value =</span> <span class="fu">rep</span>(<span class="fu">log</span>(<span class="dv">1</span>), nyears<span class="dv">-1</span>),</span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a>        <span class="at">DnormDistribution.log_sd.value =</span> <span class="fu">log</span>(<span class="fl">1.2</span>)</span>
+<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>(</span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a>      <span class="at">maturity =</span> <span class="fu">list</span>(</span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.inflection_point.value =</span> <span class="fl">1.2</span>,</span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.inflection_point.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.slope.value =</span> <span class="fl">1.5</span>, <span class="co"># arbitrary guess</span></span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.slope.estimated =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_parameters</span>(</span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a>      <span class="at">population =</span> <span class="fu">list</span>(</span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_M.value =</span> <span class="fu">rep</span>(<span class="fu">log</span>(M_value), nages <span class="sc">*</span> nyears),</span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_init_naa.value =</span> <span class="fu">log</span>(init_naa),</span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_init_naa.estimated =</span> estimate_init_naa</span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the model</span></span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> parameters <span class="sc">|&gt;</span></span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initialize_fims</span>(<span class="at">data =</span> final_fimsdat) <span class="sc">|&gt;</span></span>
+<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit_fims</span>(<span class="at">optimize =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>✔ Starting optimization ...
@@ -574,7 +570,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 ✔ Finished optimization
 ✔ Finished sdreport
 ℹ FIMS model version: 0.3.0.1
-ℹ Total run time was 0.12696 seconds
+ℹ Total run time was 0.10608 seconds
 ℹ Number of parameters: total=47, fixed_effects=47, and random_effects=0
 ℹ Maximum gradient= 0.00016
 ℹ Negative log likelihood (NLL):
@@ -589,7 +585,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">substr</span>(recruitment_log, <span class="dv">1</span>, <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "[\n{\n\"timestamp\" : \"Tue Feb 11 15:41:13 2025\",\n\"level\" : \"info\",\n\"message\" : \"Initializing fleet 1\",\n"</code></pre>
+<pre><code>[1] "[\n{\n\"timestamp\" : \"Mon Feb 17 14:59:48 2025\",\n\"level\" : \"info\",\n\"message\" : \"Initializing fleet 1\",\n"</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
