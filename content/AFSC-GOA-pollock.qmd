@@ -196,9 +196,6 @@ Two extra analyses are demonstrated. First is a likelihood profile over lnR0, sh
 #| output: false
 
 ## Try a likelihood profile
-# TODO: Received the following note when running the code below:
-# "Note that `getReportCovariance=FALSE` causes an error in `TMB::sdreport` when no ADREPORTed variables are present".
-# Flag this for Cole to verify.
 i <- 68 # this will break if model is changed at all
 map <- parameters
 map$p[i] <- NA # map off R0 specified below
@@ -209,17 +206,7 @@ for(j in 1:length(xseq)){
   print(j)
   parameters$p[i] <- xseq[j]
   obj2 <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE, map=map)
-  opt2 <- with(
-    obj,
-    stats::nlminb(
-      start = par,
-      objective = fn,
-      gradient = gr,
-      control = list(
-        trace = 0
-      )
-    )
-  )
+  opt2 <- with(obj2, nlminb(par,fn,gr))
   out <- obj2$report(obj2$env$last.par.best)
   nll_components <- out$nll_components
   index_nll <- sum(nll_components[seq(2, length(nll_components), by = 2)])
@@ -403,8 +390,7 @@ rep1_with_wrappers <- test_fit@report # FIMS initial values
 fit@max_gradient # from Cole, can use TMBhelper::fit_tmb to get val to <1e-10
 rep2_with_wrappers <- fit@report
 
-# TODO: Review differences between rep2 and rep2_with_wrappers. 
-# Flag this for Cole to verify.
+# slight differences due to different optimizer settings
 # cbind(rep2$ssb[[1]], rep2_with_wrappers$ssb[[1]])
 # cbind(rep2$nll_components, rep2_with_wrappers$nll_components)
 ```
