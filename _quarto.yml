@@ -55,6 +55,8 @@ website:
         text: SEFSC scamp case study
       - href: content/pacific-hake.qmd
         text: Pacific Hake case study
+      - href: content/advanced-features.qmd
+        text: Advanced features case study
       - href: content/acknowledgements.qmd
         text: Acknowledgements
 

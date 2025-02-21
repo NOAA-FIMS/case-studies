@@ -1,0 +1,210 @@
+---
+title: Exploration of advanced FIMS features
+format:
+  html:
+    code-fold: true
+---
+
+## The setup
+
+{{< include setup.qmd >}}
+
+```{r}
+#| warning: false
+#| label: startup
+#| output: false
+ggplot2::theme_set(theme_bw())
+```
+
+-   R version: `r R_version`\
+-   TMB version: `r TMB_version`\
+-   FIMS commit: `r FIMS_commit`\
+-   Stock name: Gulf of Alaska (GOA) Walleye Pollock\
+-   Region: AFSC\
+-   Analyst: Cole Monnahan\
+
+## Simplifications to the original assessment
+
+See the AFSC-GOA-pollock case study for details on the model. Here the focus is on advanced features.
+
+
+## Script to prepare data for building FIMS object
+
+```{r}
+#| warning: false
+#| label: prepare-fims-data
+#| output: false
+
+## define the dimensions and global variables
+years <- 1970:2023
+nyears <- length(years)
+nseasons <- 1
+nages <- 10
+ages <- 1:nages
+## This will fit the models bridging to FIMS (simplifying)
+## source("fit_bridge_models.R")
+## compare changes to model
+pkfitfinal <- readRDS("data_files/pkfitfinal.RDS")
+pkfit0 <- readRDS("data_files/pkfit0.RDS")
+parfinal <- pkfitfinal$obj$env$parList()
+pkinput0 <- readRDS('data_files/pkinput0.RDS')
+fimsdat <- pkdat0 <- pkinput0$dat
+pkinput <- readRDS('data_files/pkinput.RDS')
+```
+
+## Run FIMS model without using wrapper functions
+```{r}
+#| warning: false
+#| label: run-FIMS
+#| output: false
+#| eval: true
+
+## set up FIMS data objects
+FIMS::clear()
+estimate_fish_selex <- TRUE
+estimate_survey_selex <- TRUE
+estimate_q2 <- TRUE
+estimate_q3 <- TRUE
+estimate_q6 <- TRUE
+estimate_F <- TRUE
+estimate_recdevs <- TRUE
+
+# Set up a FIMS model without wrapper functions
+source("R/pk_prepare_FIMS_inputs.R")
+
+## make FIMS model
+success <- CreateTMBModel()
+parameters <- list(p = get_fixed())
+obj <- TMB::MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
+opt <- with(obj, nlminb(
+  start = par,
+  objective = fn,
+  gradient = gr,
+  control = list(
+    eval.max = 10000,
+    iter.max = 10000,
+    trace = 0
+  )
+))
+max(abs(obj$gr())) # from Cole, can use TMBhelper::fit_tmb to get val to <1e-10
+rep2 <- obj$report(obj$env$last.par.best) ## FIMS after estimation
+```
+
+
+## Extra analyses
+Two extra analyses are demonstrated. First is a likelihood profile over lnR0, showing component contributions and testing for data conflict (a Piner plot). The second is to run the model through the 'Stan' software using the 'tmbstan' R package. This samples from the posterior, which are put back into the model to get the posterior distribution for spawning stock biomass. Given its long run time the results are saved to a file and read in for post-hoc plotting.
+
+``` {r}
+#| label: likelihood-profile
+#| warning: true
+#| output: false
+
+## Try a likelihood profile
+i <- 68 # this will break if model is changed at all
+map <- parameters
+map$p[i] <- NA # map off R0 specified below
+map$p <- as.factor(map$p)
+xseq <- as.numeric(c(opt$par[i],  seq(22,24, len=30)))
+res <- list()
+for(j in 1:length(xseq)){
+  print(j)
+  parameters$p[i] <- xseq[j]
+  obj2 <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE, map=map)
+  opt2 <- with(obj2, nlminb(par,fn,gr))
+  out <- obj2$report(obj2$env$last.par.best)
+  nll_components <- out$nll_components
+  index_nll <- sum(nll_components[seq(2, length(nll_components), by = 2)])
+  age_comp_nll <- sum(nll_components[seq(3, length(nll_components), by = 2)])
+  res[[j]] <- data.frame(
+    j = j, lnR0 = xseq[j], total = out$jnll, index = index_nll,
+    age = age_comp_nll, recruit = out$nll_components[1], maxgrad = max(abs(obj$gr()))
+  )
+}
+res <- bind_rows(res) %>%
+  pivot_longer( cols=c(total, index, age, recruit)) %>%
+  group_by(name) %>% mutate(deltaNLL=value-min(value))
+g <- ggplot(res, aes(lnR0, deltaNLL, color=name)) + geom_line()
+g <- g+ geom_point(data=filter(res, deltaNLL==0), size=2) +
+  labs(y='Delta NLL', color='NLL component')
+ggsave('figures/AFSC_PK_like_profile_R0.png', g, width=7, height=3.5)
+```
+
+![Likelihood Profile](figures/AFSC_PK_like_profile_R0.png){width=7in}
+
+## Bayesian integration in FIMS
+This section demonstrates how to do integration via the NUTS algorithm. 
+
+```{r}
+#| label: bayesian-integration
+#| warning: true
+#| output: false
+# this takes too long to run for rendering so saving everything to file
+
+## Try Bayesian
+#library(tmbstan)
+library(shinystan)
+library(adnuts)
+## Some paraemters wandering off to Inf so fix those (need
+## priors). Needs a ton of work but is proof of concept. Major
+## problem is parallel fails.
+map <- parameters
+## parameters$p[65:66]
+map$p[c(65,66,114)] <- NA
+map$p <- as.factor(map$p)
+obj3 <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent=TRUE, map=map)
+parameter_names <- names(FIMS:::get_parameter_names(obj3[["par"]]))
+# ## Fails when trying to do this in parallel unfortunately
+# mcmc <- sample_sparse_tmb(obj3, iter=1200, warmup=200, chains=4, cores=1,
+#                           seed=1, init='random',
+#                           control=list(adapt_delta=.95))
+# saveRDS(mcmc, file='data_files/pk_mcmcfit.RDS')
+
+mcmc <- readRDS('data_files/pk_mcmcfit.RDS')
+png('figures/MCMC_pairs.png', width=7, height=5, units='in', res=200)
+pairs_admb(mcmc, pars=1:6, order='slow')
+dev.off()
+
+png('figures/MCMC_marginals.png', width=7, height=5, units='in', res=200)
+plot_marginals(mcmc, pars=1:9)
+dev.off()
+
+png('figures/MCMC_uncertainties.png', width=7, height=5, units='in', res=200)
+plot_uncertainties(mcmc)
+dev.off()
+
+png('figures/MCMC_sampler_params.png', width=7, height=7, units='in', res=200)
+plot_sampler_params(mcmc)
+dev.off()
+
+
+
+#launch_shinyadmb(mcmc)
+df <- as.data.frame(mcmc)
+## for each posterior draw, report to get SSB
+postreps <- list()
+for(ii in 1:nrow(df)){
+  if(ii %% 500==0) print(ii)
+  postreps[[ii]] <- obj3$rep(df[ii,])
+}
+ssbpost <- lapply(postreps, function(x) data.frame(year=years, ssb=x$ssb[[1]][-55]))%>%
+  bind_rows %>% mutate(rep=rep(1:nrow(df), each=54))
+saveRDS(ssbpost, file='data_files/pk_SSB_posteriors.RDS')
+ssbpost <- readRDS('data_files/pk_pollock_SSB_posteriors.RDS')
+g <- ggplot(ssbpost, aes(year, ssb/1e9, group=rep)) + geom_line(alpha=.1) +
+  ylim(0,NA) + labs(x=NULL, y='SSB (M t)', title='Posterior demo (unconverged!)')
+ggsave('figures/MCMC_ssb_posterior.png', g, width=7, height=4, units='in')
+
+```
+
+This results in the following plots showing convergence and then finally the posterior distribution of SSB over time.
+![MCMC marginals](figures/MCMC_marginals.png){width=7in}
+![MCMC pairs](figures/MCMC_pairs.png){width=7in}
+![MCMC uncertainties](figures/MCMC_uncertainties.png){width=7in}
+![MCMC sampler parameters](figures/MCMC_sampler_params.png){width=7in}
+![SSB Posterior](figures/MCMC_ssb_posterior.png){width=7in}
+
+
+```{r}
+# Clear C++ objects from memory
+FIMS::clear()
+```

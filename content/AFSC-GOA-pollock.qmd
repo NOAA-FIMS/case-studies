@@ -6,7 +6,6 @@ format:
 ---
 
 ## The setup
-
 {{< include setup.qmd >}}
 
 ```{r}
@@ -64,14 +63,12 @@ parfinal <- pkfitfinal$obj$env$parList()
 pkinput0 <- readRDS('data_files/pkinput0.RDS')
 fimsdat <- pkdat0 <- pkinput0$dat
 pkinput <- readRDS('data_files/pkinput.RDS')
+rep0 <- pkfitfinal$rep
 ```
 
-## Run FIMS model without using wrapper functions
+## Run FIMS model using wrapper functions
 ```{r}
-#| warning: false
-#| label: run-FIMS
-#| output: false
-#| eval: true
+FIMS::clear()
 
 ## set up FIMS data objects
 FIMS::clear()
@@ -83,190 +80,7 @@ estimate_q6 <- TRUE
 estimate_F <- TRUE
 estimate_recdevs <- TRUE
 
-# Set up a FIMS model without wrapper functions
 source("R/pk_prepare_FIMS_inputs.R")
-
-## make FIMS model
-success <- CreateTMBModel()
-parameters <- list(p = get_fixed())
-obj <- TMB::MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
-## report values for the two models
-rep0 <- pkfitfinal$rep
-rep1 <- obj$report() # FIMS initial values
-## try fitting the model
-# use nlminb() to match FIMS::fit_fims()
-# opt <- TMBhelper::fit_tmb(obj, getsd=FALSE, newtonsteps=0, control=list(trace=100))
-opt <- with(obj, nlminb(
-  start = par,
-  objective = fn,
-  gradient = gr,
-  control = list(
-    eval.max = 10000,
-    iter.max = 10000,
-    trace = 0
-  )
-))
-max(abs(obj$gr())) # from Cole, can use TMBhelper::fit_tmb to get val to <1e-10
-rep2 <- obj$report(obj$env$last.par.best) ## FIMS after estimation
-```
-
-## Output plotting
-```{r}
-## Output plotting
-out1 <- get_long_outputs(rep1, rep0) %>%
-  mutate(platform=ifelse(platform=='FIMS', 'FIMS init', 'TMB'))
-out2 <- get_long_outputs(rep2, rep0) %>% filter(platform=='FIMS') %>%
-  mutate(platform='FIMS opt')
-out <- rbind(out1,out2)
-g <- ggplot(out, aes(year, value, color=platform)) + geom_line() +
-  facet_wrap('name', scales='free') + ylim(0,NA) +
-  labs(x=NULL, y=NULL)
-ggsave('figures/AFSC_PK_ts_comparison.png', g, width=9, height=5, units='in')
-g <- ggplot(filter(out, platform!='TMB'), aes(year, relerror, color=platform)) + geom_line() +
-  facet_wrap('name', scales='free') +
-  labs(x=NULL, y='Relative difference') + coord_cartesian(ylim=c(-.5,.5))
-ggsave('figures/AFSC_PK_ts_comparison_relerror.png', g, width=9, height=5, units='in')
-
-## Quick check on age comp fits
-p1 <- get_acomp_fits(rep0, rep1, rep2, fleet=1, years=pkdat0$fshyrs)
-g <- ggplot(p1, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()
-ggsave('figures/AFSC_PK_age_comp_fits_1.png', g, width=9, height=8, units='in')
-p2 <- get_acomp_fits(rep0, rep1, rep2, fleet=2, years=pkdat0$srv_acyrs2)
-g <- ggplot(p2, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()
-ggsave('figures/AFSC_PK_age_comp_fits_2.png', g, width=9, height=8, units='in')
-## p3 <- get_acomp_fits(rep0, rep1, rep2, fleet=3, years=pkdat0$srv_acyrs3)
-## g <- ggplot(p3, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()
-## p6 <- get_acomp_fits(rep0, rep1, rep2, fleet=4, years=pkdat0$srv_acyrs6)
-## g <- ggplot(p6, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()
-
-## index fits
-addsegs <- function(yrs, obs, CV){
-  getlwr <- function(obs, CV) qlnorm(p=.025, meanlog=log(obs), sdlog=sqrt(log(1+CV^2)))
-  getupr <- function(obs, CV) qlnorm(p=.975, meanlog=log(obs), sdlog=sqrt(log(1+CV^2)))
-  segments(yrs, y0=getlwr(obs,CV), y1=getupr(obs,CV))
-  points(yrs, obs, pch=22, bg='white')
-}
-png('figures/AFSC_PK_index_fits.png', res=300, width=6, height=7, units='in')
-par(mfrow=c(3,1), mar=c(3,3,.5,.5), mgp=c(1.5,.5,0), tck=-0.02)
-plot(years, rep0$Eindxsurv2, type='l',
-     ylim=c(0,2), lwd=5.5,
-      xlab=NA, ylab='Biomass (million t)')
-x1 <- out1 %>% filter(name=='Index2' & platform=='FIMS init')
-x2 <- out2 %>% filter(name=='Index2' & platform=='FIMS opt')
-lines(years,x1$value, col=2, lwd=1.5)
-lines(years,x2$value, col=3, lwd=1.5)
-addsegs(yrs=pkdat0$srvyrs2, obs=pkdat0$indxsurv2, CV=pkdat0$indxsurv_log_sd2)
-legend('topright', legend=c('TMB', 'FIMS init', 'FIMS opt'), lty=1, col=1:3)
-mtext('Survey 2', line=-1.5)
-plot(years, rep0$Eindxsurv3, type='l',
-     ylim=c(0,.6), lwd=5.5,
-      xlab=NA, ylab='Biomass (million t)')
-x1 <- out1 %>% filter(name=='Index3' & platform=='FIMS init')
-x2 <- out2 %>% filter(name=='Index3' & platform=='FIMS opt')
-lines(years,x1$value, col=2, lwd=1.5)
-lines(years,x2$value, col=3, lwd=1.5)
-addsegs(yrs=pkdat0$srvyrs3, obs=pkdat0$indxsurv3, CV=pkdat0$indxsurv_log_sd3)
-mtext('Survey 3', line=-1.5)
-legend('topright', legend=c('TMB', 'FIMS init', 'FIMS opt'), lty=1, col=1:3)
-plot(years, rep0$Eindxsurv6, type='l',
-     ylim=c(0,2.6), lwd=5.5,
-      xlab=NA, ylab='Biomass (million t)')
-x1 <- out1 %>% filter(name=='Index6' & platform=='FIMS init')
-x2 <- out2 %>% filter(name=='Index6' & platform=='FIMS opt')
-lines(years,x1$value, col=2, lwd=1.5)
-lines(years,x2$value, col=3, lwd=1.5)
-addsegs(yrs=pkdat0$srvyrs6, obs=pkdat0$indxsurv6, CV=pkdat0$indxsurv_log_sd6)
-mtext('Survey 6', line=-1.5)
-legend('topright', legend=c('TMB', 'FIMS init', 'FIMS opt'), lty=1, col=1:3)
-dev.off()
-```
-## Comparison figures for basic model
-![Time Series](figures/AFSC_PK_ts_comparison.png){width=7in}
-![Time Series (relative error)](figures/AFSC_PK_ts_comparison_relerror.png){width=7in}
-![Indices](figures/AFSC_PK_index_fits.png){width=7in}
-![Fishery Age Composition Fits](figures/AFSC_PK_age_comp_fits_1.png){width=7in}
-![Survey 2 Age Composition Fits](figures/AFSC_PK_age_comp_fits_2.png){width=7in}
-
-## Extra analyses
-Two extra analyses are demonstrated. First is a likelihood profile over lnR0, showing component contributions and testing for data conflict (a Piner plot). The second is to run the model through the 'Stan' software using the 'tmbstan' R package. This samples from the posterior, which are put back into the model to get the posterior distribution for spawning stock biomass. Given its long run time the results are saved to a file and read in for post-hoc plotting.
-
-``` {r}
-#| label: extra-calcs
-#| warning: true
-#| output: false
-
-## Try a likelihood profile
-i <- 68 # this will break if model is changed at all
-map <- parameters
-map$p[i] <- NA # map off R0 specified below
-map$p <- as.factor(map$p)
-xseq <- as.numeric(c(opt$par[i],  seq(22,24, len=30)))
-res <- list()
-for(j in 1:length(xseq)){
-  print(j)
-  parameters$p[i] <- xseq[j]
-  obj2 <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE, map=map)
-  opt2 <- with(obj2, nlminb(par,fn,gr))
-  out <- obj2$report(obj2$env$last.par.best)
-  nll_components <- out$nll_components
-  index_nll <- sum(nll_components[seq(2, length(nll_components), by = 2)])
-  age_comp_nll <- sum(nll_components[seq(3, length(nll_components), by = 2)])
-  res[[j]] <- data.frame(
-    j = j, lnR0 = xseq[j], total = out$jnll, index = index_nll,
-    age = age_comp_nll, recruit = out$nll_components[1], maxgrad = max(abs(obj$gr()))
-  )
-}
-res <- bind_rows(res) %>%
-  pivot_longer( cols=c(total, index, age, recruit)) %>%
-  group_by(name) %>% mutate(deltaNLL=value-min(value))
-g <- ggplot(res, aes(lnR0, deltaNLL, color=name)) + geom_line()
-g <- g+ geom_point(data=filter(res, deltaNLL==0), size=2) +
-  labs(y='Delta NLL', color='NLL component')
-ggsave('figures/AFSC_PK_like_profile_R0.png', g, width=7, height=3.5)
-
-
-
-## ## Try Bayesian
-## library(tmbstan)
-## library(shinystan)
-## ## Some paraemters wandering off to Inf so fix those (need
-## ## priors). Needs a ton of work but is proof of concept. Major
-## ## problem is parallel fails.
-## map <- parameters
-## ## parameters$p[65:66]
-## map$p[65:66] <- NA # map off R0 specified below
-## map$p <- as.factor(map$p)
-## obj3 <- MakeADFun(data = list(), parameters, DLL = "FIMS", silent=TRUE, map=map)
-## opt3 <- TMBhelper::fit_tmb(obj3, getsd=FALSE, newtonsteps=0, control=list(trace=0))
-## ## Fails when trying to do this in parallel unfortunately
-## fit <- tmbstan(obj3, chains=1, cores=1, open_progress=FALSE,
-##                init='last.par.best', control=list(max_treedepth=10))
-## launch_shinystan(fit)
-## df <- as.data.frame(fit)
-## df <- df[,-ncol(df)] # drop lp__
-## ## for each posterior draw, report to get SSB
-## postreps <- list()
-## for(ii in 1:nrow(df)){
-##   if(ii %% 10==0) print(ii)
-##   postreps[[ii]] <- obj3$rep(df[ii,])
-## }
-## ssbpost <- lapply(postreps, function(x) data.frame(year=years, ssb=x$ssb[[1]][-55]))%>%
-##   bind_rows %>% mutate(rep=rep(1:nrow(df), each=54))
-## saveRDS(ssbpost, file='pk_SSB_posteriors.RDS')
-ssbpost <- readRDS('data_files/pk_pollock_SSB_posteriors.RDS')
-g <- ggplot(ssbpost, aes(year, ssb/1e9, group=rep)) + geom_line(alpha=.1) +
-  ylim(0,NA) + labs(x=NULL, y='SSB (M t)', title='Posterior demo (unconverged!)')
-ggsave('figures/AFSC_PK_ssb_posterior.png', g, width=7, height=4, units='in')
-
-```
-
-## Plots for extra analyses
-![Likelihood Profile](figures/AFSC_PK_like_profile_R0.png){width=7in}
-![SSB Posterior](figures/AFSC_PK_ssb_posterior.png){width=7in}
-
-## Run FIMS model using wrapper functions
-```{r}
-FIMS::clear()
 # set up selectivities for fleets and survey
 fleet1 <- survey2 <- survey6 <- list(
   selectivity = list(form = "DoubleLogisticSelectivity"),
@@ -386,14 +200,94 @@ fit <- parameters_with_wrappers  |>
   fit_fims(optimize = TRUE)
 
 ## report values for models
-rep1_with_wrappers <- test_fit@report # FIMS initial values
+rep1 <- test_fit@report # FIMS initial values
 fit@max_gradient # from Cole, can use TMBhelper::fit_tmb to get val to <1e-10
-rep2_with_wrappers <- fit@report
+rep2 <- fit@report
 
 # slight differences due to different optimizer settings
 # cbind(rep2$ssb[[1]], rep2_with_wrappers$ssb[[1]])
 # cbind(rep2$nll_components, rep2_with_wrappers$nll_components)
 ```
+
+## Output plotting
+```{r}
+## Output plotting
+out1 <- get_long_outputs(rep1, rep0) %>%
+  mutate(platform=ifelse(platform=='FIMS', 'FIMS init', 'TMB'))
+out2 <- get_long_outputs(rep2, rep0) %>% filter(platform=='FIMS') %>%
+  mutate(platform='FIMS opt')
+out <- rbind(out1,out2)
+g <- ggplot(out, aes(year, value, color=platform)) + geom_line() +
+  facet_wrap('name', scales='free') + ylim(0,NA) +
+  labs(x=NULL, y=NULL)
+ggsave('figures/AFSC_PK_ts_comparison.png', g, width=9, height=5, units='in')
+g <- ggplot(filter(out, platform!='TMB'), aes(year, relerror, color=platform)) + geom_line() +
+  facet_wrap('name', scales='free') +
+  labs(x=NULL, y='Relative difference') + coord_cartesian(ylim=c(-.5,.5))
+ggsave('figures/AFSC_PK_ts_comparison_relerror.png', g, width=9, height=5, units='in')
+
+## Quick check on age comp fits
+p1 <- get_acomp_fits(rep0, rep1, rep2, fleet=1, years=pkdat0$fshyrs)
+g <- ggplot(p1, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()
+ggsave('figures/AFSC_PK_age_comp_fits_1.png', g, width=9, height=8, units='in')
+p2 <- get_acomp_fits(rep0, rep1, rep2, fleet=2, years=pkdat0$srv_acyrs2)
+g <- ggplot(p2, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()
+ggsave('figures/AFSC_PK_age_comp_fits_2.png', g, width=9, height=8, units='in')
+## p3 <- get_acomp_fits(rep0, rep1, rep2, fleet=3, years=pkdat0$srv_acyrs3)
+## g <- ggplot(p3, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()
+## p6 <- get_acomp_fits(rep0, rep1, rep2, fleet=4, years=pkdat0$srv_acyrs6)
+## g <- ggplot(p6, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()
+
+## index fits
+addsegs <- function(yrs, obs, CV){
+  getlwr <- function(obs, CV) qlnorm(p=.025, meanlog=log(obs), sdlog=sqrt(log(1+CV^2)))
+  getupr <- function(obs, CV) qlnorm(p=.975, meanlog=log(obs), sdlog=sqrt(log(1+CV^2)))
+  segments(yrs, y0=getlwr(obs,CV), y1=getupr(obs,CV))
+  points(yrs, obs, pch=22, bg='white')
+}
+png('figures/AFSC_PK_index_fits.png', res=300, width=6, height=7, units='in')
+par(mfrow=c(3,1), mar=c(3,3,.5,.5), mgp=c(1.5,.5,0), tck=-0.02)
+plot(years, rep0$Eindxsurv2, type='l',
+     ylim=c(0,2), lwd=5.5,
+      xlab=NA, ylab='Biomass (million t)')
+x1 <- out1 %>% filter(name=='Index2' & platform=='FIMS init')
+x2 <- out2 %>% filter(name=='Index2' & platform=='FIMS opt')
+lines(years,x1$value, col=2, lwd=1.5)
+lines(years,x2$value, col=3, lwd=1.5)
+addsegs(yrs=pkdat0$srvyrs2, obs=pkdat0$indxsurv2, CV=pkdat0$indxsurv_log_sd2)
+legend('topright', legend=c('TMB', 'FIMS init', 'FIMS opt'), lty=1, col=1:3)
+mtext('Survey 2', line=-1.5)
+plot(years, rep0$Eindxsurv3, type='l',
+     ylim=c(0,.6), lwd=5.5,
+      xlab=NA, ylab='Biomass (million t)')
+x1 <- out1 %>% filter(name=='Index3' & platform=='FIMS init')
+x2 <- out2 %>% filter(name=='Index3' & platform=='FIMS opt')
+lines(years,x1$value, col=2, lwd=1.5)
+lines(years,x2$value, col=3, lwd=1.5)
+addsegs(yrs=pkdat0$srvyrs3, obs=pkdat0$indxsurv3, CV=pkdat0$indxsurv_log_sd3)
+mtext('Survey 3', line=-1.5)
+legend('topright', legend=c('TMB', 'FIMS init', 'FIMS opt'), lty=1, col=1:3)
+plot(years, rep0$Eindxsurv6, type='l',
+     ylim=c(0,2.6), lwd=5.5,
+      xlab=NA, ylab='Biomass (million t)')
+x1 <- out1 %>% filter(name=='Index6' & platform=='FIMS init')
+x2 <- out2 %>% filter(name=='Index6' & platform=='FIMS opt')
+lines(years,x1$value, col=2, lwd=1.5)
+lines(years,x2$value, col=3, lwd=1.5)
+addsegs(yrs=pkdat0$srvyrs6, obs=pkdat0$indxsurv6, CV=pkdat0$indxsurv_log_sd6)
+mtext('Survey 6', line=-1.5)
+legend('topright', legend=c('TMB', 'FIMS init', 'FIMS opt'), lty=1, col=1:3)
+dev.off()
+```
+## Comparison figures for basic model
+![Time Series](figures/AFSC_PK_ts_comparison.png){width=7in}
+![Time Series (relative error)](figures/AFSC_PK_ts_comparison_relerror.png){width=7in}
+![Indices](figures/AFSC_PK_index_fits.png){width=7in}
+![Fishery Age Composition Fits](figures/AFSC_PK_age_comp_fits_1.png){width=7in}
+![Survey 2 Age Composition Fits](figures/AFSC_PK_age_comp_fits_2.png){width=7in}
+
+
+
 
 ## Comparison table
 
