@@ -22,7 +22,6 @@ if (use_fims_main){
   remotes::install_github("NOAA-FIMS/FIMS", ref = "dev")
 }
 
-)
 remotes::install_github("r4ss/r4ss")
 
 
