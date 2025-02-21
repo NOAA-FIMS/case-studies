@@ -16,7 +16,7 @@ if (any(installed_packages == FALSE)) {
 branch_name <- system("git branch --show-current")
 use_fims_main <- grepl("main", branch_name)
 
-if (use_fims_main){
+if (use_fims_main) {
   remotes::install_github("NOAA-FIMS/FIMS")
 } else {
   remotes::install_github("NOAA-FIMS/FIMS", ref = "dev")
