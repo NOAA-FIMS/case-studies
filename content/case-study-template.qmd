@@ -2,6 +2,15 @@
 title: Customize
 ---
 
+<!--- 
+File naming convention
+
+Please name your case study file with the following convention: `OFFICE-region-species.qmd`
+
+For example:
+`AFSC-BSAI-pollock.qmd`
+--->
+
 ## Edit and add your pages
 
 Each page should start with 
