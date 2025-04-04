@@ -13,7 +13,6 @@ format:
 #| warning: false
 #| label: startup
 #| output: false
-ggplot2::theme_set(theme_bw())
 ```
 
 -   R version: `r R_version`\
@@ -34,7 +33,12 @@ See the AFSC-GOA-pollock case study for details on the model. Here the focus is 
 #| warning: false
 #| label: prepare-fims-data
 #| output: false
-
+library(ggplot2)
+library(FIMS)
+library(dplyr)
+library(tidyr)
+library(TMB)
+ggplot2::theme_set(theme_bw())
 ## define the dimensions and global variables
 years <- 1970:2023
 nyears <- length(years)
@@ -203,6 +207,73 @@ This results in the following plots showing convergence and then finally the pos
 ![MCMC sampler parameters](figures/MCMC_sampler_params.png){width=7in}
 ![SSB Posterior](figures/MCMC_ssb_posterior.png){width=7in}
 
+## Calculate conditional AIC and effective degrees of freedom
+Zheng et al. (in review; 
+[pdflink](https://doi.org/10.48550/arXiv.2411.14185)) present a new
+formula to calculate conditional AIC. To do this it calculates
+the "effective degrees of freedom" and uses that in the
+calculation of cAIC. A parameter has 0 edf when all information
+to estimate it comes from a prior or hyperpriors. In contrast it
+has an edf of 1 when it is informed only by the data. Edf gives a
+sense of complexity of the model, and cAIC will perform better
+than marginal AIC (mAIC) for mixed effects models. Here I
+demonstrate equation 6 on a FIMS model. This approach works on
+penalized ML and random effects models alike. If Bayesian priors
+(or penalties) are used it will also calculate the impact of
+those relative to the data. No priors are used yet so that is
+left off for now.
+
+```{r}
+# Set up a FIMS model without wrapper functions
+
+# the original model (with data)
+mle <- opt$par
+hess <- obj$he(mle)
+
+## make FIMS model without any data, only hyperdistribution on recdevs
+FIMS::clear()
+# this is a hack to trick the script to thinking there's no data (it should all be -999)
+years <- 500:1000
+source("R/pk_prepare_FIMS_inputs.R")
+years <- 1970:2023
+# build object but DO NOT optimize it, pass the original MLE to it
+obj_nodata <- TMB::MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE)
+success <- CreateTMBModel()
+parameters <- list(p = get_fixed())
+parameter_names <- names(FIMS:::get_parameter_names(obj[["par"]]))
+lrandom <- is.na(parameter_names) # vector of which are affected by priors/penalties
+
+# the cAIC calculations
+Hess_data <- obj$he(mle)[lrandom, lrandom]
+Hess_nodata <- obj_nodata$he(mle)[lrandom, lrandom]
+negEDF <- diag(solve(Hess_data, Hess_nodata))
+# some data processing
+edf <- data.frame(par='recdev', n=1, edf=1-negEDF) |>
+  mutate(year=1969+1:n()) |> ungroup()
+g <- ggplot(edf, aes(year, y=edf)) + geom_point() +
+  facet_wrap('par') + labs(x=NULL, y='Effective degree of freedom') +
+ylim(NA,1)
+ggsave('figures/cAIC_edf.png', g, width=7, height=4)
+tab <- edf |> group_by(par) |> summarize(n=sum(n), edf=sum(edf)) |> 
+  arrange(desc(edf)) 
+tab <- bind_rows(tab, edf |> summarize(par='Total', n=sum(n), edf=sum(edf))) |>
+  mutate(pct=100*edf/n)
+gt::gt(tab) |> gt::fmt_number(columns = 3:4, decimals = 1)  
+
+q <- sum(lrandom) # no. of random effects
+p <- sum(1-lrandom) # no. of fixed effects
+jnll <- obj$env$f(mle)
+cnll <- jnll - obj_nodata$env$f(mle)
+## conditional AIC (new calculation)
+cAIC <- 2*cnll + 2*(p+q) - 2*sum(negEDF)
+round(c(edf=sum(edf$edf), pct.edf=100*(sum(edf$edf)/sum(edf$n)),
+     cAIC=cAIC, mAIC=TMBhelper::TMBAIC(opt)),1)
+```
+
+This appears to work except for the last recruitment deviation
+which is negative which should be impossible. It is likely the
+model is misconfigured.
+![edf](figures/cAIC_edf.png){width=7in}
 
 ```{r}
 # Clear C++ objects from memory
