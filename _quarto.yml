@@ -39,21 +39,21 @@ website:
         text: Rendering
       - href: content/rmarkdown.Rmd
         text: R Markdown files
-      - href: content/cases/NEFSC-yellowtail.qmd
+      - href: content/NEFSC-yellowtail.qmd
         text: NEFSC yellowtail flounder case study
-      - href: content/cases/AFSC-GOA-pollock.qmd
+      - href: content/AFSC-GOA-pollock.qmd
         text: AFSC GOA pollock case study
-      - href: content/cases/AFSC-BSAI-AtkaMackerel.qmd
+      - href: content/AFSC-BSAI-AtkaMackerel.qmd
         text: AFSC BSAI Atka Mackerel case study
-      - href: content/cases/SWFSC-sardine.qmd
+      - href: content/SWFSC-sardine.qmd
         text: SWFSC sardine case study
-      - href: content/cases/PIFSC-opakapaka.qmd
+      - href: content/PIFSC-opakapaka.qmd
         text: PIFSC Opakapaka case study
-      - href: content/cases/NWFSC-petrale.qmd
+      - href: content/NWFSC-petrale.qmd
         text: NWFSC petrale case study
-      - href: content/cases/SEFSC-scamp.qmd
+      - href: content/SEFSC-scamp.qmd
         text: SEFSC scamp case study
-      - href: content/cases/pacific-hake.qmd
+      - href: content/pacific-hake.qmd
         text: Pacific Hake case study
       - href: content/acknowledgements.qmd
         text: Acknowledgements
