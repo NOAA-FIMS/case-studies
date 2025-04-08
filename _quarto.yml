@@ -43,7 +43,7 @@ website:
         text: NEFSC yellowtail flounder case study
       - href: content/AFSC-GOA-pollock.qmd
         text: AFSC GOA pollock case study
-      - href: content/AFSC-BSAI-AtkaMackerel.qmd
+      - href: content/AFSC-BSAI-atka_mackerel.qmd
         text: AFSC BSAI Atka Mackerel case study
       - href: content/SWFSC-sardine.qmd
         text: SWFSC sardine case study
@@ -53,7 +53,7 @@ website:
         text: NWFSC petrale case study
       - href: content/SEFSC-scamp.qmd
         text: SEFSC scamp case study
-      - href: content/pacific-hake.qmd
+      - href: content/NWFSC-pacific_hake.qmd
         text: Pacific Hake case study
       - href: content/acknowledgements.qmd
         text: Acknowledgements
