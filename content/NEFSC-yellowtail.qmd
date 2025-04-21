@@ -170,7 +170,21 @@ ages <- 1:nages # ASAP starts at age 1
 age_frame <- FIMS::FIMSFrame(mydat)
 
 # set up selectivities for fleets and survey
-fleet1 <- survey1 <- survey2 <- list(
+fleet1 <- list(
+  selectivity = list(form = "LogisticSelectivity"),
+  data_distribution = c(
+    Landings = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
+  )
+)
+survey1 <- list(
+  selectivity = list(form = "LogisticSelectivity"),
+  data_distribution = c(
+    Index = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
+  )
+)
+survey2 <- list(
   selectivity = list(form = "LogisticSelectivity"),
   data_distribution = c(
     Index = "DlnormDistribution",
@@ -262,12 +276,12 @@ report <- get_report(fit)
 
 mycols <- c("FIMS" = "blue", "ASAP" = "red", "ASAP_orig" = "darkgreen")
 
-for (i in 1:rdat$parms$nindices){
+for (i in 1:rdat$parms$nindices) {
   index_results <- data.frame(
     survey = i,
     year = years,
     observed = rdat$index.obs[[i]],
-    FIMS = report$exp_index[[rdat$parms$nfleet+i]],
+    FIMS = report$index_exp[[rdat$parms$nfleet+i]],
     ASAP = rdat$index.pred[[i]]
   )
   if (i==1){
@@ -293,7 +307,7 @@ catch_results <- data.frame(
   observed = get_data(age_frame) |>
     dplyr::filter(type == "index", name == "survey1") |>
     dplyr::pull(value),
-  FIMS = report$exp_index[[1]],
+  FIMS = report$landings_exp[[1]],
   ASAP = as.numeric(rdat$catch.pred[1,])
 )
 #print(catch_results)

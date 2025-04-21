@@ -14,7 +14,7 @@ format:
 #| label: startup
 #| output: false
 
-theme_set(theme_bw())
+ggplot2::theme_set(ggplot2::theme_bw())
 ```
 
 -   R version: `r R_version`\
@@ -172,7 +172,7 @@ fleet1 <- list(
   selectivity = list(form = "LogisticSelectivity"),
   # selectivity = list(form = "DoubleLogisticSelectivity"),
   data_distribution = c(
-    Index = "DlnormDistribution",
+    Landings = "DlnormDistribution",
     AgeComp = "DmultinomDistribution"
   )
 )
@@ -301,7 +301,7 @@ get_data(fims_data) |>
   dplyr::filter(type == "landings") |>
   dplyr::mutate(
     year = dplyr::row_number() + get_start_year(fims_data) - 1,
-    expected = get_report(fit)$exp_catch[[1]]
+    expected = get_report(fit)$landings_exp[[1]]
   ) |>
   ggplot2::ggplot(
     ggplot2::aes(year, value)
@@ -318,12 +318,12 @@ get_data(fims_data) |>
 #| label: results-sb
 
 get_estimates(fit) |>
-  dplyr::filter(grepl("SB", name, ignore.case = TRUE)) |>
+  dplyr::filter(grepl("SB", label, ignore.case = TRUE)) |>
   dplyr::mutate(
     year = (get_start_year(fims_data)- 1):get_end_year(fims_data)
   ) |>
   ggplot2::ggplot(
-    ggplot2::aes(x = year, y = value)
+    ggplot2::aes(x = year, y = estimate)
   ) +
   ggplot2::geom_line() +
   ggplot2::xlab("Year") +
@@ -335,16 +335,15 @@ get_estimates(fit) |>
 
 # Index
 get_estimates(fit) |>
-  dplyr::filter(grepl("Index", name)) |>
+  dplyr::filter(label == "indexexpected", module_id == 2) |>
   dplyr::mutate(
-    year = rep(1:(dplyr::n() / 2), 2) + get_start_year(fims_data) - 1,
-    fleet = rep(c("Fishery estimated", "Estimated"), each = dplyr::n() / 2)
-  ) |>
-  dplyr::filter(
-    fleet == "Estimated"
+    year = get_start_year(fims_data):get_end_year(fims_data),
   ) |>
   ggplot2::ggplot(
-    ggplot2::aes(year, value, group = fleet, color = as.factor(fleet))
+    ggplot2::aes(
+      year,
+      estimate
+    )
   ) +
   ggplot2::geom_line() +
   ggplot2::geom_point(
@@ -363,11 +362,11 @@ get_estimates(fit) |>
 
 # Fishing mortality
 get_estimates(fit) |>
-  dplyr::filter(grepl("Fmort", name)) |>
+  dplyr::filter(grepl("Fmort", label)) |>
   dplyr::mutate(
     year = rep(1:dplyr::n(), 1) + get_start_year(fims_data),
     fleet = rep(1, each = dplyr::n()),
-    F = exp(value)
+    F = exp(estimate)
   ) |>
   ggplot2::ggplot(
     ggplot2::aes(year, F, group = fleet)

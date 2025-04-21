@@ -33,18 +33,15 @@ r4ss_version <- packageVersion('r4ss')
 
 ## Setting up Data
 ```{r fims-dims}
-load(file.path("data_files", "opaka_model.RDS"))
+load(here::here("content", "data_files", "opaka_model.RDS"))
 include_age_comps <- FALSE
-include_length_comps <- TRUE
 years <- seq(opaka_dat$styr, opaka_dat$endyr)
 nyears <- length(years) # the number of years which we have data for.
 nseasons <- 1 # the number of seasons in each year. FIMS currently defaults to 1
 ages <- seq(1, 21) # age vector.
 nages <- length(ages) # the number of age groups.
-if(include_length_comps){
-  comp_lengths <- opaka_dat$lbin_vector # length vector.
-  nlengths <- length(comp_lengths) # the number of length bins.
-}
+comp_lengths <- opaka_dat$lbin_vector # length vector.
+nlengths <- length(comp_lengths) # the number of length bins.
 ```
 
 ### Preparing Data using FIMSFrame
@@ -57,10 +54,8 @@ if(include_length_comps){
 source(here::here("content", "R", "get_ss3_data.R"))
 opaka_dat_fims <- get_ss3_data(opaka_dat, fleets = c(1,2,3), ages = ages, lengths = comp_lengths)
 
-if (!include_age_comps){
-  opaka_dat_fims <- opaka_dat_fims |>
-    dplyr::filter(type != "age")
-}
+opaka_dat_fims <- opaka_dat_fims |>
+  dplyr::filter(type != "age")
 ## age to length conversion matrix 
 # Growth function values to create age to length conversion matrix from model
 #comparison project
@@ -155,7 +150,8 @@ opaka_dat_fims <- opaka_dat_fims |>
 
 
 opaka_dat_fims <- opaka_dat_fims |> 
-dplyr::mutate(uncertainty = ifelse(type == "length" & name == "fleet2" & value != -999, 1, uncertainty)) |> filter(!(type == "index" & name == "fleet3"))
+  dplyr::mutate(uncertainty = ifelse(type == "length" & name == "fleet2" & value != -999, 1, uncertainty)) |>
+  dplyr::filter(!(type == "index" & name == "fleet3"))
 
 fims_frame <- FIMSFrame(opaka_dat_fims)
 
@@ -172,18 +168,29 @@ The `fims_frame` object contains a `@data` slot that holds a long data frame wit
 
 ```{r, max.height='100px', attr.output='.numberLines'}
 # Define fleet specifications for fleet1 and survey1
-fleet1 <- fleet3 <- fleet4 <- list(
+fleet1 <- list(
   selectivity = list(form = "LogisticSelectivity"),
   data_distribution = c(
-    Index = "DlnormDistribution"
+    Landings = "DlnormDistribution"
   )
 )
-
 fleet2 <- list(
   selectivity = list(form = "LogisticSelectivity"),
   data_distribution = c(
     Index = "DlnormDistribution", 
     LengthComp = "DmultinomDistribution"  
+  )
+)
+fleet3 <- list(
+  selectivity = list(form = "LogisticSelectivity"),
+  data_distribution = c(
+    Landings = "DlnormDistribution"
+  )
+)
+fleet4 <- list(
+  selectivity = list(form = "LogisticSelectivity"),
+  data_distribution = c(
+    Index = "DlnormDistribution"
   )
 )
 
@@ -293,25 +300,6 @@ test_fit <- parameters |>
 fit <- parameters |>
   initialize_fims(data = fims_frame) |>
   fit_fims(optimize = TRUE)
-str(fit)
-clear()
-```
-
-```{r}
-#| eval: false
-#| code-fold: true
-fit@report$exp_index
-fit@report$exp_catch
-fit@report$F_mort[[1]]
-fit@report$log_recruit_dev
-fit@report$ssb
-fit@report$biomass
-unique(fit@estimates$name)
-fit@input$parameters #q and init_naa
-fit@estimates |> filter(name == "NAA")
-pull(value) 
-# Clear memory post-run
-
 ```
 
 ## Problems and Questions: 
@@ -324,10 +312,9 @@ pull(value)
 ## Plotting Results
 
 ```{r data-fits-plots, eval = TRUE}
-library(ggplot2)
 index_results <- data.frame(
   observed = m_index(fims_frame, "fleet2"),
-  expected = get_report(fit)[["exp_index"]][[2]]
+  expected = get_report(fit)[["index_exp"]][[2]]
 ) |>
 dplyr::mutate(year = years) |>
 dplyr::filter(year > 2016)
@@ -342,7 +329,7 @@ ggplot2::ggplot(index_results, ggplot2::aes(x = year, y = observed)) +
 
 cpue_results <- data.frame(
   observed = m_index(fims_frame, "fleet4"),
-  expected = get_report(fit)[["exp_index"]][[2]]
+  expected = get_report(fit)[["index_exp"]][[2]]
 ) |>
 dplyr::mutate(year = years) |>
 dplyr::filter(observed >0)
@@ -357,7 +344,7 @@ ggplot2::ggplot(cpue_results, ggplot2::aes(x = year, y = observed)) +
 
 catch_results <- data.frame(
   observed = c(m_landings(fims_frame, fleet = "fleet1"), m_landings(fims_frame, fleet = "fleet3")),
-  expected = c(get_report(fit)[["exp_index"]][[1]], get_report(fit)[["exp_index"]][[3]]),
+  expected = c(get_report(fit)[["landings_exp"]][[1]], get_report(fit)[["landings_exp"]][[3]]),
   fleet = rep(c("fleet1", "fleet3"), each = 75)
 ) |>
 dplyr::mutate(year = rep(years, 2))
@@ -391,7 +378,7 @@ ggplot2::ggplot(biomass, ggplot2::aes(x = Yr, y = value)) +
   ggplot2::theme_bw()
 
 recruits <- rep$recruit |> 
-  select(Yr, exp_recr, raw_dev) |>
+  dplyr::select(Yr, exp_recr, raw_dev) |>
   dplyr::rename("SS_recruit" = "exp_recr",
                 "SS_recdev" = "raw_dev",
                 "Year" = "Yr") |> 
