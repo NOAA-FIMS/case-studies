@@ -12,12 +12,12 @@ if (any(installed_packages == FALSE)) {
 }
 
 # the Bayesian case study requires these extra packages
-if(!'StanEstimators' %in% rownames(installed.packages())){
-install.packages('StanEstimators', repos = c('https://andrjohns.r-universe.dev', 'https://cloud.r-project.org'))
+if (!"StanEstimators" %in% rownames(installed.packages())) {
+  install.packages("StanEstimators", repos = c("https://andrjohns.r-universe.dev", "https://cloud.r-project.org"))
 }
 
-if(!'adnuts' %in% rownames(installed.packages())){
-  remotes::install_github('Cole-Monnahan-NOAA/adnuts', ref='sparse_M')
+if (!"adnuts" %in% rownames(installed.packages())) {
+  remotes::install_github("Cole-Monnahan-NOAA/adnuts", ref="sparse_M")
 }
 
 # Install FIMS: main branch version if on main, dev version on any other branch
@@ -25,11 +25,11 @@ if(!'adnuts' %in% rownames(installed.packages())){
 branch_name <- system("git branch --show-current")
 use_fims_main <- grepl("main", branch_name)
 
-if (use_fims_main) {
-  remotes::install_github("NOAA-FIMS/FIMS")
-} else {
-  remotes::install_github("NOAA-FIMS/FIMS", ref = "dev")
-}
+# if (use_fims_main) {
+#   remotes::install_github("NOAA-FIMS/FIMS")
+# } else {
+#   remotes::install_github("NOAA-FIMS/FIMS", ref = "dev")
+# }
 
 # SS3 case studies require r4ss
 remotes::install_github("r4ss/r4ss")

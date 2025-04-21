@@ -1,3 +1,112 @@
+## Quick function to compare models
+get_long_outputs <- function(fims, tmb) {
+  ## estimaed catch is pretty close I think
+  naa <- matrix(fims$naa[[1]], ncol = nages, byrow = TRUE) / 1e9
+  catch <-
+    data.frame(
+      year = years,
+      name = 'catch',
+      FIMS = fims$landings_exp[[1]] / 1e3,
+      TMB = tmb$Ecattot
+    )
+  ## spawnbio
+  ssb <- data.frame(
+    year = years,
+    name = 'SSB',
+    FIMS = fims$ssb[[1]][-55] / 1e9,
+    TMB = tmb$Espawnbio
+  )
+  bio <-
+    data.frame(
+      year = years,
+      name = 'biomass',
+      FIMS = fims$biomass[[1]][-55] / 1e9,
+      TMB = tmb$Etotalbio
+    )
+  fmort <-
+    data.frame(
+      year = years,
+      name = 'F',
+      FIMS = fims$F_mort[[1]],
+      TMB = tmb$F
+    )
+  recruit <-
+    data.frame(
+      year = years,
+      name = 'recruit',
+      FIMS = naa[-55, 1],
+      TMB = tmb$recruit
+    )
+  ## expected index survey 2
+  eind2 <-
+    data.frame(
+      year = years,
+      name = 'Index2',
+      FIMS = fims$index_exp[[2]] / 1e9,
+      TMB = tmb$Eindxsurv2
+    )
+  eind3 <-
+    data.frame(
+      year = years,
+      name = 'Index3',
+      FIMS = fims$index_exp[[3]] / 1e9,
+      TMB = tmb$Eindxsurv3
+    )
+  eind6 <-
+    data.frame(
+      year = years,
+      name = 'Index6',
+      FIMS = fims$index_exp[[4]] / 1e9,
+      TMB = tmb$Eindxsurv6
+    )
+  xx <- rbind(catch, ssb, bio, fmort, eind2, eind3, eind6, recruit) |>
+    tidyr::pivot_longer(cols = -c(name, year), names_to = 'platform') |>
+    dplyr::group_by(year, name) |>
+    dplyr::mutate(
+      relerror = (value - value[platform == 'TMB']) / 
+        value[platform == 'TMB']) |>
+    dplyr::ungroup()
+  return(xx)
+}
+
+get_acomp_fits <- function(tmb, fims1, fims2, fleet, years) {
+  ind <- which(tmb$years %in% years)
+  if (fleet == 1) {
+    y <- tmb$res_fish[, 11:20]
+    obs <- tmb$res_fish[, 1:10]
+  } else if (fleet == 2) {
+    y <- tmb$res_srv2[, 11:20]
+    obs <- tmb$res_srv2[, 1:10]
+  } else if (fleet == 3) {
+    y <- tmb$res_srv3[, 11:20]
+    obs <- tmb$res_srv3[, 1:10]
+  } else if (fleet == 4) {
+    y <- tmb$res_srv6[, 11:20]
+    obs <- tmb$res_srv6[, 1:10]
+  } else {
+    stop("bad fleet")
+  }
+
+  lab <- c('Fishery', 'Survey 2', 'Survey 3', 'Survey 6')[fleet]
+  x1 <- matrix(fims1$landings_naa[[fleet]], ncol = 10, byrow = TRUE)[ind, ]
+  x1 <- x1 / rowSums(x1)
+  x2 <- matrix(fims2$landings_naa[[fleet]], ncol = 10, byrow = TRUE)[ind, ]
+  x2 <- x2 / rowSums(x2)
+  dimnames(y) <-  dimnames(x1) <- dimnames(x2) <-
+    list(year = years, age = 1:10)
+  dimnames(obs) <- list(year = years, age = 1:10)
+  x1 <- reshape2::melt(x1, value.name = 'paa') |>
+    cbind(platform = 'FIMS init', type = lab)
+  x2 <- reshape2::melt(x2, value.name = 'paa') |>
+    cbind(platform = 'FIMS opt', type = lab)
+  y <- reshape2::melt(y, value.name = 'paa') |>
+    cbind(platform = 'TMB', type = lab)
+  obs <- reshape2::melt(obs, value.name = 'paa') |>
+    cbind(platform = 'obs', type = lab)
+  out <- rbind(x1, x2, y, obs)
+  out
+}
+
 ## build a FIMS and PK data set that match
 ##  need to fill missing years with -999 so it's ignored in FIMS
 # TODO: FIMS now supports automatically filling in missing values. 
@@ -185,9 +294,17 @@ survey_agecomp6 <- FIMS::m_agecomp(data_4_model, "survey6")
 # We can test this feature using the case study to evaluate its functionality. 
 fish_index <- methods::new(Index, nyears)
 fish_age_comp <- methods::new(AgeComp, nyears, nages)
-fish_index$index_data <- fishery_catch
-fish_age_comp$age_comp_data <-
-  fishery_agecomp * catchage$uncertainty#rep(Ncaa, each=nages)
+purrr::walk(
+  seq_along(fishery_catch),
+  \(x) fish_index$index_data$set(x - 1, fishery_catch[x])
+)
+purrr::walk(
+  seq_along(fishery_agecomp),
+  \(x) fish_age_comp$age_comp_data$set(
+    x - 1,
+    (fishery_agecomp * catchage$uncertainty)[x]
+  )
+)
 
 ### set up fishery
 ## fleet selectivity: converted from time-varying ascending
@@ -195,33 +312,27 @@ fish_age_comp$age_comp_data <-
 ## methods::show(DoubleLogisticSelectivity)
 fish_selex <- methods::new(DoubleLogisticSelectivity)
 fish_selex$inflection_point_asc[1]$value <- parfinal$inf1_fsh_mean
-fish_selex$inflection_point_asc[1]$is_random_effect <- FALSE
-fish_selex$inflection_point_asc[1]$estimated <- estimate_fish_selex
+fish_selex$inflection_point_asc[1]$estimation_type <- estimate_fish_selex
 fish_selex$inflection_point_desc[1]$value <- parfinal$inf2_fsh_mean
-fish_selex$inflection_point_desc[1]$is_random_effect <- FALSE
-fish_selex$inflection_point_desc[1]$estimated <- estimate_fish_selex
+fish_selex$inflection_point_desc[1]$estimation_type <- estimate_fish_selex
 fish_selex$slope_asc[1]$value <- exp(parfinal$log_slp1_fsh_mean)
-fish_selex$slope_asc[1]$is_random_effect <- FALSE
-fish_selex$slope_asc[1]$estimated <- estimate_fish_selex
+fish_selex$slope_asc[1]$estimation_type <- estimate_fish_selex
 fish_selex$slope_desc[1]$value <- exp(parfinal$log_slp2_fsh_mean)
-fish_selex$slope_desc[1]$is_random_effect <- FALSE
-fish_selex$slope_desc[1]$estimated <- estimate_fish_selex
+fish_selex$slope_desc[1]$estimation_type <- estimate_fish_selex
 
 ## create fleet object
 fish_fleet <- methods::new(Fleet)
-fish_fleet$nages <- nages
-fish_fleet$nyears <- nyears
+fish_fleet$nages$set(nages)
+fish_fleet$nyears$set(nyears)
 
-om_input <- list(nyr=length(pkfitfinal$rep$F))
-fish_fleet$log_Fmort$resize(om_input$nyr)
-for (y in 1:om_input$nyr) {
+fish_fleet$log_Fmort$resize(nyears)
+for (y in 1:nyears) {
   # Log-transform OM fishing mortality
   fish_fleet$log_Fmort[y]$value <- log(pkfitfinal$rep$F[y])
 }
 fish_fleet$log_Fmort$set_all_estimable(TRUE)
 fish_fleet$log_q[1]$value <- 0 # why is this length two in Chris' case study?
-fish_fleet$estimate_q <- FALSE
-fish_fleet$random_q <- FALSE
+fish_fleet$log_q[1]$estimation_type <- "constant"
 
 # Set Index, AgeComp, and Selectivity using the IDs from the modules defined above
 fish_fleet$SetObservedIndexData(fish_index$get_id())
@@ -231,8 +342,8 @@ fish_fleet$SetSelectivity(fish_selex$get_id())
 # Set up fishery index data using the lognormal
 fish_fleet_index_distribution <- methods::new(DlnormDistribution)
 # lognormal observation error transformed on the log scale
-fish_fleet_index_distribution$log_sd$resize(om_input[["nyr"]])
-for (y in 1:om_input[["nyr"]]) {
+fish_fleet_index_distribution$log_sd$resize(nyears)
+for (y in 1:nyears) {
   # Compute lognormal SD from OM coefficient of variation (CV)
   fish_fleet_index_distribution$log_sd[y]$value <- log(landings$uncertainty[y])
 }
@@ -249,42 +360,44 @@ fish_fleet_agecomp_distribution$set_distribution_links("data", fish_fleet$propor
 ## Setup survey 2
 survey2_fleet_index <- methods::new(Index, nyears)
 survey2_age_comp <- methods::new(AgeComp, nyears, nages)
-survey2_fleet_index$index_data <- survey_index2
-survey2_age_comp$age_comp_data <-
- survey_agecomp2 * indexage2$uncertainty
+purrr::walk(
+  seq_along(survey_index2),
+  \(x) survey2_fleet_index$index_data$set(x - 1, survey_index2[x])
+)
+purrr::walk(
+  seq_along(survey_agecomp2),
+  \(x) survey2_age_comp$age_comp_data$set(
+    x - 1,
+    (survey_agecomp2 * indexage2$uncertainty)[x]
+  )
+)
 
 ## survey selectivity: ascending logistic
 ## methods::show(DoubleLogisticSelectivity)
 survey2_selex <- methods::new(DoubleLogisticSelectivity)
 survey2_selex$inflection_point_asc[1]$value <- parfinal$inf1_srv2
-survey2_selex$inflection_point_asc[1]$is_random_effect <- FALSE
-survey2_selex$inflection_point_asc[1]$estimated <- estimate_survey_selex
+survey2_selex$inflection_point_asc[1]$estimation_type <- estimate_survey_selex
 survey2_selex$slope_asc[1]$value <- exp(parfinal$log_slp1_srv2)
-survey2_selex$slope_asc[1]$is_random_effect <- FALSE
-survey2_selex$slope_asc[1]$estimated <- estimate_survey_selex
+survey2_selex$slope_asc[1]$estimation_type <- estimate_survey_selex
 ## not estimated to make it ascending only, fix at input values
 survey2_selex$inflection_point_desc[1]$value <- parfinal$inf2_srv2
-survey2_selex$inflection_point_desc[1]$is_random_effect <- FALSE
-survey2_selex$inflection_point_desc[1]$estimated <- FALSE
+survey2_selex$inflection_point_desc[1]$estimation_type <- "constant"
 survey2_selex$slope_desc[1]$value <- exp(parfinal$log_slp2_srv2)
-survey2_selex$slope_desc[1]$is_random_effect <- FALSE
-survey2_selex$slope_desc[1]$estimated <- FALSE
+survey2_selex$slope_desc[1]$estimation_type <- "constant"
 
 survey2_fleet <- methods::new(Fleet)
-survey2_fleet$is_survey <- TRUE
-survey2_fleet$nages <- nages
-survey2_fleet$nyears <- nyears
+survey2_fleet$nages$set(nages)
+survey2_fleet$nyears$set(nyears)
 survey2_fleet$log_q[1]$value <- parfinal$log_q2_mean
-survey2_fleet$log_q[1]$estimated <- TRUE
-survey2_fleet$random_q <- FALSE
+survey2_fleet$log_q[1]$estimation_type <- "fixed_effects"
 survey2_fleet$SetSelectivity(survey2_selex$get_id())
 survey2_fleet$SetObservedIndexData(survey2_fleet_index$get_id())
 survey2_fleet$SetObservedAgeCompData(survey2_age_comp$get_id())
 
 survey2_fleet_index_distribution <- methods::new(DlnormDistribution)
 # lognormal observation error transformed on the log scale
-survey2_fleet_index_distribution$log_sd$resize(om_input[["nyr"]])
-for (y in 1:om_input[["nyr"]]) {
+survey2_fleet_index_distribution$log_sd$resize(nyears)
+for (y in 1:nyears) {
  # Compute lognormal SD from OM coefficient of variation (CV)
  survey2_fleet_index_distribution$log_sd[y]$value <- log(index2$uncertainty)[y]
 }
@@ -300,26 +413,30 @@ survey2_fleet_agecomp_distribution$set_distribution_links("data", survey2_fleet$
 ## Setup survey 3
 survey3_fleet_index <- methods::new(Index, nyears)
 survey3_age_comp <- methods::new(AgeComp, nyears, nages)
-survey3_fleet_index$index_data <- survey_index3
-survey3_age_comp$age_comp_data <-
-  survey_agecomp3 * indexage3$uncertainty
+purrr::walk(
+  seq_along(survey_index3),
+  \(x) survey3_fleet_index$index_data$set(x - 1, survey_index3[x])
+)
+purrr::walk(
+  seq_along(survey_agecomp3),
+  \(x) survey3_age_comp$age_comp_data$set(
+    x - 1,
+    (survey_agecomp3 * indexage3$uncertainty)[x]
+  )
+)
 ## survey selectivity: ascending logistic
 ## methods::show(LogisticSelectivity)
 survey3_selex <- methods::new(LogisticSelectivity)
 survey3_selex$inflection_point[1]$value <- parfinal$inf1_srv3
-survey3_selex$inflection_point[1]$is_random_effect <- FALSE
-survey3_selex$inflection_point[1]$estimated <- estimate_survey_selex
+survey3_selex$inflection_point[1]$estimation_type <- estimate_survey_selex
 survey3_selex$slope[1]$value <- exp(parfinal$log_slp1_srv3)
-survey3_selex$slope[1]$is_random_effect <- FALSE
-survey3_selex$slope[1]$estimated <- estimate_survey_selex
+survey3_selex$slope[1]$estimation_type <- estimate_survey_selex
 
 survey3_fleet <- methods::new(Fleet)
-survey3_fleet$is_survey <- TRUE
-survey3_fleet$nages <- nages
-survey3_fleet$nyears <- nyears
+survey3_fleet$nages$set(nages)
+survey3_fleet$nyears$set(nyears)
 survey3_fleet$log_q[1]$value <- parfinal$log_q3_mean
-survey3_fleet$log_q[1]$estimated <- TRUE
-survey3_fleet$random_q <- FALSE
+survey3_fleet$log_q[1]$estimation_type <- "fixed_effects"
 survey3_fleet$SetSelectivity(survey3_selex$get_id())
 survey3_fleet$SetObservedIndexData(survey3_fleet_index$get_id())
 survey3_fleet$SetObservedAgeCompData(survey3_age_comp$get_id())
@@ -327,8 +444,8 @@ survey3_fleet$SetObservedAgeCompData(survey3_age_comp$get_id())
 # sd = sqrt(log(cv^2 + 1)), sd is log transformed
 survey3_fleet_index_distribution <- methods::new(DlnormDistribution)
 # lognormal observation error transformed on the log scale
-survey3_fleet_index_distribution$log_sd$resize(om_input[["nyr"]])
-for (y in 1:om_input[["nyr"]]) {
+survey3_fleet_index_distribution$log_sd$resize(nyears)
+for (y in 1:nyears) {
   # Compute lognormal SD from OM coefficient of variation (CV)
   survey3_fleet_index_distribution$log_sd[y]$value <- log(index3$uncertainty)[y]
 }
@@ -344,43 +461,45 @@ survey3_fleet_agecomp_distribution$set_distribution_links("data", survey3_fleet$
 ## Setup survey 6
 survey6_fleet_index <- methods::new(Index, nyears)
 survey6_age_comp <- methods::new(AgeComp, nyears, nages)
-survey6_fleet_index$index_data <- survey_index6
-survey6_age_comp$age_comp_data <-
-  survey_agecomp6 * indexage6$uncertainty
+purrr::walk(
+  seq_along(survey_index6),
+  \(x) survey6_fleet_index$index_data$set(x - 1, survey_index6[x])
+)
+purrr::walk(
+  seq_along(survey_agecomp6),
+  \(x) survey6_age_comp$age_comp_data$set(
+    x - 1,
+    (survey_agecomp6 * indexage6$uncertainty)[x]
+  )
+)
 
 ## survey selectivity: ascending logistic
 ## methods::show(DoubleLogisticSelectivity)
 survey6_selex <- methods::new(DoubleLogisticSelectivity)
 survey6_selex$inflection_point_asc[1]$value <- parfinal$inf1_srv6
-survey6_selex$inflection_point_asc[1]$is_random_effect <- FALSE
-survey6_selex$inflection_point_asc[1]$estimated <- FALSE
+survey6_selex$inflection_point_asc[1]$estimation_type <- "constant"
 survey6_selex$slope_asc[1]$value <- exp(parfinal$log_slp1_srv6)
-survey6_selex$slope_asc[1]$is_random_effect <- FALSE
-survey6_selex$slope_asc[1]$estimated <- FALSE
+survey6_selex$slope_asc[1]$estimation_type <- "constant"
 ## not estimated to make it ascending only, fix at input values
 survey6_selex$inflection_point_desc[1]$value <- parfinal$inf2_srv6
-survey6_selex$inflection_point_desc[1]$is_random_effect <- FALSE
-survey6_selex$inflection_point_desc[1]$estimated <-
+survey6_selex$inflection_point_desc[1]$estimation_type <-
   estimate_survey_selex
 survey6_selex$slope_desc[1]$value <- exp(parfinal$log_slp2_srv6)
-survey6_selex$slope_desc[1]$is_random_effect <- FALSE
-survey6_selex$slope_desc[1]$estimated <- estimate_survey_selex
+survey6_selex$slope_desc[1]$estimation_type <- estimate_survey_selex
 
 survey6_fleet <- methods::new(Fleet)
-survey6_fleet$is_survey <- TRUE
-survey6_fleet$nages <- nages
-survey6_fleet$nyears <- nyears
+survey6_fleet$nages$set(nages)
+survey6_fleet$nyears$set(nyears)
 survey6_fleet$log_q[1]$value <- parfinal$log_q6
-survey6_fleet$log_q[1]$estimated <- TRUE
-survey6_fleet$random_q <- FALSE
+survey6_fleet$log_q[1]$estimation_type <- "fixed_effects"
 survey6_fleet$SetSelectivity(survey6_selex$get_id())
 survey6_fleet$SetObservedIndexData(survey6_fleet_index$get_id())
 survey6_fleet$SetObservedAgeCompData(survey6_age_comp$get_id())
 
 survey6_fleet_index_distribution <- methods::new(DlnormDistribution)
 # lognormal observation error transformed on the log scale
-survey6_fleet_index_distribution$log_sd$resize(om_input[["nyr"]])
-for (y in 1:om_input[["nyr"]]) {
+survey6_fleet_index_distribution$log_sd$resize(nyears)
+for (y in 1:nyears) {
   # Compute lognormal SD from OM coefficient of variation (CV)
   survey6_fleet_index_distribution$log_sd[y]$value <- log(index6$uncertainty)[y]
 }
@@ -396,32 +515,32 @@ survey6_fleet_agecomp_distribution$set_distribution_links("data", survey6_fleet$
 # Population module
 # recruitment
 recruitment <- methods::new(BevertonHoltRecruitment)
+recruitment_process <- new(LogDevsRecruitmentProcess)
+recruitment$SetRecruitmentProcess(recruitment_process$get_id())
 ## methods::show(BevertonHoltRecruitment)
 #recruitment$log_sigma_recruit[1]$value <- log(parfinal$sigmaR)
 recruitment$log_rzero[1]$value <- parfinal$mean_log_recruit + log(1e9)
-recruitment$log_rzero[1]$is_random_effect <- FALSE
-recruitment$log_rzero[1]$estimated <- TRUE
+recruitment$log_rzero[1]$estimation_type <- "fixed_effects"
 ## note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run
 recruitment$logit_steep[1]$value <-
   -log(1.0 - .99999) + log(.99999 - 0.2)
-recruitment$logit_steep[1]$is_random_effect <- FALSE
-recruitment$logit_steep[1]$estimated <- FALSE
-recruitment$estimate_log_devs <- estimate_recdevs
-recruitment$log_devs$resize(om_input[["nyr"]]-1)
-for (y in 1:(om_input[["nyr"]]-1)) {
+recruitment$logit_steep[1]$estimation_type <- "constant"
+recruitment$log_devs$resize(nyears-1)
+for (y in 1:(nyears-1)) {
   recruitment$log_devs[y]$value <- parfinal$dev_log_recruit[y+1]
 }
 recruitment$log_devs$set_all_estimable(estimate_recdevs)
+recruitment$log_devs$set_all_random(TRUE)
 recruitment_distribution <- methods::new(DnormDistribution)
 # set up logR_sd using the normal log_sd parameter
 # logR_sd is NOT logged. It needs to enter the model logged b/c the exp() is
 # taken before the likelihood calculation
 recruitment_distribution$log_sd <- methods::new(ParameterVector, 1)
 recruitment_distribution$log_sd[1]$value <- log(parfinal$sigmaR)
-recruitment_distribution$log_sd[1]$estimated <- FALSE
-recruitment_distribution$x$resize(om_input[["nyr"]]-1)
-recruitment_distribution$expected_values$resize(om_input[["nyr"]]-1)
-for (i in 1:(om_input[["nyr"]]-1)) {
+recruitment_distribution$log_sd[1]$estimation_type <- "constant"
+recruitment_distribution$x$resize(nyears-1)
+recruitment_distribution$expected_values$resize(nyears-1)
+for (i in 1:(nyears-1)) {
   recruitment_distribution$x[i]$value <- 0
   recruitment_distribution$expected_values[i]$value <- 0
 }
@@ -431,9 +550,17 @@ recruitment_distribution$set_distribution_links("random_effects", recruitment$lo
 ## Srv1 above
 waa <- pkinput$dat$wt_srv1
 ewaa_growth <- methods::new(EWAAgrowth)
-ewaa_growth$ages <- ages
+ewaa_growth$ages$resize(nages)
+purrr::walk(
+  seq_along(ages),
+  \(x) ewaa_growth$ages$set(x - 1, ages[x])
+)
 # NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now
-ewaa_growth$weights <- waa[1, ]
+ewaa_growth$weights$resize(nages)
+purrr::walk(
+  seq_along(waa[1, ]),
+  \(x) ewaa_growth$weights$set(x - 1, waa[1, x])
+)
 ## NOTE: FIMS assumes SSB calculated at the start of the year, so
 ## need to adjust ASAP to do so as well for now, need to make
 ## timing of SSB calculation part of FIMS later
@@ -442,142 +569,35 @@ ewaa_growth$weights <- waa[1, ]
 
 maturity <- new(LogisticMaturity)
 maturity$inflection_point[1]$value <- 4.5
-maturity$inflection_point[1]$is_random_effect <- FALSE
-maturity$inflection_point[1]$estimated <- FALSE
+maturity$inflection_point[1]$estimation_type <- "constant"
 maturity$slope[1]$value <- 1.5
-maturity$slope[1]$is_random_effect <- FALSE
-maturity$slope[1]$estimated <- FALSE
+maturity$slope[1]$estimation_type <- "constant"
 
-om_input$nages <- nages
 # population
 population <- new(Population)
 tmpM <- log(as.numeric(t(matrix(
   rep(pkfitfinal$rep$M, each = nyears), nrow = nyears
 ))))
-population$log_M$resize(om_input[["nyr"]] * om_input[["nages"]])
-for (i in 1:(om_input[["nyr"]] * om_input[["nages"]])) {
+population$log_M$resize(nyears * nages)
+for (i in 1:(nyears * nages)) {
   population$log_M[i]$value <- tmpM[i]
 }
 population$log_M$set_all_estimable(FALSE)
-population$log_init_naa$resize(om_input[["nages"]])
+population$log_init_naa$resize(nages)
 initNAA <- c(log(pkfitfinal$rep$recruit[1]), log(pkfitfinal$rep$initN)) + log(1e9)
-for (i in 1:om_input$nages) {
+for (i in seq_along(nages)) {
   population$log_init_naa[i]$value <- initNAA[i]
 }
 population$log_init_naa$set_all_estimable(FALSE)# NOTE: fixing at ASAP estimates to test SSB calculations
-population$nages <- om_input[["nages"]]
-population$ages <- ages
-population$nfleets <- 4 
-population$nseasons <- nseasons
-population$nyears <- nyears
+population$nages$set(nages)
+population$ages$resize(nages)
+purrr::walk(
+  seq_along(ages),
+  \(x) population$ages$set(x - 1, ages[x])
+)
+population$nfleets$set(4)
+population$nseasons$set(nseasons)
+population$nyears$set(nyears)
 population$SetMaturity(maturity$get_id())
 population$SetGrowth(ewaa_growth$get_id())
 population$SetRecruitment(recruitment$get_id())
-
-## Quick function to compare models
-get_long_outputs <- function(fims, tmb) {
-  ## estimaed catch is pretty close I think
-  naa <- matrix(fims$naa[[1]], ncol = nages, byrow = TRUE) / 1e9
-  catch <-
-    data.frame(
-      year = years,
-      name = 'catch',
-      FIMS = fims$exp_catch[[1]] / 1e3,
-      TMB = tmb$Ecattot
-    )
-  ## spawnbio
-  ssb <- data.frame(
-    year = years,
-    name = 'SSB',
-    FIMS = fims$ssb[[1]][-55] / 1e9,
-    TMB = tmb$Espawnbio
-  )
-  bio <-
-    data.frame(
-      year = years,
-      name = 'biomass',
-      FIMS = fims$biomass[[1]][-55] / 1e9,
-      TMB = tmb$Etotalbio
-    )
-  fmort <-
-    data.frame(
-      year = years,
-      name = 'F',
-      FIMS = fims$F_mort[[1]],
-      TMB = tmb$F
-    )
-  recruit <-
-    data.frame(
-      year = years,
-      name = 'recruit',
-      FIMS = naa[-55, 1],
-      TMB = tmb$recruit
-    )
-  ## expected index survey 2
-  eind2 <-
-    data.frame(
-      year = years,
-      name = 'Index2',
-      FIMS = fims$exp_index[[2]] / 1e9,
-      TMB = tmb$Eindxsurv2
-    )
-  eind3 <-
-    data.frame(
-      year = years,
-      name = 'Index3',
-      FIMS = fims$exp_index[[3]] / 1e9,
-      TMB = tmb$Eindxsurv3
-    )
-  eind6 <-
-    data.frame(
-      year = years,
-      name = 'Index6',
-      FIMS = fims$exp_index[[4]] / 1e9,
-      TMB = tmb$Eindxsurv6
-    )
-  xx <- rbind(catch, ssb, bio, fmort, eind2, eind3, eind6, recruit) %>%
-    pivot_longer(cols = -c(name, year), names_to = 'platform') %>%
-    group_by(year, name) %>%
-    mutate(relerror = (value - value[platform == 'TMB']) / value[platform ==
-                                                                   'TMB']) %>%
-    ungroup()
-  return(xx)
-}
-
-get_acomp_fits <- function(tmb, fims1, fims2, fleet, years) {
-  ind <- which(tmb$years %in% years)
-  if (fleet == 1) {
-    y <- tmb$res_fish[, 11:20]
-    obs <- tmb$res_fish[, 1:10]
-  } else if (fleet == 2) {
-    y <- tmb$res_srv2[, 11:20]
-    obs <- tmb$res_srv2[, 1:10]
-  } else if (fleet == 3) {
-    y <- tmb$res_srv3[, 11:20]
-    obs <- tmb$res_srv3[, 1:10]
-  } else if (fleet == 4) {
-    y <- tmb$res_srv6[, 11:20]
-    obs <- tmb$res_srv6[, 1:10]
-  } else {
-    stop("bad fleet")
-  }
-
-  lab <- c('Fishery', 'Survey 2', 'Survey 3', 'Survey 6')[fleet]
-  x1 <- matrix(fims1$cnaa[[fleet]], ncol = 10, byrow = TRUE)[ind, ]
-  x1 <- x1 / rowSums(x1)
-  x2 <- matrix(fims2$cnaa[[fleet]], ncol = 10, byrow = TRUE)[ind, ]
-  x2 <- x2 / rowSums(x2)
-  dimnames(y) <-  dimnames(x1) <- dimnames(x2) <-
-    list(year = years, age = 1:10)
-  dimnames(obs) <- list(year = years, age = 1:10)
-  x1 <- reshape2::melt(x1, value.name = 'paa') %>%
-    cbind(platform = 'FIMS init', type = lab)
-  x2 <- reshape2::melt(x2, value.name = 'paa') %>%
-    cbind(platform = 'FIMS opt', type = lab)
-  y <- reshape2::melt(y, value.name = 'paa') %>%
-    cbind(platform = 'TMB', type = lab)
-  obs <- reshape2::melt(obs, value.name = 'paa') %>%
-    cbind(platform = 'obs', type = lab)
-  out <- rbind(x1, x2, y, obs)
-  out
-}
