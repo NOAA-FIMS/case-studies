@@ -12,7 +12,7 @@ format:
 #| warning: false
 #| label: startup
 #| output: false
-ggplot2::theme_set(theme_bw())
+ggplot2::theme_set(ggplot2::theme_bw())
 ```
 
 -   R version: `r R_version`\
@@ -67,9 +67,7 @@ rep0 <- pkfitfinal$rep
 ```
 
 ## Run FIMS model using wrapper functions
-```{r}
-FIMS::clear()
-
+```{r setup-rcpp}
 ## set up FIMS data objects
 FIMS::clear()
 estimate_fish_selex <- TRUE
@@ -82,7 +80,21 @@ estimate_recdevs <- TRUE
 
 source("R/pk_prepare_FIMS_inputs.R")
 # set up selectivities for fleets and survey
-fleet1 <- survey2 <- survey6 <- list(
+fleet1 <- list(
+  selectivity = list(form = "DoubleLogisticSelectivity"),
+  data_distribution = c(
+    Landings = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
+  )
+)
+survey2 <- list(
+  selectivity = list(form = "DoubleLogisticSelectivity"),
+  data_distribution = c(
+    Index = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
+  )
+)
+survey6 <- list(
   selectivity = list(form = "DoubleLogisticSelectivity"),
   data_distribution = c(
     Index = "DlnormDistribution",
@@ -212,31 +224,40 @@ rep2 <- fit@report
 ## Output plotting
 ```{r}
 ## Output plotting
-out1 <- get_long_outputs(rep1, rep0) %>%
-  mutate(platform=ifelse(platform=='FIMS', 'FIMS init', 'TMB'))
-out2 <- get_long_outputs(rep2, rep0) %>% filter(platform=='FIMS') %>%
-  mutate(platform='FIMS opt')
+out1 <- get_long_outputs(rep1, rep0) |>
+  dplyr::mutate(platform = ifelse(platform == 'FIMS', 'FIMS init', 'TMB'))
+out2 <- get_long_outputs(rep2, rep0) |>
+  dplyr::filter(platform=='FIMS') |>
+  dplyr::mutate(platform='FIMS opt')
 out <- rbind(out1,out2)
-g <- ggplot(out, aes(year, value, color=platform)) + geom_line() +
-  facet_wrap('name', scales='free') + ylim(0,NA) +
-  labs(x=NULL, y=NULL)
-ggsave('figures/AFSC_PK_ts_comparison.png', g, width=9, height=5, units='in')
-g <- ggplot(filter(out, platform!='TMB'), aes(year, relerror, color=platform)) + geom_line() +
-  facet_wrap('name', scales='free') +
-  labs(x=NULL, y='Relative difference') + coord_cartesian(ylim=c(-.5,.5))
-ggsave('figures/AFSC_PK_ts_comparison_relerror.png', g, width=9, height=5, units='in')
+g <- ggplot2::ggplot(out, ggplot2::aes(year, value, color=platform)) +
+  ggplot2::geom_line() +
+  ggplot2::facet_wrap('name', scales='free') +
+  ggplot2::ylim(0,NA) +
+  ggplot2::labs(x=NULL, y=NULL)
+ggplot2::ggsave('figures/AFSC_PK_ts_comparison.png', g, width=9, height=5, units='in')
+g <- ggplot2::ggplot(dplyr::filter(out, platform!='TMB'), ggplot2::aes(year, relerror, color=platform)) +
+  ggplot2::geom_line() +
+  ggplot2::facet_wrap('name', scales='free') +
+  ggplot2::labs(x=NULL, y='Relative difference') +
+  ggplot2::coord_cartesian(ylim=c(-.5,.5))
+ggplot2::ggsave('figures/AFSC_PK_ts_comparison_relerror.png', g, width=9, height=5, units='in')
 
 ## Quick check on age comp fits
 p1 <- get_acomp_fits(rep0, rep1, rep2, fleet=1, years=pkdat0$fshyrs)
-g <- ggplot(p1, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()
-ggsave('figures/AFSC_PK_age_comp_fits_1.png', g, width=9, height=8, units='in')
+g <- ggplot2::ggplot(p1, ggplot2::aes(age, paa, color=platform)) +
+  ggplot2::facet_wrap('year') +
+  ggplot2::geom_line()
+ggplot2::ggsave('figures/AFSC_PK_age_comp_fits_1.png', g, width=9, height=8, units='in')
 p2 <- get_acomp_fits(rep0, rep1, rep2, fleet=2, years=pkdat0$srv_acyrs2)
-g <- ggplot(p2, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()
-ggsave('figures/AFSC_PK_age_comp_fits_2.png', g, width=9, height=8, units='in')
+g <- ggplot2::ggplot(p2, ggplot2::aes(age, paa, color=platform)) +
+  ggplot2::facet_wrap('year') +
+  ggplot2::geom_line()
+ggplot2::ggsave('figures/AFSC_PK_age_comp_fits_2.png', g, width=9, height=8, units='in')
 ## p3 <- get_acomp_fits(rep0, rep1, rep2, fleet=3, years=pkdat0$srv_acyrs3)
-## g <- ggplot(p3, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()
+## g <- ggplot2::ggplot(p3, ggplot2::aes(age, paa, color=platform)) + ggplot2::facet_wrap('year') + ggplot2::geom_line()
 ## p6 <- get_acomp_fits(rep0, rep1, rep2, fleet=4, years=pkdat0$srv_acyrs6)
-## g <- ggplot(p6, aes(age, paa, color=platform)) + facet_wrap('year') + geom_line()
+## g <- ggplot2::ggplot(p6, ggplot2::aes(age, paa, color=platform)) + ggplot2::facet_wrap('year') + ggplot2::geom_line()
 
 ## index fits
 addsegs <- function(yrs, obs, CV){
@@ -250,8 +271,10 @@ par(mfrow=c(3,1), mar=c(3,3,.5,.5), mgp=c(1.5,.5,0), tck=-0.02)
 plot(years, rep0$Eindxsurv2, type='l',
      ylim=c(0,2), lwd=5.5,
       xlab=NA, ylab='Biomass (million t)')
-x1 <- out1 %>% filter(name=='Index2' & platform=='FIMS init')
-x2 <- out2 %>% filter(name=='Index2' & platform=='FIMS opt')
+x1 <- out1 |>
+  dplyr::filter(name=='Index2' & platform=='FIMS init')
+x2 <- out2 |>
+  dplyr::filter(name=='Index2' & platform=='FIMS opt')
 lines(years,x1$value, col=2, lwd=1.5)
 lines(years,x2$value, col=3, lwd=1.5)
 addsegs(yrs=pkdat0$srvyrs2, obs=pkdat0$indxsurv2, CV=pkdat0$indxsurv_log_sd2)
@@ -260,8 +283,10 @@ mtext('Survey 2', line=-1.5)
 plot(years, rep0$Eindxsurv3, type='l',
      ylim=c(0,.6), lwd=5.5,
       xlab=NA, ylab='Biomass (million t)')
-x1 <- out1 %>% filter(name=='Index3' & platform=='FIMS init')
-x2 <- out2 %>% filter(name=='Index3' & platform=='FIMS opt')
+x1 <- out1 |>
+  dplyr::filter(name=='Index3' & platform=='FIMS init')
+x2 <- out2 |>
+  dplyr::filter(name=='Index3' & platform=='FIMS opt')
 lines(years,x1$value, col=2, lwd=1.5)
 lines(years,x2$value, col=3, lwd=1.5)
 addsegs(yrs=pkdat0$srvyrs3, obs=pkdat0$indxsurv3, CV=pkdat0$indxsurv_log_sd3)
@@ -270,8 +295,10 @@ legend('topright', legend=c('TMB', 'FIMS init', 'FIMS opt'), lty=1, col=1:3)
 plot(years, rep0$Eindxsurv6, type='l',
      ylim=c(0,2.6), lwd=5.5,
       xlab=NA, ylab='Biomass (million t)')
-x1 <- out1 %>% filter(name=='Index6' & platform=='FIMS init')
-x2 <- out2 %>% filter(name=='Index6' & platform=='FIMS opt')
+x1 <- out1 |>
+  dplyr::filter(name=='Index6' & platform=='FIMS init')
+x2 <- out2 |>
+  dplyr::filter(name=='Index6' & platform=='FIMS opt')
 lines(years,x1$value, col=2, lwd=1.5)
 lines(years,x2$value, col=3, lwd=1.5)
 addsegs(yrs=pkdat0$srvyrs6, obs=pkdat0$indxsurv6, CV=pkdat0$indxsurv_log_sd6)
