@@ -14,7 +14,7 @@
 			"updatePackages": true
 		},
 		"ghcr.io/rocker-org/devcontainer-features/r-packages:1": {
-			"packages": "dplyr,tidyr,ggplot2,TMB,here,remotes,lubridate,github::NOAA-FIMS/FIMS,github::r4ss/r4ss",
+			"packages": "dplyr,tidyr,ggplot2,TMB,here,remotes,lubridate,github::NOAA-FIMS/FIMS,github::r4ss/r4ss,Cole-Monnahan-NOAA/adnuts@sparse_M",
 			"installSystemRequirements": true
 		},
 		// option to run rstudio. you can type rserver into the command line to
