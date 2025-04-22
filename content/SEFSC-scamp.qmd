@@ -13,7 +13,7 @@ format:
 #| warning: false
 #| label: startup
 #| output: false
-ggplot2::theme_set(theme_bw())
+ggplot2::theme_set(ggplot2::theme_bw())
 ```
 -   R version: `r R_version`\
 -   TMB version: `r TMB_version`\
@@ -208,7 +208,21 @@ data_4_model <- FIMS::FIMSFrame(res)
 
 ####################################################################################
 # set up selectivities for fleets and survey
-spp_fleet1_selectivity <- spp_fleet2_selectivity <- spp_survey1_selectivity <- list(
+spp_fleet1_selectivity <- list(
+  selectivity = list(form = "LogisticSelectivity"),
+  data_distribution = c(
+    Landings = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
+  )
+)
+spp_fleet2_selectivity <- list(
+  selectivity = list(form = "LogisticSelectivity"),
+  data_distribution = c(
+    Landings = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
+  )
+)
+spp_survey1_selectivity <- list(
   selectivity = list(form = "LogisticSelectivity"),
   data_distribution = c(
     Index = "DlnormDistribution",
@@ -307,19 +321,27 @@ out.folder <- "figures"
 dir.create(out.folder, showWarnings = FALSE)
 plot.type <- "png"
 
-get_parameter <- function(fit, x) {
-  good <- dplyr::filter(get_estimates(fit), grepl(pattern = x, name))
-  out <- dplyr::pull(good, value)
-  names(out) <- dplyr::pull(good, name)
+get_selectivity_parameter <- function(fit, x) {
+  good <- dplyr::filter(
+    get_estimates(fit),
+    module_name == "selectivity",
+    label == x
+  )
+  out <- dplyr::pull(good, estimate)
+  names(out) <- paste(
+    dplyr::pull(good, label),
+    dplyr::pull(good, parameter_id),
+    sep = "_"
+  )
   return(out)
 }
-
+browser()
 selex.bam.fleet1 <- 1 / (1 + exp(-sca$parm.cons$selpar_slope_COM2[8] * (ages - sca$parm.cons$selpar_A50_COM2[8])))
-selex.fims.fleet1 <- 1 / (1 + exp(-get_parameter(fit, "slope.*\\.1") * (ages - get_parameter(fit, "inflection.*\\.1"))))
+selex.fims.fleet1 <- 1 / (1 + exp(-get_selectivity_parameter(fit, "slope")[1] * (ages - get_selectivity_parameter(fit, "inflection_point")[1])))
 selex.bam.fleet2 <- 1 / (1 + exp(-sca$parm.cons$selpar_slope1_REC2[8] * (ages - sca$parm.cons$selpar_A50_REC2[8])))
-selex.fims.fleet2 <- 1 / (1 + exp(-get_parameter(fit, "slope.*\\.2") * (ages - get_parameter(fit, "inflection.*\\.2"))))
+selex.fims.fleet2 <- 1 / (1 + exp(-get_selectivity_parameter(fit, "slope")[2] * (ages - get_selectivity_parameter(fit, "inflection_point")[2])))
 selex.bam.survey <- 1 / (1 + exp(-sca$parm.cons$selpar_slope1_CVT[8] * (ages - sca$parm.cons$selpar_A501_CVT[8])))
-selex.fims.survey <- 1 / (1 + exp(-get_parameter(fit, "slope.*\\.3") * (ages - get_parameter(fit, "inflection.*\\.3"))))
+selex.fims.survey <- 1 / (1 + exp(-get_selectivity_parameter(fit, "slope")[3] * (ages - get_selectivity_parameter(fit, "inflection_point")[3])))
 
 
 index_results_allyr <- data.frame(
@@ -327,7 +349,7 @@ index_results_allyr <- data.frame(
   observed = get_data(data_4_model) |>
     dplyr::filter(type == "index", name == "survey1") |>
     dplyr::pull(value),
-  fims.expected = report$exp_index[[3]],
+  fims.expected = report$index_exp[[3]],
   bam.expected = sca$t.series$U.CVT.pr
 )
 index_results <- index_results_allyr |>
@@ -337,7 +359,7 @@ fleet1_landings_results <- data.frame(
   observed = get_data(data_4_model) |>
     dplyr::filter(type == "landings", name == "fleet1") |>
     dplyr::pull(value),
-  fims.expected = report$exp_index[[1]],
+  fims.expected = report$landings_exp[[1]],
   bam.expected = sca$t.series$L.COM.pr
 )
 fleet2_landings_results <- data.frame(
@@ -345,7 +367,7 @@ fleet2_landings_results <- data.frame(
   observed = get_data(data_4_model) |>
     dplyr::filter(type == "landings", name == "fleet2") |>
     dplyr::pull(value),
-  fims.expected = report$exp_index[[2]],
+  fims.expected = report$landings_exp[[2]],
   bam.expected = sca$t.series$L.REC.pr
 )
 
@@ -379,7 +401,7 @@ yr.ind <- 1:nyears
 
 yr.fleet1.ind <- yr.ind[fleet1_ac_n >= 0]
 yr.fleet1.ac <- years[yr.fleet1.ind]
-fims.fleet1.ncaa <- matrix(report$cnaa[[1]], ncol = nages, byrow = TRUE)
+fims.fleet1.ncaa <- matrix(report$landings_naa[[1]], ncol = nages, byrow = TRUE)
 fims.fleet1.ncaa <- fims.fleet1.ncaa[yr.fleet1.ind, ]
 fims.fleet1.caa <- fims.fleet1.ncaa / rowSums(fims.fleet1.ncaa)
 bam.fleet1.caa <- sca$comp.mats$acomp.COM.pr
@@ -387,7 +409,7 @@ obs.fleet1.caa <- sca$comp.mats$acomp.COM.ob
 
 yr.fleet2.ind <- yr.ind[fleet2_ac_n >= 0]
 yr.fleet2.ac <- years[yr.fleet2.ind]
-fims.fleet2.ncaa <- matrix(report$cnaa[[2]], ncol = nages, byrow = TRUE)
+fims.fleet2.ncaa <- matrix(report$landings_naa[[2]], ncol = nages, byrow = TRUE)
 fims.fleet2.ncaa <- fims.fleet2.ncaa[yr.fleet2.ind, ]
 fims.fleet2.caa <- fims.fleet2.ncaa / rowSums(fims.fleet2.ncaa)
 bam.fleet2.caa <- sca$comp.mats$acomp.REC.pr
@@ -395,7 +417,7 @@ obs.fleet2.caa <- sca$comp.mats$acomp.REC.ob
 
 yr.survey.ind <- yr.ind[survey_ac_n >= 0]
 yr.survey.ac <- years[yr.survey.ind]
-fims.survey.ncaa <- matrix(report$cnaa[[3]], ncol = nages, byrow = TRUE)
+fims.survey.ncaa <- matrix(report$landings_naa[[3]], ncol = nages, byrow = TRUE)
 fims.survey.ncaa <- fims.survey.ncaa[yr.survey.ind, ]
 fims.survey.caa <- fims.survey.ncaa / rowSums(fims.survey.ncaa)
 bam.survey.caa <- sca$comp.mats$acomp.CVT.pr

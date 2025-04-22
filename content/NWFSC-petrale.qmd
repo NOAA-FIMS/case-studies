@@ -14,7 +14,7 @@ format:
 #| label: startup
 #| output: false
 
-theme_set(theme_bw())
+ggplot2::theme_set(ggplot2::theme_bw())
 ```
 
 -   R version: `r R_version`\
@@ -142,7 +142,14 @@ fims_frame <- FIMS::FIMSFrame(mydat)
 rep <- petrale_output
 
 # Define fleet specifications for fleet1 and survey1
-fleet1 <- survey1 <- list(
+fleet1 <-  list(
+  selectivity = list(form = "LogisticSelectivity"),
+  data_distribution = c(
+    Landings = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution"
+  )
+)
+survey1 <- list(
   selectivity = list(form = "LogisticSelectivity"),
   data_distribution = c(
     Index = "DlnormDistribution",
@@ -171,12 +178,6 @@ init_naa <- rep$natage |>
   as.numeric() # TODO: figure out if *1000 is needed
 init_naa <- exp(rep$parameters |> dplyr::filter(grepl("R0", Label)) |> dplyr::pull(Init)) * 1000 * exp(-(ages - 1) * rep$parameters |> dplyr::filter(grepl("NatM.*Fem", Label)) |> dplyr::pull(Value))
 init_naa[nages] <- init_naa[nages] / rep$parameters |> dplyr::filter(grepl("NatM.*Fem", Label)) |> dplyr::pull(Value) # sum of infinite series
-
-# TODO: Move this to the R folder or FIMS
-steepness_transform <- function(h) {
-  # function to convert steepness into required parameter space
-  -log(1.0 - h) + log(h - 0.2)
-}
 
 parameters <- default_parameters |>
   # SS3 model had length-based selectivity which leads to sex-specific
@@ -209,7 +210,7 @@ parameters <- default_parameters |>
         BevertonHoltRecruitment.log_rzero.value = ss3ctl$SR_parms["SR_LN(R0)", "INIT"],
         BevertonHoltRecruitment.log_devs.value = recdevs$Value,
         BevertonHoltRecruitment.logit_steep.value = ss3ctl$SR_parms["SR_BH_steep", "INIT"] |>
-          steepness_transform(),
+          transform_steepness(),
         DnormDistribution.log_sd.value = 0.5
       )
     )
@@ -255,38 +256,18 @@ fit <- parameters |>
   initialize_fims(data = fims_frame) |>
   fit_fims(optimize = TRUE)
   # TODO: why does the final message show no SB value: "i Terminal SB="
-str(fit)
-clear()
-```
-
-```{r}
-#| eval: false
-#| code-fold: true
-fit@report$exp_index
-fit@report$exp_catch # TODO: why is this all zeros
-fit@report$F_mort[[1]]
-fit@report$log_recruit_dev
-fit@report$ssb
-fit@report$biomass
-unique(fit@estimates$name)
-fit@input$parameters
-fit@estimates |> filter(name == "NAA")
-# Clear memory post-run
-
 ```
 
 ## Plotting Results
 
 ```{r data-fits-plots, eval = TRUE}
-library(ggplot2)
-
 # gather index fit info
 index_results <- data.frame(
   observed = m_index(fims_frame, "survey1"),
-  expected = get_report(fit)[["exp_index"]][[2]]
+  expected = get_report(fit)[["index_exp"]][[2]]
 ) |>
-dplyr::mutate(year = years) |>
-dplyr::filter(observed > 0) # filter out -999 rows
+  dplyr::mutate(year = years) |>
+  dplyr::filter(observed > 0) # filter out -999 rows
 
 # plot index fit
 ggplot2::ggplot(index_results, ggplot2::aes(x = year, y = observed)) +
@@ -301,12 +282,13 @@ ggplot2::ggplot(index_results, ggplot2::aes(x = year, y = observed)) +
 catch_results <- data.frame(
   year = years,
   observed = m_landings(fims_frame, fleet = "fleet1"),
-  expected = get_report(fit)[["exp_index"]][[1]]
+  expected = get_report(fit)[["landings_exp"]][[1]]
 )
 
 # plot catch fit
 ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
-  ggplot2::geom_point() + #ggplot2::aes(color = fleet)) +
+  ggplot2::geom_point() +
+  #ggplot2::aes(color = fleet)) +
   ggplot2::xlab("Year") +
   ggplot2::ylab("Catch (mt)") +
   ggplot2::geom_line(ggplot2::aes(x = year, y = expected)) + #, color = fleet)) +
@@ -360,4 +342,12 @@ ggplot2::ggplot(recruits, ggplot2::aes(x = Year, y = value, color = Model)) +
   ggplot2::facet_wrap(~Type, scales = "free_y") +
   ggplot2::theme_bw()
 
+```
+
+```{r}
+#| warning: false
+#| label: clear
+#| output: false
+
+clear()
 ```

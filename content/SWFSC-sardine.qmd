@@ -9,15 +9,6 @@ format:
 
 {{< include setup.qmd >}}
 
-```{r}
-#| warning: false
-#| label: startup
-
-# R_version <- version$version.string
-# TMB_version <- packageDescription("TMB")$Version
-# FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
-```
-
 ## Add a chunk of code describing your setup
 
 -   R version: `r R_version`\
@@ -48,32 +39,7 @@ How I simplified my assessment
 ## Add your script that sets up and runs the model
 
 ```{r}
-
-
-# options(max.print = 1000, device = 'windows')
-#
-# library(plyr)
-# library(reshape2)
-# library(tidyverse)
-# library(devtools)
-# library(patchwork)
-# library(scales)
-# withr::local_options(pkg.build_extra_flags = FALSE)
-#
-# library(TMB)
-# library(r4ss)
-#
-# #Local version of FIMS downloaded last week
-# # devtools::load_all("../fims_v2/FIMS")
-#
-#
-# # devtools::install_github("NOAA-FIMS/FIMS")
-# # pak::pkg_install("NOAA-FIMS/FIMS")
-#
-# library(FIMS)
-
 clear()
-rm(list = ls())
 
 #--------------------------------------------------------
 #Logistic function for later use
@@ -181,7 +147,15 @@ fimsdat$value <- as.numeric(fimsdat$value)
 final_fimsdat <- FIMSFrame(fimsdat)
 
 # Define fleet specifications for fleet1 and survey1
-fleet1 <- survey1 <- list(
+fleet1 <- list(
+  selectivity = list(form = "LogisticSelectivity"),
+  data_distribution = c(
+    Landings = "DlnormDistribution",
+    AgeComp = "DmultinomDistribution",
+    LengthComp = "DmultinomDistribution"
+  )
+)
+survey1 <- list(
   selectivity = list(form = "LogisticSelectivity"),
   data_distribution = c(
     Index = "DlnormDistribution",
@@ -281,11 +255,6 @@ fit <- parameters |>
 
 # Get information about the model and print a few characters to the screen
 recruitment_log <- get_log_module("information")
-substr(recruitment_log, 1, 100)
-
-# Clear memory post-run
-clear()
-
 ```
 
 ## Add your comparison figures
@@ -324,7 +293,7 @@ ggplot2::ggsave(
 index <- ssres$cpue |>
   dplyr::select(Yr, Obs, Exp)
 names(index) <- c("year", 'obs', 'ss3')
-index$fims <- get_report(fit)[["exp_index"]][[2]]
+index$fims <- get_report(fit)[["index_exp"]][[2]]
 index |>
   tidyr::pivot_longer(names_to = "variable", cols = dplyr::matches("ss3|fims")) |>
   ggplot2::ggplot(ggplot2::aes(x = year)) +
@@ -492,16 +461,16 @@ Output:
 * include all parameter values and names (fixed and estimated, also show starting values)
 * Code to generate a default set of figures and tables for use in assessment documents/presentations
 
-## List any issues that you ran into or found
-
-Please [open an issue](https://github.com/NOAA-FIMS/FIMS/issues/new/choose) if you found something new.
-
 ## What features are most important to add based on this case study?
 
 * The ability to start the model at non-equilibrium conditions  (In SS3 there is a
 SR_regime parameter and Initial F to match equilbirium age comps to first year of data age comps)
 *Does the model year start in the first year of the data input?
 
-## Add your pages to the project
+```{r}
+#| warning: false
+#| label: clear
+#| output: false
 
-* Add the files to `_quarto.yml`
+clear()
+```
