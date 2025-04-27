@@ -35,8 +35,6 @@ website:
         text: Home
       - href: content/case-study-template.qmd
         text: Case study template
-      - href: content/rendering.qmd
-        text: Rendering
       - href: content/rmarkdown.Rmd
         text: R Markdown files
       - href: content/NEFSC-yellowtail.qmd
