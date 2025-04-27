@@ -315,8 +315,10 @@ report <- get_report(fit)
 
 ######################################################################
 # Plot results
-library(colorspace)
-cols <- colorspace::sequential_hcl(5, "Viridis")
+
+# created by running colorspace::sequential_hcl(5, "Viridis")
+cols <- c("#4B0055", "#00588B", "#009B95", "#53CC67", "#FDE333")
+
 out.folder <- "figures"
 dir.create(out.folder, showWarnings = FALSE)
 plot.type <- "png"
