@@ -38,13 +38,13 @@ if (!"r4ss" %in% rownames(installed.packages())) {
 
 # Install FIMS: main branch version if on main, dev version on any other branch
 
-branch_name <- system("git branch --show-current")
+branch_name <- system("git branch --show-current", intern = TRUE)
 use_fims_main <- grepl("main", branch_name)
 
 if (use_fims_main) {
   remotes::install_github("NOAA-FIMS/FIMS")
 } else {
-  remotes::install_github("NOAA-FIMS/FIMS", ref = "dev-transform")
+  remotes::install_github("NOAA-FIMS/FIMS", ref = "dev")
 }
 
 # Load packages
