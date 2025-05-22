@@ -26,12 +26,18 @@ jobs:
       - name: Set up R (needed for Rmd)
         uses: r-lib/actions/setup-r@v2
 
+      - name: Install system dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install gettext
+          brew link --force gettext
+
      # - name: Install packages (needed for Rmd)
      #   run: Rscript -e 'install.packages(c("rmarkdown", "knitr", "jsonlite"))'
       - name: Install R packages with renv
         uses: r-lib/actions/setup-renv@v2
         env:
-          RENV_PROFILE: dev
+          RENV_PROFILE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main' && '' || 'dev' }}
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
