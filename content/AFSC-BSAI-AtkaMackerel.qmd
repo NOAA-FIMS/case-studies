@@ -16,7 +16,7 @@ editor_options:
 #| label: startup
 #| output: false
 
-theme_set(theme_bw())
+ggplot2::theme_set(theme_bw())
 
 
 # R_version <- version$version.string
