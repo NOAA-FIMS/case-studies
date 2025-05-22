@@ -52,9 +52,18 @@ nlengths <- length(comp_lengths) # the number of length bins.
 # use FIMS data frame
 
 source(here::here("content", "R", "get_ss3_data.R"))
-opaka_dat_fims <- get_ss3_data(opaka_dat, fleets = c(1,2,3), ages = ages, lengths = comp_lengths)
-
-opaka_dat_fims <- opaka_dat_fims |>
+opaka_dat_fims <- get_ss3_data(
+  list(
+    dat = opaka_dat,
+    ctl = opaka_ctl,
+    start = list(),
+    fore = list(),
+    wtatage = rep[["wtatage"]]
+  ),
+  fleets = c(1,2,3),
+  ages = ages,
+  lengths = comp_lengths
+) |>
   dplyr::filter(type != "age")
 ## age to length conversion matrix 
 # Growth function values to create age to length conversion matrix from model
@@ -123,31 +132,6 @@ opaka_dat_fims <- type.convert(
   rbind(opaka_dat_fims, length_age_data),
   as.is = TRUE
 )
-
-# Get weight-at-age from SS3 report output and convert from kg to mt
-weight_at_age_data <- rep[["wtatage"]] |> 
-  dplyr::filter(sex == 1 & fleet == 1 & year == 1949) |> 
-  dplyr::select(dplyr::matches("[0-9]+")) |>
-  round(4) |>
-  tidyr::pivot_longer(names_to = "age", cols = dplyr::everything()) |>
-  dplyr::filter(age %in% ages) |>
-  tidyr::expand_grid(
-    opaka_dat_fims |> dplyr::select(datestart) |> dplyr::distinct()
-  ) |>
-  dplyr::left_join(
-    opaka_dat_fims |> dplyr::select(datestart, dateend) |> dplyr::distinct(),
-    by = "datestart"
-  ) |>
-  dplyr::mutate(
-    type = "weight-at-age",
-    name = "fleet1",
-    unit = "mt",
-    age = as.integer(age),
-    value = value/1000
-  )
-opaka_dat_fims <- opaka_dat_fims |> 
-  dplyr::bind_rows(weight_at_age_data)
-
 
 opaka_dat_fims <- opaka_dat_fims |> 
   dplyr::mutate(uncertainty = ifelse(type == "length" & name == "fleet2" & value != -999, 1, uncertainty)) |>

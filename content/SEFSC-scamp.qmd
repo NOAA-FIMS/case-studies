@@ -296,7 +296,7 @@ default_parameters <- data_4_model |>
     )
   )
 # FIX
-# $Population.log_M.estimated
+# $Population.log_M.estimatation_type <- "fixed_effects"
 # [1] 1
 
 ####################################################################################
