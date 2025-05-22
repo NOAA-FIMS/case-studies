@@ -1,6 +1,8 @@
 ```{r}
 #| warning: false
 #| label: package-installation
+#| eval: false
+#| echo: false
 
 # Names of required packages
 packages <- c(
@@ -36,17 +38,6 @@ if (!"r4ss" %in% rownames(installed.packages())) {
   remotes::install_github("r4ss/r4ss")
 }
 
-# Install FIMS: main branch version if on main, dev version on any other branch
-
-branch_name <- system("git branch --show-current", intern = TRUE)
-use_fims_main <- grepl("main", branch_name)
-
-if (use_fims_main) {
-  remotes::install_github("NOAA-FIMS/FIMS")
-} else {
-  remotes::install_github("NOAA-FIMS/FIMS", ref = "dev")
-}
-
 # Load packages
 invisible(lapply(packages, library, character.only = TRUE))
 
@@ -58,3 +49,15 @@ FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
 
 source(file.path("R", "utils.R"))
 ```
+
+
+```{r}
+library(FIMS)
+library(adnuts)
+R_version <- version$version.string
+TMB_version <- packageDescription("TMB")$Version
+FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
+
+source(file.path("R", "utils.R"))
+```
+
