@@ -35,6 +35,10 @@ It may be necessary to work off of main in order to apply a "hot fix" to case-st
 
 Create a branch off of dev that does NOT include the word "main" somwhere in its name.
 
+## How to use `renv`  
+
+[renv](https://rstudio.github.io/renv/) helps manage R packages for a project. We have set it up for this repository so that everyone can ensure they have all of the necessary packages installed on their computer to reproduce the case studies. When starting a working session run `renv::restore()` to automatically download and install all necessary packages. As you make changes periodically check `renv::status()` to see if any new packages need to be added to the lock file (`renv.lock`). If your project is out of sync, run `renv::snapshot()` to update the lock file. Once finished working for the day, be sure to push your changes to the lock file to the repository. 
+
 ## How to use codespaces 
 
 See the [GitHub codespaces documentation](https://docs.github.com/en/codespaces) for general codespaces help.
