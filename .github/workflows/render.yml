@@ -31,7 +31,7 @@ jobs:
       - name: Install R packages with renv
         uses: r-lib/actions/setup-renv@v2
         with: 
-          profile: dev
+          profile: "dev"
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
