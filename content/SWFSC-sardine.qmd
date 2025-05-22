@@ -172,13 +172,13 @@ default_parameters <- final_fimsdat |>
 
 # Update parameters
   # Control how parameters are updated
-estimate_fish_selex <- FALSE
-estimate_survey_selex <- FALSE
-estimate_q <- FALSE #Fix at 1
-estimate_F <- TRUE
+estimate_fish_selex <- "constant"
+estimate_survey_selex <- "constant"
+estimate_q <- "constant" #Fix at 1
+estimate_F <- "fixed_effects"
 estimate_recdevs <- TRUE
-estimate_init_naa <- TRUE
-estimate_log_rzero <- TRUE
+estimate_init_naa <- "fixed_effects"
+estimate_log_rzero <- "fixed_effects"
 steep <- 0.6 # sardine steepness is fixed at 0.6
 M_value <- 0.8 #.8 worked pretty well
 rzero <- 17 #14.2 is log(R0) in sardine simplified model
@@ -195,11 +195,11 @@ parameters <- default_parameters |>
     modified_parameters = list(
       fleet1 = list(
         LogisticSelectivity.inflection_point.value = 1,
-        LogisticSelectivity.inflection_point.estimated = estimate_fish_selex,
+        LogisticSelectivity.inflection_point.estimation_type = estimate_fish_selex,
         LogisticSelectivity.slope.value = 5,
-        LogisticSelectivity.slope.estimated = estimate_fish_selex,
+        LogisticSelectivity.slope.estimation_type = estimate_fish_selex,
         Fleet.log_Fmort.value = log(rep(0.2, nyears)),
-        Fleet.log_Fmort.estimated = estimate_F,
+        Fleet.log_Fmort.estimation_type = estimate_F,
         DlnormDistribution.log_sd.value = rep(log(sqrt(log(0.01^2 + 1))), nyears)
       )
     )
@@ -208,11 +208,11 @@ parameters <- default_parameters |>
     modified_parameters = list(
       survey1 = list(
         LogisticSelectivity.inflection_point.value = 1.2,
-        LogisticSelectivity.inflection_point.estimated = estimate_survey_selex,
+        LogisticSelectivity.inflection_point.estimation_type = estimate_survey_selex,
         LogisticSelectivity.slope.value = 2,
-        LogisticSelectivity.slope.estimated = estimate_survey_selex,
+        LogisticSelectivity.slope.estimation_type = estimate_survey_selex,
         Fleet.log_q.value = 0,
-        Fleet.log_q.estimated = estimate_q,
+        Fleet.log_q.estimation_type = estimate_q,
         DlnormDistribution.log_sd.value = rep(log(sqrt(log(0.1^2 + 1))), nyears)
       )
     )
@@ -221,7 +221,7 @@ parameters <- default_parameters |>
     modified_parameters = list(
       recruitment = list(
         BevertonHoltRecruitment.log_rzero.value = rzero,
-        BevertonHoltRecruitment.log_rzero.estimated = estimate_log_rzero,
+        BevertonHoltRecruitment.log_rzero.estimation_type = estimate_log_rzero,
         BevertonHoltRecruitment.logit_steep.value = -log(1.0 - steep) + log(steep - 0.2),
         BevertonHoltRecruitment.log_devs.value = rep(log(1), nyears-1),
         DnormDistribution.log_sd.value = log(1.2)
@@ -243,7 +243,7 @@ parameters <- default_parameters |>
       population = list(
         Population.log_M.value = rep(log(M_value), nages * nyears),
         Population.log_init_naa.value = log(init_naa),
-        Population.log_init_naa.estimated = estimate_init_naa
+        Population.log_init_naa.estimation_type = estimate_init_naa
       )
     )
   )
