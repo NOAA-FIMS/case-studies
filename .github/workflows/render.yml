@@ -30,8 +30,8 @@ jobs:
      #   run: Rscript -e 'install.packages(c("rmarkdown", "knitr", "jsonlite"))'
       - name: Install R packages with renv
         uses: r-lib/actions/setup-renv@v2
-        with: 
-          profile: "dev"
+        env:
+          RENV_PROFILE: dev
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
