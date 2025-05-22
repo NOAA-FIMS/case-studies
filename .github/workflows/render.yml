@@ -15,7 +15,7 @@ name: Render
 
 jobs:
   build-deploy:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
@@ -26,12 +26,18 @@ jobs:
       - name: Set up R (needed for Rmd)
         uses: r-lib/actions/setup-r@v2
 
+      - name: Install system dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+
      # - name: Install packages (needed for Rmd)
      #   run: Rscript -e 'install.packages(c("rmarkdown", "knitr", "jsonlite"))'
       - name: Install R packages with renv
         uses: r-lib/actions/setup-renv@v2
         env:
-          RENV_PROFILE: dev
+          RENV_PROFILE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main' && '' || 'dev' }}
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
