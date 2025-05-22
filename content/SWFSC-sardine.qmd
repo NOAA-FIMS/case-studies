@@ -232,9 +232,9 @@ parameters <- default_parameters |>
     modified_parameters = list(
       maturity = list(
         LogisticMaturity.inflection_point.value = 1.2,
-        LogisticMaturity.inflection_point.estimated = FALSE,
+        LogisticMaturity.inflection_point.estimation_type = "constant",
         LogisticMaturity.slope.value = 1.5, # arbitrary guess
-        LogisticMaturity.slope.estimated = FALSE
+        LogisticMaturity.slope.estimation_type = "constant"
       )
     )
   ) |>
