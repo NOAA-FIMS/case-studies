@@ -49,7 +49,7 @@ jobs:
           Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
           Rscript -e "source('./content/renv-profile.R')"
           Rscript -e "
-            lockfile <- if (file.exists('renv/profiles/dev/renv.lock')) 'renv/profiles/dev/renv.lock' else 'renv/renv.lock'
+            lockfile <- if (file.exists('renv/profiles/dev/renv.lock')){ 'renv/profiles/dev/renv.lock'} else {'renv/renv.lock'}
             message("Using lockfile: ", lockfile)
             if (file.exists(lockfile)) {
               lock <- renv::lockfile_read(lockfile)
