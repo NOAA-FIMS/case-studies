@@ -41,7 +41,8 @@ jobs:
           fi
 
       - name: Print the output
-        run: echo "The profile is: ${{ steps.profile.outputs.profile }}"
+        run: |
+          echo "The profile is: ${{ steps.profile.outputs.profile }}"
 
       - name: Check renv profile
         run: |
