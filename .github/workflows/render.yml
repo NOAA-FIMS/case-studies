@@ -31,8 +31,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libglpk-dev libxml2-dev libcurl4-openssl-dev libjpeg-dev libfontconfig1-dev pandoc
       
-      - name: Debug branch name
-        run: echo "Running on branch: ${{ github.ref_name }}"
+      - name: Print branch name
+        run: |
+          echo "Running on branch: ${{ github.ref_name }}"
 
       # - name: Install R packages with renv
       #   uses: r-lib/actions/setup-renv@v2
