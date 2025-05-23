@@ -39,19 +39,19 @@ jobs:
         run: |
           Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
           Rscript -e "renv::activate()"
-          Rscript -e "lock <- renv::lockfile_read(~/work/case-studies/case-studies/renv/profiles/dev/renv.lock)"
-          Rscript -e "pkg_names <- names(lock$Packages)"
-        # pkg_name <- 'FIMS'  # replace with your package
-        # if (pkg_name %in% names(lock$Packages)) {
-        #   pkg_info <- lock$Packages[[pkg_name]]
-        #   cat('Package:', pkg_name, '\n')
-        #   cat('Version:', pkg_info$Version, '\n')
-        #   cat('Source:', pkg_info$Source, '\n')
-        #   if (!is.null(pkg_info$RemoteRepo)) cat('Repository:', pkg_info$RemoteRepo, '\n')
-        #   if (!is.null(pkg_info$RemoteRef)) cat('Git Ref:', pkg_info$RemoteRef, '\n')
-        # } else {
-        #   cat('Package not found in lockfile\n')
-        # }"
+          Rscript -e "
+          dev_lockfile <- 'renv/profiles/dev/renv.lock'
+          if (file.exists(dev_lockfile)) {
+            lock <- renv::lockfile_read(dev_lockfile)
+            cat('Successfully read dev profile with', length(lock\$Packages), 'packages\n')
+          } else {
+            cat('Dev profile lockfile not found at:', dev_lockfile, '\n')
+            # Check what files actually exist
+            if (dir.exists('renv/profiles/dev')) {
+              files <- list.files('renv/profiles/dev', full.names = TRUE)
+              cat('Files in dev profile dir:', paste(files, collapse = ', '), '\n')
+            }
+          }"
  
 
       # - name: Install R packages with renv
