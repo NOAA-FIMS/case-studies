@@ -39,7 +39,6 @@ jobs:
         run: |
           Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
           Rscript -e "renv::activate()"
-          Rscript -e "cat('Profile:', renv::settings\$profile(), '\n')"
           Rscript -e "renv::status()"
  
 
