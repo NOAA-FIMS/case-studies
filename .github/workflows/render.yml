@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - dev
-      - 74-feature-set-up-renv
   workflow_dispatch:
   schedule: 
     - cron: '30 0 * * 0' # runs At 00:00 on Sunday
@@ -47,8 +46,6 @@ jobs:
             libproj-dev \
             pkg-config
 
-     # - name: Install packages (needed for Rmd)
-     #   run: Rscript -e 'install.packages(c("rmarkdown", "knitr", "jsonlite"))'
       - name: Install R packages with renv
         uses: r-lib/actions/setup-renv@v2
         env:
