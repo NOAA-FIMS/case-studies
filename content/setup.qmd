@@ -2,6 +2,7 @@
 #| warning: false
 #| label: package-installation
 #| eval: false
+#| echo: false
 
 # Names of required packages
 packages <- c(
