@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - dev
+      - 74-feature-set-up-renv
   workflow_dispatch:
   schedule: 
     - cron: '30 0 * * 0' # runs At 00:00 on Sunday
@@ -28,28 +29,15 @@ jobs:
       - name: Install system dependencies for R packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            libcurl4-openssl-dev \
-            libssl-dev \
-            libxml2-dev \
-            libfontconfig1-dev \
-            libharfbuzz-dev \
-            libfribidi-dev \
-            libfreetype6-dev \
-            libpng-dev \
-            libtiff5-dev \
-            libjpeg-dev \
-            libgit2-dev \
-            libudunits2-dev \
-            libgdal-dev \
-            libgeos-dev \
-            libproj-dev \
-            pkg-config
+          sudo apt-get install -y libglpk-dev libxml2-dev libcurl4-openssl-dev libjpeg-dev libfontconfig1-dev pandoc
+      
+      - name: Debug branch name
+        run: echo "Running on branch: ${{ github.ref_name }}"
 
-      - name: Install R packages with renv
-        uses: r-lib/actions/setup-renv@v2
-        env:
-          RENV_PROFILE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main' && '' || 'dev' }}
+      # - name: Install R packages with renv
+      #   uses: r-lib/actions/setup-renv@v2
+      #   env:
+      #     RENV_PROFILE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main' && '' || 'dev' }}
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
@@ -63,10 +51,10 @@ jobs:
       
       # add software dependencies here
 
-      - name: Render Quarto Project 
-        uses: quarto-dev/quarto-actions/render@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # this secret is always available for github actions
+      # - name: Render Quarto Project 
+      #   uses: quarto-dev/quarto-actions/render@v2
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # this secret is always available for github actions
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      # - name: Upload artifact
+      #   uses: actions/upload-pages-artifact@v3
