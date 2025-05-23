@@ -1,3 +1,2 @@
-source("renv/activate.R")
 # .Rprofile
-source(".R/renv-profile.R")
+source(".content/renv-profile.R")
