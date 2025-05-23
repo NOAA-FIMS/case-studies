@@ -42,6 +42,7 @@ jobs:
           Rscript -e "renv::status()"
           Rscript -e "
           lock <- renv::lockfile_read()
+          pkg_names <- head(names(lock$Packages), 5)
           pkg_name <- 'FIMS'  # replace with your package
           if (pkg_name %in% names(lock$Packages)) {
             pkg_info <- lock$Packages[[pkg_name]]
