@@ -44,7 +44,17 @@ jobs:
           if (file.exists(dev_lockfile)) {
             lock <- renv::lockfile_read(dev_lockfile)
             cat('Successfully read dev profile with', length(lock\$Packages), 'packages\n')
-            names(lock\$Packages)
+            pkg_name <- 'FIMS'  # replace with your package
+            if (pkg_name %in% names(lock\$Packages)) {
+              pkg_info <- lock\$Packages[[pkg_name]]
+              cat('Package:', pkg_name, '\n')
+              cat('Version:', pkg_info\$Version, '\n')
+              cat('Source:', pkg_info\$Source, '\n')
+              if (!is.null(pkg_info\$RemoteRepo)) cat('Repository:', pkg_info\$RemoteRepo, '\n')
+              if (!is.null(pkg_info\$RemoteRef)) cat('Git Ref:', pkg_info\$RemoteRef, '\n')
+            } else {
+              cat('Package not found in lockfile\n')
+            }
           } else {
             cat('Dev profile lockfile not found at:', dev_lockfile, '\n')
             # Check what files actually exist
