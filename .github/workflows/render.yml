@@ -47,7 +47,7 @@ jobs:
       - name: Activate and inspect renv profile
         run: |
           Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
-          Rscript -e "source('.content/renv-profile.R')"
+          Rscript -e "source('./content/renv-profile.R')"
           Rscript -e "
             lockfile <- if (file.exists('renv/profiles/dev/renv.lock')) 'renv/profiles/dev/renv.lock' else 'renv/renv.lock'
             if (file.exists(lockfile)) {
