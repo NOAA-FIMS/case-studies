@@ -40,6 +40,9 @@ jobs:
             echo "profile=default" >> $GITHUB_OUTPUT
           fi
 
+      - name: Print the output
+        run: echo "The profile is: ${{ steps.profile.outputs.profile }}"
+
       - name: Check renv profile
         run: |
           Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
