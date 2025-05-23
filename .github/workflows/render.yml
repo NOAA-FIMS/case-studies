@@ -44,8 +44,7 @@ jobs:
           if (file.exists(dev_lockfile)) {
             lock <- renv::lockfile_read(dev_lockfile)
             cat('Successfully read dev profile with', length(lock\$Packages), 'packages\n')
-            names(lock$Packages)
-            }
+            names(lock\$Packages)
           } else {
             cat('Dev profile lockfile not found at:', dev_lockfile, '\n')
             # Check what files actually exist
