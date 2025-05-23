@@ -40,8 +40,8 @@ jobs:
           Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
           Rscript -e "renv::activate()"
           Rscript -e "cat('Profile:', renv::settings\$profile(), '\n')"
-          Rscript -e "cat('Project root:', renv::project(), '\n')"
-          Rscript -e "if(file.exists('renv.lock')) cat('renv.lock exists\n') else cat('No renv.lock found\n')"
+          Rscript -e "renv::status()"
+ 
 
       # - name: Install R packages with renv
       #   uses: r-lib/actions/setup-renv@v2
