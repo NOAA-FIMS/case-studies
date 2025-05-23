@@ -39,7 +39,7 @@ jobs:
         run: |
           Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
           Rscript -e "renv::activate()"
-          Rscript -e "lock <- renv::lockfile_read()"
+          Rscript -e "lock <- renv::lockfile_read(~/work/case-studies/case-studies/renv/profiles/dev/renv.lock)"
           Rscript -e "pkg_names <- names(lock$Packages)"
         # pkg_name <- 'FIMS'  # replace with your package
         # if (pkg_name %in% names(lock$Packages)) {
