@@ -31,18 +31,30 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libglpk-dev libxml2-dev libcurl4-openssl-dev libjpeg-dev libfontconfig1-dev pandoc
       
-      - name: Print branch name
+      - name: Determine renv profile
+        id: profile
         run: |
-          echo "Running on branch: ${{ github.ref_name }}"
+          if [[ "${{ github.ref_name }}" == "dev" ]] || [[ "${{ github.base_ref }}" == "dev" ]]; then
+            echo "profile=dev" >> $GITHUB_OUTPUT
+          else
+            echo "profile=default" >> $GITHUB_OUTPUT
+          fi
 
       - name: Check renv profile
         run: |
           Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
-          Rscript -e "renv::activate()"
+          profile="${{ steps.profile.outputs.profile }}"
+          echo "Using profile: $profile"
+          if [[ "$profile" == "dev" ]] && [[ -f "renv/profiles/dev/renv.lock" ]]; then
+            Rscript -e "renv::activate(profile = 'dev')"
+            lockfile <- 'renv/profiles/dev/renv.lock'
+          else
+            Rscript -e "renv::activate()"
+            lockfile <- 'renv/renv.lock'
+          fi
           Rscript -e "
-          dev_lockfile <- 'renv/profiles/dev/renv.lock'
-          if (file.exists(dev_lockfile)) {
-            lock <- renv::lockfile_read(dev_lockfile)
+          if (file.exists(lockfile)) {
+            lock <- renv::lockfile_read(lockfile)
             cat('Successfully read dev profile with', length(lock\$Packages), 'packages\n')
             pkg_name <- 'FIMS'  # replace with your package
             if (pkg_name %in% names(lock\$Packages)) {
