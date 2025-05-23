@@ -50,6 +50,7 @@ jobs:
           Rscript -e "source('./content/renv-profile.R')"
           Rscript -e "
             lockfile <- if (file.exists('renv/profiles/dev/renv.lock')) 'renv/profiles/dev/renv.lock' else 'renv/renv.lock'
+            message("Using lockfile: ", lockfile)
             if (file.exists(lockfile)) {
               lock <- renv::lockfile_read(lockfile)
               cat('Read lockfile with', length(lock$Packages), 'packages\n')
