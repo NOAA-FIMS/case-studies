@@ -75,7 +75,11 @@ jobs:
         env:
           GITHUB_REF_NAME: ${{ github.ref_name }}
   
-
+      - name: Check if lockfile was modified
+        run: |
+          echo "Git diff of lockfile:"
+          git diff renv/profiles/dev/renv.lock || echo "No diff or file missing"
+          
       # - name: Install R packages with renv
       #   uses: r-lib/actions/setup-renv@v2
       #   env:
