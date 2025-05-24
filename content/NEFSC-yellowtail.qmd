@@ -204,7 +204,7 @@ default_parameters <- age_frame |>
     modified_parameters = list(
       fleet1 = list(
         Fleet.log_Fmort.value = log(rep(rdat$initial.guesses$Fmult.year1.init[1], nyears)), # ASAP assumes Fmult devs = 0
-        Fleet.log_Fmort.estimated = TRUE,
+        Fleet.log_Fmort.estimation_type = "fixed_effects",
         # FIX: Users should not have to reset the uncertainty for a fleet when this information
         #      is already in the data, it should be stored and pulled out automatically in
         #      create_default_parameters(). For index data too.
@@ -227,7 +227,7 @@ default_parameters <- age_frame |>
       recruitment = list(
         # ASAP can enter either R0 or SSB0, need to make sure use R0 in input file
         BevertonHoltRecruitment.log_rzero.value = log(rdat$initial.guesses$SR.inits$SR.scaler.init),
-        BevertonHoltRecruitment.log_devs.estimated = TRUE,
+        BevertonHoltRecruitment.log_devs.estimation_type = "fixed_effects",
         # note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run
         BevertonHoltRecruitment.logit_steep.value = -log(1.0 - rdat$initial.guesses$SR.inits$SR_steepness.init) + log(rdat$initial.guesses$SR.inits$SR_steepness.init - 0.2),
         DnormDistribution.log_sd.value = mean(rdat$control.parms$recruit.cv), # typically enter same value for every year in ASAP,
@@ -239,9 +239,9 @@ default_parameters <- age_frame |>
       # mat.female*prop.female + mat.male*prop.male and then assuming an all female population 
       maturity = list(
         LogisticMaturity.inflection_point.value =  1.8, # hardwired for now, need to figure out a better way than this
-        LogisticMaturity.inflection_point.estimated = FALSE,
+        LogisticMaturity.inflection_point.estimation_type = "constant",
         LogisticMaturity.slope.value = 4, # hardwired for now, need to figure out a better way than this
-        LogisticMaturity.slope.estimated = FALSE
+        LogisticMaturity.slope.estimation_type = "constant"
       ),
       population = list(
         # M is vector of age1 M X nyrs then age2 M X nyrs
@@ -249,7 +249,7 @@ default_parameters <- age_frame |>
         Population.log_init_naa.value = log(rdat$N.age[1,]), # log(rdat$initial.guesses$NAA.year1.init)
         # Does not really matter if you estimate these or not when
         # distributions are fixed
-        Population.log_init_naa.estimated = FALSE
+        Population.log_init_naa.estimation_type = "constant"
       )
     )
   )
