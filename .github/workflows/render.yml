@@ -41,12 +41,12 @@ jobs:
             echo "profile=default" >> $GITHUB_OUTPUT
           fi
 
-          echo "The profile is: ${{ steps.profile.outputs.profile }}"
+          echo "The profile is: $profile"
  
       - name: Activate and inspect renv profile
         run: |
           Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
-          # Set lockfile based on the profile output from previous step
+
           profile="${{ steps.profile.outputs.profile }}"
           echo "Detected profile: $profile"
 
@@ -57,23 +57,35 @@ jobs:
           fi
 
           echo "Using lockfile: $lockfile"
+
+          # Pass profile and lockfile as environment variables
+          export PROFILE="$profile"
+          export LOCKFILE="$lockfile"
+
           Rscript -e "source('./content/renv-profile.R')"
+
           Rscript -e '
-          if(profile == "dev"){
-          lockfile <- "/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock"
-          }else{
-          lockfile <- "/home/runner/work/case-studies/case-studies/renv/renv.lock"
-          }
-          message('Using lockfile: ', lockfile)
-          if (file.exists(lockfile)) {
+            profile <- Sys.getenv("PROFILE")
+            lockfile <- Sys.getenv("LOCKFILE")
+
+            message("Using profile: ", profile)
+            message("Using lockfile: ", lockfile)
+
+            if (file.exists(lockfile)) {
               lock <- renv::lockfile_read(lockfile)
-              cat('Read lockfile with', length(lock\$Packages), 'packages\n')
-              if ('FIMS' %in% names(lock\$Packages)) {
-                pkg <- lock\$Packages[['FIMS']]
-                cat('FIMS version:', pkg\$RemoteRef, '\n')
+              cat("Read lockfile with", length(lock$Packages), "packages\n")
+
+              if ("FIMS" %in% names(lock$Packages)) {
+                pkg <- lock$Packages[["FIMS"]]
+                cat("FIMS version:", pkg$Version, "\n")
+                if (!is.null(pkg$RemoteRef)) cat("Git Ref:", pkg$RemoteRef, "\n")
+                if (!is.null(pkg$RemoteRepo)) cat("Repository:", pkg$RemoteRepo, "\n")
+              } else {
+                cat("FIMS not found in lockfile\n")
               }
-            } else{
-            cat('Lockfile not found: ', lockfile, '\n')}
+            } else {
+              cat("Lockfile not found at:", lockfile, "\n")
+            }
           '
         env:
           GITHUB_REF_NAME: ${{ github.ref_name }}
