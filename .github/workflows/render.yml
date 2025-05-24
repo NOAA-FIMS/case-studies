@@ -24,11 +24,6 @@ jobs:
         with:
           fetch-depth: 0  # Get full history and all branch contents
 
-      - name: Cache R packages
-        uses: r-lib/actions/setup-renv@v2
-        with:
-          cache-version: 2
-
       - name: Set up R (needed for Rmd)
         uses: r-lib/actions/setup-r@v2
 
@@ -37,6 +32,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libglpk-dev libxml2-dev libcurl4-openssl-dev libjpeg-dev libfontconfig1-dev pandoc
       
+      - name: Cache R packages
+        uses: r-lib/actions/setup-renv@v2
+        with:
+          cache-version: 2
+
       - name: Determine renv profile
         id: profile
         run: |
