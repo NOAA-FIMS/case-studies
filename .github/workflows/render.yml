@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - dev
-      - 74-feature-set-up-renv
   workflow_dispatch:
   schedule: 
     - cron: '30 0 * * 0' # runs At 00:00 on Sunday
@@ -73,7 +72,7 @@ jobs:
             message('Using lockfile: ', lockfile)
             message('Working directory is: ', getwd())
             if (file.exists(lockfile)) {
-              lock <- renv::lockfile_read(lockfile)
+              lock <- renv::lockfile_read(renv/profile/dev/renv.lock)
               cat('Read lockfile with', length(lock$Packages), 'packages\n')
               if ('FIMS' %in% names(lock$Packages)) {
                 pkg <- lock$Packages[['FIMS']]
