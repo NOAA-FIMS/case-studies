@@ -84,17 +84,32 @@ jobs:
         env:
           GITHUB_REF_NAME: ${{ github.ref_name }}
   
-      - name: Print lockfile content and size
+      - name: Final lockfile debug
         run: |
-          echo "File listing:"
-          ls -lh renv/profiles/dev/renv.lock || echo "Lockfile missing"
-
-          echo "Git-tracked lockfile?"
-          git ls-files renv/profiles/dev/renv.lock || echo "Not tracked"
-
-          echo "First 40 lines of the lockfile:"
-          head -n 40 renv/profiles/dev/renv.lock || echo "Cannot read lockfile"
-
+          LOCKFILE="/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock"
+          
+          echo "File path: $LOCKFILE"
+          echo "Exists?"; test -f "$LOCKFILE" && echo yes || echo no
+          echo "Size: $(stat --format="%s bytes" "$LOCKFILE")"
+          echo "SHA256: $(sha256sum "$LOCKFILE")"
+          
+          echo "Contents (first 20 lines):"
+          head -n 20 "$LOCKFILE"
+          
+          echo "Reading lockfile with R:"
+          Rscript -e '
+            lockfile <- '/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock'
+            cat("Working directory:", getwd(), "\n")
+            cat("Reading lockfile:", lockfile, "\n")
+            lock <- renv::lockfile_read(lockfile)
+            cat("Packages found:", length(lock$Packages), "\n")
+            if ("FIMS" %in% names(lock$Packages)) {
+              pkg <- lock$Packages[["FIMS"]]
+              cat("FIMS version:", pkg$RemoteRef, "\n")
+            } else {
+              cat("FIMS not found\n")
+            }"
+            
       # - name: Install R packages with renv
       #   uses: r-lib/actions/setup-renv@v2
       #   env:
