@@ -38,21 +38,6 @@ if (!"r4ss" %in% rownames(installed.packages())) {
   remotes::install_github("r4ss/r4ss")
 }
 
-# Install FIMS: main branch version if on main, dev version on any other branch
-
-branch_name <- system("git branch --show-current", intern = TRUE)
-#use_fims_main <- grepl("main", branch_name)
-
-if (branch_name == "main") {
-  # Use default profile
-  Sys.unsetenv("RENV_PROFILE")
-  message("Using default renv profile for main branch")
-} else {
-  # Use dev profile
-  Sys.setenv(RENV_PROFILE = "dev")
-  message("Using dev renv profile for branch: ", current_branch)
-}
-
 # Load packages
 invisible(lapply(packages, library, character.only = TRUE))
 
@@ -67,19 +52,6 @@ source(file.path("R", "utils.R"))
 
 
 ```{r}
-branch_name <- system("git branch --show-current", intern = TRUE)
-#use_fims_main <- grepl("main", branch_name)
-
-if (branch_name == "main") {
-  # Use default profile
-  Sys.unsetenv("RENV_PROFILE")
-  message("Using default renv profile for main branch")
-} else {
-  # Use dev profile
-  Sys.setenv(RENV_PROFILE = "dev")
-  message("Using dev renv profile for branch: ", current_branch)
-}
-
 library(FIMS)
 library(adnuts)
 R_version <- version$version.string

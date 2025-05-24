@@ -86,6 +86,7 @@ jobs:
             } else {
               cat("Lockfile not found at:", lockfile, "\n")
             }
+            renv::restore()
           '
         env:
           GITHUB_REF_NAME: ${{ github.ref_name }}
@@ -108,10 +109,10 @@ jobs:
       
       # add software dependencies here
 
-      # - name: Render Quarto Project 
-      #   uses: quarto-dev/quarto-actions/render@v2
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # this secret is always available for github actions
+      - name: Render Quarto Project 
+        uses: quarto-dev/quarto-actions/render@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # this secret is always available for github actions
 
-      # - name: Upload artifact
-      #   uses: actions/upload-pages-artifact@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
