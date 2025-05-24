@@ -68,15 +68,15 @@ jobs:
           echo "Using lockfile: $lockfile"
           Rscript -e "source('./content/renv-profile.R')"
           Rscript -e "
-            lockfile <- '${lockfile}'
+            lockfile <- "/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock"
             message('Using lockfile: ', lockfile)
             message('Working directory is: ', getwd())
             if (file.exists(lockfile)) {
-              lock <- renv::lockfile_read("/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock")
+              lock <- renv::lockfile_read(lockfile)
               cat('Read lockfile with', length(lock$Packages), 'packages\n')
               if ('FIMS' %in% names(lock$Packages)) {
                 pkg <- lock$Packages[['FIMS']]
-                cat('FIMS version:', pkg$$RemoteRef, '\n')
+                cat('FIMS version:', pkg$RemoteRef, '\n')
               }
             } else{
             cat('Lockfile not found: ', lockfile, '\n')}
