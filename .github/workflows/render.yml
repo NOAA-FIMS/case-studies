@@ -97,18 +97,27 @@ jobs:
           head -n 20 "$LOCKFILE"
           
           echo "Reading lockfile with R:"
-          Rscript -e "
-            lockfile <- '/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock'
+          Rscript -e '
+            lockfile <- "/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock"
             cat("Working directory:", getwd(), "\n")
             cat("Reading lockfile:", lockfile, "\n")
-            lock <- renv::lockfile_read(lockfile)
-            cat("Packages found:", length(lock$Packages), "\n")
-            if ("FIMS" %in% names(lock$Packages)) {
-              pkg <- lock$Packages[["FIMS"]]
-              cat("FIMS version:", pkg$RemoteRef, "\n")
+
+            if (file.exists(lockfile)) {
+              lock <- renv::lockfile_read(lockfile)
+              cat("Packages found:", length(lock$Packages), "\n")
+
+              if ("FIMS" %in% names(lock$Packages)) {
+                pkg <- lock$Packages[["FIMS"]]
+                cat("FIMS version:", pkg$Version, "\n")
+                if (!is.null(pkg$RemoteRef)) cat("Git Ref:", pkg$RemoteRef, "\n")
+                if (!is.null(pkg$RemoteRepo)) cat("Repository:", pkg$RemoteRepo, "\n")
+              } else {
+                cat("FIMS not found in lockfile\n")
+              }
             } else {
-              cat("FIMS not found\n")
-            }"
+              cat("Lockfile does not exist at", lockfile, "\n")
+            }
+          '
             
       # - name: Install R packages with renv
       #   uses: r-lib/actions/setup-renv@v2
