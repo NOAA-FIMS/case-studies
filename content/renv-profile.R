@@ -7,12 +7,7 @@ if (branch == "") {
 }
 
 # Determine profile
-profile <- if (branch != "main") "dev" else NULL
+profile <- if (branch == "main") NULL else "dev"
 
-if (!is.null(profile)) {
-  message("Activating renv profile: ", profile)
-  renv::activate(profile = profile)
-} else {
-  message("Activating default renv profile")
-  renv::activate()
-}
+message("Overriding renv activation with profile: ", if (is.null(profile)) "default" else profile)
+renv::activate(profile = profile)

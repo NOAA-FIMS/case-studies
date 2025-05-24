@@ -31,7 +31,7 @@ jobs:
           echo "Commit: $(git rev-parse HEAD)"
           echo "Log:"
           git log --oneline -n 5  
-          
+
       - name: Set up R (needed for Rmd)
         uses: r-lib/actions/setup-r@v2
 
@@ -84,10 +84,16 @@ jobs:
         env:
           GITHUB_REF_NAME: ${{ github.ref_name }}
   
-      - name: Check if lockfile was modified
+      - name: Print lockfile content and size
         run: |
-          echo "Git diff of lockfile:"
-          git diff renv/profiles/dev/renv.lock || echo "No diff or file missing"
+          echo "File listing:"
+          ls -lh renv/profiles/dev/renv.lock || echo "Lockfile missing"
+
+          echo "Git-tracked lockfile?"
+          git ls-files renv/profiles/dev/renv.lock || echo "Not tracked"
+
+          echo "First 40 lines of the lockfile:"
+          head -n 40 renv/profiles/dev/renv.lock || echo "Cannot read lockfile"
 
       # - name: Install R packages with renv
       #   uses: r-lib/actions/setup-renv@v2
