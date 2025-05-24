@@ -68,7 +68,7 @@ jobs:
           echo "Using lockfile: $lockfile"
           Rscript -e "source('./content/renv-profile.R')"
           Rscript -e "
-            lockfile <- "/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock"
+            lockfile <- '/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock'
             message('Using lockfile: ', lockfile)
             message('Working directory is: ', getwd())
             if (file.exists(lockfile)) {
