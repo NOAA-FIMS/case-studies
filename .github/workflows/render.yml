@@ -71,6 +71,7 @@ jobs:
           Rscript -e "
             lockfile <- '${lockfile}'
             message('Using lockfile: ', lockfile)
+            message('Working directory is: ', getwd())
             if (file.exists(lockfile)) {
               lock <- renv::lockfile_read(lockfile)
               cat('Read lockfile with', length(lock$Packages), 'packages\n')
