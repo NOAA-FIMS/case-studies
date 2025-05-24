@@ -149,9 +149,9 @@ parameters_with_wrappers <- data_4_model |>
         DoubleLogisticSelectivity.inflection_point_asc.value = parfinal$inf1_srv2,
         DoubleLogisticSelectivity.slope_asc.value = exp(parfinal$log_slp1_srv2),
         DoubleLogisticSelectivity.inflection_point_desc.value = parfinal$inf2_srv2,
-        DoubleLogisticSelectivity.inflection_point_desc.estimated = FALSE,
+        DoubleLogisticSelectivity.inflection_point_desc.estimation_type = "constant",
         DoubleLogisticSelectivity.slope_desc.value = exp(parfinal$log_slp2_srv2),
-        DoubleLogisticSelectivity.slope_desc.estimated = FALSE,
+        DoubleLogisticSelectivity.slope_desc.estimation_type = "constant",
         Fleet.log_q.value = parfinal$log_q2_mean
       )
     )
@@ -169,9 +169,9 @@ parameters_with_wrappers <- data_4_model |>
     modified_parameters = list(
       survey6 = list(
         DoubleLogisticSelectivity.inflection_point_asc.value = parfinal$inf1_srv6,
-        DoubleLogisticSelectivity.inflection_point_asc.estimated = FALSE,
+        DoubleLogisticSelectivity.inflection_point_asc.estimation_type = "constant",
         DoubleLogisticSelectivity.slope_asc.value = exp(parfinal$log_slp1_srv6),
-        DoubleLogisticSelectivity.slope_asc.estimated = FALSE,
+        DoubleLogisticSelectivity.slope_asc.estimation_type = "constant",
         DoubleLogisticSelectivity.inflection_point_desc.value = parfinal$inf2_srv6,
         DoubleLogisticSelectivity.slope_desc.value = exp(parfinal$log_slp2_srv6),
         Fleet.log_q.value = parfinal$log_q6
@@ -192,9 +192,9 @@ parameters_with_wrappers <- data_4_model |>
     modified_parameters = list(
       maturity = list(
         LogisticMaturity.inflection_point.value = 4.5,
-        LogisticMaturity.inflection_point.estimated = FALSE,
+        LogisticMaturity.inflection_point.estimation_type = "constant",
         LogisticMaturity.slope.value = 1.5,
-        LogisticMaturity.slope.estimated = FALSE
+        LogisticMaturity.slope.estimation_type = "constant"
       )
     )
   ) |>
@@ -206,7 +206,7 @@ parameters_with_wrappers <- data_4_model |>
           nrow = data_4_model@n_years
         )))),
         Population.log_init_naa.value = c(log(pkfitfinal$rep$recruit[1]), log(pkfitfinal$rep$initN)) + log(1e9),
-        Population.log_init_naa.estimated = FALSE
+        Population.log_init_naa.estimation_type = "constant"
       )
     )
   )

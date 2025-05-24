@@ -275,9 +275,9 @@ default_parameters <- data_4_model |>
       # mat.female*prop.female + mat.male*prop.male and then assuming an all female population 
       maturity = list(
         LogisticMaturity.inflection_point.value = 2.254187,
-        LogisticMaturity.inflection_point.estimated = FALSE,
+        LogisticMaturity.inflection_point.estimation_type = "constant",
         LogisticMaturity.slope.value = 1.659077,
-        LogisticMaturity.slope.estimated = FALSE
+        LogisticMaturity.slope.estimation_type = "constant"
       ),
       population = list(
         # M is vector of age1 M X nyrs then age2 M X nyrs
@@ -286,12 +286,12 @@ default_parameters <- data_4_model |>
           nrow = nyears
         ))),
         Population.log_init_naa.value = log(sca$N.age[1, ]),
-        Population.log_init_naa.estimated = FALSE
+        Population.log_init_naa.estimation_type = "constant"
       )
     )
   )
 # FIX
-# $Population.log_M.estimated
+# $Population.log_M.estimatation_type <- "fixed_effects"
 # [1] 1
 
 ####################################################################################

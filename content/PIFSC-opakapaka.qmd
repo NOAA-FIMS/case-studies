@@ -52,9 +52,18 @@ nlengths <- length(comp_lengths) # the number of length bins.
 # use FIMS data frame
 
 source(here::here("content", "R", "get_ss3_data.R"))
-opaka_dat_fims <- get_ss3_data(opaka_dat, fleets = c(1,2,3), ages = ages, lengths = comp_lengths)
-
-opaka_dat_fims <- opaka_dat_fims |>
+opaka_dat_fims <- get_ss3_data(
+  list(
+    dat = opaka_dat,
+    ctl = opaka_ctl,
+    start = list(),
+    fore = list(),
+    wtatage = rep[["wtatage"]]
+  ),
+  fleets = c(1,2,3),
+  ages = ages,
+  lengths = comp_lengths
+) |>
   dplyr::filter(type != "age")
 ## age to length conversion matrix 
 # Growth function values to create age to length conversion matrix from model
@@ -124,31 +133,6 @@ opaka_dat_fims <- type.convert(
   as.is = TRUE
 )
 
-# Get weight-at-age from SS3 report output and convert from kg to mt
-weight_at_age_data <- rep[["wtatage"]] |> 
-  dplyr::filter(sex == 1 & fleet == 1 & year == 1949) |> 
-  dplyr::select(dplyr::matches("[0-9]+")) |>
-  round(4) |>
-  tidyr::pivot_longer(names_to = "age", cols = dplyr::everything()) |>
-  dplyr::filter(age %in% ages) |>
-  tidyr::expand_grid(
-    opaka_dat_fims |> dplyr::select(datestart) |> dplyr::distinct()
-  ) |>
-  dplyr::left_join(
-    opaka_dat_fims |> dplyr::select(datestart, dateend) |> dplyr::distinct(),
-    by = "datestart"
-  ) |>
-  dplyr::mutate(
-    type = "weight-at-age",
-    name = "fleet1",
-    unit = "mt",
-    age = as.integer(age),
-    value = value/1000
-  )
-opaka_dat_fims <- opaka_dat_fims |> 
-  dplyr::bind_rows(weight_at_age_data)
-
-
 opaka_dat_fims <- opaka_dat_fims |> 
   dplyr::mutate(uncertainty = ifelse(type == "length" & name == "fleet2" & value != -999, 1, uncertainty)) |>
   dplyr::filter(!(type == "index" & name == "fleet3"))
@@ -217,9 +201,9 @@ parameters <- default_parameters |>
       fleet1 = list(
         Fleet.log_Fmort.value = log(rep$exploitation$FRS),
         LogisticSelectivity.inflection_point.value = 1.81, #used age selex values
-        LogisticSelectivity.inflection_point.estimated = FALSE,
+        LogisticSelectivity.inflection_point.estimation_type = "constant",
         LogisticSelectivity.slope.value = 4.5, #used age selex values
-        LogisticSelectivity.slope.estimated = FALSE
+        LogisticSelectivity.slope.estimation_type = "constant"
       )
     )
   ) |>
@@ -227,9 +211,9 @@ parameters <- default_parameters |>
       modified_parameters = list(
         fleet4 = list(
           LogisticSelectivity.inflection_point.value = 1.81, #used age selex values
-          LogisticSelectivity.inflection_point.estimated = FALSE,
+          LogisticSelectivity.inflection_point.estimation_type = "constant",
           LogisticSelectivity.slope.value = 4.5, #used age selex values
-          LogisticSelectivity.slope.estimated = FALSE,
+          LogisticSelectivity.slope.estimation_type = "constant",
           Fleet.log_q.value = -3.90281 #value from SS
         )
       )
@@ -238,9 +222,9 @@ parameters <- default_parameters |>
     modified_parameters = list(
       fleet2 = list(
         LogisticSelectivity.inflection_point.value = 1, #used age selex values
-        LogisticSelectivity.inflection_point.estimated = FALSE,
+        LogisticSelectivity.inflection_point.estimation_type = "constant",
         LogisticSelectivity.slope.value = 3, #used age selex values
-        LogisticSelectivity.slope.estimated = FALSE,
+        LogisticSelectivity.slope.estimation_type = "constant",
         Fleet.log_q.value = -4.12772
       )
     )
@@ -250,9 +234,9 @@ parameters <- default_parameters |>
       fleet3 = list(
         Fleet.log_Fmort.value = log(rep$exploitation$Non_comm),
         LogisticSelectivity.inflection_point.value = 1.97,
-        LogisticSelectivity.inflection_point.estimated = FALSE,
+        LogisticSelectivity.inflection_point.estimation_type = "constant",
         LogisticSelectivity.slope.value = 4.5,
-        LogisticSelectivity.slope.estimated = FALSE
+        LogisticSelectivity.slope.estimation_type = "constant"
       )
     )
   ) |>
@@ -269,9 +253,9 @@ parameters <- default_parameters |>
     modified_parameters = list(
       maturity = list(
         LogisticMaturity.inflection_point.value = 7, # currently in opaka model in terms of length so guesstimated what it would be for age based on growth
-        LogisticMaturity.inflection_point.estimated = FALSE,
+        LogisticMaturity.inflection_point.estimation_type = "constant",
         LogisticMaturity.slope.value = 0.5, #make positive from SS value 
-        LogisticMaturity.slope.estimated = FALSE
+        LogisticMaturity.slope.estimation_type = "constant"
       )
     )
   ) |>
@@ -279,7 +263,7 @@ parameters <- default_parameters |>
     modified_parameters = list(
       population = list(
         Population.log_init_naa.value = log(init_naa),
-        Population.log_init_naa.estimated = FALSE,
+        Population.log_init_naa.estimation_type = "constant",
         Population.log_M.value = rep(log(0.135), get_n_years(fims_frame)*get_n_ages(fims_frame))
       )
     )
