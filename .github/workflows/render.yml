@@ -24,13 +24,6 @@ jobs:
         with:
           fetch-depth: 0  # Get full history and all branch contents
 
-      - name: Check branch and commit
-        run: |
-          echo "Branch: $(git rev-parse --abbrev-ref HEAD)"
-          echo "Commit: $(git rev-parse HEAD)"
-          echo "Log:"
-          git log --oneline -n 5  
-
       - name: Set up R (needed for Rmd)
         uses: r-lib/actions/setup-r@v2
 
@@ -48,10 +41,8 @@ jobs:
             echo "profile=default" >> $GITHUB_OUTPUT
           fi
 
-      - name: Print the output
-        run: |
           echo "The profile is: ${{ steps.profile.outputs.profile }}"
-
+ 
       - name: Activate and inspect renv profile
         run: |
           Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
@@ -60,18 +51,21 @@ jobs:
           echo "Detected profile: $profile"
 
           if [[ "$profile" == "dev" ]]; then
-            lockfile="renv/profiles/dev/renv.lock"
+            lockfile="/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock"
           else
-            lockfile="renv/renv.lock"
+            lockfile="/home/runner/work/case-studies/case-studies/renv/renv.lock"
           fi
 
           echo "Using lockfile: $lockfile"
           Rscript -e "source('./content/renv-profile.R')"
-          Rscript -e "
-            lockfile <- '/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock'
-            message('Using lockfile: ', lockfile)
-            message('Working directory is: ', getwd())
-            if (file.exists(lockfile)) {
+          Rscript -e '
+          if(profile == "dev"){
+          lockfile <- "/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock"
+          }else{
+          lockfile <- "/home/runner/work/case-studies/case-studies/renv/renv.lock"
+          }
+          message('Using lockfile: ', lockfile)
+          if (file.exists(lockfile)) {
               lock <- renv::lockfile_read(lockfile)
               cat('Read lockfile with', length(lock$Packages), 'packages\n')
               if ('FIMS' %in% names(lock$Packages)) {
@@ -80,44 +74,10 @@ jobs:
               }
             } else{
             cat('Lockfile not found: ', lockfile, '\n')}
-          "
+          '
         env:
           GITHUB_REF_NAME: ${{ github.ref_name }}
   
-      - name: Final lockfile debug
-        run: |
-          LOCKFILE="/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock"
-          
-          echo "File path: $LOCKFILE"
-          echo "Exists?"; test -f "$LOCKFILE" && echo yes || echo no
-          echo "Size: $(stat --format="%s bytes" "$LOCKFILE")"
-          echo "SHA256: $(sha256sum "$LOCKFILE")"
-          
-          echo "Contents (first 20 lines):"
-          head -n 20 "$LOCKFILE"
-          
-          echo "Reading lockfile with R:"
-          Rscript -e '
-            lockfile <- "/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock"
-            cat("Working directory:", getwd(), "\n")
-            cat("Reading lockfile:", lockfile, "\n")
-
-            if (file.exists(lockfile)) {
-              lock <- renv::lockfile_read(lockfile)
-              cat("Packages found:", length(lock$Packages), "\n")
-
-              if ("FIMS" %in% names(lock$Packages)) {
-                pkg <- lock$Packages[["FIMS"]]
-                cat("FIMS version:", pkg$Version, "\n")
-                if (!is.null(pkg$RemoteRef)) cat("Git Ref:", pkg$RemoteRef, "\n")
-                if (!is.null(pkg$RemoteRepo)) cat("Repository:", pkg$RemoteRepo, "\n")
-              } else {
-                cat("FIMS not found in lockfile\n")
-              }
-            } else {
-              cat("Lockfile does not exist at", lockfile, "\n")
-            }
-          '
             
       # - name: Install R packages with renv
       #   uses: r-lib/actions/setup-renv@v2
