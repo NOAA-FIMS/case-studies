@@ -97,7 +97,7 @@ jobs:
           head -n 20 "$LOCKFILE"
           
           echo "Reading lockfile with R:"
-          Rscript -e '
+          Rscript -e "
             lockfile <- '/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock'
             cat("Working directory:", getwd(), "\n")
             cat("Reading lockfile:", lockfile, "\n")
