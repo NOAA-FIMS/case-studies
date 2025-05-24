@@ -67,10 +67,10 @@ jobs:
           message('Using lockfile: ', lockfile)
           if (file.exists(lockfile)) {
               lock <- renv::lockfile_read(lockfile)
-              cat('Read lockfile with', length(lock$Packages), 'packages\n')
-              if ('FIMS' %in% names(lock$Packages)) {
-                pkg <- lock$Packages[['FIMS']]
-                cat('FIMS version:', pkg$RemoteRef, '\n')
+              cat('Read lockfile with', length(lock\$Packages), 'packages\n')
+              if ('FIMS' %in% names(lock\$Packages)) {
+                pkg <- lock\$Packages[['FIMS']]
+                cat('FIMS version:', pkg\$RemoteRef, '\n')
               }
             } else{
             cat('Lockfile not found: ', lockfile, '\n')}
