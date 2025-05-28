@@ -268,7 +268,8 @@ default_parameters <- data_4_model |>
         DnormDistribution.log_sd.value = sca$parm.cons$rec_sigma[8],
         # The last value of the initial numbers at age is the first
         # recruitment deviation
-        BevertonHoltRecruitment.log_devs.value = sca$t.series$logR.dev[-1]
+        BevertonHoltRecruitment.log_devs.value = sca$t.series$logR.dev[-1],
+        BevertonHoltRecruitment.log_devs.estimation_type = "fixed_effects"
       ),
       # Maturity
       # NOTE, to match FIMS for a protogynous stock, these maturity values were obtained by fitting a logistic fcn to the age vector,
