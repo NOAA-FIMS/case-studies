@@ -7,7 +7,6 @@ Stock | Status
 -- | --
 NEFSC yellowtail flounder | working
 AFSC GOA pollock | working
-AFSC BSAI Atka Mackerel | working
 SWFSC sardine | working
 NWFSC petrale | working
 PIFSC opakapaka | working
