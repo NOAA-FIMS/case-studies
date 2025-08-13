@@ -247,11 +247,15 @@ default_parameters <- data_4_model |>
       fleet2 = list(
         LogisticSelectivity.inflection_point.value = sca$parm.cons$selpar_A50_REC2[8],
         LogisticSelectivity.slope.value = sca$parm.cons$selpar_slope1_REC2[8],
+        LogisticSelectivity.inflection_point.estimation_type = "fixed_effects",
+        LogisticSelectivity.slope.estimation_type = "fixed_effects",
         Fleet.log_Fmort.value = log(sca$t.series$F.REC)
       ),
       survey1 = list(
         LogisticSelectivity.inflection_point.value = sca$parm.cons$selpar_A501_CVT[8],
         LogisticSelectivity.slope.value = sca$parm.cons$selpar_slope1_CVT[8],
+        LogisticSelectivity.inflection_point.estimation_type = "fixed_effects",
+        LogisticSelectivity.slope.estimation_type = "fixed_effects",
         Fleet.log_q.value = log(sca$parms$q.CVT)
       )
     )
@@ -338,7 +342,7 @@ get_selectivity_parameter <- function(fit, x) {
   )
   return(out)
 }
-browser()
+
 selex.bam.fleet1 <- 1 / (1 + exp(-sca$parm.cons$selpar_slope_COM2[8] * (ages - sca$parm.cons$selpar_A50_COM2[8])))
 selex.fims.fleet1 <- 1 / (1 + exp(-get_selectivity_parameter(fit, "slope")[1] * (ages - get_selectivity_parameter(fit, "inflection_point")[1])))
 selex.bam.fleet2 <- 1 / (1 + exp(-sca$parm.cons$selpar_slope1_REC2[8] * (ages - sca$parm.cons$selpar_A50_REC2[8])))
