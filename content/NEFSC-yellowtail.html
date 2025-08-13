@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.7.33">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -73,9 +73,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-bc185b5c5bdbcb35c2eb49d8a876ef70.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-56191fd399c254e3e2b46d8b860b2c33.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
@@ -339,12 +339,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../content/AFSC-BSAI-AtkaMackerel.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">AFSC BSAI Atka Mackerel case study</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../content/SWFSC-sardine.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">SWFSC sardine case study</span></a>
   </div>
@@ -460,7 +454,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="st">"adnuts"</span> <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())) {</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"Cole-Monnahan-NOAA/adnuts"</span>, <span class="at">ref=</span><span class="st">"sparse_M"</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"Cole-Monnahan-NOAA/adnuts"</span>)</span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># SS3 case studies require r4ss</span></span>
@@ -500,11 +494,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <ul>
-<li>R version: R version 4.5.0 (2025-04-11)<br>
+<li>R version: R version 4.5.1 (2025-06-13)<br>
 </li>
 <li>TMB version: 1.9.17<br>
 </li>
-<li>FIMS commit: 5e3995b<br>
+<li>FIMS commit: bb9558f<br>
 </li>
 <li>Stock name: Southern New England-Mid Atlantic Yellowtail Flounder<br>
 </li>
@@ -690,7 +684,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
 <span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet1 =</span> <span class="fu">list</span>(</span>
 <span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_Fmort.value =</span> <span class="fu">log</span>(<span class="fu">rep</span>(rdat<span class="sc">$</span>initial.guesses<span class="sc">$</span>Fmult.year1.init[<span class="dv">1</span>], nyears)), <span class="co"># ASAP assumes Fmult devs = 0</span></span>
-<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_Fmort.estimated =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_Fmort.estimation_type =</span> <span class="st">"fixed_effects"</span>,</span>
 <span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>        <span class="co"># FIX: Users should not have to reset the uncertainty for a fleet when this information</span></span>
 <span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>        <span class="co">#      is already in the data, it should be stored and pulled out automatically in</span></span>
 <span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>        <span class="co">#      create_default_parameters(). For index data too.</span></span>
@@ -713,7 +707,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>      <span class="at">recruitment =</span> <span class="fu">list</span>(</span>
 <span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ASAP can enter either R0 or SSB0, need to make sure use R0 in input file</span></span>
 <span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.log_rzero.value =</span> <span class="fu">log</span>(rdat<span class="sc">$</span>initial.guesses<span class="sc">$</span>SR.inits<span class="sc">$</span>SR.scaler.init),</span>
-<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.log_devs.estimated =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.log_devs.estimation_type =</span> <span class="st">"fixed_effects"</span>,</span>
 <span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>        <span class="co"># note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run</span></span>
 <span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>        <span class="at">BevertonHoltRecruitment.logit_steep.value =</span> <span class="sc">-</span><span class="fu">log</span>(<span class="fl">1.0</span> <span class="sc">-</span> rdat<span class="sc">$</span>initial.guesses<span class="sc">$</span>SR.inits<span class="sc">$</span>SR_steepness.init) <span class="sc">+</span> <span class="fu">log</span>(rdat<span class="sc">$</span>initial.guesses<span class="sc">$</span>SR.inits<span class="sc">$</span>SR_steepness.init <span class="sc">-</span> <span class="fl">0.2</span>),</span>
 <span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>        <span class="at">DnormDistribution.log_sd.value =</span> <span class="fu">mean</span>(rdat<span class="sc">$</span>control.parms<span class="sc">$</span>recruit.cv), <span class="co"># typically enter same value for every year in ASAP,</span></span>
@@ -725,9 +719,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>      <span class="co"># mat.female*prop.female + mat.male*prop.male and then assuming an all female population </span></span>
 <span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>      <span class="at">maturity =</span> <span class="fu">list</span>(</span>
 <span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.inflection_point.value =</span>  <span class="fl">1.8</span>, <span class="co"># hardwired for now, need to figure out a better way than this</span></span>
-<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.inflection_point.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.inflection_point.estimation_type =</span> <span class="st">"constant"</span>,</span>
 <span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.slope.value =</span> <span class="dv">4</span>, <span class="co"># hardwired for now, need to figure out a better way than this</span></span>
-<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.slope.estimated =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.slope.estimation_type =</span> <span class="st">"constant"</span></span>
 <span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a>      ),</span>
 <span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>      <span class="at">population =</span> <span class="fu">list</span>(</span>
 <span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>        <span class="co"># M is vector of age1 M X nyrs then age2 M X nyrs</span></span>
@@ -735,7 +729,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_init_naa.value =</span> <span class="fu">log</span>(rdat<span class="sc">$</span>N.age[<span class="dv">1</span>,]), <span class="co"># log(rdat$initial.guesses$NAA.year1.init)</span></span>
 <span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Does not really matter if you estimate these or not when</span></span>
 <span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>        <span class="co"># distributions are fixed</span></span>
-<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_init_naa.estimated =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_init_naa.estimation_type =</span> <span class="st">"constant"</span></span>
 <span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a>      )</span>
 <span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a>  )</span>
@@ -937,9 +931,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>  Component      FIMS     ASAP
 1     Total 2540.1331 2410.844
-2     Index 1034.7833 1020.548
-3  Age Comp 1360.0192 1390.297
-4       Rec  145.3306    0.000</code></pre>
+2     Index 1034.7835 1020.548
+3  Age Comp 1360.0191 1390.297
+4       Rec  145.3305    0.000</code></pre>
 </div>
 </div>
 </section>

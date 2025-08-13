@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.7.33">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -73,9 +73,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-bc185b5c5bdbcb35c2eb49d8a876ef70.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-56191fd399c254e3e2b46d8b860b2c33.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
@@ -339,12 +339,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../content/AFSC-BSAI-AtkaMackerel.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">AFSC BSAI Atka Mackerel case study</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../content/SWFSC-sardine.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">SWFSC sardine case study</span></a>
   </div>
@@ -458,7 +452,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="st">"adnuts"</span> <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())) {</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"Cole-Monnahan-NOAA/adnuts"</span>, <span class="at">ref=</span><span class="st">"sparse_M"</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"Cole-Monnahan-NOAA/adnuts"</span>)</span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># SS3 case studies require r4ss</span></span>
@@ -547,7 +541,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>AtoL <span class="ot">&lt;-</span> <span class="cf">function</span>(a,Linf,K,a_0){</span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  L <span class="ot">&lt;-</span> Linf<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span><span class="fu">exp</span>(<span class="sc">-</span>K<span class="sc">*</span>(a<span class="sc">-</span>a_0)))</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>ages <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>amax</span>
 <span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>len_bins <span class="ot">&lt;-</span> comp_lengths</span>
@@ -685,9 +679,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet1 =</span> <span class="fu">list</span>(</span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_Fmort.value =</span> <span class="fu">log</span>(rep<span class="sc">$</span>exploitation<span class="sc">$</span>FRS),</span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.value =</span> <span class="fl">1.81</span>, <span class="co">#used age selex values</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.estimation_type =</span> <span class="st">"constant"</span>,</span>
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.value =</span> <span class="fl">4.5</span>, <span class="co">#used age selex values</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.estimated =</span> <span class="cn">FALSE</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.estimation_type =</span> <span class="st">"constant"</span></span>
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>      )</span>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
@@ -695,9 +689,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
 <span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">fleet4 =</span> <span class="fu">list</span>(</span>
 <span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>          <span class="at">LogisticSelectivity.inflection_point.value =</span> <span class="fl">1.81</span>, <span class="co">#used age selex values</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>          <span class="at">LogisticSelectivity.inflection_point.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>          <span class="at">LogisticSelectivity.inflection_point.estimation_type =</span> <span class="st">"constant"</span>,</span>
 <span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>          <span class="at">LogisticSelectivity.slope.value =</span> <span class="fl">4.5</span>, <span class="co">#used age selex values</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>          <span class="at">LogisticSelectivity.slope.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>          <span class="at">LogisticSelectivity.slope.estimation_type =</span> <span class="st">"constant"</span>,</span>
 <span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>          <span class="at">Fleet.log_q.value =</span> <span class="sc">-</span><span class="fl">3.90281</span> <span class="co">#value from SS</span></span>
 <span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>      )</span>
@@ -706,9 +700,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
 <span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet2 =</span> <span class="fu">list</span>(</span>
 <span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.value =</span> <span class="dv">1</span>, <span class="co">#used age selex values</span></span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.estimation_type =</span> <span class="st">"constant"</span>,</span>
 <span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.value =</span> <span class="dv">3</span>, <span class="co">#used age selex values</span></span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.estimation_type =</span> <span class="st">"constant"</span>,</span>
 <span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_q.value =</span> <span class="sc">-</span><span class="fl">4.12772</span></span>
 <span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>      )</span>
 <span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>    )</span>
@@ -718,9 +712,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet3 =</span> <span class="fu">list</span>(</span>
 <span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>        <span class="at">Fleet.log_Fmort.value =</span> <span class="fu">log</span>(rep<span class="sc">$</span>exploitation<span class="sc">$</span>Non_comm),</span>
 <span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.value =</span> <span class="fl">1.97</span>,</span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.inflection_point.estimation_type =</span> <span class="st">"constant"</span>,</span>
 <span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.value =</span> <span class="fl">4.5</span>,</span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.estimated =</span> <span class="cn">FALSE</span></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticSelectivity.slope.estimation_type =</span> <span class="st">"constant"</span></span>
 <span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>      )</span>
 <span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
@@ -737,9 +731,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
 <span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>      <span class="at">maturity =</span> <span class="fu">list</span>(</span>
 <span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.inflection_point.value =</span> <span class="dv">7</span>, <span class="co"># currently in opaka model in terms of length so guesstimated what it would be for age based on growth</span></span>
-<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.inflection_point.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.inflection_point.estimation_type =</span> <span class="st">"constant"</span>,</span>
 <span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.slope.value =</span> <span class="fl">0.5</span>, <span class="co">#make positive from SS value </span></span>
-<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.slope.estimated =</span> <span class="cn">FALSE</span></span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>        <span class="at">LogisticMaturity.slope.estimation_type =</span> <span class="st">"constant"</span></span>
 <span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>      )</span>
 <span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
@@ -747,7 +741,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">modified_parameters =</span> <span class="fu">list</span>(</span>
 <span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>      <span class="at">population =</span> <span class="fu">list</span>(</span>
 <span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_init_naa.value =</span> <span class="fu">log</span>(init_naa),</span>
-<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_init_naa.estimated =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_init_naa.estimation_type =</span> <span class="st">"constant"</span>,</span>
 <span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>        <span class="at">Population.log_M.value =</span> <span class="fu">rep</span>(<span class="fu">log</span>(<span class="fl">0.135</span>), <span class="fu">get_n_years</span>(fims_frame)<span class="sc">*</span><span class="fu">get_n_ages</span>(fims_frame))</span>
 <span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>      )</span>
 <span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>    )</span>
@@ -771,17 +765,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stderr">
 <pre><code>✔ Starting optimization ...
 ℹ Restarting optimizer 3 times to improve gradient.
-ℹ Maximum gradient went from 0.01223 to 0.0026 after 3 steps.
+ℹ Maximum gradient went from 0.01229 to 0.00171 after 3 steps.
 ✔ Finished optimization
 ✔ Finished sdreport
-ℹ FIMS model version: 0.4.0
-ℹ Total run time was 2.30624 minutes
+ℹ FIMS model version: 0.6.3
+ℹ Total run time was 2.26298 minutes
 ℹ Number of parameters: total=227, fixed_effects=227, and random_effects=0
-ℹ Maximum gradient= 0.0026
+ℹ Maximum gradient= 0.00171
 ℹ Negative log likelihood (NLL):
 • Marginal NLL= 569.48717
 • Total NLL= 569.48717
-ℹ Terminal SB=</code></pre>
+ℹ Terminal SB= 1092.39328</code></pre>
 </div>
 </div>
 </section>
