@@ -28,7 +28,7 @@ if (!"StanEstimators" %in% rownames(installed.packages())) {
 }
 
 if (!"adnuts" %in% rownames(installed.packages())) {
-  remotes::install_github("Cole-Monnahan-NOAA/adnuts", ref="sparse_M")
+  remotes::install_github("Cole-Monnahan-NOAA/adnuts")
 }
 
 # SS3 case studies require r4ss

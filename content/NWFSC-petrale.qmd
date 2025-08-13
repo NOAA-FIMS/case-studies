@@ -192,21 +192,21 @@ parameters <- default_parameters |>
   update_parameters(
     modified_parameters = list(
       fleet1 = list(
-        Fleet.log_Fmort.estimated = FALSE,
+        Fleet.log_Fmort.estimation_type = "constant",
         Fleet.log_Fmort.value = rep$exploitation |> 
           dplyr::filter(Yr %in% years) |> 
           dplyr::pull(North) |>
           log(), # "North" is the SS3 fleet name
         LogisticSelectivity.inflection_point.value = 10, 
-        LogisticSelectivity.inflection_point.estimated = TRUE,
+        LogisticSelectivity.inflection_point.estimation_type = "fixed_effects",
         LogisticSelectivity.slope.value = 2, #used age selex values
-        LogisticSelectivity.slope.estimated = TRUE
+        LogisticSelectivity.slope.estimation_type = "fixed_effects"
       ),
       survey1 = list(
         LogisticSelectivity.inflection_point.value = 6, 
-        LogisticSelectivity.inflection_point.estimated = TRUE,
+        LogisticSelectivity.inflection_point.estimation_type = "fixed_effects",
         LogisticSelectivity.slope.value = 2, 
-        LogisticSelectivity.slope.estimated = TRUE
+        LogisticSelectivity.slope.estimation_type = "fixed_effects"
       )
     )
   ) |>
@@ -227,9 +227,9 @@ parameters <- default_parameters |>
       # based on looking at model$endgrowth |> dplyr::filter(Sex == 1) |> dplyr::select(Age_Beg, Len_Mat)
       maturity = list(
         LogisticMaturity.inflection_point.value = 20.5, 
-        LogisticMaturity.inflection_point.estimated = FALSE,
+        LogisticMaturity.inflection_point.estimation_type = "constant",
         LogisticMaturity.slope.value = 1.8, # arbitrary guess
-        LogisticMaturity.slope.estimated = FALSE
+        LogisticMaturity.slope.estimation_type = "constant"
       )
     )
   ) |>
@@ -237,12 +237,12 @@ parameters <- default_parameters |>
     modified_parameters = list(
       population = list(
         Population.log_init_naa.value = log(init_naa),
-        Population.log_init_naa.estimated = TRUE,
+        Population.log_init_naa.estimation_type = "fixed_effects",
         Population.log_M.value = rep(
           log(rep$parameters["NatM_uniform_Fem_GP_1", "Value"]),
           get_n_years(fims_frame) * get_n_ages(fims_frame)
         ),
-        Population.log_M.estimated = FALSE
+        Population.log_M.estimation_type = "constant"
       )
     )
   )
