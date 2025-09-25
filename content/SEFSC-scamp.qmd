@@ -5,26 +5,19 @@ format:
     code-fold: true
 ---
 
-## Setup description
+## The setup
 
 {{< include setup.qmd >}}
 
-```{r}
-#| warning: false
-#| label: startup
-#| output: false
-ggplot2::theme_set(ggplot2::theme_bw())
-```
--   R version: `r R_version`\
--   TMB version: `r TMB_version`\
--   FIMS commit: `r FIMS_commit`\
--   Stock name: South Atlantic scamp grouper\
--   Region: SEFSC\
--   Analyst: Kyle Shertzer\
--   Analyses completed on 1 July 2024\
+* R version: `r R_version`
+* TMB version: `r TMB_version`
+* FIMS commit: `r FIMS_commit`
+* Stock name: South Atlantic scamp grouper
+* Region: SEFSC
+* Analyst: Kyle Shertzer
 
+## Simplifications to the original assessment
 
-## Simplifications or modifications to the original assessment
 The original stock assessment ([SEDAR-68OA](https://sedarweb.org/documents/sedar-68oa-south-atlantic-scamp-operational-assessment-final-stock-assessment-report/)) was conducted using the Beaufort
 Assessment Model (BAM). That assessment included details not yet available
 in FIMS, and so the following simplifications or modifications were made to the BAM configuration to allow more direct comparisons with FIMS output. These assessments and comparisons are for demonstration only.

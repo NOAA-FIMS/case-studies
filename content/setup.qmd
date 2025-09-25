@@ -51,7 +51,11 @@ source(file.path("R", "utils.R"))
 ```
 
 
-```{r}
+```{r package-loading}
+#| echo: false
+#| warning: false
+#| output: false
+
 library(FIMS)
 library(adnuts)
 R_version <- version$version.string
@@ -59,5 +63,6 @@ TMB_version <- packageDescription("TMB")$Version
 FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
 
 source(file.path("R", "utils.R"))
+ggplot2::theme_set(ggplot2::theme_bw())
 ```
 

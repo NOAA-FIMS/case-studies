@@ -1,5 +1,5 @@
 ---
-title: SWFSC Case Study Pacific sardine
+title: SWFSC Case Study Pacific Sardine
 format:
   html:
     code-fold: true
@@ -9,18 +9,15 @@ format:
 
 {{< include setup.qmd >}}
 
-## Add a chunk of code describing your setup
+* R version: `r R_version`
+* TMB version: `r TMB_version`
+* FIMS commit: `r FIMS_commit`
+* Stock name: Pacific Sardine Northern Subpopulation
+* Region: SWFSC
+* Analyst: Peter Kuriyama
 
--   R version: `r R_version`\
--   TMB version: `r TMB_version`\
--   FIMS commit: `r FIMS_commit`\
--   Stock name: Pacific sardine northern subpopulation\
--   Region: SWFSC\
--   Analyst: Peter Kuriyama\
+## Simplifications to the original assessment
 
-## Add a bulleted list and script describing simplifications you had to make
-
-How I simplified my assessment
 * Convert two-semester time step to annual
 * Sum the catch values for MexCal S1 and S2
 * Sum the age comps for MexCal S1 and S2

@@ -9,21 +9,12 @@ format:
 
 {{< include setup.qmd >}}
 
-```{r}
-#| warning: false
-#| label: startup
-
-# R_version <- version$version.string
-# TMB_version <- packageDescription("TMB")$Version
-# FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
-```
-
--   R version: `r R_version`\
--   TMB version: `r TMB_version`\
--   FIMS commit: `r FIMS_commit`\
--   Stock name: Southern New England-Mid Atlantic Yellowtail Flounder\
--   Region: NEFSC\
--   Analyst: Chris Legault\
+* R version: `r R_version`
+* TMB version: `r TMB_version`
+* FIMS commit: `r FIMS_commit`
+* Stock name: Southern New England-Mid Atlantic Yellowtail Flounder
+* Region: NEFSC
+* Analyst: Chris Legault
 
 ## Simplifications to the original assessment
 

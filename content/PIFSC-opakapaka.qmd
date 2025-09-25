@@ -1,35 +1,22 @@
 ---
 title: "Opakapaka Case Study"
-format: html
+format:
+  html:
+    code-fold: true
 ---
-
-{{< include setup.qmd >}}
-
-```{r fims1, warning=FALSE, message=FALSE}
-#remotes::install_github("NOAA-FIMS/FIMS", ref = "main")
-library(r4ss)
-# clear memory
-clear()
-
-```
 
 ## The setup
 
-```{r}
-#| echo: false
-R_version <- version$version.string
-TMB_version <- packageDescription("TMB")$Version
-FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
-r4ss_version <- packageVersion('r4ss')
-```
+{{< include setup.qmd >}}
 
-* R version = `R_version`
-* TMB version = `TMB_version`
-* FIMS commit = `FIMS_commit`
-* `r4ss` version = `r4ss_version`  
+* R version: `r R_version`
+* TMB version: `r TMB_version`
+* FIMS commit: `r FIMS_commit`  
 * Stock name: Main Hawaiian Islands Opakapaka
 * Region: Pacific Islands
 * Analyst: Meg Oshima
+
+## Simplifications to the original assessment
 
 ## Setting up Data
 ```{r fims-dims}
@@ -46,7 +33,7 @@ nlengths <- length(comp_lengths) # the number of length bins.
 
 ### Preparing Data using FIMSFrame
 
- We will be reading data into the model using the FIMSFrame S4 R class set up in [R/fimsframe.R](https://github.com/NOAA-FIMS/FIMS/blob/main/R/fimsframe.R)
+We will be reading data into the model using the FIMSFrame S4 R class set up in [R/fimsframe.R](https://github.com/NOAA-FIMS/FIMS/blob/main/R/fimsframe.R)
 
 ```{r fimsframe}
 # use FIMS data frame

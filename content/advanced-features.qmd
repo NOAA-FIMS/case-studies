@@ -9,12 +9,12 @@ format:
 
 {{< include setup.qmd >}}
 
--   R version: `r R_version`\
--   TMB version: `r TMB_version`\
--   FIMS commit: `r FIMS_commit`\
--   Stock name: Gulf of Alaska (GOA) Walleye Pollock\
--   Region: AFSC\
--   Analyst: Cole Monnahan\
+* R version: `r R_version`
+* TMB version: `r TMB_version`
+* FIMS commit: `r FIMS_commit`
+* Stock name: Gulf of Alaska (GOA) Walleye Pollock
+* Region: AFSC
+* Analyst: Cole Monnahan
 
 ## Simplifications to the original assessment
 
