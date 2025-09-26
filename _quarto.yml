@@ -51,8 +51,6 @@ website:
         text: Pacific Hake case study
       - href: content/advanced-features.qmd
         text: Advanced features case study
-      - href: content/acknowledgements.qmd
-        text: Acknowledgements
 
 format:
   html:
