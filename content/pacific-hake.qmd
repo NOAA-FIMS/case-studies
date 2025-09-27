@@ -12,6 +12,8 @@ format:
 ```{r}
 #| label: setup-objects
 common_name <- "Pacific Hake"
+hake_maturity_inflection_point <- 2.2
+hake_maturity_slope <- 1.8
 ```
 
 * R version: `r R_version`
@@ -45,7 +47,6 @@ The relative age-1 index was removed from the data because FIMS currently works 
 
 ## Setting up the data
 
-
 ```{r}
 #| warning: false
 #| label: prepare-fims-data
@@ -58,8 +59,6 @@ maturity_data <- utils::read.csv("https://raw.githubusercontent.com/pacific-hake
 # source("https://raw.githubusercontent.com/NOAA-FIMS/case-studies/refs/heads/main/content/R/get_ss3_data.R")
 source("https://raw.githubusercontent.com/NOAA-FIMS/case-studies/refs/heads/wtatage-from-SS3/content/R/get_ss3_data.R")
 
-hake_maturity_inflection_point <- 2.2
-hake_maturity_slope <- 1.8
 ages <- 0:15
 
 # Mt or 1,000,000 * t
