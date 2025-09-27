@@ -105,7 +105,7 @@ mydat <- get_ss3_data(
     name == "fleet4" ~ "survey1" # change fleet4 to survey1 to match yellowtail case-study
   )) |>
   dplyr::filter(
-    purrr::map_chr(strsplit(mydat$datestart, "-"), purrr::pluck, 1) %in% years
+    purrr::map_chr(strsplit(datestart, "-"), purrr::pluck, 1) %in% years
   ) # filter out forecast years
 
 # set up FIMS data objects
