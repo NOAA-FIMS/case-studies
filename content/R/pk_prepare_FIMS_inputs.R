@@ -1,7 +1,7 @@
 ## Quick function to compare models
 get_long_outputs <- function(fims, tmb) {
   ## estimaed catch is pretty close I think
-  naa <- matrix(fims$naa[[1]], ncol = nages, byrow = TRUE) / 1e9
+  naa <- matrix(fims$naa[[1]], ncol = n_ages, byrow = TRUE) / 1e9
   catch <-
     data.frame(
       year = years,
@@ -113,35 +113,35 @@ get_acomp_fits <- function(tmb, fims1, fims2, fleet, years) {
 # We can test this feature using the case study to evaluate its functionality. 
 ind2 <- 0 * pkfit0$rep$Eindxsurv2 - 999
 ind2[which(years %in% fimsdat$srvyrs2)] <- fimsdat$indxsurv2
-CV2 <- rep(1, length = nyears) # actually SE in log space
+CV2 <- rep(1, length = n_years) # actually SE in log space
 CV2[which(years %in% fimsdat$srvyrs2)] <- fimsdat$indxsurv_log_sd2
 paa2 <- pkfit0$rep$Esrvp2 * 0 - 999
 paa2[which(years %in% fimsdat$srv_acyrs2), ] <- fimsdat$srvp2
-Npaa2 <- rep(1, nyears)
+Npaa2 <- rep(1, n_years)
 Npaa2[which(years %in% fimsdat$srv_acyrs2)] <- fimsdat$multN_srv2
 
 ind3 <- 0 * pkfit0$rep$Eindxsurv3 - 999
 ind3[which(years %in% fimsdat$srvyrs3)] <- fimsdat$indxsurv3
-CV3 <- rep(1, length = nyears) # actually SE in log space
+CV3 <- rep(1, length = n_years) # actually SE in log space
 CV3[which(years %in% fimsdat$srvyrs3)] <- fimsdat$indxsurv_log_sd3
 paa3 <- pkfit0$rep$Esrvp3 * 0 - 999
 paa3[which(years %in% fimsdat$srv_acyrs3), ] <- fimsdat$srvp3
-Npaa3 <- rep(1, nyears)
+Npaa3 <- rep(1, n_years)
 Npaa3[which(years %in% fimsdat$srv_acyrs3)] <- fimsdat$multN_srv3
 
 ind6 <- 0 * pkfit0$rep$Eindxsurv6 - 999
 ind6[which(years %in% fimsdat$srvyrs6)] <- fimsdat$indxsurv6
-CV6 <- rep(1, length = nyears) # actually SE in log space
+CV6 <- rep(1, length = n_years) # actually SE in log space
 CV6[which(years %in% fimsdat$srvyrs6)] <- fimsdat$indxsurv_log_sd6
 paa6 <- pkfit0$rep$Esrvp6 * 0 - 999
 paa6[which(years %in% fimsdat$srv_acyrs6), ] <- fimsdat$srvp6
-Npaa6 <- rep(1, nyears)
+Npaa6 <- rep(1, n_years)
 Npaa6[which(years %in% fimsdat$srv_acyrs6)] <- fimsdat$multN_srv6
 
 ## repeat with fish catch at age, using expected in missing years
 caa <- pkfit0$rep$Ecatp * 0 - 999
 caa[which(years %in% fimsdat$fshyrs), ] <- fimsdat$catp
-Ncaa <- rep(1, nyears)
+Ncaa <- rep(1, n_years)
 Ncaa[which(years %in% fimsdat$fshyrs)] <- fimsdat$multN_fsh
 
 ## put into fims friendly form
@@ -199,58 +199,58 @@ index6 <- data.frame(
 catchage <- data.frame(
   type = "age",
   name = "fleet1",
-  age = rep(seq(1, nages), nyears),
+  age = rep(seq(1, n_ages), n_years),
   datestart = rep(paste0(
     seq(fimsdat$styr, fimsdat$endyr), "-01-01"
-  ), each = nages),
+  ), each = n_ages),
   dateend = rep(paste0(
     seq(fimsdat$styr, fimsdat$endyr), "-12-31"
-  ), each = nages),
+  ), each = n_ages),
   value = as.numeric(t(caa)),
   unit = "",
-  uncertainty = rep(Ncaa, each = nages)
+  uncertainty = rep(Ncaa, each = n_ages)
 )
 indexage2 <- data.frame(
   type = "age",
   name = "survey2",
-  age = rep(seq(1, nages), nyears),
+  age = rep(seq(1, n_ages), n_years),
   datestart = rep(paste0(
     seq(fimsdat$styr, fimsdat$endyr), "-01-01"
-  ), each = nages),
+  ), each = n_ages),
   dateend = rep(paste0(
     seq(fimsdat$styr, fimsdat$endyr), "-12-31"
-  ), each = nages),
+  ), each = n_ages),
   value = as.numeric(t(paa2)),
   unit = "",
-  uncertainty = rep(Npaa2, each = nages)
+  uncertainty = rep(Npaa2, each = n_ages)
 )
 indexage3 <- data.frame(
   type = "age",
   name = "survey3",
-  age = rep(seq(1, nages), nyears),
+  age = rep(seq(1, n_ages), n_years),
   datestart = rep(paste0(
     seq(fimsdat$styr, fimsdat$endyr), "-01-01"
-  ), each = nages),
+  ), each = n_ages),
   dateend = rep(paste0(
     seq(fimsdat$styr, fimsdat$endyr), "-12-31"
-  ), each = nages),
+  ), each = n_ages),
   value = as.numeric(t(paa3)),
   unit = "",
-  uncertainty = rep(Npaa3, each = nages)
+  uncertainty = rep(Npaa3, each = n_ages)
 )
 indexage6 <- data.frame(
   type = "age",
   name = "survey6",
-  age = rep(seq(1, nages), nyears),
+  age = rep(seq(1, n_ages), n_years),
   datestart = rep(paste0(
     seq(fimsdat$styr, fimsdat$endyr), "-01-01"
-  ), each = nages),
+  ), each = n_ages),
   dateend = rep(paste0(
     seq(fimsdat$styr, fimsdat$endyr), "-12-31"
-  ), each = nages),
+  ), each = n_ages),
   value = as.numeric(t(paa6)),
   unit = "",
-  uncertainty = rep(Npaa6, each = nages)
+  uncertainty = rep(Npaa6, each = n_ages)
 )
 indexage <- rbind(indexage2, indexage3, indexage6)
 index <- rbind(index2, index3, index6)
@@ -262,15 +262,15 @@ res <- rbind(res, landings, index, catchage, indexage)
 timingfishery <- data.frame(
   datestart = rep(paste0(
     seq(fimsdat$styr, fimsdat$endyr), "-01-01"
-  ), each = nages),
+  ), each = n_ages),
   dateend = rep(paste0(
     seq(fimsdat$styr, fimsdat$endyr), "-12-31"
-  ), each = nages)
+  ), each = n_ages)
 )
 weightsfishery <- data.frame(
   type = "weight-at-age",
   name = "fleet1",
-  age = seq(1, nages),
+  age = seq(1, n_ages),
   value = pkinput$dat$wt_srv1[1,],
   uncertainty = NA,
   unit = "mt"
@@ -292,8 +292,8 @@ survey_agecomp6 <- FIMS::m_agecomp(data_4_model, "survey6")
 # need to think about how to deal with multiple fleets - only using 1 fleet for now
 # TODO: FIMS now supports multiple fishing fleets. 
 # We can test this feature using the case study to evaluate its functionality. 
-fish_index <- methods::new(Index, nyears)
-fish_age_comp <- methods::new(AgeComp, nyears, nages)
+fish_index <- methods::new(Index, n_years)
+fish_age_comp <- methods::new(AgeComp, n_years, n_ages)
 purrr::walk(
   seq_along(fishery_catch),
   \(x) fish_index$index_data$set(x - 1, fishery_catch[x])
@@ -322,11 +322,11 @@ fish_selex$slope_desc[1]$estimation_type <- estimate_fish_selex
 
 ## create fleet object
 fish_fleet <- methods::new(Fleet)
-fish_fleet$nages$set(nages)
-fish_fleet$nyears$set(nyears)
+fish_fleet$nages$set(n_ages)
+fish_fleet$nyears$set(n_years)
 
-fish_fleet$log_Fmort$resize(nyears)
-for (y in 1:nyears) {
+fish_fleet$log_Fmort$resize(n_years)
+for (y in 1:n_years) {
   # Log-transform OM fishing mortality
   fish_fleet$log_Fmort[y]$value <- log(pkfitfinal$rep$F[y])
 }
@@ -342,8 +342,8 @@ fish_fleet$SetSelectivity(fish_selex$get_id())
 # Set up fishery index data using the lognormal
 fish_fleet_index_distribution <- methods::new(DlnormDistribution)
 # lognormal observation error transformed on the log scale
-fish_fleet_index_distribution$log_sd$resize(nyears)
-for (y in 1:nyears) {
+fish_fleet_index_distribution$log_sd$resize(n_years)
+for (y in 1:n_years) {
   # Compute lognormal SD from OM coefficient of variation (CV)
   fish_fleet_index_distribution$log_sd[y]$value <- log(landings$uncertainty[y])
 }
@@ -358,8 +358,8 @@ fish_fleet_agecomp_distribution$set_observed_data(fish_fleet$GetObservedAgeCompD
 fish_fleet_agecomp_distribution$set_distribution_links("data", fish_fleet$proportion_catch_numbers_at_age$get_id())
 
 ## Setup survey 2
-survey2_fleet_index <- methods::new(Index, nyears)
-survey2_age_comp <- methods::new(AgeComp, nyears, nages)
+survey2_fleet_index <- methods::new(Index, n_years)
+survey2_age_comp <- methods::new(AgeComp, n_years, n_ages)
 purrr::walk(
   seq_along(survey_index2),
   \(x) survey2_fleet_index$index_data$set(x - 1, survey_index2[x])
@@ -386,8 +386,8 @@ survey2_selex$slope_desc[1]$value <- exp(parfinal$log_slp2_srv2)
 survey2_selex$slope_desc[1]$estimation_type <- "constant"
 
 survey2_fleet <- methods::new(Fleet)
-survey2_fleet$nages$set(nages)
-survey2_fleet$nyears$set(nyears)
+survey2_fleet$nages$set(n_ages)
+survey2_fleet$nyears$set(n_years)
 survey2_fleet$log_q[1]$value <- parfinal$log_q2_mean
 survey2_fleet$log_q[1]$estimation_type <- "fixed_effects"
 survey2_fleet$SetSelectivity(survey2_selex$get_id())
@@ -396,8 +396,8 @@ survey2_fleet$SetObservedAgeCompData(survey2_age_comp$get_id())
 
 survey2_fleet_index_distribution <- methods::new(DlnormDistribution)
 # lognormal observation error transformed on the log scale
-survey2_fleet_index_distribution$log_sd$resize(nyears)
-for (y in 1:nyears) {
+survey2_fleet_index_distribution$log_sd$resize(n_years)
+for (y in 1:n_years) {
  # Compute lognormal SD from OM coefficient of variation (CV)
  survey2_fleet_index_distribution$log_sd[y]$value <- log(index2$uncertainty)[y]
 }
@@ -411,8 +411,8 @@ survey2_fleet_agecomp_distribution$set_observed_data(survey2_fleet$GetObservedAg
 survey2_fleet_agecomp_distribution$set_distribution_links("data", survey2_fleet$proportion_catch_numbers_at_age$get_id())
  
 ## Setup survey 3
-survey3_fleet_index <- methods::new(Index, nyears)
-survey3_age_comp <- methods::new(AgeComp, nyears, nages)
+survey3_fleet_index <- methods::new(Index, n_years)
+survey3_age_comp <- methods::new(AgeComp, n_years, n_ages)
 purrr::walk(
   seq_along(survey_index3),
   \(x) survey3_fleet_index$index_data$set(x - 1, survey_index3[x])
@@ -433,8 +433,8 @@ survey3_selex$slope[1]$value <- exp(parfinal$log_slp1_srv3)
 survey3_selex$slope[1]$estimation_type <- estimate_survey_selex
 
 survey3_fleet <- methods::new(Fleet)
-survey3_fleet$nages$set(nages)
-survey3_fleet$nyears$set(nyears)
+survey3_fleet$nages$set(n_ages)
+survey3_fleet$nyears$set(n_years)
 survey3_fleet$log_q[1]$value <- parfinal$log_q3_mean
 survey3_fleet$log_q[1]$estimation_type <- "fixed_effects"
 survey3_fleet$SetSelectivity(survey3_selex$get_id())
@@ -444,8 +444,8 @@ survey3_fleet$SetObservedAgeCompData(survey3_age_comp$get_id())
 # sd = sqrt(log(cv^2 + 1)), sd is log transformed
 survey3_fleet_index_distribution <- methods::new(DlnormDistribution)
 # lognormal observation error transformed on the log scale
-survey3_fleet_index_distribution$log_sd$resize(nyears)
-for (y in 1:nyears) {
+survey3_fleet_index_distribution$log_sd$resize(n_years)
+for (y in 1:n_years) {
   # Compute lognormal SD from OM coefficient of variation (CV)
   survey3_fleet_index_distribution$log_sd[y]$value <- log(index3$uncertainty)[y]
 }
@@ -459,8 +459,8 @@ survey3_fleet_agecomp_distribution$set_observed_data(survey3_fleet$GetObservedAg
 survey3_fleet_agecomp_distribution$set_distribution_links("data", survey3_fleet$proportion_catch_numbers_at_age$get_id())
 
 ## Setup survey 6
-survey6_fleet_index <- methods::new(Index, nyears)
-survey6_age_comp <- methods::new(AgeComp, nyears, nages)
+survey6_fleet_index <- methods::new(Index, n_years)
+survey6_age_comp <- methods::new(AgeComp, n_years, n_ages)
 purrr::walk(
   seq_along(survey_index6),
   \(x) survey6_fleet_index$index_data$set(x - 1, survey_index6[x])
@@ -488,8 +488,8 @@ survey6_selex$slope_desc[1]$value <- exp(parfinal$log_slp2_srv6)
 survey6_selex$slope_desc[1]$estimation_type <- estimate_survey_selex
 
 survey6_fleet <- methods::new(Fleet)
-survey6_fleet$nages$set(nages)
-survey6_fleet$nyears$set(nyears)
+survey6_fleet$nages$set(n_ages)
+survey6_fleet$nyears$set(n_years)
 survey6_fleet$log_q[1]$value <- parfinal$log_q6
 survey6_fleet$log_q[1]$estimation_type <- "fixed_effects"
 survey6_fleet$SetSelectivity(survey6_selex$get_id())
@@ -498,8 +498,8 @@ survey6_fleet$SetObservedAgeCompData(survey6_age_comp$get_id())
 
 survey6_fleet_index_distribution <- methods::new(DlnormDistribution)
 # lognormal observation error transformed on the log scale
-survey6_fleet_index_distribution$log_sd$resize(nyears)
-for (y in 1:nyears) {
+survey6_fleet_index_distribution$log_sd$resize(n_years)
+for (y in 1:n_years) {
   # Compute lognormal SD from OM coefficient of variation (CV)
   survey6_fleet_index_distribution$log_sd[y]$value <- log(index6$uncertainty)[y]
 }
@@ -525,8 +525,8 @@ recruitment$log_rzero[1]$estimation_type <- "fixed_effects"
 recruitment$logit_steep[1]$value <-
   -log(1.0 - .99999) + log(.99999 - 0.2)
 recruitment$logit_steep[1]$estimation_type <- "constant"
-recruitment$log_devs$resize(nyears-1)
-for (y in 1:(nyears-1)) {
+recruitment$log_devs$resize(n_years-1)
+for (y in 1:(n_years-1)) {
   recruitment$log_devs[y]$value <- parfinal$dev_log_recruit[y+1]
 }
 recruitment$log_devs$set_all_estimable(estimate_recdevs)
@@ -538,9 +538,9 @@ recruitment_distribution <- methods::new(DnormDistribution)
 recruitment_distribution$log_sd <- methods::new(ParameterVector, 1)
 recruitment_distribution$log_sd[1]$value <- log(parfinal$sigmaR)
 recruitment_distribution$log_sd[1]$estimation_type <- "constant"
-recruitment_distribution$x$resize(nyears-1)
-recruitment_distribution$expected_values$resize(nyears-1)
-for (i in 1:(nyears-1)) {
+recruitment_distribution$x$resize(n_years-1)
+recruitment_distribution$expected_values$resize(n_years-1)
+for (i in 1:(n_years-1)) {
   recruitment_distribution$x[i]$value <- 0
   recruitment_distribution$expected_values[i]$value <- 0
 }
@@ -550,13 +550,13 @@ recruitment_distribution$set_distribution_links("random_effects", recruitment$lo
 ## Srv1 above
 waa <- pkinput$dat$wt_srv1
 ewaa_growth <- methods::new(EWAAgrowth)
-ewaa_growth$ages$resize(nages)
+ewaa_growth$ages$resize(n_ages)
 purrr::walk(
   seq_along(ages),
   \(x) ewaa_growth$ages$set(x - 1, ages[x])
 )
 # NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now
-ewaa_growth$weights$resize(nages)
+ewaa_growth$weights$resize(n_ages)
 purrr::walk(
   seq_along(waa[1, ]),
   \(x) ewaa_growth$weights$set(x - 1, waa[1, x])
@@ -576,28 +576,28 @@ maturity$slope[1]$estimation_type <- "constant"
 # population
 population <- new(Population)
 tmpM <- log(as.numeric(t(matrix(
-  rep(pkfitfinal$rep$M, each = nyears), nrow = nyears
+  rep(pkfitfinal$rep$M, each = n_years), nrow = n_years
 ))))
-population$log_M$resize(nyears * nages)
-for (i in 1:(nyears * nages)) {
+population$log_M$resize(n_years * n_ages)
+for (i in 1:(n_years * n_ages)) {
   population$log_M[i]$value <- tmpM[i]
 }
 population$log_M$set_all_estimable(FALSE)
-population$log_init_naa$resize(nages)
+population$log_init_naa$resize(n_ages)
 initNAA <- c(log(pkfitfinal$rep$recruit[1]), log(pkfitfinal$rep$initN)) + log(1e9)
-for (i in seq_along(nages)) {
+for (i in seq_along(n_ages)) {
   population$log_init_naa[i]$value <- initNAA[i]
 }
 population$log_init_naa$set_all_estimable(FALSE)# NOTE: fixing at ASAP estimates to test SSB calculations
-population$nages$set(nages)
-population$ages$resize(nages)
+population$nages$set(n_ages)
+population$ages$resize(n_ages)
 purrr::walk(
   seq_along(ages),
   \(x) population$ages$set(x - 1, ages[x])
 )
 population$nfleets$set(4)
-population$nseasons$set(nseasons)
-population$nyears$set(nyears)
+population$nseasons$set(n_seasons)
+population$nyears$set(n_years)
 population$SetMaturity(maturity$get_id())
 population$SetGrowth(ewaa_growth$get_id())
 population$SetRecruitment(recruitment$get_id())

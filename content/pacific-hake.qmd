@@ -57,7 +57,7 @@ base_dir <- "https://raw.githubusercontent.com/pacific-hake/hake-assessment/refs
 maturity_data <- utils::read.csv("https://raw.githubusercontent.com/pacific-hake/hake-assessment/refs/heads/master/data-tables/maturity-ogives.csv")
 # Get the latest code for get_ss3_data()
 # source("https://raw.githubusercontent.com/NOAA-FIMS/case-studies/refs/heads/main/content/R/get_ss3_data.R")
-source("R/get_ss3_data.R")
+source(here::here("content", function_directory, "get_ss3_data.R"))
 
 ages <- 0:15
 
@@ -82,7 +82,7 @@ ss3_sb_median <- c(
 )
 
 inputs <- r4ss::SS_read(base_dir)
-inputs[["wtatage"]] <- r4ss::SS_readwtatage(file.path(base_dir, "wtatage.ss_new"))
+inputs[["wtatage"]] <- r4ss::SS_readwtatage(here::here("content", base_dir, "wtatage.ss_new"))
 
 fims_data <- get_ss3_data(
   ss3_inputs = inputs,

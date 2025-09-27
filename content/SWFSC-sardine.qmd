@@ -94,7 +94,7 @@ fimsindex <- tibble::tibble(type = "index", name = "survey1",
 fimsindex$unit <- ""
 
 #-----Age compositions
-acomps <- utils::read.csv("data_files/sardine_acomps.csv") |>
+acomps <- utils::read.csv(here::here("content", data_directory, "sardine_acomps.csv")) |>
   dplyr::mutate(value_prop = value / Nsamp) # convert age-comp data to proportions, to match fims-demo.Rmd
 
 fimsage <- tibble::tibble(type = "age", name = acomps$name,
@@ -130,7 +130,7 @@ fimsindex$unit <- ""
     # FIMS assumes WAA is expressed in mt, but expresses natage in fish
     # WAA input values are supplied to SS3 in kg and FIMS in mt
     # Model now correctly processes inputs and provides comparable NAA, WAA, and biomass outputs to SS3
-wtatage <- r4ss::SS_readwtatage("data_files/sardine_wtatage.ss_new") |>
+wtatage <- r4ss::SS_readwtatage(here::here("content", data_directory, "sardine_wtatage.ss_new")) |>
   dplyr::filter(fleet %in% c(1, 2)) |>
   dplyr::mutate(fleet = ifelse(fleet == 1, "fleet1", "survey1")) |>
   tidyr::pivot_longer(cols = `0`:`10`, names_to = "age", values_to = "value") |>
@@ -191,12 +191,12 @@ estimate_log_rzero <- "fixed_effects"
 steep <- 0.6 # sardine steepness is fixed at 0.6
 M_value <- 0.8 #.8 worked pretty well
 rzero <- 17 #14.2 is log(R0) in sardine simplified model
-nyears <- get_n_years(final_fimsdat)
+n_years <- get_n_years(final_fimsdat)
 years <- get_start_year(final_fimsdat):get_end_year(final_fimsdat)
-nages <- get_n_ages(final_fimsdat)
+n_ages <- get_n_ages(final_fimsdat)
 ages <- get_ages(final_fimsdat)
 init_naa <- exp(rzero) * exp(-(ages - 1) * M_value)
-init_naa[nages] <- init_naa[nages] / M_value # sum of infinite series
+init_naa[n_ages] <- init_naa[n_ages] / M_value # sum of infinite series
 
   # Update parameters
 parameters <- default_parameters |>
@@ -207,9 +207,9 @@ parameters <- default_parameters |>
         LogisticSelectivity.inflection_point.estimation_type = estimate_fish_selex,
         LogisticSelectivity.slope.value = 5,
         LogisticSelectivity.slope.estimation_type = estimate_fish_selex,
-        Fleet.log_Fmort.value = log(rep(0.2, nyears)),
+        Fleet.log_Fmort.value = log(rep(0.2, n_years)),
         Fleet.log_Fmort.estimation_type = estimate_F,
-        DlnormDistribution.log_sd.value = rep(log(sqrt(log(0.01^2 + 1))), nyears)
+        DlnormDistribution.log_sd.value = rep(log(sqrt(log(0.01^2 + 1))), n_years)
       )
     )
   ) |>
@@ -222,7 +222,7 @@ parameters <- default_parameters |>
         LogisticSelectivity.slope.estimation_type = estimate_survey_selex,
         Fleet.log_q.value = 0,
         Fleet.log_q.estimation_type = estimate_q,
-        DlnormDistribution.log_sd.value = rep(log(sqrt(log(0.1^2 + 1))), nyears)
+        DlnormDistribution.log_sd.value = rep(log(sqrt(log(0.1^2 + 1))), n_years)
       )
     )
   ) |>
@@ -232,7 +232,7 @@ parameters <- default_parameters |>
         BevertonHoltRecruitment.log_rzero.value = rzero,
         BevertonHoltRecruitment.log_rzero.estimation_type = estimate_log_rzero,
         BevertonHoltRecruitment.logit_steep.value = -log(1.0 - steep) + log(steep - 0.2),
-        BevertonHoltRecruitment.log_devs.value = rep(log(1), nyears-1),
+        BevertonHoltRecruitment.log_devs.value = rep(log(1), n_years-1),
         DnormDistribution.log_sd.value = log(1.2)
       )
     )
@@ -250,7 +250,7 @@ parameters <- default_parameters |>
   update_parameters(
     modified_parameters = list(
       population = list(
-        Population.log_M.value = rep(log(M_value), nages * nyears),
+        Population.log_M.value = rep(log(M_value), n_ages * n_years),
         Population.log_init_naa.value = log(init_naa),
         Population.log_init_naa.estimation_type = estimate_init_naa
       )
@@ -276,7 +276,7 @@ recruitment_log <- get_log_module("information")
 
 ```{r}
 #| label: comparison-plots
-load("data_files/sardine_simplified_res.Rdata")
+load(here::here("content", data_directory, "sardine_simplified_res.Rdata"))
 
 #------------------------------------------------------------------------
 #------SSB

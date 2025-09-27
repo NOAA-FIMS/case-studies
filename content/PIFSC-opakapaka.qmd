@@ -37,17 +37,16 @@ To get the operational model to more closely match a FIMS model the following ch
 #| label: prepare-fims-data
 #| output: false
 #| warning: false
-load(here::here("content", "data_files", "opaka_model.RDS"))
+load(here::here("content", data_directory, "opaka_model.RDS"))
 include_age_comps <- FALSE
 years <- seq(opaka_dat$styr, opaka_dat$endyr)
-nyears <- length(years) # the number of years which we have data for.
-nseasons <- 1 # the number of seasons in each year. FIMS currently defaults to 1
+n_years <- length(years) # the number of years which we have data for.
 ages <- seq(1, 21) # age vector.
-nages <- length(ages) # the number of age groups.
+n_ages <- length(ages) # the number of age groups.
 comp_lengths <- opaka_dat$lbin_vector # length vector.
 nlengths <- length(comp_lengths) # the number of length bins.
 
-source(here::here("content", "R", "get_ss3_data.R"))
+source(here::here("content", function_directory, "get_ss3_data.R"))
 opaka_dat_fims <- get_ss3_data(
   list(
     dat = opaka_dat,
@@ -187,7 +186,7 @@ recdevs <- rep$parameters |>
            dplyr::select(Label, Value)
 
 init_naa <- (exp(opaka_ctl$SR_parms["SR_LN(R0)", "INIT"]) * 1000) * exp(-(ages - 1) * 0.135)
-init_naa[nages] <- init_naa[nages] / 0.135
+init_naa[n_ages] <- init_naa[n_ages] / 0.135
 
 parameters <- default_parameters |>
   update_parameters(
@@ -330,7 +329,7 @@ dplyr::filter(Yr > 1947) |> ##CHECK: including "initial year" to match length wi
 dplyr::rename("SS_SpawnBio" = "SpawnBio",
               "SS_Bio" = "Bio_all") |>
 dplyr::mutate(FIMS_SpawnBio = get_report(fit)[["ssb"]][[1]] , 
-              FIMS_Bio = get_report(fit)[["biomass"]][[1]]) |> ##CHECK: Is FIMS ssb reporting nyears+1 or initial year-1?
+              FIMS_Bio = get_report(fit)[["biomass"]][[1]]) |> ##CHECK: Is FIMS ssb reporting n_years+1 or initial year-1?
 tidyr::pivot_longer(cols = -Yr) |>
 tidyr::separate_wider_delim(cols = "name", delim = "_", names = c("Model", "Type"))             
 
@@ -379,7 +378,7 @@ pcnal[,69]
 
 ## checking estimated numbers at age
 head(fit@report$naa[[1]])
-naa_mat <- matrix(data = fit@report$naa[[1]], nrow = nages)
+naa_mat <- matrix(data = fit@report$naa[[1]], nrow = n_ages)
 head(naa_mat)
 
 ```

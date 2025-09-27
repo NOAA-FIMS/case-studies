@@ -12,6 +12,12 @@ format:
 ```{r}
 #| label: setup-objects
 common_name <- "Gulf of Alaska walleye pollock"
+
+# define the dimensions and global variables
+years <- 1970:2023
+n_years <- length(years)
+ages <- 1:10
+n_ages <- length(ages)
 ```
 
 * R version: `r R_version`
@@ -37,22 +43,15 @@ To get the operational model to more closely match a FIMS model the following ch
 #| output: false
 #| warning: false
 
-ggplot2::theme_set(ggplot2::theme_bw())
-## define the dimensions and global variables
-years <- 1970:2023
-nyears <- length(years)
-nseasons <- 1
-nages <- 10
-ages <- 1:nages
-## This will fit the models bridging to FIMS (simplifying)
-## source("fit_bridge_models.R")
-## compare changes to model
-pkfitfinal <- readRDS("data_files/pkfitfinal.RDS")
-pkfit0 <- readRDS("data_files/pkfit0.RDS")
+# This will fit the models bridging to FIMS (simplifying)
+# source("fit_bridge_models.R")
+# compare changes to model
+pkfitfinal <- readRDS(here::here("content", data_directory, "pkfitfinal.RDS"))
+pkfit0 <- readRDS(here::here("content", data_directory, "pkfit0.RDS"))
 parfinal <- pkfitfinal$obj$env$parList()
-pkinput0 <- readRDS('data_files/pkinput0.RDS')
+pkinput0 <- readRDS(here::here("content", data_directory, "pkinput0.RDS"))
 fimsdat <- pkdat0 <- pkinput0$dat
-pkinput <- readRDS('data_files/pkinput.RDS')
+pkinput <- readRDS(here::here("content", data_directory, "pkinput.RDS"))
 ```
 
 ## Run FIMS model
@@ -73,7 +72,7 @@ estimate_F <- "fixed"
 estimate_recdevs <- TRUE
 
 # Set up a FIMS model without wrapper functions
-source("R/pk_prepare_FIMS_inputs_old.R")
+source(here::here("content", function_directory, "pk_prepare_FIMS_inputs_old.R"))
 
 ## make FIMS model
 success <- FIMS::CreateTMBModel()
@@ -116,7 +115,7 @@ map <- parameters
 map$p[i] <- NA # map off R0 specified below
 map$p <- as.factor(map$p)
 map$re <- as.factor(map$re)
-xseq <- as.numeric(c(opt$par[i],  seq(22,24, len=30)))
+xseq <- as.numeric(c(opt$par[i],  seq(22,24, len = 30)))
 res <- list()
 for(j in seq_along(xseq)) {
   print(j)
@@ -140,15 +139,15 @@ for(j in seq_along(xseq)) {
   )
 }
 res <- dplyr::bind_rows(res) |>
-  tidyr::pivot_longer( cols=c(total, index, age, recruit)) |>
+  tidyr::pivot_longer( cols = c(total, index, age, recruit)) |>
   dplyr::group_by(name) |>
-  dplyr::mutate(deltaNLL=value-min(value))
-g <- ggplot2::ggplot(res, ggplot2::aes(lnR0, deltaNLL, color=name)) +
+  dplyr::mutate(deltaNLL = value - min(value))
+g <- ggplot2::ggplot(res, ggplot2::aes(lnR0, deltaNLL, color = name)) +
   ggplot2::geom_line()
 g <- g +
-  ggplot2::geom_point(data = dplyr::filter(res, deltaNLL==0), size=2) +
-  ggplot2::labs(y='Delta NLL', color='NLL component')
-ggplot2::ggsave('figures/AFSC_PK_like_profile_R0.png', g, width=7, height=3.5)
+  ggplot2::geom_point(data = dplyr::filter(res, deltaNLL == 0), size = 2) +
+  ggplot2::labs(y = "Delta NLL", color = "NLL component")
+ggplot2::ggsave("figures/AFSC_PK_like_profile_R0.png", g, width = 7, height = 3.5)
 ```
 
 ![Likelihood Profile](figures/AFSC_PK_like_profile_R0.png){width=7in}
@@ -184,25 +183,25 @@ obj3 <- TMB::MakeADFun(
 )
 parameter_names <- names(FIMS:::get_parameter_names(obj3[["par"]]))
 # ## Fails when trying to do this in parallel unfortunately
-# mcmc <- sample_sparse_tmb(obj3, iter=1200, warmup=200, chains=4, cores=1,
-#                           seed=1, init='random',
-#                           control=list(adapt_delta=.95))
-# saveRDS(mcmc, file='data_files/pk_mcmcfit.RDS')
+# mcmc <- sample_sparse_tmb(obj3, iter = 1200, warmup = 200, chains = 4, cores = 1,
+#                           seed = 1, init = "random",
+#                           control = list(adapt_delta = .95))
+# saveRDS(mcmc, file = here::here("content", data_directory, "pk_mcmcfit.RDS"))
 
-mcmc <- readRDS('data_files/pk_mcmcfit.RDS')
-png('figures/MCMC_pairs.png', width=7, height=5, units='in', res=200)
-adnuts::pairs_admb(mcmc, pars=1:6, order='slow')
+mcmc <- readRDS(here::here("content", data_directory, "pk_mcmcfit.RDS"))
+png("figures/MCMC_pairs.png", width = 7, height = 5, units = "in", res = 200)
+adnuts::pairs_admb(mcmc, pars = 1:6, order = "slow")
 dev.off()
 
-png('figures/MCMC_marginals.png', width=7, height=5, units='in', res=200)
-adnuts::plot_marginals(mcmc, pars=1:9)
+png("figures/MCMC_marginals.png", width = 7, height = 5, units = "in", res = 200)
+adnuts::plot_marginals(mcmc, pars = 1:9)
 dev.off()
 
-png('figures/MCMC_uncertainties.png', width=7, height=5, units='in', res=200)
+png("figures/MCMC_uncertainties.png", width = 7, height = 5, units = "in", res = 200)
 adnuts::plot_uncertainties(mcmc)
 dev.off()
 
-png('figures/MCMC_sampler_params.png', width=7, height=7, units='in', res=200)
+png("figures/MCMC_sampler_params.png", width = 7, height = 7, units = "in", res = 200)
 adnuts::plot_sampler_params(mcmc)
 dev.off()
 
@@ -213,19 +212,24 @@ df <- as.data.frame(mcmc)
 ## for each posterior draw, report to get SSB
 postreps <- list()
 for(ii in 1:nrow(df)){
-  if(ii %% 500==0) print(ii)
+  if(ii %% 500 == 0) print(ii)
   postreps[[ii]] <- obj3$rep(df[ii,])
 }
-ssbpost <- lapply(postreps, function(x) data.frame(year=years, ssb=x$ssb[[1]][-55])) |>
+ssbpost <- lapply(postreps, function(x) data.frame(year = years, ssb = x$ssb[[1]][-55])) |>
   dplyr::bind_rows() |>
-  dplyr::mutate(rep=rep(1:nrow(df), each=54))
-saveRDS(ssbpost, file='data_files/pk_SSB_posteriors.RDS')
-ssbpost <- readRDS('data_files/pk_pollock_SSB_posteriors.RDS')
-g <- ggplot2::ggplot(ssbpost, ggplot2::aes(year, ssb/1e9, group=rep)) +
-  ggplot2::geom_line(alpha=.1) +
+  dplyr::mutate(rep = rep(1:nrow(df), each = 54))
+saveRDS(
+  ssbpost,
+  file = here::here("content", data_directory, "pk_SSB_posteriors.RDS")
+)
+ssbpost <- readRDS(
+  here::here("content", data_directory, "pk_pollock_SSB_posteriors.RDS")
+)
+g <- ggplot2::ggplot(ssbpost, ggplot2::aes(year, ssb/1e9, group = rep)) +
+  ggplot2::geom_line(alpha = .1) +
   ggplot2::ylim(0,NA) +
-  ggplot2::labs(x=NULL, y='SSB (M t)', title='Posterior demo (unconverged!)')
-ggplot2::ggsave('figures/MCMC_ssb_posterior.png', g, width=7, height=4, units='in')
+  ggplot2::labs(x = NULL, y = "SSB (M t)", title = "Posterior demo (unconverged!)")
+ggplot2::ggsave("figures/MCMC_ssb_posterior.png", g, width = 7, height = 4, units = "in")
 
 ```
 
@@ -265,7 +269,7 @@ hess <- obj$he(mle)
 FIMS::clear()
 # this is a hack to trick the script to thinking there's no data (it should all be -999)
 years <- 500:1000
-source("R/pk_prepare_FIMS_inputs_old.R")
+source(here::here("content", function_directory, "pk_prepare_FIMS_inputs_old.R"))
 years <- 1970:2023
 # build object but DO NOT optimize it, pass the original MLE to it
 obj_nodata <- TMB::MakeADFun(data = list(), parameters, DLL = "FIMS", silent = TRUE, random = "re")
@@ -279,32 +283,32 @@ Hess_data <- obj$he(mle)[lrandom, lrandom]
 Hess_nodata <- obj_nodata$he(mle)[lrandom, lrandom]
 negEDF <- diag(solve(Hess_data, Hess_nodata))
 # some data processing
-edf <- data.frame(par='recdev', n=1, edf=1-negEDF) |>
-  dplyr::mutate(year=1969+1:n()) |>
+edf <- data.frame(par = "recdev", n = 1, edf = 1-negEDF) |>
+  dplyr::mutate(year = 1969 + 1:n()) |>
   dplyr::ungroup()
-g <- ggplot2::ggplot(edf, ggplot2::aes(year, y=edf)) +
+g <- ggplot2::ggplot(edf, ggplot2::aes(year, y = edf)) +
   ggplot2::geom_point() +
-  ggplot2::facet_wrap('par') +
-  ggplot2::labs(x=NULL, y='Effective degree of freedom') +
-  ggplot2::ylim(NA,1)
-ggplot2::ggsave('figures/cAIC_edf.png', g, width=7, height=4)
+  ggplot2::facet_wrap("par") +
+  ggplot2::labs(x = NULL, y = "Effective degree of freedom") +
+  ggplot2::ylim(NA, 1)
+ggplot2::ggsave("figures/cAIC_edf.png", g, width = 7, height = 4)
 tab <- edf |>
   dplyr::group_by(par) |>
-  dplyr::summarize(n=sum(n), edf=sum(edf)) |>
+  dplyr::summarize(n = sum(n), edf = sum(edf)) |>
   dplyr::arrange(desc(edf))
 tab <- dplyr::bind_rows(tab, edf |>
-  dplyr::summarize(par='Total', n=sum(n), edf=sum(edf))) |>
-  dplyr::mutate(pct=100*edf/n)
+  dplyr::summarize(par = "Total", n = sum(n), edf = sum(edf))) |>
+  dplyr::mutate(pct = 100 * edf / n)
 gt::gt(tab) |> gt::fmt_number(columns = 3:4, decimals = 1)
 
 q <- sum(lrandom) # no. of random effects
-p <- sum(1-lrandom) # no. of fixed effects
+p <- sum(1 - lrandom) # no. of fixed effects
 jnll <- obj$env$f(mle)
 cnll <- jnll - obj_nodata$env$f(mle)
 ## conditional AIC (new calculation)
-cAIC <- 2*cnll + 2*(p+q) - 2*sum(negEDF)
-round(c(edf=sum(edf$edf), pct.edf=100*(sum(edf$edf)/sum(edf$n)),
-     cAIC=cAIC, mAIC=TMBhelper::TMBAIC(opt)),1)
+cAIC <- 2 * cnll + 2 * (p+q) - 2 * sum(negEDF)
+round(c(edf = sum(edf$edf), pct.edf = 100 * (sum(edf$edf)/sum(edf$n)),
+     cAIC = cAIC, mAIC = TMBhelper::TMBAIC(opt)),1)
 ```
 
 This appears to work except for the last recruitment deviation

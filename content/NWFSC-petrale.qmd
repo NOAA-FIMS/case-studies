@@ -67,16 +67,15 @@ petrale_output <- r4ss::SS_output(
 # but for simplicity this petrale example only uses the northern catch)
 # years <- seq(petrale_input$dat$styr, petrale_input$dat$endyr)
 years <- seq(1896, petrale_input$dat$endyr)
-nyears <- length(years)
-nseasons <- 1
+n_years <- length(years)
 # ages <- 0:petrale_input$dat$Nages # population ages in SS3, starts at age 0
 ages <- 1:17 # same as data bins
-nages <- length(ages)
+n_ages <- length(ages)
 lengths <- petrale_output[["lbins"]]
 nlengths <- length(lengths)
 
 # source function to simplify data and convert from SS3 format
-source("R/get_ss3_data.R")
+source(here::here("content", function_directory, "get_ss3_data.R"))
 
 # fleet 4 used conditional age-at-length data with marginal observations
 # entered as fleet == -4 (to exclude from likelihood due to redundancy)
@@ -151,7 +150,7 @@ init_naa <- rep$natage |>
   dplyr::select(paste(ages)) |> 
   as.numeric() # TODO: figure out if *1000 is needed
 init_naa <- exp(rep$parameters |> dplyr::filter(grepl("R0", Label)) |> dplyr::pull(Init)) * 1000 * exp(-(ages - 1) * rep$parameters |> dplyr::filter(grepl("NatM.*Fem", Label)) |> dplyr::pull(Value))
-init_naa[nages] <- init_naa[nages] / rep$parameters |> dplyr::filter(grepl("NatM.*Fem", Label)) |> dplyr::pull(Value) # sum of infinite series
+init_naa[n_ages] <- init_naa[n_ages] / rep$parameters |> dplyr::filter(grepl("NatM.*Fem", Label)) |> dplyr::pull(Value) # sum of infinite series
 
 # TODO: Move this to the R folder or FIMS
 steepness_transform <- function(h) {
@@ -282,7 +281,7 @@ biomass <- rep$timeseries |>
   dplyr::mutate(
     FIMS_SpawnBio = get_report(fit)[["ssb"]][[1]][-1] , 
     FIMS_Bio = get_report(fit)[["biomass"]][[1]][-1]
-  ) |> ##CHECK: Is FIMS ssb reporting nyears+1 or initial year-1?
+  ) |> ##CHECK: Is FIMS ssb reporting n_years+1 or initial year-1?
   tidyr::pivot_longer(cols = -Yr) |>
   tidyr::separate_wider_delim(
     cols = "name",

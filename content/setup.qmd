@@ -42,18 +42,25 @@ invisible(lapply(packages, library, character.only = TRUE))
 ```
 
 
-```{r package-loading}
+```{r}
 #| echo: false
-#| warning: false
+#| label: package-loading
 #| output: false
+#| warning: false
 
 library(FIMS)
 library(adnuts)
 R_version <- version$version.string
 TMB_version <- packageDescription("TMB")$Version
 FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
-
-source(file.path("R", "utils.R"))
 ggplot2::theme_set(ggplot2::theme_bw())
+```
+
+```{r}
+#| label: file-management
+
+data_directory <- "data_files"
+function_directory <- "R"
+source(here::here("content", function_directory, "utils.R"))
 ```
 

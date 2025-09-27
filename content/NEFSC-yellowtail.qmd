@@ -61,8 +61,8 @@ The catch weight at age matrix was used as the weight at age for all sources.
 FIMS::clear()
 
 # read the ASAP rdat files
-rdat <- dget(file.path("data_files", "NEFSC_YT_SIMPLIFIED.RDAT")) # to be used in FIMS, lots of modifications from original
-orig <- dget(file.path("data_files", "NEFSC_YT_ORIGINAL.RDAT"))   # where started before modifications for use in FIMS
+rdat <- dget(here::here("content", data_directory, "NEFSC_YT_SIMPLIFIED.RDAT")) # to be used in FIMS, lots of modifications from original
+orig <- dget(here::here("content", data_directory, "NEFSC_YT_ORIGINAL.RDAT"))   # where started before modifications for use in FIMS
 
 # function to create equivalent of data_mile1, basic catch and survey data
 # need to think about how to deal with multiple fleets and indices - only use 1 of each for now
@@ -161,11 +161,10 @@ get_asap_data <- function(rdat){
 mydat <- get_asap_data(rdat)
 
 # define the dimensions
-nyears <- rdat$parms$nyears
+n_years <- rdat$parms$nyears
 years <- seq(rdat$parms$styr, rdat$parms$endyr)
-nseasons <- 1 # ASAP only has one season
-nages <- rdat$parms$nages
-ages <- 1:nages # ASAP starts at age 1
+ages <- 1:rdat$parms$nages # ASAP starts at age 1
+n_ages <- length(ages)
 
 
 # set up FIMS data objects
@@ -210,21 +209,21 @@ default_parameters <- age_frame |>
   update_parameters(
     modified_parameters = list(
       fleet1 = list(
-        Fleet.log_Fmort.value = log(rep(rdat$initial.guesses$Fmult.year1.init[1], nyears)), # ASAP assumes Fmult devs = 0
+        Fleet.log_Fmort.value = log(rep(rdat$initial.guesses$Fmult.year1.init[1], n_years)), # ASAP assumes Fmult devs = 0
         Fleet.log_Fmort.estimation_type = "fixed_effects",
         # FIX: Users should not have to reset the uncertainty for a fleet when this information
         #      is already in the data, it should be stored and pulled out automatically in
         #      create_default_parameters(). For index data too.
-        DlnormDistribution.log_sd.value = rep(log(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), nyears)
+        DlnormDistribution.log_sd.value = rep(log(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), n_years)
       ),
       survey1 = list(
         Fleet.log_q.value = log(rdat$initial.guesses$q.year1.init[1]),
         # sd = sqrt(log(cv^2 + 1)), sd is log transformed
-        DlnormDistribution.log_sd.value = rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[1]], na.rm=TRUE)^2 + 1)))), nyears)
+        DlnormDistribution.log_sd.value = rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[1]], na.rm=TRUE)^2 + 1)))), n_years)
       ),
       survey2 = list(
         Fleet.log_q.value = log(rdat$initial.guesses$q.year1.init[2]),
-        DlnormDistribution.log_sd.value = rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[2]], na.rm=TRUE)^2 + 1)))), nyears)
+        DlnormDistribution.log_sd.value = rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[2]], na.rm=TRUE)^2 + 1)))), n_years)
       )
     )
   ) |>
@@ -335,9 +334,9 @@ comp_catch <- ggplot2::ggplot(catch_results, ggplot2::aes(x = years, y = observe
 
 pop_results <- data.frame(
   Year = c(years, max(years)+1, years, years, years, years, max(years)+1, years),
-  Metric = c(rep("SSB", 2*nyears+1), rep("F_mort", 2*nyears), rep("Recruitment", 2*nyears+1)),
-  Model = c(rep("FIMS", nyears+1), rep("ASAP", nyears), rep(c("FIMS", "ASAP"), each=nyears), 
-             rep("FIMS", nyears+1), rep("ASAP", nyears)),
+  Metric = c(rep("SSB", 2*n_years+1), rep("F_mort", 2*n_years), rep("Recruitment", 2*n_years+1)),
+  Model = c(rep("FIMS", n_years+1), rep("ASAP", n_years), rep(c("FIMS", "ASAP"), each=n_years), 
+             rep("FIMS", n_years+1), rep("ASAP", n_years)),
   Value = c(report$ssb[[1]], rdat$SSB, report$F_mort[[1]], rdat$F.report, report$recruitment[[1]], as.numeric(rdat$N.age[,1]))
 )
 #print(pop_results)
@@ -373,23 +372,23 @@ comp_FRSSB3 <- ggplot2::ggplot(pop_results_3, ggplot2::aes(x=Year, y=Value, colo
 #print(comp_FRSSB3)
 
 FIMS_naa_results <- data.frame(
-  Year = rep(c(years, max(years)+1), each = nages),
-  Age = rep(ages, nyears+1),
+  Year = rep(c(years, max(years)+1), each = n_ages),
+  Age = rep(ages, n_years+1),
   Metric = "NAA",
   Model = "FIMS",
   Value = report$naa[[1]]
 )
 
 ASAP_naa_results <- data.frame(
-  Year = rep(years, each = nages),
-  Age = rep(ages, nyears),
+  Year = rep(years, each = n_ages),
+  Age = rep(ages, n_years),
   Metric = "NAA",
   Model = "ASAP",
   Value = as.numeric(t(rdat$N.age))
 )
 
 orig_naa_results <- data.frame(
-  Year = rep(orig_years, each = nages),
+  Year = rep(orig_years, each = n_ages),
   Age = rep(ages, length(orig_years)),
   Metric = "NAA",
   Model = "ASAP_orig",

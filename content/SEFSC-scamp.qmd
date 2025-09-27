@@ -72,20 +72,20 @@ commercial in pounds and recreational in numbers.\
 FIMS::clear()
 grDevices::graphics.off()
 
-sca <- dget("data_files/scamp32o.rdat") # get scamp data and output from simplified version of BAM
+# get scamp data and output from simplified version of BAM
+sca <- dget(here::here("content", data_directory, "/scamp32o.rdat"))
 
 # Set dimensions
 styr <- dplyr::first(sca$t.series$year)
 endyr <- dplyr::last(sca$t.series$year)
 years <- styr:endyr
-nyears <- endyr - styr + 1 # the number of years which we have data for
-nseasons <- 1 # the number of seasons in each year. FIMS currently defaults to 1
+n_years <- endyr - styr + 1 # the number of years which we have data for
 ages <- sca$a.series$age # age vector.
-nages <- length(ages) # the number of age groups.
+n_ages <- length(ages) # the number of age groups.
 
 # Prepare data; initialize all values with -999 (missing)
 # fleet1 is commercial, fleet2 is recreational
-fleet1_ac <- fleet2_ac <- survey_ac <- matrix(-999, nrow = nyears, ncol = nages)
+fleet1_ac <- fleet2_ac <- survey_ac <- matrix(-999, nrow = n_years, ncol = n_ages)
 
 # Previously used log(sqrt(log(1.0 + fleet1_landings_cv^2)))
 # CV is arithmetic space is what is used to fit in BAM
@@ -106,7 +106,7 @@ survey_index <- sca$t.series$U.CVT.ob |>
 survey_index_cv <- sca$t.series$cv.U.CVT
 survey_index_sd <- sqrt(log(1.0 + survey_index_cv^2)) |>
   tidyr::replace_na(1) |>
-  base::replace(nyears - 1, 1) # manually replacing the 2020 CV as a missing value
+  base::replace(n_years - 1, 1) # manually replacing the 2020 CV as a missing value
 
 # COMMENT: These multinomial entries are not whole numbers and many <1. This is not
 # technically correct, but it does not seem to make a difference based on testing.
@@ -158,42 +158,42 @@ survey_index_df <- data.frame(
 fleet1_ac_df <- data.frame(
   type = "age",
   name = "fleet1",
-  age = rep(seq(1, nages), nyears),
-  datestart = rep(paste0(seq(styr, endyr), "-01-01"), each = nages),
-  dateend = rep(paste0(seq(styr, endyr), "-12-31"), each = nages),
+  age = rep(seq(1, n_ages), n_years),
+  datestart = rep(paste0(seq(styr, endyr), "-01-01"), each = n_ages),
+  dateend = rep(paste0(seq(styr, endyr), "-12-31"), each = n_ages),
   value = as.numeric(t(fleet1_ac)),
   unit = "",
-  uncertainty = rep(fleet1_ac_n, each = nages)
+  uncertainty = rep(fleet1_ac_n, each = n_ages)
 )
 
 fleet2_ac_df <- data.frame(
   type = "age",
   name = "fleet2",
-  age = rep(seq(1, nages), nyears),
-  datestart = rep(paste0(seq(styr, endyr), "-01-01"), each = nages),
-  dateend = rep(paste0(seq(styr, endyr), "-12-31"), each = nages),
+  age = rep(seq(1, n_ages), n_years),
+  datestart = rep(paste0(seq(styr, endyr), "-01-01"), each = n_ages),
+  dateend = rep(paste0(seq(styr, endyr), "-12-31"), each = n_ages),
   value = as.numeric(t(fleet2_ac)),
   unit = "",
-  uncertainty = rep(fleet2_ac_n, each = nages)
+  uncertainty = rep(fleet2_ac_n, each = n_ages)
 )
 
 survey_ac_df <- data.frame(
   type = "age",
   name = "survey1",
-  age = rep(seq(1, nages), nyears),
-  datestart = rep(paste0(seq(styr, endyr), "-01-01"), each = nages),
-  dateend = rep(paste0(seq(styr, endyr), "-12-31"), each = nages),
+  age = rep(seq(1, n_ages), n_years),
+  datestart = rep(paste0(seq(styr, endyr), "-01-01"), each = n_ages),
+  dateend = rep(paste0(seq(styr, endyr), "-12-31"), each = n_ages),
   value = as.numeric(t(survey_ac)),
   unit = "",
-  uncertainty = rep(survey_ac_n, each = nages)
+  uncertainty = rep(survey_ac_n, each = n_ages)
 )
 
 weight_at_age <- data.frame(
   type = "weight-at-age",
   name = "fleet1",
-  age = seq(nages),
-  datestart = rep(paste0(styr, "-01-01"), nages),
-  dateend = rep(paste0(styr, "-12-31"), nages),
+  age = seq(n_ages),
+  datestart = rep(paste0(styr, "-01-01"), n_ages),
+  dateend = rep(paste0(styr, "-12-31"), n_ages),
   value = sca$a.series$wgt.mt,
   unit = "mt",
   uncertainty = NA
@@ -292,8 +292,8 @@ default_parameters <- data_4_model |>
       population = list(
         # M is vector of age1 M X nyrs then age2 M X nyrs
         Population.log_M.value = log(as.numeric(matrix(
-          rep(sca$a.series$M, each = nyears),
-          nrow = nyears
+          rep(sca$a.series$M, each = n_years),
+          nrow = n_years
         ))),
         Population.log_init_naa.value = log(sca$N.age[1, ]),
         Population.log_init_naa.estimation_type = "constant"
@@ -398,13 +398,13 @@ fleet2_F_results <- data.frame(
 )
 
 # Dropping the last (extra) year from FIMS output, assuming it is a projection yr (not an initialization yr)
-fims.naa <- matrix(report$naa[[1]], ncol = nages, byrow = TRUE)
+fims.naa <- matrix(report$naa[[1]], ncol = n_ages, byrow = TRUE)
 fims.naa <- fims.naa[-54, ]
 popn_results <- data.frame(
   yr = styr:endyr,
-  fims.ssb = report$ssb[[1]][1:nyears],
-  fims.recruits = report$recruitment[[1]][1:nyears] / 1000,
-  fims.biomass = report$biomass[[1]][1:nyears],
+  fims.ssb = report$ssb[[1]][1:n_years],
+  fims.recruits = report$recruitment[[1]][1:n_years] / 1000,
+  fims.biomass = report$biomass[[1]][1:n_years],
   fims.abundance = rowSums(fims.naa) / 1000,
   bam.ssb = sca$t.series$SSB,
   bam.recruits = sca$t.series$recruits / 1000,
@@ -412,11 +412,11 @@ popn_results <- data.frame(
   bam.abundance = sca$t.series$N / 1000
 )
 
-yr.ind <- 1:nyears
+yr.ind <- 1:n_years
 
 yr.fleet1.ind <- yr.ind[fleet1_ac_n >= 0]
 yr.fleet1.ac <- years[yr.fleet1.ind]
-fims.fleet1.ncaa <- matrix(report$landings_naa[[1]], ncol = nages, byrow = TRUE)
+fims.fleet1.ncaa <- matrix(report$landings_naa[[1]], ncol = n_ages, byrow = TRUE)
 fims.fleet1.ncaa <- fims.fleet1.ncaa[yr.fleet1.ind, ]
 fims.fleet1.caa <- fims.fleet1.ncaa / rowSums(fims.fleet1.ncaa)
 bam.fleet1.caa <- sca$comp.mats$acomp.COM.pr
@@ -424,7 +424,7 @@ obs.fleet1.caa <- sca$comp.mats$acomp.COM.ob
 
 yr.fleet2.ind <- yr.ind[fleet2_ac_n >= 0]
 yr.fleet2.ac <- years[yr.fleet2.ind]
-fims.fleet2.ncaa <- matrix(report$landings_naa[[2]], ncol = nages, byrow = TRUE)
+fims.fleet2.ncaa <- matrix(report$landings_naa[[2]], ncol = n_ages, byrow = TRUE)
 fims.fleet2.ncaa <- fims.fleet2.ncaa[yr.fleet2.ind, ]
 fims.fleet2.caa <- fims.fleet2.ncaa / rowSums(fims.fleet2.ncaa)
 bam.fleet2.caa <- sca$comp.mats$acomp.REC.pr
@@ -432,7 +432,7 @@ obs.fleet2.caa <- sca$comp.mats$acomp.REC.ob
 
 yr.survey.ind <- yr.ind[survey_ac_n >= 0]
 yr.survey.ac <- years[yr.survey.ind]
-fims.survey.ncaa <- matrix(report$landings_naa[[3]], ncol = nages, byrow = TRUE)
+fims.survey.ncaa <- matrix(report$landings_naa[[3]], ncol = n_ages, byrow = TRUE)
 fims.survey.ncaa <- fims.survey.ncaa[yr.survey.ind, ]
 fims.survey.caa <- fims.survey.ncaa / rowSums(fims.survey.ncaa)
 bam.survey.caa <- sca$comp.mats$acomp.CVT.pr
@@ -559,9 +559,9 @@ par(las = 1, mar = c(2.2, 2.7, 0.5, 0.5), cex = 0.75)
 
 for (i in 1:nrow(obs.fleet1.caa))
 {
-  plot(1:nages, obs.fleet1.caa[i, ], col = cols[1], xlab = "", ylab = "", pch = 16)
-  lines(1:nages, bam.fleet1.caa[i, ], lwd = 3, col = cols[2])
-  lines(1:nages, fims.fleet1.caa[i, ], lwd = 3, col = cols[4])
+  plot(1:n_ages, obs.fleet1.caa[i, ], col = cols[1], xlab = "", ylab = "", pch = 16)
+  lines(1:n_ages, bam.fleet1.caa[i, ], lwd = 3, col = cols[2])
+  lines(1:n_ages, fims.fleet1.caa[i, ], lwd = 3, col = cols[4])
   if (i > 1) legend("topright", legend = yr.fleet1.ac[i], cex = 1, bty = "n")
   if (i == 1) {
     legend("topright",
@@ -583,9 +583,9 @@ par(las = 1, mar = c(2.2, 2.7, 0.5, 0.5), cex = 0.75)
 
 for (i in 1:nrow(obs.fleet2.caa))
 {
-  plot(1:nages, obs.fleet2.caa[i, ], col = cols[1], xlab = "", ylab = "", pch = 16)
-  lines(1:nages, bam.fleet2.caa[i, ], lwd = 3, col = cols[2])
-  lines(1:nages, fims.fleet2.caa[i, ], lwd = 3, col = cols[4])
+  plot(1:n_ages, obs.fleet2.caa[i, ], col = cols[1], xlab = "", ylab = "", pch = 16)
+  lines(1:n_ages, bam.fleet2.caa[i, ], lwd = 3, col = cols[2])
+  lines(1:n_ages, fims.fleet2.caa[i, ], lwd = 3, col = cols[4])
   if (i > 1) legend("topright", legend = yr.fleet2.ac[i], cex = 1, bty = "n")
   if (i == 1) {
     legend("topright",
@@ -607,9 +607,9 @@ par(las = 1, mar = c(2.2, 2.7, 0.5, 0.5), cex = 0.75)
 
 for (i in 1:nrow(obs.survey.caa))
 {
-  plot(1:nages, obs.survey.caa[i, ], col = cols[1], xlab = "", ylab = "", pch = 16)
-  lines(1:nages, bam.survey.caa[i, ], lwd = 3, col = cols[2])
-  lines(1:nages, fims.survey.caa[i, ], lwd = 3, col = cols[4])
+  plot(1:n_ages, obs.survey.caa[i, ], col = cols[1], xlab = "", ylab = "", pch = 16)
+  lines(1:n_ages, bam.survey.caa[i, ], lwd = 3, col = cols[2])
+  lines(1:n_ages, fims.survey.caa[i, ], lwd = 3, col = cols[4])
   if (i > 1) legend("topright", legend = yr.survey.ac[i], cex = 1, bty = "n")
   if (i == 1) {
     legend("topright",
@@ -648,7 +648,7 @@ FIMS::clear()
 to run FIMS successfully. \
 * Data input seems complex for now. I was able to mimic previous examples, but would not likely have been successful starting from scratch. 
 A user interface will presumably help simplify the process.\
-*Clear distinction between "fleet" and "index" would be helpful. Examples of this confusion include 1) landings are defined using ```methods::new(Index, nyears)```
+*Clear distinction between "fleet" and "index" would be helpful. Examples of this confusion include 1) landings are defined using ```methods::new(Index, n_years)```
 and ```spp_fleet1$SetObservedIndexData(spp_fleet1_landings$get_id())```, and 2) surveys are defined using ```methods::new(Fleet)```.\
 *For simplification of the scamp example, I dropped two fishery dependent indices. My impression is that, in FIMS, fishery dependent indices would need to be defined as their own "fleet" and then *somehow* mirror the selectivity of the corresponding fishing fleet, presumably using TMB's mapping feature. 
 I think it would be more straightforward if a fishery dependent index could be defined as an object linked to the fleet, similar to how landings and age comp

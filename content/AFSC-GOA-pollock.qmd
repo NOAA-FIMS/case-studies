@@ -10,7 +10,14 @@ format:
 {{< include setup.qmd >}}
 
 ```{r}
+#| label: setup-objects
 common_name <- "Gulf of Alaska walleye pollock"
+
+# define the dimensions and global variables
+years <- 1970:2023
+n_years <- length(years)
+ages <- 1:10
+n_ages <- length(ages)
 ```
 
 * R version: `r R_version`
@@ -41,33 +48,30 @@ To get the operational model to more closely match a FIMS model the following ch
 
 ## Setting up the data
 
-```{r setup-data}
-#| warning: false
+```{r}
 #| label: prepare-fims-data
 #| output: false
+#| warning: false
 
-## define the dimensions and global variables
-years <- 1970:2023
-nyears <- length(years)
-nseasons <- 1
-nages <- 10
-ages <- 1:nages
+#
 ## This will fit the models bridging to FIMS (simplifying)
 ## source("fit_bridge_models.R")
 ## compare changes to model
-pkfitfinal <- readRDS("data_files/pkfitfinal.RDS")
-pkfit0 <- readRDS("data_files/pkfit0.RDS")
+pkfitfinal <- readRDS(here::here("content", data_directory, "pkfitfinal.RDS"))
+pkfit0 <- readRDS(here::here("content", data_directory, "pkfit0.RDS"))
 parfinal <- pkfitfinal$obj$env$parList()
-pkinput0 <- readRDS('data_files/pkinput0.RDS')
+pkinput0 <- readRDS(here::here("content", data_directory, "pkinput0.RDS"))
 fimsdat <- pkdat0 <- pkinput0$dat
-pkinput <- readRDS('data_files/pkinput.RDS')
+pkinput <- readRDS(here::here("content", data_directory, "pkinput.RDS"))
 rep0 <- pkfitfinal$rep
 ```
 
-## Run FIMS model using wrapper functions
-```{r setup-rcpp}
-## set up FIMS data objects
+## Run FIMS model
+
+```{r}
+#| label: setup-model
 FIMS::clear()
+
 estimate_fish_selex <- TRUE
 estimate_survey_selex <- TRUE
 estimate_q2 <- TRUE
@@ -78,15 +82,15 @@ estimate_recdevs <- TRUE
 
 # Read in data portion of preparing input
 file_lines <- scan(
-  "R/pk_prepare_FIMS_inputs.R",
-  what=character(),
-  # skip=start-1,
+  here::here("content", function_directory, "pk_prepare_FIMS_inputs.R"),
+  what = character(),
+  # skip = start-1,
   # nlines = end - start + 1,
   sep = "\n"
 )
 source(textConnection(paste(
   file_lines[1:grep("data_4_model <-", file_lines)],
-  collapse="\n"
+  collapse = "\n"
 )))
 
 # set up selectivities for fleets and survey
@@ -231,89 +235,90 @@ rep2 <- fit@report
 # cbind(rep2$nll_components, rep2_with_wrappers$nll_components)
 ```
 
-## Output plotting
+## Plotting results
+
 ```{r}
-## Output plotting
+#| label: comparison-plots
 out1 <- get_long_outputs(rep1, rep0) |>
-  dplyr::mutate(platform = ifelse(platform == 'FIMS', 'FIMS init', 'TMB'))
+  dplyr::mutate(platform = ifelse(platform == "FIMS", "FIMS init", "TMB"))
 out2 <- get_long_outputs(rep2, rep0) |>
-  dplyr::filter(platform=='FIMS') |>
-  dplyr::mutate(platform='FIMS opt')
+  dplyr::filter(platform == "FIMS") |>
+  dplyr::mutate(platform = "FIMS opt")
 out <- rbind(out1,out2)
-g <- ggplot2::ggplot(out, ggplot2::aes(year, value, color=platform)) +
+g <- ggplot2::ggplot(out, ggplot2::aes(year, value, color = platform)) +
   ggplot2::geom_line() +
-  ggplot2::facet_wrap('name', scales='free') +
+  ggplot2::facet_wrap("name", scales = "free") +
   ggplot2::ylim(0,NA) +
-  ggplot2::labs(x=NULL, y=NULL)
-ggplot2::ggsave('figures/AFSC_PK_ts_comparison.png', g, width=9, height=5, units='in')
-g <- ggplot2::ggplot(dplyr::filter(out, platform!='TMB'), ggplot2::aes(year, relerror, color=platform)) +
+  ggplot2::labs(x = NULL, y = NULL)
+ggplot2::ggsave("figures/AFSC_PK_ts_comparison.png", g, width = 9, height = 5, units = "in")
+g <- ggplot2::ggplot(dplyr::filter(out, platform != "TMB"), ggplot2::aes(year, relerror, color = platform)) +
   ggplot2::geom_line() +
-  ggplot2::facet_wrap('name', scales='free') +
-  ggplot2::labs(x=NULL, y='Relative difference') +
-  ggplot2::coord_cartesian(ylim=c(-.5,.5))
-ggplot2::ggsave('figures/AFSC_PK_ts_comparison_relerror.png', g, width=9, height=5, units='in')
+  ggplot2::facet_wrap("name", scales = "free") +
+  ggplot2::labs(x = NULL, y = "Relative difference") +
+  ggplot2::coord_cartesian(ylim = c(-.5,.5))
+ggplot2::ggsave("figures/AFSC_PK_ts_comparison_relerror.png", g, width = 9, height = 5, units = "in")
 
 ## Quick check on age comp fits
-p1 <- get_acomp_fits(rep0, rep1, rep2, fleet=1, years=pkdat0$fshyrs)
-g <- ggplot2::ggplot(p1, ggplot2::aes(age, paa, color=platform)) +
-  ggplot2::facet_wrap('year') +
+p1 <- get_acomp_fits(rep0, rep1, rep2, fleet = 1, years = pkdat0$fshyrs)
+g <- ggplot2::ggplot(p1, ggplot2::aes(age, paa, color = platform)) +
+  ggplot2::facet_wrap("year") +
   ggplot2::geom_line()
-ggplot2::ggsave('figures/AFSC_PK_age_comp_fits_1.png', g, width=9, height=8, units='in')
-p2 <- get_acomp_fits(rep0, rep1, rep2, fleet=2, years=pkdat0$srv_acyrs2)
-g <- ggplot2::ggplot(p2, ggplot2::aes(age, paa, color=platform)) +
-  ggplot2::facet_wrap('year') +
+ggplot2::ggsave("figures/AFSC_PK_age_comp_fits_1.png", g, width = 9, height = 8, units = "in")
+p2 <- get_acomp_fits(rep0, rep1, rep2, fleet = 2, years = pkdat0$srv_acyrs2)
+g <- ggplot2::ggplot(p2, ggplot2::aes(age, paa, color = platform)) +
+  ggplot2::facet_wrap("year") +
   ggplot2::geom_line()
-ggplot2::ggsave('figures/AFSC_PK_age_comp_fits_2.png', g, width=9, height=8, units='in')
-## p3 <- get_acomp_fits(rep0, rep1, rep2, fleet=3, years=pkdat0$srv_acyrs3)
-## g <- ggplot2::ggplot(p3, ggplot2::aes(age, paa, color=platform)) + ggplot2::facet_wrap('year') + ggplot2::geom_line()
-## p6 <- get_acomp_fits(rep0, rep1, rep2, fleet=4, years=pkdat0$srv_acyrs6)
-## g <- ggplot2::ggplot(p6, ggplot2::aes(age, paa, color=platform)) + ggplot2::facet_wrap('year') + ggplot2::geom_line()
+ggplot2::ggsave("figures/AFSC_PK_age_comp_fits_2.png", g, width = 9, height = 8, units = "in")
+## p3 <- get_acomp_fits(rep0, rep1, rep2, fleet = 3, years = pkdat0$srv_acyrs3)
+## g <- ggplot2::ggplot(p3, ggplot2::aes(age, paa, color = platform)) + ggplot2::facet_wrap("year") + ggplot2::geom_line()
+## p6 <- get_acomp_fits(rep0, rep1, rep2, fleet = 4, years = pkdat0$srv_acyrs6)
+## g <- ggplot2::ggplot(p6, ggplot2::aes(age, paa, color = platform)) + ggplot2::facet_wrap("year") + ggplot2::geom_line()
 
 ## index fits
 addsegs <- function(yrs, obs, CV){
-  getlwr <- function(obs, CV) qlnorm(p=.025, meanlog=log(obs), sdlog=sqrt(log(1+CV^2)))
-  getupr <- function(obs, CV) qlnorm(p=.975, meanlog=log(obs), sdlog=sqrt(log(1+CV^2)))
-  segments(yrs, y0=getlwr(obs,CV), y1=getupr(obs,CV))
-  points(yrs, obs, pch=22, bg='white')
+  getlwr <- function(obs, CV) qlnorm(p = .025, meanlog = log(obs), sdlog = sqrt(log(1+CV^2)))
+  getupr <- function(obs, CV) qlnorm(p = .975, meanlog = log(obs), sdlog = sqrt(log(1+CV^2)))
+  segments(yrs, y0 = getlwr(obs,CV), y1 = getupr(obs,CV))
+  points(yrs, obs, pch = 22, bg = "white")
 }
-png('figures/AFSC_PK_index_fits.png', res=300, width=6, height=7, units='in')
-par(mfrow=c(3,1), mar=c(3,3,.5,.5), mgp=c(1.5,.5,0), tck=-0.02)
-plot(years, rep0$Eindxsurv2, type='l',
-     ylim=c(0,2), lwd=5.5,
-      xlab=NA, ylab='Biomass (million t)')
+png("figures/AFSC_PK_index_fits.png", res = 300, width = 6, height = 7, units = "in")
+par(mfrow = c(3,1), mar = c(3,3,.5,.5), mgp = c(1.5,.5,0), tck = -0.02)
+plot(years, rep0$Eindxsurv2, type = "l",
+     ylim = c(0,2), lwd = 5.5,
+      xlab = NA, ylab = "Biomass (million t)")
 x1 <- out1 |>
-  dplyr::filter(name=='Index2' & platform=='FIMS init')
+  dplyr::filter(name = "Index2" & platform == "FIMS init")
 x2 <- out2 |>
-  dplyr::filter(name=='Index2' & platform=='FIMS opt')
-lines(years,x1$value, col=2, lwd=1.5)
-lines(years,x2$value, col=3, lwd=1.5)
-addsegs(yrs=pkdat0$srvyrs2, obs=pkdat0$indxsurv2, CV=pkdat0$indxsurv_log_sd2)
-legend('topright', legend=c('TMB', 'FIMS init', 'FIMS opt'), lty=1, col=1:3)
-mtext('Survey 2', line=-1.5)
-plot(years, rep0$Eindxsurv3, type='l',
-     ylim=c(0,.6), lwd=5.5,
-      xlab=NA, ylab='Biomass (million t)')
+  dplyr::filter(name == "Index2" & platform == "FIMS opt")
+lines(years,x1$value, col = 2, lwd = 1.5)
+lines(years,x2$value, col = 3, lwd = 1.5)
+addsegs(yrs = pkdat0$srvyrs2, obs = pkdat0$indxsurv2, CV = pkdat0$indxsurv_log_sd2)
+legend("topright", legend = c("TMB", "FIMS init", "FIMS opt"), lty = 1, col = 1:3)
+mtext("Survey 2", line = -1.5)
+plot(years, rep0$Eindxsurv3, type = "l",
+     ylim = c(0,.6), lwd = 5.5,
+      xlab = NA, ylab = "Biomass (million t)")
 x1 <- out1 |>
-  dplyr::filter(name=='Index3' & platform=='FIMS init')
+  dplyr::filter(name == "Index3" & platform == "FIMS init")
 x2 <- out2 |>
-  dplyr::filter(name=='Index3' & platform=='FIMS opt')
-lines(years,x1$value, col=2, lwd=1.5)
-lines(years,x2$value, col=3, lwd=1.5)
-addsegs(yrs=pkdat0$srvyrs3, obs=pkdat0$indxsurv3, CV=pkdat0$indxsurv_log_sd3)
-mtext('Survey 3', line=-1.5)
-legend('topright', legend=c('TMB', 'FIMS init', 'FIMS opt'), lty=1, col=1:3)
-plot(years, rep0$Eindxsurv6, type='l',
-     ylim=c(0,2.6), lwd=5.5,
-      xlab=NA, ylab='Biomass (million t)')
+  dplyr::filter(name == "Index3" & platform == "FIMS opt")
+lines(years,x1$value, col = 2, lwd = 1.5)
+lines(years,x2$value, col = 3, lwd = 1.5)
+addsegs(yrs = pkdat0$srvyrs3, obs = pkdat0$indxsurv3, CV = pkdat0$indxsurv_log_sd3)
+mtext("Survey 3", line = -1.5)
+legend("topright", legend = c("TMB", "FIMS init", "FIMS opt"), lty = 1, col = 1:3)
+plot(years, rep0$Eindxsurv6, type = "l",
+     ylim = c(0,2.6), lwd = 5.5,
+      xlab = NA, ylab = "Biomass (million t)")
 x1 <- out1 |>
-  dplyr::filter(name=='Index6' & platform=='FIMS init')
+  dplyr::filter(name=="Index6" & platform=="FIMS init")
 x2 <- out2 |>
-  dplyr::filter(name=='Index6' & platform=='FIMS opt')
-lines(years,x1$value, col=2, lwd=1.5)
-lines(years,x2$value, col=3, lwd=1.5)
-addsegs(yrs=pkdat0$srvyrs6, obs=pkdat0$indxsurv6, CV=pkdat0$indxsurv_log_sd6)
-mtext('Survey 6', line=-1.5)
-legend('topright', legend=c('TMB', 'FIMS init', 'FIMS opt'), lty=1, col=1:3)
+  dplyr::filter(name == "Index6" & platform == "FIMS opt")
+lines(years,x1$value, col = 2, lwd = 1.5)
+lines(years,x2$value, col = 3, lwd = 1.5)
+addsegs(yrs = pkdat0$srvyrs6, obs = pkdat0$indxsurv6, CV = pkdat0$indxsurv_log_sd6)
+mtext("Survey 6", line = -1.5)
+legend("topright", legend = c("TMB", "FIMS init", "FIMS opt"), lty = 1, col = 1:3)
 dev.off()
 ```
 ## Comparison figures for basic model
@@ -345,6 +350,6 @@ To do
 * More sophisticated control over selectivity so that ages 1 and 2 can be zeroed out for a double-logistic form, overriding the selectivity curve.
 
 ```{r}
-# Clear C++ objects from memory
+#| label: cleanup
 FIMS::clear()
 ```
