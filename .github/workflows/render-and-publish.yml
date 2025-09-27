@@ -4,6 +4,11 @@ on:
 
 name: Render and Publish
 
+# Cancel runs happening simultaneously on the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
