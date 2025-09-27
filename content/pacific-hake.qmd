@@ -14,6 +14,9 @@ format:
 common_name <- "Pacific Hake"
 hake_maturity_inflection_point <- 2.2
 hake_maturity_slope <- 1.8
+
+ages <- 0:15
+source(here::here("content", function_directory, "get_ss3_data.R"))
 ```
 
 * R version: `r R_version`
@@ -55,11 +58,6 @@ The relative age-1 index was removed from the data because FIMS currently works 
 # base_dir <- "/srv/hake/models/2025/01-version/01-base-models/01-base"
 base_dir <- "https://raw.githubusercontent.com/pacific-hake/hake-assessment/refs/heads/model-files/models/2025"
 maturity_data <- utils::read.csv("https://raw.githubusercontent.com/pacific-hake/hake-assessment/refs/heads/master/data-tables/maturity-ogives.csv")
-# Get the latest code for get_ss3_data()
-# source("https://raw.githubusercontent.com/NOAA-FIMS/case-studies/refs/heads/main/content/R/get_ss3_data.R")
-source(here::here("content", function_directory, "get_ss3_data.R"))
-
-ages <- 0:15
 
 # Mt or 1,000,000 * t
 ss3_sb_median <- c(
@@ -82,7 +80,9 @@ ss3_sb_median <- c(
 )
 
 inputs <- r4ss::SS_read(base_dir)
-inputs[["wtatage"]] <- r4ss::SS_readwtatage(here::here("content", base_dir, "wtatage.ss_new"))
+# NOTE: Cannot change this instance of file.path() to here::here() because it is using
+#       files from the web not files from this local directory
+inputs[["wtatage"]] <- r4ss::SS_readwtatage(file.path(base_dir, "wtatage.ss_new"))
 
 fims_data <- get_ss3_data(
   ss3_inputs = inputs,

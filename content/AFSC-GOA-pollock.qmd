@@ -287,7 +287,7 @@ plot(years, rep0$Eindxsurv2, type = "l",
      ylim = c(0,2), lwd = 5.5,
       xlab = NA, ylab = "Biomass (million t)")
 x1 <- out1 |>
-  dplyr::filter(name = "Index2" & platform == "FIMS init")
+  dplyr::filter(name == "Index2" & platform == "FIMS init")
 x2 <- out2 |>
   dplyr::filter(name == "Index2" & platform == "FIMS opt")
 lines(years,x1$value, col = 2, lwd = 1.5)
@@ -311,7 +311,7 @@ plot(years, rep0$Eindxsurv6, type = "l",
      ylim = c(0,2.6), lwd = 5.5,
       xlab = NA, ylab = "Biomass (million t)")
 x1 <- out1 |>
-  dplyr::filter(name=="Index6" & platform=="FIMS init")
+  dplyr::filter(name == "Index6" & platform == "FIMS init")
 x2 <- out2 |>
   dplyr::filter(name == "Index6" & platform == "FIMS opt")
 lines(years,x1$value, col = 2, lwd = 1.5)

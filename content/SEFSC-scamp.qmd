@@ -9,7 +9,7 @@ format:
 
 {{< include setup.qmd >}}
 
-```{r setup-objects}
+```{r}
 #| label: setup-objects
 common_name <- "South Atlantic scamp grouper"
 ```
