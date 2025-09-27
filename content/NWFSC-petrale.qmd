@@ -9,18 +9,23 @@ format:
 
 {{< include setup.qmd >}}
 
+```{r}
+#| label: setup-objects
+common_name <- "Gulf of Petrale Sole"
+```
+
 * R version: `r R_version`
 * TMB version: `r TMB_version`
 * FIMS commit: `r FIMS_commit`
-* Stock name: West Coast Petrale Sole
+* Stock name: `r common_name`
 * Region: NWFSC
 * Analyst: Ian G. Taylor
 
 ## Simplifications to the original assessment
 
-The operational petrale sole stock assessment used Stock Synthesis (SS3) and included numerous data types and population dynamic assumptions that are not yet available in FIMS. A simplified SS3 model was also developed to provide a closer comparison but is still a work in progress. This is intended as a demonstration and nothing more.
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
 
-For both the FIMS model and the simplified SS3 model, I made the following changes:
+To get the operational model to more closely match a FIMS model the following changes were made:
 
 * Remove data
   * Remove male lengths and ages
@@ -28,14 +33,17 @@ For both the FIMS model and the simplified SS3 model, I made the following chang
 * Simplify selectivity
   * Remove length-based retention functions
   * Convert to age-based logistic (from length-based double-normal, fixed asymptotic)
-* Remove parameter priors (on M and h)
-* Use female mean weight at age from wtatage file
+* Remove priors
+  * Natural mortality
+  * Steepness
+* Use female mean weight at age from the SS3 weight-at-age file
 
-## Script to prepare data for building FIMS object
+## Setting up the data
+
 ```{r}
-#| warning: false
 #| label: prepare-fims-data
 #| output: false
+#| warning: false
 
 # read SS3 input files from petrale sole assessment on github
 petrale_input <- r4ss::SS_read(
@@ -96,15 +104,18 @@ mydat <- get_ss3_data(
     name == "fleet1" ~ name,
     name == "fleet4" ~ "survey1" # change fleet4 to survey1 to match yellowtail case-study
   )) |>
-  dplyr::filter(dateend |> lubridate::as_date() |> lubridate::year() %in% years) # filter out forecast years
+  dplyr::filter(
+    purrr::map_chr(strsplit(mydat$datestart, "-"), purrr::pluck, 1) %in% years
+  ) # filter out forecast years
 
 # set up FIMS data objects
 fims_frame <- FIMS::FIMSFrame(mydat)
 ```
 
-### Prepare Parameters using `create_default_parameters()`
-```{r, max.height='100px', attr.output='.numberLines'}
+## Run FIMS model
 
+```{r, max.height='100px', attr.output='.numberLines'}
+#| label: setup-model
 ## lots of code below copied PIFSC-opakapaka.qmd
 # rename SS3 output to avoid modifying lines copied from opakapaka model
 rep <- petrale_output
@@ -130,11 +141,6 @@ default_parameters <- fims_frame |>
   create_default_parameters(
     fleets = list(fleet1 = fleet1, survey1 = survey1)
   )
-
-```
-
-### Modifying parameters
-```{r modify-default-parameters}
 
 recdevs <- rep$recruitpars |> # $recruitpars is a subset of $parameters with Yr as an additional column
   dplyr::filter(Yr %in% years[-1]) |> # filter out initial numbers parameters
@@ -215,11 +221,6 @@ parameters <- default_parameters |>
     )
   )
 
-```
-## Initialize modules and fit the model
-
-With data and parameters in place, we can now initialize modules using `initialize_fims()` and fit the model using `fit_fims()`.
-```{r, max.height='100px', attr.output='.numberLines', fit-fims, eval = TRUE}
 # Run the model without optimization to help ensure a viable model
 test_fit <- parameters |>
   initialize_fims(data = fims_frame) |>
@@ -232,9 +233,11 @@ fit <- parameters |>
   # TODO: why does the final message show no SB value: "i Terminal SB="
 ```
 
-## Plotting Results
+## Plotting results
 
-```{r data-fits-plots, eval = TRUE}
+```{r}
+#| label: comparison-plots
+#| eval: true
 # gather index fit info
 index_results <- data.frame(
   observed = m_index(fims_frame, "survey1"),
@@ -267,9 +270,6 @@ ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::ylab("Catch (mt)") +
   ggplot2::geom_line(ggplot2::aes(x = year, y = expected)) + #, color = fleet)) +
   ggplot2::theme_bw()
-```
-
-```{r ss3-comparison-plots}
 
 # gather biomass info from FIMS and SS3
 biomass <- rep$timeseries |> 
@@ -319,9 +319,8 @@ ggplot2::ggplot(recruits, ggplot2::aes(x = Year, y = value, color = Model)) +
 ```
 
 ```{r}
-#| warning: false
-#| label: clear
+#| label: cleanup
 #| output: false
-
-clear()
+#| warning: false
+FIMS::clear()
 ```

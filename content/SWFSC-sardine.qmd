@@ -9,14 +9,23 @@ format:
 
 {{< include setup.qmd >}}
 
+```{r}
+#| label: setup-objects
+common_name <- "Northern subpopulation of Pacific sardine"
+```
+
 * R version: `r R_version`
 * TMB version: `r TMB_version`
 * FIMS commit: `r FIMS_commit`
-* Stock name: Pacific Sardine Northern Subpopulation
+* Stock name: `r common_name`
 * Region: SWFSC
 * Analyst: Peter Kuriyama
 
 ## Simplifications to the original assessment
+
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
+
+To get the operational model to more closely match a FIMS model the following changes were made:
 
 * Convert two-semester time step to annual
 * Sum the catch values for MexCal S1 and S2
@@ -33,10 +42,13 @@ format:
 * No ageing error in FIMS?
 * Assume time-invariant weight at age for the fishery and survey
 
-## Add your script that sets up and runs the model
+## Setting up the data
 
 ```{r}
-clear()
+#| warning: false
+#| label: prepare-fims-data
+#| output: false
+FIMS::clear()
 
 #--------------------------------------------------------
 #Logistic function for later use
@@ -244,6 +256,12 @@ parameters <- default_parameters |>
       )
     )
   )
+```
+
+## Run FIMS model
+
+```{r}
+#| label: setup-model
 
 # Fit the model
 fit <- parameters |>
@@ -257,6 +275,7 @@ recruitment_log <- get_log_module("information")
 ## Add your comparison figures
 
 ```{r}
+#| label: comparison-plots
 load("data_files/sardine_simplified_res.Rdata")
 
 #------------------------------------------------------------------------
@@ -465,9 +484,9 @@ SR_regime parameter and Initial F to match equilbirium age comps to first year o
 *Does the model year start in the first year of the data input?
 
 ```{r}
-#| warning: false
 #| label: clear
 #| output: false
+#| warning: false
 
-clear()
+FIMS::clear()
 ```

@@ -9,60 +9,67 @@ format:
 
 {{< include setup.qmd >}}
 
+```{r setup-objects}
+#| label: setup-objects
+common_name <- "South Atlantic scamp grouper"
+```
+
 * R version: `r R_version`
 * TMB version: `r TMB_version`
 * FIMS commit: `r FIMS_commit`
-* Stock name: South Atlantic scamp grouper
+* Stock name: `r common_name`
 * Region: SEFSC
 * Analyst: Kyle Shertzer
 
 ## Simplifications to the original assessment
 
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
+
+To get the operational model to more closely match a FIMS model the following changes were made:
+
 The original stock assessment ([SEDAR-68OA](https://sedarweb.org/documents/sedar-68oa-south-atlantic-scamp-operational-assessment-final-stock-assessment-report/)) was conducted using the Beaufort
 Assessment Model (BAM). That assessment included details not yet available
 in FIMS, and so the following simplifications or modifications were made to the BAM configuration to allow more direct comparisons with FIMS output. These assessments and comparisons are for demonstration only.
 
-Simplifications or modifications:
-
--   Set SSB calculations to occur on Jan. 1, rather than time of peak spawning\
--   Set abundance calculations for matching index data to occur on Jan. 1, rather than mid-year sampling\
--   Dropped time blocks on fleets' selectivities\
--   Dropped all length compositions\
--   Dropped estimation of the variation in size at age, as this parameter is not estimable without length comps.\
--   Converted index data and predictions to occur in weight rather than numbers\
--   Converted SSB to be female only. Because scamp are a protogynous hermaphrodite, the original assessment 
+* Set SSB calculations to occur on Jan. 1, rather than time of peak spawning
+* Set abundance calculations for matching index data to occur on Jan. 1, rather than mid-year sampling\
+* Dropped time blocks on fleets' selectivities\
+* Dropped all length compositions\
+* Dropped estimation of the variation in size at age, as this parameter is not estimable without length comps.\
+* Converted index data and predictions to occur in weight rather than numbers\
+* Converted SSB to be female only. Because scamp are a protogynous hermaphrodite, the original assessment 
 accounted for males implicitly by computing SSB as the sum of total (male + female) mature biomass. 
 One way to match that accounting
 would be to assume that the female maturity vector equals that of both sexes combined,
 and then further assume that the population is 100% female. However, current FIMS (1 July 2024) does not allow deviation from
 a 50:50 sex ratio. Thus, for this example, FIMS and BAM use the maturity vector of both sexes combined, but apply that vector
 only to females and assume a 50:50 sex ratio when computing SSB.\
--   Female maturity at age modeled as a logistic function, rather than empirical.\
--   Extended estimates of rec devs forward in time to the terminal year. Based on likelihood profiling, values from the last two
+* Female maturity at age modeled as a logistic function, rather than empirical.\
+* Extended estimates of rec devs forward in time to the terminal year. Based on likelihood profiling, values from the last two
 years were not estimable, and thus were fixed in the original assessment.\
--   Extended estimates of rec devs backward in time to the initial year, 1969. The original assessment started estimating rec devs in 
+* Extended estimates of rec devs backward in time to the initial year, 1969. The original assessment started estimating rec devs in 
 1980, when age composition data become available.\
--   Dropped the fishery dependent growth curve and set mean size at age of the landings equal to the population growth curve.\
--   Converted all observed and predicted landings to weight (mt). The original assessment used units native to the data collection:
+* Dropped the fishery dependent growth curve and set mean size at age of the landings equal to the population growth curve.\
+* Converted all observed and predicted landings to weight (mt). The original assessment used units native to the data collection:
 commercial in pounds and recreational in numbers.\
--   Replaced Dirichlet-multinomial with standard multinomial distribution for fitting age comps.\
--   Extended age comps to include ages 1-20+, as modeled in the population. The original assessment modeled ages
+* Replaced Dirichlet-multinomial with standard multinomial distribution for fitting age comps.\
+* Extended age comps to include ages 1-20+, as modeled in the population. The original assessment modeled ages
 1-20+ in the population, but fitted ages 1-15+ in the age compositions because of many zeros in the 16-20 age range.\
--   Dropped fishery dependent indices. This was for simplicity, as modeling those indices would require mirroring a fleet's selectivity, which is not something I currently know how to do in FIMS.\
+* Dropped fishery dependent indices. This was for simplicity, as modeling those indices would require mirroring a fleet's selectivity, which is not something I currently know how to do in FIMS.\
 
+## Setting up the data
 
-
-
-## Add your script that sets up and runs the model
-
-```{r, output=FALSE}
+```{r}
+#| warning: false
+#| label: prepare-fims-data
+#| output: false
 ###############################################
 # South Atlantic scamp grouper example assessment
 # Compare output from FIMS and a simplified version of BAM
 ##############################################
 
 # clear memory
-clear()
+FIMS::clear()
 grDevices::graphics.off()
 
 sca <- dget("data_files/scamp32o.rdat") # get scamp data and output from simplified version of BAM
@@ -198,8 +205,13 @@ agecomps <- rbind(fleet1_ac_df, fleet2_ac_df, survey_ac_df)
 
 res <- rbind(landings, index, agecomps, weight_at_age)
 data_4_model <- FIMS::FIMSFrame(res)
+```
 
-####################################################################################
+## Run FIMS model
+
+```{r}
+#| label: setup-model
+
 # set up selectivities for fleets and survey
 spp_fleet1_selectivity <- list(
   selectivity = list(form = "LogisticSelectivity"),
@@ -310,7 +322,10 @@ sdr_fixed <- summary(sdr, "fixed")
 report <- get_report(fit)
 
 # print(sdr_fixed)
+```
 
+```{r}
+#| label: comparison-plots
 ######################################################################
 # Plot results
 
@@ -607,7 +622,7 @@ for (i in 1:nrow(obs.survey.caa))
 
 dev.off()
 
-clear()
+FIMS::clear()
 ```
 
 
@@ -629,13 +644,13 @@ clear()
 ![Predicted-tseries-population](figures/SEFSC_scamp_tseries_popn.png){width=7in, fig-align="left"}
 
 ## What was your experience using FIMS? What could we do to improve usability?
--    Great joy when it finally worked!  But, it took a lot of time to first simplify the corresponding BAM implementation and then
+* Great joy when it finally worked!  But, it took a lot of time to first simplify the corresponding BAM implementation and then
 to run FIMS successfully. \
--    Data input seems complex for now. I was able to mimic previous examples, but would not likely have been successful starting from scratch. 
+* Data input seems complex for now. I was able to mimic previous examples, but would not likely have been successful starting from scratch. 
 A user interface will presumably help simplify the process.\
--   Clear distinction between "fleet" and "index" would be helpful. Examples of this confusion include 1) landings are defined using ```methods::new(Index, nyears)```
+*Clear distinction between "fleet" and "index" would be helpful. Examples of this confusion include 1) landings are defined using ```methods::new(Index, nyears)```
 and ```spp_fleet1$SetObservedIndexData(spp_fleet1_landings$get_id())```, and 2) surveys are defined using ```methods::new(Fleet)```.\
--   For simplification of the scamp example, I dropped two fishery dependent indices. My impression is that, in FIMS, fishery dependent indices would need to be defined as their own "fleet" and then *somehow* mirror the selectivity of the corresponding fishing fleet, presumably using TMB's mapping feature. 
+*For simplification of the scamp example, I dropped two fishery dependent indices. My impression is that, in FIMS, fishery dependent indices would need to be defined as their own "fleet" and then *somehow* mirror the selectivity of the corresponding fishing fleet, presumably using TMB's mapping feature. 
 I think it would be more straightforward if a fishery dependent index could be defined as an object linked to the fleet, similar to how landings and age comp
 data are handled.\
 -  When a model has multiple fleets, the function ```FIMS::m_landings``` concatenates all fleets' landings into one long vector. Thus, one must specify
@@ -651,15 +666,14 @@ This life history creates a sex ratio that is tilted toward females for younger 
 
 
 ## What features are most important to add based on this case study?
--    Discards. I chose this assessment as a case study because it did not explicitly model discards, and I knew that capability was not yet available in FIMS.
+* Discards. I chose this assessment as a case study because it did not explicitly model discards, and I knew that capability was not yet available in FIMS.
 However, most assessments in the Southeast model dead discards.\
--    Fitting to length composition data.\
+* Fitting to length composition data.\
 
 ## Acknowledgments
 Thanks to Nathan Vaughan and Ian Taylor, who helped troubleshoot earlier versions of the code.
 
-<!--
-## Add your pages to the project
-
-* Add the files to `_quarto.yml`
--->
+```{r}
+#| label: cleanup
+FIMS::clear()
+```

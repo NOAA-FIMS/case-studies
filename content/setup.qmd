@@ -10,7 +10,6 @@ packages <- c(
   "ggplot2",
   "gt",
   "here",
-  "lubridate",
   "remotes",
   "reshape2",
   "shinystan",
@@ -40,14 +39,6 @@ if (!"r4ss" %in% rownames(installed.packages())) {
 
 # Load packages
 invisible(lapply(packages, library, character.only = TRUE))
-
-library(FIMS)
-library(adnuts)
-R_version <- version$version.string
-TMB_version <- packageDescription("TMB")$Version
-FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
-
-source(file.path("R", "utils.R"))
 ```
 
 

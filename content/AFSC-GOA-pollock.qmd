@@ -9,36 +9,39 @@ format:
 
 {{< include setup.qmd >}}
 
+```{r}
+common_name <- "Gulf of Alaska walleye pollock"
+```
 
 * R version: `r R_version`
 * TMB version: `r TMB_version`
 * FIMS commit: `r FIMS_commit`
-* Stock name: Gulf of Alaska (GOA) Walleye Pollock
+* Stock name: `r common_name`
 * Region: AFSC
 * Analyst: Cole Monnahan
 
 ## Simplifications to the original assessment
 
-The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the pollock stock. This is intended as a demonstration and nothing more.
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
 
-To get the opertional model to more closely match FIMS I:
+To get the operational model to more closely match a FIMS model the following changes were made:
 
-* Droped surveys 1, 4, and 5
+* Dropped surveys 1, 4, and 5
 * Removed ageing error
 * Removed length compositions
 * Removed bias correction in log-normal index likelihoods
 * Simplified catchability of survey 3 to be constant in time (removed random walk)
 * Updated maturity to be parametric rather than empirical
 * Used constant weight at age for all sources: spawning, fishery, surveys, and biomass calculations. The same matrix was used throughout.
-* Changee timing to be Jan 1 for spawning and all surveys
+* Change timing to be Jan 1 for spawning and all surveys
 * Removed prior on catchability for survey 2
 * Removed time-varying fisheries selectivity (constant double logistic)
 * Took off normalization of selectivity
 * Removed age accumulation for fishery age compositions
 
+## Setting up the data
 
-## Script to prepare data for building FIMS object
-```{r}
+```{r setup-data}
 #| warning: false
 #| label: prepare-fims-data
 #| output: false

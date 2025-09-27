@@ -9,24 +9,33 @@ format:
 
 {{< include setup.qmd >}}
 
+```{r}
+#| label: setup-objects
+common_name <- "Gulf of Alaska walleye pollock"
+```
+
 * R version: `r R_version`
 * TMB version: `r TMB_version`
 * FIMS commit: `r FIMS_commit`
-* Stock name: Gulf of Alaska (GOA) Walleye Pollock
+* Stock name: `r common_name`
 * Region: AFSC
 * Analyst: Cole Monnahan
 
 ## Simplifications to the original assessment
 
-See the AFSC-GOA-pollock case study for details on the model. Here the focus is on advanced features.
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
 
+To get the operational model to more closely match a FIMS model the following changes were made:
+
+* See the AFSC-GOA-pollock case study for details on the production-level assessment model and how it was modified
+* The focus here is on advanced features of FIMS rather than `r common_name` itself
 
 ## Script to prepare data for building FIMS object
 
 ```{r}
-#| warning: false
 #| label: prepare-fims-data
 #| output: false
+#| warning: false
 
 ggplot2::theme_set(ggplot2::theme_bw())
 ## define the dimensions and global variables
@@ -46,15 +55,15 @@ fimsdat <- pkdat0 <- pkinput0$dat
 pkinput <- readRDS('data_files/pkinput.RDS')
 ```
 
-## Run FIMS model without using wrapper functions
+## Run FIMS model
 ```{r}
-#| warning: false
-#| label: run-FIMS
-#| output: false
 #| eval: false
+#| label: setup-model
+#| output: false
+#| warning: false
 
-## set up FIMS data objects
 FIMS::clear()
+
 estimate_fish_selex <- "fixed"
 estimate_survey_selex <- "fixed"
 estimate_q2 <- "fixed"
@@ -87,11 +96,12 @@ opt <- with(obj, nlminb(
   )
 ))
 max(abs(obj$gr())) # from Cole, can use TMBhelper::fit_tmb to get val to <1e-10
-rep2 <- obj$report(obj$env$last.par.best) ## FIMS after estimation
+# FIMS after estimation
+rep2 <- obj$report(obj$env$last.par.best)
 ```
 
-
 ## Extra analyses
+
 Two extra analyses are demonstrated. First is a likelihood profile over lnR0, showing component contributions and testing for data conflict (a Piner plot). The second is to run the model through the 'Stan' software using the 'tmbstan' R package. This samples from the posterior, which are put back into the model to get the posterior distribution for spawning stock biomass. Given its long run time the results are saved to a file and read in for post-hoc plotting.
 
 ``` {r}
@@ -147,10 +157,10 @@ ggplot2::ggsave('figures/AFSC_PK_like_profile_R0.png', g, width=7, height=3.5)
 This section demonstrates how to do integration via the NUTS algorithm. 
 
 ```{r}
-#| label: bayesian-integration
-#| warning: true
-#| output: false
 #| eval: false
+#| label: setup-stan
+#| output: false
+#| warning: true
 # this takes too long to run for rendering so saving everything to file
 
 ## Try Bayesian
@@ -244,6 +254,7 @@ left off for now.
 
 ```{r}
 #| eval: false
+#| label: setup-cAIC
 # Set up a FIMS model without wrapper functions
 
 # the original model (with data)
@@ -302,6 +313,7 @@ model is misconfigured.
 ![edf](figures/cAIC_edf.png){width=7in}
 
 ```{r}
+#| label: cleanup
 # Clear C++ objects from memory
 FIMS::clear()
 ```

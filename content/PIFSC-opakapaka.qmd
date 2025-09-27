@@ -1,5 +1,5 @@
 ---
-title: "Opakapaka Case Study"
+title: PIFSC Opakapaka Case Study
 format:
   html:
     code-fold: true
@@ -9,17 +9,34 @@ format:
 
 {{< include setup.qmd >}}
 
+```{r}
+#| label: setup-objects
+common_name <- "main Hawaiian Islands Opakapaka"
+```
+
 * R version: `r R_version`
 * TMB version: `r TMB_version`
 * FIMS commit: `r FIMS_commit`  
-* Stock name: Main Hawaiian Islands Opakapaka
+* Stock name: `r common_name`
 * Region: Pacific Islands
 * Analyst: Meg Oshima
 
 ## Simplifications to the original assessment
 
-## Setting up Data
-```{r fims-dims}
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
+
+To get the operational model to more closely match a FIMS model the following changes were made:
+
+* In our model maturity and selectivity are length-based processes so I converted (aka eye-balled logistic curves that look like they match for ages) to values that I think would be roughly equivalent in ages. Eventually, having length-based processes would be necessary for this model.   
+* The scale of the fitted CPUE is lower than the observed values.  
+* If I don't fix the initial numbers-at-age, the model puts a really large number of individuals in age-0 bin and then 0 fish in the rest of the ages. Not sure what is happening here.  
+
+## Setting up the data
+
+```{r}
+#| label: prepare-fims-data
+#| output: false
+#| warning: false
 load(here::here("content", "data_files", "opaka_model.RDS"))
 include_age_comps <- FALSE
 years <- seq(opaka_dat$styr, opaka_dat$endyr)
@@ -29,14 +46,6 @@ ages <- seq(1, 21) # age vector.
 nages <- length(ages) # the number of age groups.
 comp_lengths <- opaka_dat$lbin_vector # length vector.
 nlengths <- length(comp_lengths) # the number of length bins.
-```
-
-### Preparing Data using FIMSFrame
-
-We will be reading data into the model using the FIMSFrame S4 R class set up in [R/fimsframe.R](https://github.com/NOAA-FIMS/FIMS/blob/main/R/fimsframe.R)
-
-```{r fimsframe}
-# use FIMS data frame
 
 source(here::here("content", "R", "get_ss3_data.R"))
 opaka_dat_fims <- get_ss3_data(
@@ -135,9 +144,11 @@ The `fims_frame` object contains a `@data` slot that holds a long data frame wit
 * length composition data for fleet 2
 
 
-### Prepare Parameters using `create_default_parameters()`
+## Run FIMS model
 
 ```{r, max.height='100px', attr.output='.numberLines'}
+#| label: setup-model
+
 # Define fleet specifications for fleet1 and survey1
 fleet1 <- list(
   selectivity = list(form = "LogisticSelectivity"),
@@ -170,10 +181,6 @@ default_parameters <- fims_frame |>
   create_default_parameters(
     fleets = list(fleet1 = fleet1, fleet2 = fleet2, fleet3 = fleet3, fleet4=fleet4)
   )
-```
-
-### Modifying parameters
-```{r modify-default-parameters}
 
 recdevs <- rep$parameters |> 
            dplyr::filter(stringr::str_detect(Label, "RecrDev")) |> 
@@ -256,12 +263,6 @@ parameters <- default_parameters |>
     )
   )
 
-```
-
-## Initialize modules and fit the model
-
-With data and parameters in place, we can now initialize modules using `initialize_fims()` and fit the model using `fit_fims()`.
-```{r, max.height='100px', attr.output='.numberLines', fit-fims, eval = TRUE}
 # Run the model without optimization to help ensure a viable model
 test_fit <- parameters |>
   initialize_fims(data = fims_frame) |>
@@ -273,16 +274,11 @@ fit <- parameters |>
   fit_fims(optimize = TRUE)
 ```
 
-## Problems and Questions: 
-
-* In our model maturity and selectivity are length-based processes so I converted (aka eye-balled logistic curves that look like they match for ages) to values that I think would be roughly equivalent in ages. Eventually, having length-based processes would be necessary for this model.   
-* The scale of the fitted CPUE is lower than the observed values.  
-* If I don't fix the initial numbers-at-age, the model puts a really large number of individuals in age-0 bin and then 0 fish in the rest of the ages. Not sure what is happening here.  
-
-
 ## Plotting Results
 
-```{r data-fits-plots, eval = TRUE}
+```{r}
+#| label: comparison-plots
+
 index_results <- data.frame(
   observed = m_index(fims_frame, "fleet2"),
   expected = get_report(fit)[["index_exp"]][[2]]
@@ -327,9 +323,6 @@ ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::ylab("Catch (mt)") +
   ggplot2::geom_line(ggplot2::aes(x = year, y = expected, color = fleet)) +
   ggplot2::theme_bw()
-```
-
-```{r ss3-comparison-plots}
 
 biomass <- rep$timeseries |> 
 dplyr::select(Yr, SpawnBio, Bio_all) |> 
@@ -369,8 +362,7 @@ ggplot2::ggplot(recruits, ggplot2::aes(x = Year, y = value, color = Model)) +
 
 ```{r}
 #| eval: false
-#| code-fold: true
-
+#| label: proportions-plots-not-run
 ## Checking fit to proportion catch number at length
 pcnal <- matrix(data = fit@report$pcnal[[2]], nrow = nlengths)
 
@@ -390,4 +382,9 @@ head(fit@report$naa[[1]])
 naa_mat <- matrix(data = fit@report$naa[[1]], nrow = nages)
 head(naa_mat)
 
+```
+
+```{r}
+#| label: cleanup
+FIMS::clear()
 ```

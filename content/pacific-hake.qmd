@@ -1,5 +1,5 @@
 ---
-title: Pacific Hake
+title: U.S. West Coast Case Study of Pacific Hake
 format:
   html:
     code-fold: true
@@ -9,14 +9,23 @@ format:
 
 {{< include setup.qmd >}}
 
+```{r}
+#| label: setup-objects
+common_name <- "Pacific Hake"
+```
+
 * R version: `r R_version`
 * TMB version: `r TMB_version`
 * FIMS commit: `r FIMS_commit`
-* Stock name: Pacific Hake
+* Stock name: `r common_name`
 * Region: U.S. West Coast
 * Analyst: Kelli F. Johnson
 
 ## Simplifications to the original assessment
+
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
+
+To get the operational model to more closely match a FIMS model the following changes were made:
 
 ### Weight-at-age data
 
@@ -26,31 +35,6 @@ Weight-at-age data was taken from the .ss_new file because this file contains da
 
 Year-specific maturity ogives for Pacific Hake were translated to a single logistic curve. First, estimates of maturity at age for the maximum day of the year investigated were averaged across years. Subsequently, this ogive was plotted and several values for the inflection point and slope parameters of the logistic curve were used to find a logistic curve that matched the average curve as best as possible. This lead to a curve with an inflection of `r hake_maturity_inflection_point` and a slope of `r hake_maturity_slope`.
 
-```{r}
-#| label: maturity
-
-maturity_data |>
-  dplyr::filter(doy == max(doy)) |>
-  dplyr::group_by(age) |>
-  dplyr::summarize(empirical = mean(p_mature)) |>
-  dplyr::full_join(
-    execute_logistic(
-      # TODO: un-hard code these age values
-      ages,
-      hake_maturity_slope,
-      hake_maturity_inflection_point
-    ) |>
-      dplyr::rename(age = x, logit = value),
-    by = "age"
-  ) |>
-  tidyr::pivot_longer(cols = c("empirical", "logit")) |>
-  ggplot2::ggplot(ggplot2::aes(age, value, color = name)) +
-  ggplot2::geom_line(linewidth = 1.5) +
-  ggplot2::xlab("Age") +
-  ggplot2::ylab("Probability of being mature") +
-  ggplot2::scale_color_brewer(palette = "Dark2", name = "Method")
-```
-
 ### Selectivity
 
 The logistic and double logistic selectivity curves are currently the only selectivity forms that are available in FIMS. A researcher from the Southwest Fisheries Science Center is working on adding age-specific selectivity, which will be available later this calendar year.
@@ -59,9 +43,13 @@ The logistic and double logistic selectivity curves are currently the only selec
 
 The relative age-1 index was removed from the data because FIMS currently works on biomass and does not allow for inputs in numbers. This relative index could be included after an agreed upon method to translate numbers of age-1 fish to biomass is established. This could be as simple as multiplying annual numbers of fish by weight of age-1 fish from the weight-at-age estimates from the GLMM.
 
+## Setting up the data
+
+
 ```{r}
-#| echo: false
-#| label: setup
+#| warning: false
+#| label: prepare-fims-data
+#| output: false
 
 # base_dir <- "/srv/hake/models/2025/01-version/01-base-models/01-base"
 base_dir <- "https://raw.githubusercontent.com/pacific-hake/hake-assessment/refs/heads/model-files/models/2025"
@@ -73,11 +61,6 @@ source("https://raw.githubusercontent.com/NOAA-FIMS/case-studies/refs/heads/wtat
 hake_maturity_inflection_point <- 2.2
 hake_maturity_slope <- 1.8
 ages <- 0:15
-```
-
-```{r}
-#| echo: false
-#| label: ss3-quantities
 
 # Mt or 1,000,000 * t
 ss3_sb_median <- c(
@@ -97,16 +80,6 @@ ss3_sb_median <- c(
 `2018` = 1.752535, `2019` = 1.439125, `2020` = 1.35688, `2021` = 1.120755,
 `2022` = 1.159235, `2023` = 1.47779, `2024` = 1.638705, `2025` = 1.736495,
 `2026` = 1.245515, `2027` = 0.865635, `2028` = 0.5916625)
-```
-
-## Data
-
-All data for a FIMS model is contained in one data frame. Here, we call this object `fims_data`. The creation of this data set is assisted by the R function called `get_ss3_data()` written by Drs. Ian G. Taylor and Megumi C. Oshima.
-
-Because data-weighting is not available in FIMS, the input sample size for the survey age-composition data was multiplied by 10. Additionally, because non-parametric selectivity is not yet available in FIMS, the terminal year of data was removed from this data set.
-
-```{r}
-#| label: data
 
 inputs <- r4ss::SS_read(base_dir)
 inputs[["wtatage"]] <- r4ss::SS_readwtatage(file.path(base_dir, "wtatage.ss_new"))
@@ -134,13 +107,6 @@ fims_data <- get_ss3_data(
   ) |>
   FIMS::FIMSFrame()
 n_ages_years <- get_n_ages(fims_data) * get_n_years(fims_data)
-```
-
-```{r}
-#| label:  data-summaries
-
-# Printing the S4 class that is returned from FIMSFrame()
-fims_data
 
 # Summary of the data types available
 FIMS::get_data(fims_data) |>
@@ -149,7 +115,37 @@ FIMS::get_data(fims_data) |>
   dplyr::count()
 ```
 
-## Model
+```{r}
+#| label: maturity-plot
+
+#TODO: save this figure and reference it above with maturity
+maturity_data |>
+  dplyr::filter(doy == max(doy)) |>
+  dplyr::group_by(age) |>
+  dplyr::summarize(empirical = mean(p_mature)) |>
+  dplyr::full_join(
+    execute_logistic(
+      # TODO: un-hard code these age values
+      ages,
+      hake_maturity_slope,
+      hake_maturity_inflection_point
+    ) |>
+      dplyr::rename(age = x, logit = value),
+    by = "age"
+  ) |>
+  tidyr::pivot_longer(cols = c("empirical", "logit")) |>
+  ggplot2::ggplot(ggplot2::aes(age, value, color = name)) +
+  ggplot2::geom_line(linewidth = 1.5) +
+  ggplot2::xlab("Age") +
+  ggplot2::ylab("Probability of being mature") +
+  ggplot2::scale_color_brewer(palette = "Dark2", name = "Method")
+```
+
+All data for a FIMS model is contained in one data frame. Here, we call this object `fims_data`. The creation of this data set is assisted by the R function called `get_ss3_data()` written by Drs. Ian G. Taylor and Megumi C. Oshima.
+
+Because data-weighting is not available in FIMS, the input sample size for the survey age-composition data was multiplied by 10. Additionally, because non-parametric selectivity is not yet available in FIMS, the terminal year of data was removed from this data set.
+
+## Run FIMS model
 
 ### Parameterization
 
@@ -158,7 +154,7 @@ Currently, only the multinomial distribution is available for fitting compositio
 Natural mortality can be estimated in FIMS using age- and year-specific values but all values were fixed at the median estimate from Stock Synthesis for this analysis.
 
 ```{r}
-#| label: parameterization
+#| label: setup-model
 
 fleet1 <- list(
   selectivity = list(form = "LogisticSelectivity"),
@@ -221,9 +217,10 @@ default_parameters <- fims_data |>
   )
 ```
 
-```{r parameterization-fleet3}
+```{r}
 #| eval: false
 #| include: false
+#| label: setup-fleet3
 
 default_parameters <- default_parameters |>
   update_parameters(
@@ -247,8 +244,8 @@ default_parameters <- default_parameters |>
 Parameters can vary with time, though the R interface is not currently fully developed to easily allow this. Hence, the code below.
 
 ```{r}
-#| label: tv
 #| eval: false
+#| label: setup-tv
 
 # Code to create time-varying parameters
 
@@ -269,11 +266,10 @@ default_parameters[["parameters"]][["fleet1"]][["LogisticSelectivity.inflection_
 #   rep(TRUE, get_n_years(fims_data))
 ```
 
-
 ### Fit
 
 ```{r}
-#| label: fit
+#| label: setup-fit
 
 # Run the model without optimization to help ensure a viable model
 test_fit <- default_parameters |>
@@ -284,10 +280,10 @@ fit <- default_parameters |>
   fit_fims(optimize = TRUE)
 ```
 
-### Results
+### Plotting results
 
 ```{r}
-#| label: results-catch
+#| label: comparison-plots
 
 get_data(fims_data) |>
   dplyr::filter(type == "landings") |>
@@ -304,10 +300,6 @@ get_data(fims_data) |>
   ) +
   ggplot2::xlab("Year") +
   ggplot2::ylab("Landings (t)")
-```
-
-```{r}
-#| label: results-sb
 
 get_estimates(fit) |>
   dplyr::filter(grepl("SB", label, ignore.case = TRUE)) |>
@@ -320,12 +312,8 @@ get_estimates(fit) |>
   ggplot2::geom_line() +
   ggplot2::xlab("Year") +
   ggplot2::ylab("Spawning biomass (t)")
-```
 
-```{r}
-#| label: results-index
-
-# Index
+# index
 get_estimates(fit) |>
   dplyr::filter(label == "IndexExpected") |>
   # TODO: fix this filtering when module_id has fleet number in it again
@@ -356,10 +344,6 @@ get_estimates(fit) |>
   ggplot2::scale_color_brewer(palette = "Dark2", name = "Method") +
   ggplot2::xlab("Year") +
   ggplot2::ylab("Index of abundance (t)")
-```
-
-```{r}
-#| label: results-f
 
 # Fishing mortality
 get_estimates(fit) |>
@@ -378,9 +362,9 @@ get_estimates(fit) |>
 ```
 
 ```{r}
-#| label: results-other
 #| echo: false
 #| eval: false
+#| label: comparison-plots-not-run
 
 get_parameter("ssb", fit) - head(ss3_sb_median, get_n_years(fims_data) + 1) * 1000000 
 
@@ -398,3 +382,7 @@ g <- purrr::map2_df(
 get_estimates(fit) |> dplyr::count(name) |> print(n=900)
 ```
 
+```{r}
+#| label: cleanup
+FIMS::clear()
+```
