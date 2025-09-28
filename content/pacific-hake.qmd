@@ -16,7 +16,6 @@ hake_maturity_inflection_point <- 2.2
 hake_maturity_slope <- 1.8
 
 ages <- 0:15
-source(here::here("content", function_directory, "get_ss3_data.R"))
 ```
 
 * R version: `r R_version`

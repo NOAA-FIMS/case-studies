@@ -59,11 +59,22 @@ To get the operational model to more closely match a FIMS model the following ch
 ## compare changes to model
 pkfitfinal <- readRDS(here::here("content", data_directory, "pkfitfinal.RDS"))
 pkfit0 <- readRDS(here::here("content", data_directory, "pkfit0.RDS"))
+rep0 <- pkfitfinal$rep
 parfinal <- pkfitfinal$obj$env$parList()
 pkinput0 <- readRDS(here::here("content", data_directory, "pkinput0.RDS"))
 fimsdat <- pkdat0 <- pkinput0$dat
 pkinput <- readRDS(here::here("content", data_directory, "pkinput.RDS"))
-rep0 <- pkfitfinal$rep
+data_4_model <- prepare_pollock_data(
+  pkfitfinal = pkfitfinal,
+  pkfit0 = pkfit0,
+  parfinal = parfinal,
+  fimsdat = fimsdat,
+  pkinput = pkinput,
+  years = years,
+  n_years = n_years,
+  ages = ages,
+  n_ages = n_ages
+)
 ```
 
 ## Run FIMS model
@@ -79,19 +90,6 @@ estimate_q3 <- TRUE
 estimate_q6 <- TRUE
 estimate_F <- TRUE
 estimate_recdevs <- TRUE
-
-# Read in data portion of preparing input
-file_lines <- scan(
-  here::here("content", function_directory, "pk_prepare_FIMS_inputs.R"),
-  what = character(),
-  # skip = start-1,
-  # nlines = end - start + 1,
-  sep = "\n"
-)
-source(textConnection(paste(
-  file_lines[1:grep("data_4_model <-", file_lines)],
-  collapse = "\n"
-)))
 
 # set up selectivities for fleets and survey
 fleet1 <- list(

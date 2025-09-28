@@ -61,6 +61,13 @@ ggplot2::theme_set(ggplot2::theme_bw())
 
 data_directory <- "data_files"
 function_directory <- "R"
-source(here::here("content", function_directory, "utils.R"))
+purrr::walk(
+  here::here(
+    "content",
+    function_directory,
+    dir(here::here("content", function_directory))
+  ),
+  source
+)
 ```
 
