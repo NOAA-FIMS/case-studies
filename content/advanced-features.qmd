@@ -63,16 +63,16 @@ pkinput <- readRDS(here::here("content", data_directory, "pkinput.RDS"))
 
 FIMS::clear()
 
-estimate_fish_selex <- "fixed"
-estimate_survey_selex <- "fixed"
-estimate_q2 <- "fixed"
-estimate_q3 <- "fixed"
-estimate_q6 <- "fixed"
-estimate_F <- "fixed"
+estimate_fish_selex <- "fixed_effects"
+estimate_survey_selex <- "fixed_effects"
+estimate_q2 <- "fixed_effects"
+estimate_q3 <- "fixed_effects"
+estimate_q6 <- "fixed_effects"
+estimate_F <- "fixed_effects"
 estimate_recdevs <- TRUE
 
 # Set up a FIMS model without wrapper functions
-source(here::here("content", function_directory, "pk_prepare_FIMS_inputs_old.R"))
+source(here::here("content", function_directory, "pk_prepare_FIMS_inputs.R"))
 
 ## make FIMS model
 success <- FIMS::CreateTMBModel()
@@ -241,20 +241,8 @@ This results in the following plots showing convergence and then finally the pos
 ![SSB Posterior](figures/MCMC_ssb_posterior.png){width=7in}
 
 ## Calculate conditional AIC and effective degrees of freedom
-Zheng et al. (in review; 
-[pdflink](https://doi.org/10.48550/arXiv.2411.14185)) present a new
-formula to calculate conditional AIC. To do this it calculates
-the "effective degrees of freedom" and uses that in the
-calculation of cAIC. A parameter has 0 edf when all information
-to estimate it comes from a prior or hyperpriors. In contrast it
-has an edf of 1 when it is informed only by the data. Edf gives a
-sense of complexity of the model, and cAIC will perform better
-than marginal AIC (mAIC) for mixed effects models. Here I
-demonstrate equation 6 on a FIMS model. This approach works on
-penalized ML and random effects models alike. If Bayesian priors
-(or penalties) are used it will also calculate the impact of
-those relative to the data. No priors are used yet so that is
-left off for now.
+
+Zheng et al. (in review; [pdflink](https://doi.org/10.48550/arXiv.2411.14185)) present a new formula to calculate conditional AIC. To do this it calculates the "effective degrees of freedom" and uses that in the calculation of cAIC. A parameter has 0 edf when all information to estimate it comes from a prior or hyperpriors. In contrast it has an edf of 1 when it is informed only by the data. Edf gives a sense of complexity of the model, and cAIC will perform better than marginal AIC (mAIC) for mixed effects models. Here I demonstrate equation 6 on a FIMS model. This approach works on penalized ML and random effects models alike. If Bayesian priors (or penalties) are used it will also calculate the impact of those relative to the data. No priors are used yet so that is left off for now.
 
 ```{r}
 #| eval: false

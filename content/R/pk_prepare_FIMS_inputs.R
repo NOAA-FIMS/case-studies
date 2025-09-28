@@ -1,39 +1,39 @@
 ## Quick function to compare models
 get_long_outputs <- function(fims, tmb) {
-  ## estimaed catch is pretty close I think
+  ## estimated catch is pretty close I think
   naa <- matrix(fims$naa[[1]], ncol = n_ages, byrow = TRUE) / 1e9
   catch <-
     data.frame(
       year = years,
-      name = 'catch',
+      name = "catch",
       FIMS = fims$landings_exp[[1]] / 1e3,
       TMB = tmb$Ecattot
     )
   ## spawnbio
   ssb <- data.frame(
     year = years,
-    name = 'SSB',
+    name = "SSB",
     FIMS = fims$ssb[[1]][-55] / 1e9,
     TMB = tmb$Espawnbio
   )
   bio <-
     data.frame(
       year = years,
-      name = 'biomass',
+      name = "biomass",
       FIMS = fims$biomass[[1]][-55] / 1e9,
       TMB = tmb$Etotalbio
     )
   fmort <-
     data.frame(
       year = years,
-      name = 'F',
+      name = "F",
       FIMS = fims$F_mort[[1]],
       TMB = tmb$F
     )
   recruit <-
     data.frame(
       year = years,
-      name = 'recruit',
+      name = "recruit",
       FIMS = naa[-55, 1],
       TMB = tmb$recruit
     )
@@ -41,30 +41,30 @@ get_long_outputs <- function(fims, tmb) {
   eind2 <-
     data.frame(
       year = years,
-      name = 'Index2',
+      name = "Index2",
       FIMS = fims$index_exp[[2]] / 1e9,
       TMB = tmb$Eindxsurv2
     )
   eind3 <-
     data.frame(
       year = years,
-      name = 'Index3',
+      name = "Index3",
       FIMS = fims$index_exp[[3]] / 1e9,
       TMB = tmb$Eindxsurv3
     )
   eind6 <-
     data.frame(
       year = years,
-      name = 'Index6',
+      name = "Index6",
       FIMS = fims$index_exp[[4]] / 1e9,
       TMB = tmb$Eindxsurv6
     )
   xx <- rbind(catch, ssb, bio, fmort, eind2, eind3, eind6, recruit) |>
-    tidyr::pivot_longer(cols = -c(name, year), names_to = 'platform') |>
+    tidyr::pivot_longer(cols = -c(name, year), names_to = "platform") |>
     dplyr::group_by(year, name) |>
     dplyr::mutate(
-      relerror = (value - value[platform == 'TMB']) / 
-        value[platform == 'TMB']) |>
+      relerror = (value - value[platform == "TMB"]) / 
+        value[platform == "TMB"]) |>
     dplyr::ungroup()
   return(xx)
 }
@@ -87,7 +87,7 @@ get_acomp_fits <- function(tmb, fims1, fims2, fleet, years) {
     stop("bad fleet")
   }
 
-  lab <- c('Fishery', 'Survey 2', 'Survey 3', 'Survey 6')[fleet]
+  lab <- c("Fishery", "Survey 2", "Survey 3", "Survey 6")[fleet]
   x1 <- matrix(fims1$landings_naa[[fleet]], ncol = 10, byrow = TRUE)[ind, ]
   x1 <- x1 / rowSums(x1)
   x2 <- matrix(fims2$landings_naa[[fleet]], ncol = 10, byrow = TRUE)[ind, ]
@@ -95,14 +95,14 @@ get_acomp_fits <- function(tmb, fims1, fims2, fleet, years) {
   dimnames(y) <-  dimnames(x1) <- dimnames(x2) <-
     list(year = years, age = 1:10)
   dimnames(obs) <- list(year = years, age = 1:10)
-  x1 <- reshape2::melt(x1, value.name = 'paa') |>
-    cbind(platform = 'FIMS init', type = lab)
-  x2 <- reshape2::melt(x2, value.name = 'paa') |>
-    cbind(platform = 'FIMS opt', type = lab)
-  y <- reshape2::melt(y, value.name = 'paa') |>
-    cbind(platform = 'TMB', type = lab)
-  obs <- reshape2::melt(obs, value.name = 'paa') |>
-    cbind(platform = 'obs', type = lab)
+  x1 <- reshape2::melt(x1, value.name = "paa") |>
+    cbind(platform = "FIMS init", type = lab)
+  x2 <- reshape2::melt(x2, value.name = "paa") |>
+    cbind(platform = "FIMS opt", type = lab)
+  y <- reshape2::melt(y, value.name = "paa") |>
+    cbind(platform = "TMB", type = lab)
+  obs <- reshape2::melt(obs, value.name = "paa") |>
+    cbind(platform = "obs", type = lab)
   out <- rbind(x1, x2, y, obs)
   out
 }
@@ -281,7 +281,7 @@ res <- rbind(res, weightatage_data)
 
 data_4_model <- FIMS::FIMSFrame(res)
 
-fishery_catch <- FIMS::m_landings(data_4_model, 'fleet1')
+fishery_catch <- FIMS::m_landings(data_4_model, "fleet1")
 fishery_agecomp <- FIMS::m_agecomp(data_4_model, "fleet1")
 survey_index2 <- FIMS::m_index(data_4_model, "survey2")
 survey_agecomp2 <- FIMS::m_agecomp(data_4_model, "survey2")
@@ -312,13 +312,13 @@ purrr::walk(
 ## methods::show(DoubleLogisticSelectivity)
 fish_selex <- methods::new(DoubleLogisticSelectivity)
 fish_selex$inflection_point_asc[1]$value <- parfinal$inf1_fsh_mean
-fish_selex$inflection_point_asc[1]$estimation_type <- estimate_fish_selex
+fish_selex$inflection_point_asc[1]$estimation_type$set(estimate_fish_selex)
 fish_selex$inflection_point_desc[1]$value <- parfinal$inf2_fsh_mean
-fish_selex$inflection_point_desc[1]$estimation_type <- estimate_fish_selex
+fish_selex$inflection_point_desc[1]$estimation_type$set(estimate_fish_selex)
 fish_selex$slope_asc[1]$value <- exp(parfinal$log_slp1_fsh_mean)
-fish_selex$slope_asc[1]$estimation_type <- estimate_fish_selex
+fish_selex$slope_asc[1]$estimation_type$set(estimate_fish_selex)
 fish_selex$slope_desc[1]$value <- exp(parfinal$log_slp2_fsh_mean)
-fish_selex$slope_desc[1]$estimation_type <- estimate_fish_selex
+fish_selex$slope_desc[1]$estimation_type$set(estimate_fish_selex)
 
 ## create fleet object
 fish_fleet <- methods::new(Fleet)
@@ -326,36 +326,37 @@ fish_fleet$nages$set(n_ages)
 fish_fleet$nyears$set(n_years)
 
 fish_fleet$log_Fmort$resize(n_years)
-for (y in 1:n_years) {
+for (y in seq(n_years)) {
   # Log-transform OM fishing mortality
   fish_fleet$log_Fmort[y]$value <- log(pkfitfinal$rep$F[y])
 }
 fish_fleet$log_Fmort$set_all_estimable(TRUE)
 fish_fleet$log_q[1]$value <- 0 # why is this length two in Chris' case study?
-fish_fleet$log_q[1]$estimation_type <- "constant"
+fish_fleet$log_q[1]$estimation_type$set("constant")
 
 # Set Index, AgeComp, and Selectivity using the IDs from the modules defined above
-fish_fleet$SetObservedIndexData(fish_index$get_id())
-fish_fleet$SetObservedAgeCompData(fish_age_comp$get_id())
-fish_fleet$SetSelectivity(fish_selex$get_id())
+fish_fleet$SetObservedIndexDataID(fish_index$get_id())
+fish_fleet$SetObservedAgeCompDataID(fish_age_comp$get_id())
+fish_fleet$SetSelectivityID(fish_selex$get_id())
 
 # Set up fishery index data using the lognormal
 fish_fleet_index_distribution <- methods::new(DlnormDistribution)
 # lognormal observation error transformed on the log scale
 fish_fleet_index_distribution$log_sd$resize(n_years)
-for (y in 1:n_years) {
+for (y in seq(n_years)) {
   # Compute lognormal SD from OM coefficient of variation (CV)
   fish_fleet_index_distribution$log_sd[y]$value <- log(landings$uncertainty[y])
 }
 fish_fleet_index_distribution$log_sd$set_all_estimable(FALSE)
 # Set Data using the IDs from the modules defined above
 fish_fleet_index_distribution$set_observed_data(fish_fleet$GetObservedIndexDataID())
-fish_fleet_index_distribution$set_distribution_links("data", fish_fleet$log_expected_index$get_id())
+fish_fleet_index_distribution$set_distribution_links("data", fish_fleet$log_index_expected$get_id())
 
 # Set up fishery age composition data using the multinomial
 fish_fleet_agecomp_distribution <- methods::new(DmultinomDistribution)
 fish_fleet_agecomp_distribution$set_observed_data(fish_fleet$GetObservedAgeCompDataID())
-fish_fleet_agecomp_distribution$set_distribution_links("data", fish_fleet$proportion_catch_numbers_at_age$get_id())
+# ?: was previously using ID from proportion_catch_numbers_at_age
+fish_fleet_agecomp_distribution$set_distribution_links("data", fish_fleet$agecomp_proportion$get_id())
 
 ## Setup survey 2
 survey2_fleet_index <- methods::new(Index, n_years)
@@ -376,39 +377,40 @@ purrr::walk(
 ## methods::show(DoubleLogisticSelectivity)
 survey2_selex <- methods::new(DoubleLogisticSelectivity)
 survey2_selex$inflection_point_asc[1]$value <- parfinal$inf1_srv2
-survey2_selex$inflection_point_asc[1]$estimation_type <- estimate_survey_selex
+survey2_selex$inflection_point_asc[1]$estimation_type$set(estimate_survey_selex)
 survey2_selex$slope_asc[1]$value <- exp(parfinal$log_slp1_srv2)
-survey2_selex$slope_asc[1]$estimation_type <- estimate_survey_selex
+survey2_selex$slope_asc[1]$estimation_type$set(estimate_survey_selex)
 ## not estimated to make it ascending only, fix at input values
 survey2_selex$inflection_point_desc[1]$value <- parfinal$inf2_srv2
-survey2_selex$inflection_point_desc[1]$estimation_type <- "constant"
+survey2_selex$inflection_point_desc[1]$estimation_type$set("constant")
 survey2_selex$slope_desc[1]$value <- exp(parfinal$log_slp2_srv2)
-survey2_selex$slope_desc[1]$estimation_type <- "constant"
+survey2_selex$slope_desc[1]$estimation_type$set("constant")
 
 survey2_fleet <- methods::new(Fleet)
 survey2_fleet$nages$set(n_ages)
 survey2_fleet$nyears$set(n_years)
 survey2_fleet$log_q[1]$value <- parfinal$log_q2_mean
-survey2_fleet$log_q[1]$estimation_type <- "fixed_effects"
-survey2_fleet$SetSelectivity(survey2_selex$get_id())
-survey2_fleet$SetObservedIndexData(survey2_fleet_index$get_id())
-survey2_fleet$SetObservedAgeCompData(survey2_age_comp$get_id())
+survey2_fleet$log_q[1]$estimation_type$set("fixed_effects")
+survey2_fleet$SetSelectivityID(survey2_selex$get_id())
+survey2_fleet$SetObservedIndexDataID(survey2_fleet_index$get_id())
+survey2_fleet$SetObservedAgeCompDataID(survey2_age_comp$get_id())
 
 survey2_fleet_index_distribution <- methods::new(DlnormDistribution)
 # lognormal observation error transformed on the log scale
 survey2_fleet_index_distribution$log_sd$resize(n_years)
-for (y in 1:n_years) {
+for (y in seq(n_years)) {
  # Compute lognormal SD from OM coefficient of variation (CV)
  survey2_fleet_index_distribution$log_sd[y]$value <- log(index2$uncertainty)[y]
 }
 survey2_fleet_index_distribution$log_sd$set_all_estimable(FALSE)
 # Set Data using the IDs from the modules defined above
 survey2_fleet_index_distribution$set_observed_data(survey2_fleet$GetObservedIndexDataID())
-survey2_fleet_index_distribution$set_distribution_links("data", survey2_fleet$log_expected_index$get_id())
+survey2_fleet_index_distribution$set_distribution_links("data", survey2_fleet$log_index_expected$get_id())
 # Set up fishery age composition data using the multinomial
 survey2_fleet_agecomp_distribution <- methods::new(DmultinomDistribution)
 survey2_fleet_agecomp_distribution$set_observed_data(survey2_fleet$GetObservedAgeCompDataID())
-survey2_fleet_agecomp_distribution$set_distribution_links("data", survey2_fleet$proportion_catch_numbers_at_age$get_id())
+# ?: was previously using ID from proportion_catch_numbers_at_age
+survey2_fleet_agecomp_distribution$set_distribution_links("data", survey2_fleet$agecomp_proportion$get_id())
  
 ## Setup survey 3
 survey3_fleet_index <- methods::new(Index, n_years)
@@ -428,35 +430,36 @@ purrr::walk(
 ## methods::show(LogisticSelectivity)
 survey3_selex <- methods::new(LogisticSelectivity)
 survey3_selex$inflection_point[1]$value <- parfinal$inf1_srv3
-survey3_selex$inflection_point[1]$estimation_type <- estimate_survey_selex
+survey3_selex$inflection_point[1]$estimation_type$set(estimate_survey_selex)
 survey3_selex$slope[1]$value <- exp(parfinal$log_slp1_srv3)
-survey3_selex$slope[1]$estimation_type <- estimate_survey_selex
+survey3_selex$slope[1]$estimation_type$set(estimate_survey_selex)
 
 survey3_fleet <- methods::new(Fleet)
 survey3_fleet$nages$set(n_ages)
 survey3_fleet$nyears$set(n_years)
 survey3_fleet$log_q[1]$value <- parfinal$log_q3_mean
-survey3_fleet$log_q[1]$estimation_type <- "fixed_effects"
-survey3_fleet$SetSelectivity(survey3_selex$get_id())
-survey3_fleet$SetObservedIndexData(survey3_fleet_index$get_id())
-survey3_fleet$SetObservedAgeCompData(survey3_age_comp$get_id())
+survey3_fleet$log_q[1]$estimation_type$set("fixed_effects")
+survey3_fleet$SetSelectivityID(survey3_selex$get_id())
+survey3_fleet$SetObservedIndexDataID(survey3_fleet_index$get_id())
+survey3_fleet$SetObservedAgeCompDataID(survey3_age_comp$get_id())
 
 # sd = sqrt(log(cv^2 + 1)), sd is log transformed
 survey3_fleet_index_distribution <- methods::new(DlnormDistribution)
 # lognormal observation error transformed on the log scale
 survey3_fleet_index_distribution$log_sd$resize(n_years)
-for (y in 1:n_years) {
+for (y in seq(n_years)) {
   # Compute lognormal SD from OM coefficient of variation (CV)
   survey3_fleet_index_distribution$log_sd[y]$value <- log(index3$uncertainty)[y]
 }
 survey3_fleet_index_distribution$log_sd$set_all_estimable(FALSE)
 # Set Data using the IDs from the modules defined above
 survey3_fleet_index_distribution$set_observed_data(survey3_fleet$GetObservedIndexDataID())
-survey3_fleet_index_distribution$set_distribution_links("data", survey3_fleet$log_expected_index$get_id())
+survey3_fleet_index_distribution$set_distribution_links("data", survey3_fleet$log_index_expected$get_id())
 # Set up fishery age composition data using the multinomial
 survey3_fleet_agecomp_distribution <- methods::new(DmultinomDistribution)
 survey3_fleet_agecomp_distribution$set_observed_data(survey3_fleet$GetObservedAgeCompDataID())
-survey3_fleet_agecomp_distribution$set_distribution_links("data", survey3_fleet$proportion_catch_numbers_at_age$get_id())
+# ?: was previously using ID from proportion_catch_numbers_at_age
+survey3_fleet_agecomp_distribution$set_distribution_links("data", survey3_fleet$agecomp_proportion$get_id())
 
 ## Setup survey 6
 survey6_fleet_index <- methods::new(Index, n_years)
@@ -477,54 +480,54 @@ purrr::walk(
 ## methods::show(DoubleLogisticSelectivity)
 survey6_selex <- methods::new(DoubleLogisticSelectivity)
 survey6_selex$inflection_point_asc[1]$value <- parfinal$inf1_srv6
-survey6_selex$inflection_point_asc[1]$estimation_type <- "constant"
+survey6_selex$inflection_point_asc[1]$estimation_type$set("constant")
 survey6_selex$slope_asc[1]$value <- exp(parfinal$log_slp1_srv6)
-survey6_selex$slope_asc[1]$estimation_type <- "constant"
+survey6_selex$slope_asc[1]$estimation_type$set("constant")
 ## not estimated to make it ascending only, fix at input values
 survey6_selex$inflection_point_desc[1]$value <- parfinal$inf2_srv6
-survey6_selex$inflection_point_desc[1]$estimation_type <-
-  estimate_survey_selex
+survey6_selex$inflection_point_desc[1]$estimation_type$set(estimate_survey_selex)
 survey6_selex$slope_desc[1]$value <- exp(parfinal$log_slp2_srv6)
-survey6_selex$slope_desc[1]$estimation_type <- estimate_survey_selex
+survey6_selex$slope_desc[1]$estimation_type$set(estimate_survey_selex)
 
 survey6_fleet <- methods::new(Fleet)
 survey6_fleet$nages$set(n_ages)
 survey6_fleet$nyears$set(n_years)
 survey6_fleet$log_q[1]$value <- parfinal$log_q6
-survey6_fleet$log_q[1]$estimation_type <- "fixed_effects"
-survey6_fleet$SetSelectivity(survey6_selex$get_id())
-survey6_fleet$SetObservedIndexData(survey6_fleet_index$get_id())
-survey6_fleet$SetObservedAgeCompData(survey6_age_comp$get_id())
+survey6_fleet$log_q[1]$estimation_type$set("fixed_effects")
+survey6_fleet$SetSelectivityID(survey6_selex$get_id())
+survey6_fleet$SetObservedIndexDataID(survey6_fleet_index$get_id())
+survey6_fleet$SetObservedAgeCompDataID(survey6_age_comp$get_id())
 
 survey6_fleet_index_distribution <- methods::new(DlnormDistribution)
 # lognormal observation error transformed on the log scale
 survey6_fleet_index_distribution$log_sd$resize(n_years)
-for (y in 1:n_years) {
+for (y in seq(n_years)) {
   # Compute lognormal SD from OM coefficient of variation (CV)
   survey6_fleet_index_distribution$log_sd[y]$value <- log(index6$uncertainty)[y]
 }
 survey6_fleet_index_distribution$log_sd$set_all_estimable(FALSE)
 # Set Data using the IDs from the modules defined above
 survey6_fleet_index_distribution$set_observed_data(survey6_fleet$GetObservedIndexDataID())
-survey6_fleet_index_distribution$set_distribution_links("data", survey6_fleet$log_expected_index$get_id())
+survey6_fleet_index_distribution$set_distribution_links("data", survey6_fleet$log_index_expected$get_id())
 # Set up fishery age composition data using the multinomial
 survey6_fleet_agecomp_distribution <- methods::new(DmultinomDistribution)
 survey6_fleet_agecomp_distribution$set_observed_data(survey6_fleet$GetObservedAgeCompDataID())
-survey6_fleet_agecomp_distribution$set_distribution_links("data", survey6_fleet$proportion_catch_numbers_at_age$get_id())
+# ?: was previously using ID from proportion_catch_numbers_at_age
+survey6_fleet_agecomp_distribution$set_distribution_links("data", survey6_fleet$agecomp_proportion$get_id())
 
 # Population module
 # recruitment
 recruitment <- methods::new(BevertonHoltRecruitment)
 recruitment_process <- new(LogDevsRecruitmentProcess)
-recruitment$SetRecruitmentProcess(recruitment_process$get_id())
+recruitment$SetRecruitmentProcessID(recruitment_process$get_id())
 ## methods::show(BevertonHoltRecruitment)
 #recruitment$log_sigma_recruit[1]$value <- log(parfinal$sigmaR)
 recruitment$log_rzero[1]$value <- parfinal$mean_log_recruit + log(1e9)
-recruitment$log_rzero[1]$estimation_type <- "fixed_effects"
+recruitment$log_rzero[1]$estimation_type$set("fixed_effects")
 ## note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run
 recruitment$logit_steep[1]$value <-
   -log(1.0 - .99999) + log(.99999 - 0.2)
-recruitment$logit_steep[1]$estimation_type <- "constant"
+recruitment$logit_steep[1]$estimation_type$set("constant")
 recruitment$log_devs$resize(n_years-1)
 for (y in 1:(n_years-1)) {
   recruitment$log_devs[y]$value <- parfinal$dev_log_recruit[y+1]
@@ -537,10 +540,10 @@ recruitment_distribution <- methods::new(DnormDistribution)
 # taken before the likelihood calculation
 recruitment_distribution$log_sd <- methods::new(ParameterVector, 1)
 recruitment_distribution$log_sd[1]$value <- log(parfinal$sigmaR)
-recruitment_distribution$log_sd[1]$estimation_type <- "constant"
-recruitment_distribution$x$resize(n_years-1)
-recruitment_distribution$expected_values$resize(n_years-1)
-for (i in 1:(n_years-1)) {
+recruitment_distribution$log_sd[1]$estimation_type$set("constant")
+recruitment_distribution$x$resize(n_years - 1)
+recruitment_distribution$expected_values$resize(n_years - 1)
+for (i in seq(n_years - 1)) {
   recruitment_distribution$x[i]$value <- 0
   recruitment_distribution$expected_values[i]$value <- 0
 }
@@ -569,9 +572,9 @@ purrr::walk(
 
 maturity <- new(LogisticMaturity)
 maturity$inflection_point[1]$value <- 4.5
-maturity$inflection_point[1]$estimation_type <- "constant"
+maturity$inflection_point[1]$estimation_type$set("constant")
 maturity$slope[1]$value <- 1.5
-maturity$slope[1]$estimation_type <- "constant"
+maturity$slope[1]$estimation_type$set("constant")
 
 # population
 population <- new(Population)
@@ -596,8 +599,7 @@ purrr::walk(
   \(x) population$ages$set(x - 1, ages[x])
 )
 population$nfleets$set(4)
-population$nseasons$set(n_seasons)
 population$nyears$set(n_years)
-population$SetMaturity(maturity$get_id())
-population$SetGrowth(ewaa_growth$get_id())
-population$SetRecruitment(recruitment$get_id())
+population$SetMaturityID(maturity$get_id())
+population$SetGrowthID(ewaa_growth$get_id())
+population$SetRecruitmentID(recruitment$get_id())
