@@ -13,7 +13,7 @@ format:
 #| label: setup-objects
 common_name <- "Pacific Hake"
 
-terminal_year <- 2010
+terminal_year <- 2024
 
 hake_maturity_inflection_point <- 2.2
 hake_maturity_slope <- 1.8
@@ -80,7 +80,7 @@ data_4_model <- get_ss3_data(
       uncertainty
     )
   ) |>
-  dplyr::filter(timing <= terminal_year) |>
+  dplyr::filter(timing <= terminal_year, timing > 1976) |>
   FIMS::FIMSFrame()
 ```
 
@@ -151,6 +151,8 @@ Same as the fishery data, the standard survey data for any number of surveys can
 
 <!-- TODO: run a sensitivity with the age-1 index -->
 Regardless, the age-1 index is not fit to in this case study because it is not in the 2025 base model.
+
+No extra uncertainty was estimated for the index of abundance. 
 
 ### Fishing mortality
 
@@ -631,7 +633,8 @@ for (ii in 1:3) {
     )
   )
 }
-
+FIMS::set_fixed(opt$par)
+sd_report <- TMB::sdreport(obj)
 # Check that the standard errors are not NA
 any(is.na(summary(
   TMB::sdreport(obj, skip.delta.method = TRUE),
@@ -642,7 +645,7 @@ fit <- FIMSFit(
   input = parameter_list,
   obj = obj,
   opt = opt,
-  sdreport = TMB::sdreport(obj)
+  sdreport = sd_report
 )
 output <- FIMS::get_estimates(fit) |>
   dplyr::mutate(
@@ -797,7 +800,6 @@ for (ii in 1:3) {
 ```{r}
 #| label: comparison-plots
 #| echo: false
-#| eval: false
 
 stockplotr::plot_landings(
   dplyr::filter(output, module_id == 1)
@@ -822,7 +824,7 @@ stockplotr::plot_timeseries(
     label_name = "^index_expected$",
     geom = "line"
   ),
-  x = "year_i",
+  x = "year",
   y = "estimated",
   ylab = "Relative Index of Abundance"
 ) +
@@ -832,10 +834,13 @@ stockplotr::plot_timeseries(
       module_id == 2,
       label == "index_expected",
       observed > -999
-    ),
-    ggplot2::aes(x = year_i, y = observed)
+    ) |>
+      dplyr::left_join(
+        year_conversion_matrix,
+        by = c("year_i" = "index")
+      ),
+    ggplot2::aes(x = year, y = observed)
   ) +
-  ggplot2::xlim(30, 60) +
   stockplotr::theme_noaa()
 
 # Fishing mortality
@@ -851,7 +856,6 @@ stockplotr::plot_timeseries(
 ) +
   stockplotr::theme_noaa()
 ```
-
 
 ### Plotting Bayesian results
 
@@ -880,11 +884,11 @@ ggplot2::ggplot(
 ```
 
 ```{r}
+#| label: plot-selectivity-curves
+#| fig-cap: "Estimated selectivity curves for the fishery and the survey using logistic selectivity."
+#| fig-alt: "The survey selects younger fish than the fishery but they both select older fish equally."
 #| echo: false
-#| eval: false
-#| label: comparison-plots-not-run
 
-# TODO: Create plots for each selectivity type
 temp <- purrr::map2(
   .x = dplyr::filter(
     output,
@@ -901,7 +905,7 @@ temp <- purrr::map2(
   .f = execute_logistic,
   x = get_ages(data_4_model)
 )
-names(temp) <- 1:2
+names(temp) <- get_fleets(data_4_model)
 
 g <- ggplot2::ggplot(
   data = dplyr::bind_rows(temp, .id = "fleet"),

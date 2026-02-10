@@ -377,10 +377,6 @@ for (y in which(temporary[, "index"] != -999)) {
  )
 }
 rm(temporary)
-for (y in seq(n_years)) {
-  # Compute lognormal SD from OM coefficient of variation (CV)
-  survey6_fleet_index_distribution$log_sd[y]$value <- log(fimsdat$indxsurv_log_sd6)[y]
-}
 survey6_fleet_index_distribution$log_sd$set_all_estimable(FALSE)
 # Set Data using the IDs from the modules defined above
 survey6_fleet_index_distribution$set_observed_data(survey6_fleet$GetObservedIndexDataID())
@@ -433,15 +429,12 @@ waa <- pkinput$dat$wt_srv1
 waa <- rbind(waa, waa[1, ])
 ewaa_growth <- methods::new(EWAAGrowth)
 ewaa_growth$n_years$set(get_n_years(data_4_model) + 1)
-ewaa_growth$ages$resize(
-  n_ages * (get_n_years(data_4_model) + 1)
-)
+ewaa_growth$ages$resize(n_ages)
 purrr::walk(
   seq_along(ages),
   \(x) ewaa_growth$ages$set(x - 1, ages[x])
 )
-# NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now
-ewaa_growth$weights$resize(n_ages)
+ewaa_growth$weights$resize(n_ages * (get_n_years(data_4_model) + 1))
 purrr::walk(
   seq(ewaa_growth$weights$size()),
   \(x) ewaa_growth$weights$set(x - 1, c(t(waa))[x])
@@ -1047,17 +1040,18 @@ recruitment_distribution$set_distribution_links("random_effects", recruitment$lo
 ## growth  -- assumes single WAA vector for everything, based on
 ## Srv1 above
 waa <- pkinput$dat$wt_srv1
-ewaa_growth <- methods::new(EWAAgrowth)
+waa <- rbind(waa, waa[1, ])
+ewaa_growth <- methods::new(EWAAGrowth)
+ewaa_growth$n_years$set(get_n_years(data_4_model) + 1)
 ewaa_growth$ages$resize(n_ages)
 purrr::walk(
   seq_along(ages),
   \(x) ewaa_growth$ages$set(x - 1, ages[x])
 )
-# NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now
-ewaa_growth$weights$resize(n_ages)
+ewaa_growth$weights$resize(n_ages * (get_n_years(data_4_model) + 1))
 purrr::walk(
-  seq_along(waa[1, ]),
-  \(x) ewaa_growth$weights$set(x - 1, waa[1, x])
+  seq(ewaa_growth$weights$size()),
+  \(x) ewaa_growth$weights$set(x - 1, c(t(waa))[x])
 )
 ## NOTE: FIMS assumes SSB calculated at the start of the year, so
 ## need to adjust ASAP to do so as well for now, need to make
