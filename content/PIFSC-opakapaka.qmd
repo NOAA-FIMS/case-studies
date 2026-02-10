@@ -485,7 +485,8 @@ default_parameters <- FIMS::create_default_configurations(
 # Run the  model with optimization
 fit <- default_parameters |>
   FIMS::initialize_fims(data = data_4_model) |>
-  FIMS::fit_fims(optimize = TRUE)
+  # Model is too big to run on GitHub action if you estimate uncertainty
+  FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
 ```
 
 ## Plotting Results
