@@ -430,8 +430,12 @@ recruitment_distribution$set_distribution_links("random_effects", recruitment$lo
 ## growth  -- assumes single WAA vector for everything, based on
 ## Srv1 above
 waa <- pkinput$dat$wt_srv1
+waa <- rbind(waa, waa[1, ])
 ewaa_growth <- methods::new(EWAAGrowth)
-ewaa_growth$ages$resize(n_ages)
+ewaa_growth$n_years$set(get_n_years(data_4_model) + 1)
+ewaa_growth$ages$resize(
+  n_ages * (get_n_years(data_4_model) + 1)
+)
 purrr::walk(
   seq_along(ages),
   \(x) ewaa_growth$ages$set(x - 1, ages[x])
@@ -439,8 +443,8 @@ purrr::walk(
 # NOTE: FIMS currently cannot use matrix of WAA, so have to ensure constant WAA over time in ASAP file for now
 ewaa_growth$weights$resize(n_ages)
 purrr::walk(
-  seq_along(waa[1, ]),
-  \(x) ewaa_growth$weights$set(x - 1, waa[1, x])
+  seq(ewaa_growth$weights$size()),
+  \(x) ewaa_growth$weights$set(x - 1, c(t(waa))[x])
 )
 ## NOTE: FIMS assumes SSB calculated at the start of the year, so
 ## need to adjust ASAP to do so as well for now, need to make
