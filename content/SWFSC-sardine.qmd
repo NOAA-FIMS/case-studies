@@ -1,5 +1,5 @@
 ---
-title: SWFSC Case Study Pacific sardine
+title: SWFSC Case Study Pacific Sardine
 format:
   html:
     code-fold: true
@@ -9,18 +9,24 @@ format:
 
 {{< include setup.qmd >}}
 
-## Add a chunk of code describing your setup
+```{r}
+#| label: setup-objects
+common_name <- "Northern subpopulation of Pacific sardine"
+```
 
--   R version: `r R_version`\
--   TMB version: `r TMB_version`\
--   FIMS commit: `r FIMS_commit`\
--   Stock name: Pacific sardine northern subpopulation\
--   Region: SWFSC\
--   Analyst: Peter Kuriyama\
+* R version: `r R_version`
+* TMB version: `r TMB_version`
+* FIMS commit: `r FIMS_commit`
+* Stock name: `r common_name`
+* Region: SWFSC
+* Analyst: Peter Kuriyama
 
-## Add a bulleted list and script describing simplifications you had to make
+## Simplifications to the original assessment
 
-How I simplified my assessment
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
+
+To get the operational model to more closely match a FIMS model the following changes were made:
+
 * Convert two-semester time step to annual
 * Sum the catch values for MexCal S1 and S2
 * Sum the age comps for MexCal S1 and S2
@@ -36,10 +42,13 @@ How I simplified my assessment
 * No ageing error in FIMS?
 * Assume time-invariant weight at age for the fishery and survey
 
-## Add your script that sets up and runs the model
+## Setting up the data
 
 ```{r}
-clear()
+#| warning: false
+#| label: prepare-fims-data
+#| output: false
+FIMS::clear()
 
 #--------------------------------------------------------
 #Logistic function for later use
@@ -64,8 +73,7 @@ catch <- data.frame(year = 2005:2023, catch = c(29188.50, 53107.00, 69929.40,
 
 
 fimscatch <- tibble::tibble(type = "landings", name = "fleet1",
-                    age = NA, datestart = paste0(catch$year, "-01-01"),
-                    dateend = paste0(catch$year, "-12-31"), value = catch$catch,
+                    age = NA, timing = catch$year, value = catch$catch,
                     unit = "mt", uncertainty = 0.05)
 
 #-----CPUE
@@ -79,40 +87,18 @@ cpue <- data.frame(year = 2005:2023, obs = c(649619.0, 899635.0, 956354.0, 86328
 #   scale_y_continuous(label = comma)
 
 fimsindex <- tibble::tibble(type = "index", name = "survey1",
-                    age = NA, datestart = paste0(cpue$year, "-01-01"),
-                    dateend = paste0(cpue$year, "-12-31"),
-                    value = cpue$obs, unit = 'mt', uncertainty = .3)
+                    age = NA, timing = cpue$year,
+                    value = cpue$obs, unit = "mt", uncertainty = .3)
 fimsindex$unit <- ""
 
 #-----Age compositions
-acomps <- utils::read.csv("data_files/sardine_acomps.csv") |>
+acomps <- utils::read.csv(file.path(data_directory, "sardine_acomps.csv")) |>
   dplyr::mutate(value_prop = value / Nsamp) # convert age-comp data to proportions, to match fims-demo.Rmd
 
-fimsage <- tibble::tibble(type = "age", name = acomps$name,
-                  age = acomps$age, datestart = paste0(acomps$Yr, "-01-01"),
-                  dateend = paste0(acomps$Yr, "-12-31"),
+fimsage <- tibble::tibble(type = "age_comp", name = acomps$name,
+                  age = acomps$age, timing = acomps$Yr,
                   value = acomps$value_prop, unit = "proportion", uncertainty = acomps$Nsamp)
-
-# Fill in missing name/year rows with -999s for value and "" for uncertainty
-  # This works the same as not doing anything, but is not necessary
-# blank_age_grid <- expand.grid(name = c("fleet1", "survey1"),
-#                               age = 0:8,
-#                               yr = 2005:2023)
-# blank_age <- tibble::tibble(type = "age", name = blank_age_grid$name,
-#                     age = blank_age_grid$age,
-#                     datestart = paste0(blank_age_grid$yr, "-01-01"),
-#                     dateend = paste0(blank_age_grid$yr, "-12-31"),
-#                     value = -999, unit = "proportion", uncertainty = NA)
-# missing_ages <- blank_age |>
-#   mutate(name_date = paste0(name, datestart)) |>
-#   filter(!(name_date %in% paste0(fimsage_init$name, fimsage_init$datestart))) |>
-#   select(-name_date)
-# fimsage <- rbind(fimsage, missing_ages)
-
 #fimsage$uncertainty <- 50 Leave as empirical values
-
-fimscatch$value <- fimscatch$value
-fimsindex$unit <- ""
 
 #-----Weight-at-age
   # Q: What are the differences in how SS3 and FIMS process wtatage inputs/units?
@@ -121,7 +107,7 @@ fimsindex$unit <- ""
     # FIMS assumes WAA is expressed in mt, but expresses natage in fish
     # WAA input values are supplied to SS3 in kg and FIMS in mt
     # Model now correctly processes inputs and provides comparable NAA, WAA, and biomass outputs to SS3
-wtatage <- r4ss::SS_readwtatage("data_files/sardine_wtatage.ss_new") |>
+wtatage <- r4ss::SS_readwtatage(file.path(data_directory, "sardine_wtatage.ss_new")) |>
   dplyr::filter(fleet %in% c(1, 2)) |>
   dplyr::mutate(fleet = ifelse(fleet == 1, "fleet1", "survey1")) |>
   tidyr::pivot_longer(cols = `0`:`10`, names_to = "age", values_to = "value") |>
@@ -131,145 +117,167 @@ fimswaa <- tibble::tibble(
   type = "weight-at-age",
   name = wtatage$fleet,
   age = wtatage$age,
-  datestart = paste0(wtatage$year, "-01-01"),
-  dateend = paste0(wtatage$year, "-12-31"),
+  timing = wtatage$year,
   value = wtatage$value,
   unit = "mt",
   uncertainty = NA
 )
 
 #Combine everything, format
-fimsdat <- rbind(fimscatch, fimsindex, fimsage, fimswaa)
-fimsdat$age <- as.integer(fimsdat$age)
-fimsdat$value <- as.numeric(fimsdat$value)
+data_4_model <- rbind(fimscatch, fimsindex, fimsage, fimswaa)
+data_4_model$age <- as.integer(data_4_model$age)
+data_4_model$value <- as.numeric(data_4_model$value)
 
 # Convert to FIMSFrame
-final_fimsdat <- FIMSFrame(fimsdat)
+data_4_model <- FIMS::FIMSFrame(data_4_model)
 
-# Define fleet specifications for fleet1 and survey1
-fleet1 <- list(
-  selectivity = list(form = "LogisticSelectivity"),
-  data_distribution = c(
-    Landings = "DlnormDistribution",
-    AgeComp = "DmultinomDistribution",
-    LengthComp = "DmultinomDistribution"
-  )
-)
-survey1 <- list(
-  selectivity = list(form = "LogisticSelectivity"),
-  data_distribution = c(
-    Index = "DlnormDistribution",
-    AgeComp = "DmultinomDistribution",
-    LengthComp = "DmultinomDistribution"
-  )
-)
+n_years <- FIMS::get_n_years(data_4_model)
+years <- FIMS::get_start_year(data_4_model):FIMS::get_end_year(data_4_model)
+n_ages <- FIMS::get_n_ages(data_4_model)
+ages <- FIMS::get_ages(data_4_model)
+rzero <- 17 #14.2 is log(R0) in sardine simplified model
+M_value <- 0.8 #.8 worked pretty well
+init_naa <- exp(rzero) * exp(-(ages - 1) * M_value)
+init_naa[n_ages] <- init_naa[n_ages] / M_value # sum of infinite series
 
 # Create default recruitment, growth, and maturity parameters
-default_parameters <- final_fimsdat |>
-  create_default_parameters(
-    fleets = list(fleet1 = fleet1, survey1 = survey1)
+parameters <- FIMS::create_default_configurations(data = data_4_model) |>
+  FIMS::create_default_parameters(data = data_4_model) |>
+  tidyr::unnest(data) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Selectivity",
+      label = rep(c("inflection_point", "slope"), 2),
+      value = c(1, 5, 1.2, 2),
+      estimation_type = "constant",
+      fleet_name = rep(c("fleet1", "survey1"), each = 2)
+    ),
+    by = c("module_name", "label", "fleet_name")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Recruitment",
+      label = "logit_steep",
+      value = FIMS::logit(0.2, 1.0, 0.6)
+    ),
+    by = c("module_name", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Recruitment",
+      label = c("log_rzero", "log_sd"),
+      value = c(rzero, log(1.2)),
+    ),
+    by = c("module_name", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Recruitment",
+      label = "log_devs",
+      value = log(1),
+    ),
+    by = c("module_name", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Maturity",
+      label = c("inflection_point", "slope"),
+      value = c(1.2, 1.5) # 1.5 is arbitrary guess
+    ),
+    by = c("module_name", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Fleet",
+      fleet_name = "survey1",
+      label = "log_q",
+      value = 0,
+      estimation_type = "constant"
+    ),
+    by = c("module_name", "fleet_name", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Fleet",
+      fleet_name = "fleet1",
+      label = "log_Fmort",
+      value = log(0.2)
+    ),
+    by = c("module_name", "fleet_name", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Population",
+      label = c("log_M"),
+      value = log(M_value)
+    ),
+    by = c("module_name", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Population",
+      label = c("log_init_naa"),
+      age = ages,
+      value = log(init_naa),
+      estimation_type = "fixed_effects"
+    ),
+    by = c("module_name", "age", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Data",
+      fleet_name = "fleet1",
+      label = "log_sd",
+      value = log(sqrt(log(0.01^2 + 1))),
+      estimation_type = "fixed_effects"
+    ),
+    by = c("module_name", "fleet_name", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Data",
+      fleet_name = "survey1",
+      label = "log_sd",
+      value = log(sqrt(log(0.1^2 + 1))),
+      estimation_type = "fixed_effects"
+    ),
+    by = c("module_name", "fleet_name", "label")
   )
+```
 
-# Update parameters
-  # Control how parameters are updated
-estimate_fish_selex <- "constant"
-estimate_survey_selex <- "constant"
-estimate_q <- "constant" #Fix at 1
-estimate_F <- "fixed_effects"
-estimate_recdevs <- TRUE
-estimate_init_naa <- "fixed_effects"
-estimate_log_rzero <- "fixed_effects"
-steep <- 0.6 # sardine steepness is fixed at 0.6
-M_value <- 0.8 #.8 worked pretty well
-rzero <- 17 #14.2 is log(R0) in sardine simplified model
-nyears <- get_n_years(final_fimsdat)
-years <- get_start_year(final_fimsdat):get_end_year(final_fimsdat)
-nages <- get_n_ages(final_fimsdat)
-ages <- get_ages(final_fimsdat)
-init_naa <- exp(rzero) * exp(-(ages - 1) * M_value)
-init_naa[nages] <- init_naa[nages] / M_value # sum of infinite series
+## Run FIMS model
 
-  # Update parameters
-parameters <- default_parameters |>
-  update_parameters( # update fleet1 specifications
-    modified_parameters = list(
-      fleet1 = list(
-        LogisticSelectivity.inflection_point.value = 1,
-        LogisticSelectivity.inflection_point.estimation_type = estimate_fish_selex,
-        LogisticSelectivity.slope.value = 5,
-        LogisticSelectivity.slope.estimation_type = estimate_fish_selex,
-        Fleet.log_Fmort.value = log(rep(0.2, nyears)),
-        Fleet.log_Fmort.estimation_type = estimate_F,
-        DlnormDistribution.log_sd.value = rep(log(sqrt(log(0.01^2 + 1))), nyears)
-      )
-    )
-  ) |>
-  update_parameters( # update survey1 specifications
-    modified_parameters = list(
-      survey1 = list(
-        LogisticSelectivity.inflection_point.value = 1.2,
-        LogisticSelectivity.inflection_point.estimation_type = estimate_survey_selex,
-        LogisticSelectivity.slope.value = 2,
-        LogisticSelectivity.slope.estimation_type = estimate_survey_selex,
-        Fleet.log_q.value = 0,
-        Fleet.log_q.estimation_type = estimate_q,
-        DlnormDistribution.log_sd.value = rep(log(sqrt(log(0.1^2 + 1))), nyears)
-      )
-    )
-  ) |>
-  update_parameters(
-    modified_parameters = list(
-      recruitment = list(
-        BevertonHoltRecruitment.log_rzero.value = rzero,
-        BevertonHoltRecruitment.log_rzero.estimation_type = estimate_log_rzero,
-        BevertonHoltRecruitment.logit_steep.value = -log(1.0 - steep) + log(steep - 0.2),
-        BevertonHoltRecruitment.log_devs.value = rep(log(1), nyears-1),
-        DnormDistribution.log_sd.value = log(1.2)
-      )
-    )
-  ) |>
-  update_parameters(
-    modified_parameters = list(
-      maturity = list(
-        LogisticMaturity.inflection_point.value = 1.2,
-        LogisticMaturity.inflection_point.estimation_type = "constant",
-        LogisticMaturity.slope.value = 1.5, # arbitrary guess
-        LogisticMaturity.slope.estimation_type = "constant"
-      )
-    )
-  ) |>
-  update_parameters(
-    modified_parameters = list(
-      population = list(
-        Population.log_M.value = rep(log(M_value), nages * nyears),
-        Population.log_init_naa.value = log(init_naa),
-        Population.log_init_naa.estimation_type = estimate_init_naa
-      )
-    )
-  )
+```{r}
+#| label: setup-model
 
 # Fit the model
 fit <- parameters |>
-  initialize_fims(data = final_fimsdat) |>
-  fit_fims(optimize = TRUE)
+  FIMS::initialize_fims(data = data_4_model) |>
+  FIMS::fit_fims(optimize = TRUE)
+output <- FIMS::get_estimates(fit) |>
+  dplyr::mutate(
+    uncertainty_label = "se",
+    year = year_i,
+    estimate = estimated
+  )
 
 # Get information about the model and print a few characters to the screen
-recruitment_log <- get_log_module("information")
+log <- FIMS::get_log_module("information")
 ```
 
 ## Add your comparison figures
 
 ```{r}
-load("data_files/sardine_simplified_res.Rdata")
+#| label: comparison-plots
+load(file.path(data_directory, "sardine_simplified_res.Rdata"))
 
 #------------------------------------------------------------------------
 #------SSB
 # Q: Is 'ssb' from  get_report(fit) calculated assuming 2 genders and a 50:50 ratio?
   # If so, it might explain the discrepancy between ss3 (1 gender model) and fims (2 genders)
 ssbs <- ssres$timeseries |>
-  dplyr::select(Yr, SpawnBio) |>
-  dplyr::mutate(fims = c(0, 0, get_report(fit)[["ssb"]][[1]]))
-names(ssbs)[2] <- 'ss3'
+  dplyr::select(Yr, ss3 = SpawnBio) |>
+  dplyr::mutate(fims = c(0, 0, FIMS::get_report(fit)[["spawning_biomass"]][[1]]))
 
 ssbs |>
   dplyr::filter(Yr >= 2005, Yr < 2024) |>
@@ -292,8 +300,8 @@ ggplot2::ggsave(
 #------Index fits
 index <- ssres$cpue |>
   dplyr::select(Yr, Obs, Exp)
-names(index) <- c("year", 'obs', 'ss3')
-index$fims <- get_report(fit)[["index_exp"]][[2]]
+names(index) <- c("year", "obs", "ss3")
+index$fims <- FIMS::get_report(fit)[["index_expected"]][[2]]
 index |>
   tidyr::pivot_longer(names_to = "variable", cols = dplyr::matches("ss3|fims")) |>
   ggplot2::ggplot(ggplot2::aes(x = year)) +
@@ -308,12 +316,12 @@ ggplot2::ggsave("figures/SWFSC-sardine-surveyfit.png", width = 6.8, height = 5.2
 #------------------------------------------------------------------------
 #-----Calculate age-1+ biomass
 #Multiply numbers at age by weight at age and sum
-naa <- get_report(fit)[["naa"]][[1]]
+naa <- get_report(fit)[["numbers_at_age"]][[1]]
 
 naa1 <- tidyr::crossing(c(years, 2024), ages) |>
   dplyr::mutate(naa = naa) |>
   as.data.frame()
-names(naa1) <- c("year", 'age', 'value')
+names(naa1) <- c("year", "age", "value")
 naa1$cohort <- naa1$year - naa1$age
 
 #Format Weight at age (identical WAA for each year and fleet)
@@ -380,7 +388,7 @@ ggplot2::ggsave(
 # Divide FIMS recruits by 1000 to match reporting in SS3
 recs <- ssres$timeseries |>
   dplyr::select(Yr, Recruit_0) |>
-  dplyr::mutate(fims = c(0, 0, get_report(fit)[["recruitment"]][[1]]) / 1000)
+  dplyr::mutate(fims = c(0, 0, get_report(fit)[["expected_recruitment"]][[1]]) / 1000)
 names(recs)[2] <- "ss3"
 
 recs |>
@@ -401,8 +409,10 @@ ggplot2::ggsave("figures/SWFSC-sardine-recruitment.png", width = 6.8, height = 5
 ##Fishery
 
 sel_fishery <- logistic(ages,
-                        slope = parameters$parameters$fleet1$LogisticSelectivity.slope.value,
-                        inflection_point = parameters$parameters$fleet1$LogisticSelectivity.inflection_point.value)
+                        slope = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "slope", module_id == 1) |>
+                          dplyr::pull(estimated),
+                        inflection_point = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "inflection_point", module_id == 1) |>
+                          dplyr::pull(estimated))
 
 names(sel_fishery) <- c("age", "fims")
 
@@ -422,8 +432,10 @@ ggplot2::ggplot(
 
 #-----------Survey
 sel_survey <- logistic(ages,
-                       slope = parameters$parameters$survey1$LogisticSelectivity.slope.value,
-                       inflection_point = parameters$parameters$survey1$LogisticSelectivity.inflection_point.value)
+                       slope = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "slope", module_id == 2) |>
+                          dplyr::pull(estimated),
+                       inflection_point = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "inflection_point", module_id == 2) |>
+                          dplyr::pull(estimated))
 
 names(sel_survey) <- c("age", 'fims')
 
@@ -468,9 +480,9 @@ SR_regime parameter and Initial F to match equilbirium age comps to first year o
 *Does the model year start in the first year of the data input?
 
 ```{r}
-#| warning: false
 #| label: clear
 #| output: false
+#| warning: false
 
-clear()
+FIMS::clear()
 ```

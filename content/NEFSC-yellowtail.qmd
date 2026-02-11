@@ -10,22 +10,22 @@ format:
 {{< include setup.qmd >}}
 
 ```{r}
-#| warning: false
-#| label: startup
-
-# R_version <- version$version.string
-# TMB_version <- packageDescription("TMB")$Version
-# FIMS_commit <- substr(packageDescription("FIMS")$GithubSHA1, 1, 7)
+#| label: setup-objects
+common_name <- "Southern New England-Mid Atlantic Yellowtail Flounder"
 ```
 
--   R version: `r R_version`\
--   TMB version: `r TMB_version`\
--   FIMS commit: `r FIMS_commit`\
--   Stock name: Southern New England-Mid Atlantic Yellowtail Flounder\
--   Region: NEFSC\
--   Analyst: Chris Legault\
+* R version: `r R_version`
+* TMB version: `r TMB_version`
+* FIMS commit: `r FIMS_commit`
+* Stock name: `r common_name`
+* Region: NEFSC
+* Analyst: Chris Legault
 
 ## Simplifications to the original assessment
+
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
+
+To get the operational model to more closely match a FIMS model the following changes were made:
 
 * End year 2021 to 2019 due to missing 2020 survey
 * 5 indices to 2
@@ -50,26 +50,27 @@ The varying weights at age, index CVs, and ESS values were replaced by the time 
 
 The catch weight at age matrix was used as the weight at age for all sources.
 
-## Script that sets up and runs the model
+## Setting up the data
+
 ```{r}
+#| label: prepare-fims-data
+#| output: false
 #| warning: false
-#| label: run-fims
 
 # clear memory
-clear()
+FIMS::clear()
 
 # read the ASAP rdat files
-rdat <- dget(file.path("data_files", "NEFSC_YT_SIMPLIFIED.RDAT")) # to be used in FIMS, lots of modifications from original
-orig <- dget(file.path("data_files", "NEFSC_YT_ORIGINAL.RDAT"))   # where started before modifications for use in FIMS
+rdat <- dget(file.path(data_directory, "NEFSC_YT_SIMPLIFIED.RDAT")) # to be used in FIMS, lots of modifications from original
+orig <- dget(file.path(data_directory, "NEFSC_YT_ORIGINAL.RDAT"))   # where started before modifications for use in FIMS
 
 # function to create equivalent of data_mile1, basic catch and survey data
 # need to think about how to deal with multiple fleets and indices - only use 1 of each for now
-get_asap_data <- function(rdat){
+get_asap_data <- function(rdat) {
   res <- data.frame(type = character(),
                 name = character(),
                 age = integer(),
-                datestart = character(),
-                dateend = character(),
+                timing = double(),
                 value = double(),
                 unit = character(),
                 uncertainty = double())
@@ -77,22 +78,26 @@ get_asap_data <- function(rdat){
   landings <- data.frame(type = "landings",
                      name = "fleet1",
                      age = NA,
-                     datestart = paste0(seq(rdat$parms$styr, rdat$parms$endyr), "-01-01"),
-                     dateend = paste0(seq(rdat$parms$styr, rdat$parms$endyr), "-12-31"),
+                     timing = seq(rdat$parms$styr, rdat$parms$endyr),
                      value = as.numeric(rdat$catch.obs[1,]),
                      unit = "mt",
-                     uncertainty = rdat$control.parms$catch.tot.cv[,1])
+                     # This was
+                     # rdat$control.parms$catch.tot.cv[,1]
+                     # but it was just reset to the following later in the parameters so using internal functionality to set it now
+                     # uncertainty = rep(log(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), rdat[["parms"]][["nyears"]])
+                     uncertainty = rep(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1)), rdat[["parms"]][["nyears"]])
+  )
   
   # loop over all indices
   for (i in 1:rdat$parms$nindices){
     index <- data.frame(type = "index",
                         name = paste0("survey", i),
                         age = NA,
-                        datestart = paste0(seq(rdat$parms$styr, rdat$parms$endyr), "-01-01"),
-                        dateend = paste0(seq(rdat$parms$styr, rdat$parms$endyr), "-12-31"),
+                        timing = seq(rdat$parms$styr, rdat$parms$endyr),
                         value = as.numeric(rdat$index.obs[[i]]),
                         unit = "",
-                        uncertainty = rdat$index.cv[[i]])
+                        # uncertainty = rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[i]], na.rm=TRUE)^2 + 1)))), rdat[["parms"]][["nyears"]]))
+                        uncertainty = rep(sqrt(log(as.numeric(mean(rdat$index.cv[[i]], na.rm=TRUE)^2 + 1))), rdat[["parms"]][["nyears"]]))
     if (i == 1){
       allinds <- index
     }else{
@@ -100,22 +105,20 @@ get_asap_data <- function(rdat){
     }
   }
   
-  catchage <- data.frame(type = "age",
+  catchage <- data.frame(type = "age_comp",
                      name = "fleet1",
                      age = rep(seq(1,rdat$parms$nages), rdat$parms$nyears),
-                     datestart = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), "-01-01"), each=rdat$parms$nages),
-                     dateend = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), "-12-31"), each=rdat$parms$nages),
+                     timing = rep(seq(rdat$parms$styr, rdat$parms$endyr), each=rdat$parms$nages),
                      value = as.numeric(t(rdat$catch.comp.mats$catch.fleet1.ob)),
                      unit = "",
                      uncertainty = rep(rdat$fleet.catch.Neff.init[1,], each=rdat$parms$nages))
   
   # loop over all indices
   for (i in 1:rdat$parms$nindices){
-    indexage <- data.frame(type = "age",
+    indexage <- data.frame(type = "age_comp",
                            name = paste0("survey", i),
                            age = rep(seq(1,rdat$parms$nages), rdat$parms$nyears),
-                           datestart = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), "-01-01"), each=rdat$parms$nages),
-                           dateend = rep(paste0(seq(rdat$parms$styr, rdat$parms$endyr), "-12-31"), each=rdat$parms$nages),
+                           timing = rep(seq(rdat$parms$styr, rdat$parms$endyr), each=rdat$parms$nages),
                            value = as.numeric(t(rdat$index.comp.mats[[i*2-1]])),
                            unit = "",
                            uncertainty = rep(rdat$index.Neff.init[i,], each=rdat$parms$nages))
@@ -133,18 +136,8 @@ get_asap_data <- function(rdat){
     type = "weight-at-age",
     name = "fleet1",
     age = seq(rdat[["parms"]][["nages"]]),
-    datestart = rep(
-      paste0(
-        seq(rdat[["parms"]][["styr"]], rdat[["parms"]][["endyr"]]),
-        "-01-01"
-      ),
-      each = rdat[["parms"]][["nages"]]
-    ),
-    dateend = rep(
-      paste0(
-        seq(rdat[["parms"]][["styr"]], rdat[["parms"]][["endyr"]]),
-        "-12-31"
-      ),
+    timing = rep(
+      seq(rdat[["parms"]][["styr"]], rdat[["parms"]][["endyr"]]),
       each = rdat[["parms"]][["nages"]]
     ),
     value = c(t(rdat[["WAA.mats"]][["WAA.catch.all"]])),
@@ -156,113 +149,120 @@ get_asap_data <- function(rdat){
   return(res)
 }
 
-mydat <- get_asap_data(rdat)
-
-# define the dimensions
-nyears <- rdat$parms$nyears
-years <- seq(rdat$parms$styr, rdat$parms$endyr)
-nseasons <- 1 # ASAP only has one season
-nages <- rdat$parms$nages
-ages <- 1:nages # ASAP starts at age 1
-
-
 # set up FIMS data objects
-age_frame <- FIMS::FIMSFrame(mydat)
+data_4_model <- FIMS::FIMSFrame(get_asap_data(rdat))
+# define the dimensions
+ages <- get_ages(data_4_model)
+n_ages <- get_n_ages(data_4_model)
+years <- seq(get_start_year(data_4_model), get_end_year(data_4_model))
+n_years <- get_n_years(data_4_model)
+```
 
-# set up selectivities for fleets and survey
-fleet1 <- list(
-  selectivity = list(form = "LogisticSelectivity"),
-  data_distribution = c(
-    Landings = "DlnormDistribution",
-    AgeComp = "DmultinomDistribution"
-  )
-)
-survey1 <- list(
-  selectivity = list(form = "LogisticSelectivity"),
-  data_distribution = c(
-    Index = "DlnormDistribution",
-    AgeComp = "DmultinomDistribution"
-  )
-)
-survey2 <- list(
-  selectivity = list(form = "LogisticSelectivity"),
-  data_distribution = c(
-    Index = "DlnormDistribution",
-    AgeComp = "DmultinomDistribution"
-  )
-)
+## Run FIMS model
 
-default_parameters <- age_frame |>
-  create_default_parameters(
-    fleets = list(
-      fleet1 = fleet1,
-      survey1 = survey1,
-      survey2 = survey2
-    )
+```{r}
+#| label: setup-model
+test <- create_default_configurations(data = data_4_model) |>
+  create_default_parameters(data = data_4_model) |>
+  tidyr::unnest(data) |>
+  # ASAP assumes Fmult devs = 0
+  dplyr::rows_update(
+    tibble::tibble(
+      fleet_name = "fleet1",
+      label = "log_Fmort",
+      time = years,
+      value = log(rep(rdat$initial.guesses$Fmult.year1.init[1], n_years))
+    ),
+    by = c("fleet_name", "label", "time")
   ) |>
-  update_parameters(
-    modified_parameters = list(
-      fleet1 = list(
-        Fleet.log_Fmort.value = log(rep(rdat$initial.guesses$Fmult.year1.init[1], nyears)), # ASAP assumes Fmult devs = 0
-        Fleet.log_Fmort.estimation_type = "fixed_effects",
-        # FIX: Users should not have to reset the uncertainty for a fleet when this information
-        #      is already in the data, it should be stored and pulled out automatically in
-        #      create_default_parameters(). For index data too.
-        DlnormDistribution.log_sd.value = rep(log(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), nyears)
-      ),
-      survey1 = list(
-        Fleet.log_q.value = log(rdat$initial.guesses$q.year1.init[1]),
-        # sd = sqrt(log(cv^2 + 1)), sd is log transformed
-        DlnormDistribution.log_sd.value = rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[1]], na.rm=TRUE)^2 + 1)))), nyears)
-      ),
-      survey2 = list(
-        Fleet.log_q.value = log(rdat$initial.guesses$q.year1.init[2]),
-        DlnormDistribution.log_sd.value = rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[2]], na.rm=TRUE)^2 + 1)))), nyears)
-      )
-    )
+  dplyr::rows_update(
+    tibble::tibble(
+      fleet_name = c("survey1", "survey2"),
+      label = "log_q",
+      value = log(rdat$initial.guesses$q.year1.init)
+    ),
+    by = c("fleet_name", "label")
   ) |>
-  update_parameters(
-    modified_parameters = list(
-      # Recruitment
-      recruitment = list(
-        # ASAP can enter either R0 or SSB0, need to make sure use R0 in input file
-        BevertonHoltRecruitment.log_rzero.value = log(rdat$initial.guesses$SR.inits$SR.scaler.init),
-        BevertonHoltRecruitment.log_devs.estimation_type = "fixed_effects",
-        # note: do not set steepness exactly equal to 1, use 0.99 instead in ASAP run
-        BevertonHoltRecruitment.logit_steep.value = -log(1.0 - rdat$initial.guesses$SR.inits$SR_steepness.init) + log(rdat$initial.guesses$SR.inits$SR_steepness.init - 0.2),
-        DnormDistribution.log_sd.value = mean(rdat$control.parms$recruit.cv), # typically enter same value for every year in ASAP,
-        # Unrealistically setting these from the ASAP run
-        BevertonHoltRecruitment.log_devs.value = rdat$SR.resids$logR.dev[-1]
+  dplyr::rows_update(
+    tibble::tibble(
+      label = "log_devs",
+      time = years[-1],
+      # Unrealistically setting these from the ASAP run
+      value = rdat$SR.resids$logR.dev[-1],
+      estimation_type = "fixed_effects"
+    ),
+    by = c("label", "time")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      # ASAP can enter either R0 or SB0, use R0 in input file
+      label = c("log_rzero", "logit_steep"),
+      value = c(
+        log(rdat$initial.guesses$SR.inits$SR.scaler.init),
+        FIMS::logit(0.2, 1.0, rdat$initial.guesses$SR.inits$SR_steepness.init)
       ),
-      # Maturity
-      # NOTE, to match FIMS for a protogynous stock, these maturity values were obtained by fitting a logistic fcn to the age vector,
-      # mat.female*prop.female + mat.male*prop.male and then assuming an all female population 
-      maturity = list(
-        LogisticMaturity.inflection_point.value =  1.8, # hardwired for now, need to figure out a better way than this
-        LogisticMaturity.inflection_point.estimation_type = "constant",
-        LogisticMaturity.slope.value = 4, # hardwired for now, need to figure out a better way than this
-        LogisticMaturity.slope.estimation_type = "constant"
-      ),
-      population = list(
-        # M is vector of age1 M X nyrs then age2 M X nyrs
-        Population.log_M.value = log(as.numeric(t(rdat$M.age))),
-        Population.log_init_naa.value = log(rdat$N.age[1,]), # log(rdat$initial.guesses$NAA.year1.init)
-        # Does not really matter if you estimate these or not when
-        # distributions are fixed
-        Population.log_init_naa.estimation_type = "constant"
-      )
-    )
+      estimation_type = c("fixed_effects", "constant")
+    ),
+    by = c("label")
+  ) |>
+  # Maturity
+  # NOTE, to match FIMS for a protogynous stock,
+  # maturity values were obtained by fitting a logistic fcn to the age vector,
+  # mat.female*prop.female + mat.male*prop.male
+  # assuming an all female population 
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Maturity",
+      label = c("inflection_point", "slope"),
+      value = c(1.8, 4)
+    ),
+    by = c("module_name", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Population",
+      label = "log_init_naa",
+      age = ages,
+      value = log(rdat$N.age[1, ]),
+      # TODO: Turn these on later
+      estimation_type = "constant"
+    ),
+    by = c("module_name", "label", "age")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Population",
+      label = rep("log_M", n_years * n_ages),
+      time = rep(years, each = n_ages),
+      age = rep(ages, n_years),
+      # M is vector of age1 M X nyrs then age2 M X nyrs
+      value = log(as.numeric(t(rdat$M.age)))
+    ),
+    by = c("module_name", "label", "age", "time"),
+    # TODO: fix this
+    unmatched = "ignore"
+  ) |>
+    # Update log_sd for log_devs in the Recruitment module
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Recruitment",
+      label = "log_sd",
+      # ASAP takes one value per year but that value is often just repeated
+      value = mean(rdat$control.parms$recruit.cv)
+    ),
+    by = c("module_name", "label")
   )
 
 # Put it all together, creating the FIMS model and making the TMB fcn
 # Run the model without optimization to help ensure a viable model
-test_fit <- default_parameters |>
-  initialize_fims(data = age_frame) |>
+test_fit <- test |>
+  initialize_fims(data = data_4_model) |>
   fit_fims(optimize = FALSE)
 # Run the  model with optimization
-fit <- default_parameters |>
-  initialize_fims(data = age_frame) |>
+fit <- test |>
+  initialize_fims(data = data_4_model) |>
   fit_fims(optimize = TRUE)
+output <- get_estimates(fit)
 
 # eventually change to allow multiple fishing fleets similar to multiple indices - only using 1 fishing fleet for now
 # NOTE: FIMS assumes SSB calculated at the start of the year, so need to adjust ASAP to do so as well for now, need to make timing of SSB calculation part of FIMS later
@@ -271,8 +271,12 @@ fit <- default_parameters |>
 sdr <- get_sdreport(fit)
 sdr_fixed <- summary(sdr, "fixed")
 report <- get_report(fit)
+```
 
 ### Plotting
+
+```{r}
+#| label: comparison-plots
 
 mycols <- c("FIMS" = "blue", "ASAP" = "red", "ASAP_orig" = "darkgreen")
 
@@ -281,7 +285,7 @@ for (i in 1:rdat$parms$nindices) {
     survey = i,
     year = years,
     observed = rdat$index.obs[[i]],
-    FIMS = report$index_exp[[rdat$parms$nfleet+i]],
+    FIMS = report$index_expected[[rdat$parms$nfleet+i]],
     ASAP = rdat$index.pred[[i]]
   )
   if (i==1){
@@ -304,10 +308,10 @@ comp_index <- ggplot2::ggplot(allinds_results, ggplot2::aes(x = year, y = observ
 #print(comp_index)
 
 catch_results <- data.frame(
-  observed = get_data(age_frame) |>
+  observed = get_data(data_4_model) |>
     dplyr::filter(type == "index", name == "survey1") |>
     dplyr::pull(value),
-  FIMS = report$landings_exp[[1]],
+  FIMS = report$landings_expected[[1]],
   ASAP = as.numeric(rdat$catch.pred[1,])
 )
 #print(catch_results)
@@ -324,10 +328,20 @@ comp_catch <- ggplot2::ggplot(catch_results, ggplot2::aes(x = years, y = observe
 
 pop_results <- data.frame(
   Year = c(years, max(years)+1, years, years, years, years, max(years)+1, years),
-  Metric = c(rep("SSB", 2*nyears+1), rep("F_mort", 2*nyears), rep("Recruitment", 2*nyears+1)),
-  Model = c(rep("FIMS", nyears+1), rep("ASAP", nyears), rep(c("FIMS", "ASAP"), each=nyears), 
-             rep("FIMS", nyears+1), rep("ASAP", nyears)),
-  Value = c(report$ssb[[1]], rdat$SSB, report$F_mort[[1]], rdat$F.report, report$recruitment[[1]], as.numeric(rdat$N.age[,1]))
+  Metric = c(rep("SSB", 2*n_years+1), rep("F_mort", 2*n_years), rep("Recruitment", 2*n_years+1)),
+  Model = c(rep("FIMS", n_years+1), rep("ASAP", n_years), rep(c("FIMS", "ASAP"), each=n_years), 
+             rep("FIMS", n_years+1), rep("ASAP", n_years)),
+  Value = c(
+    report$spawning_biomass[[1]],
+    rdat$SSB,
+    output |>
+      dplyr::filter(label == "log_Fmort", module_id == 1) |>
+      dplyr::pull(estimated) |>
+      exp(),
+    rdat$F.report,
+    report$expected_recruitment[[1]],
+    as.numeric(rdat$N.age[,1])
+  )
 )
 #print(pop_results)
 
@@ -362,23 +376,23 @@ comp_FRSSB3 <- ggplot2::ggplot(pop_results_3, ggplot2::aes(x=Year, y=Value, colo
 #print(comp_FRSSB3)
 
 FIMS_naa_results <- data.frame(
-  Year = rep(c(years, max(years)+1), each = nages),
-  Age = rep(ages, nyears+1),
+  Year = rep(c(years, max(years)+1), each = n_ages),
+  Age = rep(ages, n_years+1),
   Metric = "NAA",
   Model = "FIMS",
-  Value = report$naa[[1]]
+  Value = report$numbers_at_age[[1]]
 )
 
 ASAP_naa_results <- data.frame(
-  Year = rep(years, each = nages),
-  Age = rep(ages, nyears),
+  Year = rep(years, each = n_ages),
+  Age = rep(ages, n_years),
   Metric = "NAA",
   Model = "ASAP",
   Value = as.numeric(t(rdat$N.age))
 )
 
 orig_naa_results <- data.frame(
-  Year = rep(orig_years, each = nages),
+  Year = rep(orig_years, each = n_ages),
   Age = rep(ages, length(orig_years)),
   Metric = "NAA",
   Model = "ASAP_orig",
@@ -419,7 +433,9 @@ if(saveplots){
 }
 
 ```
+
 ## Comparison figures
+
 ![Catch](figures/NEFSC_YT_compare_catch.png){width=4in}
 ![Indices](figures/NEFSC_YT_compare_index.png){width=4in}
 ![FRSSB](figures/NEFSC_YT_compare_FRSSB3.png){width=4in}
@@ -430,7 +446,7 @@ if(saveplots){
 The likelihood components from FIMS and ASAP for the same data are shown in the table below. Note that the ASAP file had to turn on the use likelihood constants option to enable this comparison (this option should not be used when recruitment deviations are estimated).
 
 ```{r}
-#| label: comparison-table
+#| label: comparison-tables
 nll_components <- report[["nll_components"]]
 jnlltab <- data.frame(
   Component=c("Total","Index","Age Comp", "Rec"),
@@ -476,7 +492,7 @@ Please [open an issue](https://github.com/NOAA-FIMS/FIMS/issues/new/choose) if y
 * Missing values, would allow inclusion of the other 3 indices (too many missing years to fill for this example)
 
 ```{r}
-#| label: clear-C++-objects-from-memory
+#| label: cleanup
 # Clear C++ objects from memory
-clear()
+FIMS::clear()
 ```

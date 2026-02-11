@@ -10,74 +10,251 @@ format:
 {{< include setup.qmd >}}
 
 ```{r}
-#| warning: false
-#| label: startup
-#| output: false
+#| label: setup-objects
+common_name <- "Petrale sole"
 
-ggplot2::theme_set(ggplot2::theme_bw())
+
+# read SS3 input files from petrale sole assessment on GitHub
+petrale_input <- r4ss::SS_read(
+  "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/"
+)
+# add wtatage file to list of input files
+petrale_input[["wtatage"]] <- r4ss::SS_readwtatage(
+  "https://raw.githubusercontent.com/pfmc-assessments/petrale/refs/heads/main/models/2023.a034.001/wtatage.ss_new"
+)
+# read SS3 output files from petrale sole assessment on GitHub
+petrale_output <- r4ss::SS_output(
+  "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001",
+  printstats = FALSE,
+  verbose = FALSE,
+  covar = FALSE
+)
+output_petrale <- stockplotr::convert_output(
+  "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/Report.sso",
+  model = "ss3"
+)
+# years <- seq(petrale_input$dat$styr, petrale_input$dat$endyr)
+years <- seq(1896, petrale_input$dat$endyr)
+n_years <- length(years)
+# ages <- 0:petrale_input$dat$Nages # population ages in SS3, starts at age 0
+ages <- 1:17 # same as data bins
+n_ages <- length(ages)
+lengths <- petrale_output[["lbins"]]
+nlengths <- length(lengths)
 ```
 
--   R version: `r R_version`\
--   TMB version: `r TMB_version`\
--   FIMS commit: `r FIMS_commit`\
--   Stock name: West Coast Petrale Sole\
--   Region: NWFSC\
--   Analyst: Ian G. Taylor\
+* R version: `r R_version`
+* TMB version: `r TMB_version`
+* FIMS commit: `r FIMS_commit`
+* Stock name: `r common_name`
+* Region: NWFSC
+* Analyst: Ian G. Taylor
 
 ## Simplifications to the original assessment
 
-The operational petrale sole stock assessment used Stock Synthesis (SS3) and included numerous data types and population dynamic assumptions that are not yet available in FIMS. A simplified SS3 model was also developed to provide a closer comparison but is still a work in progress. This is intended as a demonstration and nothing more.
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
 
-For both the FIMS model and the simplified SS3 model, I made the following changes:
+To get the operational model to more closely match a FIMS model the following changes were made:
 
 * Remove data
-  * Remove lengths
-  * Remove male ages
+  * Remove male lengths and ages
   * Remove discard fractions and discard comps
 * Simplify selectivity
   * Remove length-based retention functions
   * Convert to age-based logistic (from length-based double-normal, fixed asymptotic)
-* Remove parameter priors (on M and h)
-* Use female mean weight at age as calculated from the parametric growth curves
-* Varying Index CV to constant over time
-* Varying Catch ESS to constant over time
+* Remove priors
+  * Natural mortality
+  * Steepness
+* Use female mean weight at age from the SS3 weight-at-age file
 
-## Script to prepare data for building FIMS object
+## Setting up the data
+
 ```{r}
-#| warning: false
+#| eval: false
+#| label: local-production-model
+#| echo: false
+
+## SIMPLIFY SS3 DATA FILE
+dat <- petrale_input$dat
+
+# change dimensions
+dat$Nsexes <- 1 # previously 2
+dat$Nages <- n_ages # previously 40
+
+# mirroring selectivity and keeping both fishing fleets instead of aggregating
+# catch aggregate landings across fleets
+# dat$catch <- dat$catch |>
+#     dplyr::group_by(year) |>
+#     dplyr::summarize(catch = sum(catch), catch_se = mean(catch_se)) |>
+#     dplyr::mutate(seas = 1, fleet = 1, .after = year) |>
+#     as.data.frame() # write_fwf4() can't write tibles
+
+# filter indices (just include WCGBTS)
+dat$CPUE <- dat$CPUE |>
+  dplyr::filter(index == 4)
+
+# remove discard info
+dat$N_discard_fleets <- 0
+dat$discard_fleet_info <- NULL
+dat$discard_data <- NULL
+
+# remove mean body weight
+dat$use_meanbodywt <- 0
+dat$meanbodywt <- NULL
+dat$DF_for_meanbodywt <- NULL
+
+# remove length comps
+dat$use_lencomp <- 0
+dat$len_info <- NULL
+dat$lencomp <- NULL
+
+# simplify ageing error matrix
+dat$N_ageerror_definitions <- 1
+dat$ageerror <- dat$ageerror[1:2, paste0("age", 0:17)]
+
+# simplify age comps
+dat$agecomp <-
+  dat$agecomp |>
+  # exclude fleets 2 and 3, and only use marginal data for fleet 4
+  dplyr::filter(fleet %in% c(1, -4)) |>
+  # exclude male observations
+  dplyr::select(!dplyr::starts_with("m", ignore.case = FALSE)) |>
+  # assign observations to ageing error 1
+  dplyr::mutate(Gender = 1, Ageerr = 1) |>
+  # remove redundant observations
+  # NOTE: this removes some age comp data because there
+  # were years with multiple observations from the same fleet
+  # due to multiple ageing error matrices
+  dplyr::distinct(year, fleet, .keep_all = TRUE)
+
+# Simplify SS3 control file
+ctl <- petrale_input$ctl
+ctl$Nages <- 17 # previously 40
+ctl$Nsexes <- 1 # previously 2
+# turn on empirical weight-at-age
+# ctl$EmpiricalWAA <- 1 # previously zero
+# remove male mortality and growth parameters
+ctl$MG_parms <- ctl$MG_parms |>
+  dplyr::filter(!grepl("_Mal_", rownames(ctl$MG_parms)))
+ctl$max_bias_adj <- -1 # set bias adjust = 1.0 for all years
+
+# filter catchability stuff to only fleet 4
+ctl$Q_options <- ctl$Q_options |>
+  dplyr::filter(fleet == 4)
+ctl$Q_parms <- ctl$Q_parms |>
+  dplyr::filter(grepl("WCGBTS", rownames(ctl$Q_parms)))
+
+# add new age-based selex parameters
+# age-based logistic (pattern 12) for fleets 1 and 4
+# have south fishery (fleet 2) mirror fleet 1
+# no parameters for fleet 3 (ignored index left in place to avoid renumbering fleets)
+ctl$age_selex_types <- ctl$age_selex_types |>
+  dplyr::mutate(
+    Pattern = c(12, 15, 0, 12),
+    Special = c(0, 1, 0, 0)
+  ) # fleet 2 mirror fleet 1
+
+# create 4 parameter rows
+ctl$age_selex_parms <- cbind(
+  data.frame(
+    LO = 1,
+    HI = 10,
+    INIT = c(5, 2, 5, 2),
+    PRIOR = 0,
+    PR_SD = 99,
+    PR_type = 0,
+    PHASE = 2
+  ),
+  matrix(0, nrow = 4, ncol = 7)
+)
+names(ctl$age_selex_parms)[8:14] <- names(ctl$size_selex_parms)[8:14]
+rownames(ctl$age_selex_parms) <- paste0(
+  "AgeSel_", c("P_1_", "P_2_"),
+  c("fleet1", "fleet1", "fleet4", "fleet4")
+)
+
+# remove length-based selectivity
+ctl$size_selex_types <- ctl$size_selex_types |>
+  dplyr::mutate(Pattern = 0, Discard = 0, Male = 0)
+ctl$size_selex_parms <- NULL
+ctl$size_selex_parms_tv <- NULL
+
+# turn off variance adjustments
+ctl$DoVar_adjust <- 0
+ctl$Variance_adjustment_list <- NULL
+# use wtatage file
+ctl$EmpiricalWAA <- 1
+
+# Create wtatage.ss file
+# wtatage <- SS_readwtatage(
+#   "c:/ss/Petrale/Petrale2023/petrale/models//2023.a034.001/wtatage.ss_new"
+# )
+# wtatage for fleets -1:0 (population), and fleets 1:4 (real fleets)
+wtatage <- matrix(
+  rep(
+    c(
+      0.0010, # age 0
+      0.0148, 0.0617, 0.1449, 0.2570, 0.3876, 0.5260, 0.6640, 0.7957, 0.9175,
+      1.0273, 1.1247, 1.2097, 1.2831, 1.3460, 1.3994, 1.4446, 1.4821
+    ),
+    6
+  ),
+  nrow = 6, ncol = 18, byrow = TRUE
+)
+# wtatage for fleet = -2 (fecundity * maturity)
+wtatage <- rbind(
+  c(
+    0, 0, 0, 2.34337e-07, 6.7895e-06, 5.41665e-05, 0.000173396, 0.000338953,
+    0.000514454, 0.000681685, 0.000834535, 0.000971472, 0.00109252, 0.00119837,
+    0.00129006, 0.00136882, 0.00143602, 0.00149302
+  ),
+  wtatage
+)
+names(wtatage) <- 0:17
+wtatage <- data.frame(
+  Yr = -1800,
+  Seas = 1,
+  Sex = 1,
+  Bio_Pattern = 1,
+  BirthSeas = 1,
+  Fleet = -2:4,
+  wtatage
+)
+
+if (TRUE) {
+  # write modified data and control files
+  new_input <- petrale_input
+  new_input$dat <- dat
+  new_input$ctl <- ctl
+  new_input$wtatage <- wtatage
+
+  # new_input$dir <- "c:/ss/Petrale/Petrale2023/petrale/models/2023.a050.001_FIMS_case-study"
+  new_input$dir <- "c:/ss/Petrale/Petrale2023/petrale/models/2023.a050.002_FIMS_case-study_wtatage"
+  # create directory if it doesn't exist
+  if (!dir.exists(new_input$dir)) {
+    dir.create(new_input$dir)
+  }
+
+  r4ss::SS_write(new_input, dir = new_input$dir, overwrite = TRUE)
+
+  r4ss::run(
+    new_input$dir,
+    show_in_console = TRUE,
+    skipfinished = FALSE
+  )
+  p2 <- r4ss::SS_output(new_input$dir)
+}
+```
+
+```{r}
 #| label: prepare-fims-data
 #| output: false
-
-# read SS3 input files from petrale sole assessment on github
-petrale_input <- r4ss::SS_read(
-  "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/"
-)
-petrale_output <- r4ss::SS_output(
-  "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001",
-  printstats = FALSE,
-  verbose = FALSE
-)
+#| warning: false
   
-# generic names for SS3 data and control files could be useful in future generalized version of this code
-ss3dat <- petrale_input$dat
-ss3ctl <- petrale_input$ctl
-
 # define the dimensions based on the range in the data
 # for petrale, the north fleet catch begins in 1896, 
 # not the start year of the model 1876 (which is when the southern fleet catch begins,
 # but for simplicity this petrale example only uses the northern catch)
-# years <- seq(ss3dat$styr, ss3dat$endyr)
-years <- seq(1896, ss3dat$endyr)
-nyears <- length(years)
-nseasons <- 1
-# ages <- 0:ss3dat$Nages # population ages in SS3, starts at age 0
-ages <- 1:17 # same as data bins
-nages <- length(ages)
-lengths <- petrale_output[["lbins"]]
-nlengths <- length(lengths)
-
-# source function to simplify data and convert from SS3 format
-source("R/get_ss3_data.R")
 
 # fleet 4 used conditional age-at-length data with marginal observations
 # entered as fleet == -4 (to exclude from likelihood due to redundancy)
@@ -87,13 +264,21 @@ source("R/get_ss3_data.R")
 # by assigning to fleet -1, these get filtered by get_ss3_data()
 
 # only include age comps with fleet = -4 or 1:
-ss3dat$agecomp <- ss3dat$agecomp |>
-  dplyr::filter(fleet %in% c(-4, 1))
-ss3dat$agecomp$fleet <- abs(ss3dat$agecomp$fleet)
+petrale_input$dat$agecomp <- petrale_input$dat$agecomp |>
+  dplyr::filter(fleet %in% c(-4, 1)) |>
+  dplyr::mutate(fleet = abs(fleet)) |>
+  dplyr::arrange(fleet, year, dplyr::desc(Nsamp)) |>
+  dplyr::distinct(fleet, year, .keep_all = TRUE)
+
+petrale_input$dat$lencomp <- petrale_input$dat$lencomp |>
+    dplyr::filter(
+    # filter out discard length-composition data
+    !(part == 1 & fleet == 1)
+  )
 
 # convert SS3 data into FIMS format using function defined in the R directory
 mydat <- get_ss3_data(
-  ss3dat,
+  ss3_inputs = petrale_input,
   fleets = c(1, 4),
   ages = ages,
   lengths = petrale_input[["dat"]][["lbin_vector"]]
@@ -103,70 +288,38 @@ mydat <- get_ss3_data(
     name == "fleet1" ~ name,
     name == "fleet4" ~ "survey1" # change fleet4 to survey1 to match yellowtail case-study
   )) |>
-  dplyr::filter(value != -999)
-
-# Weight-at-age code copied directly from PIFSC-opakapaka.qmd
-# Get weight-at-age from SS3 report output and convert from kg to mt
-weight_at_age_data <- petrale_output[["wtatage"]] |> 
-  dplyr::filter(sex == 1 & fleet == 1 & year == 1949) |> 
-  dplyr::select(dplyr::matches("[0-9]+")) |>
-  # round(4) |>
-  tidyr::pivot_longer(names_to = "age", cols = dplyr::everything()) |>
-  dplyr::filter(age %in% ages) |>
-  tidyr::expand_grid(
-    mydat |> dplyr::select(datestart) |> dplyr::distinct()
-  ) |>
-  dplyr::left_join(
-    mydat |> dplyr::select(datestart, dateend) |> dplyr::distinct(),
-    by = "datestart"
-  ) |>
-  dplyr::mutate(
-    type = "weight-at-age",
-    name = "fleet1",
-    unit = "mt",
-    age = as.integer(age),
-    value = value/1000
+  dplyr::filter(
+    # filter out forecast years
+    timing %in% years
   )
-mydat <- mydat |> 
-  dplyr::bind_rows(weight_at_age_data)
+
 
 # set up FIMS data objects
-fims_frame <- FIMS::FIMSFrame(mydat)
+data_4_model <- FIMS::FIMSFrame(mydat |>
+  # Remove the length-composition data
+  # TODO: remove this as we create an age-to-length-conversion matrixt
+  dplyr::filter(type != "length_comp") |>
+  dplyr::select(-length)
+)
 ```
 
-### Prepare Parameters using `create_default_parameters()`
-```{r, max.height='100px', attr.output='.numberLines'}
+## Run FIMS model
 
-## lots of code below copied PIFSC-opakapaka.qmd
+```{r, max.height='100px', attr.output='.numberLines'}
+#| label: setup-model
+
+# lots of code below copied PIFSC-opakapaka.qmd
 # rename SS3 output to avoid modifying lines copied from opakapaka model
 rep <- petrale_output
 
-# Define fleet specifications for fleet1 and survey1
-fleet1 <-  list(
-  selectivity = list(form = "LogisticSelectivity"),
-  data_distribution = c(
-    Landings = "DlnormDistribution",
-    AgeComp = "DmultinomDistribution"
-  )
-)
-survey1 <- list(
-  selectivity = list(form = "LogisticSelectivity"),
-  data_distribution = c(
-    Index = "DlnormDistribution",
-    AgeComp = "DmultinomDistribution"
-  )
-)
-
 # Create default parameters
-default_parameters <- fims_frame |>
-  create_default_parameters(
-    fleets = list(fleet1 = fleet1, survey1 = survey1)
-  )
-
-```
-
-### Modifying parameters
-```{r modify-default-parameters}
+default_parameters <- FIMS::create_default_configurations(
+  data = data_4_model
+) |>
+  FIMS::create_default_parameters(
+    data = data_4_model
+  ) |>
+  tidyr::unnest(cols = data)
 
 recdevs <- rep$recruitpars |> # $recruitpars is a subset of $parameters with Yr as an additional column
   dplyr::filter(Yr %in% years[-1]) |> # filter out initial numbers parameters
@@ -177,100 +330,116 @@ init_naa <- rep$natage |>
   dplyr::select(paste(ages)) |> 
   as.numeric() # TODO: figure out if *1000 is needed
 init_naa <- exp(rep$parameters |> dplyr::filter(grepl("R0", Label)) |> dplyr::pull(Init)) * 1000 * exp(-(ages - 1) * rep$parameters |> dplyr::filter(grepl("NatM.*Fem", Label)) |> dplyr::pull(Value))
-init_naa[nages] <- init_naa[nages] / rep$parameters |> dplyr::filter(grepl("NatM.*Fem", Label)) |> dplyr::pull(Value) # sum of infinite series
-
-# TODO: Move this to the R folder or FIMS
-steepness_transform <- function(h) {
-  # function to convert steepness into required parameter space
-  -log(1.0 - h) + log(h - 0.2)
-}
+init_naa[n_ages] <- init_naa[n_ages] / rep$parameters |> dplyr::filter(grepl("NatM.*Fem", Label)) |> dplyr::pull(Value) # sum of infinite series
 
 parameters <- default_parameters |>
   # SS3 model had length-based selectivity which leads to sex-specific
   # age-based selectivity due to sexually-dimorphic growth.
   # I didn't bother to calculate an age-based inflection point averaged over sexes
-  update_parameters(
-    modified_parameters = list(
-      fleet1 = list(
-        Fleet.log_Fmort.estimation_type = "constant",
-        Fleet.log_Fmort.value = rep$exploitation |> 
-          dplyr::filter(Yr %in% years) |> 
-          dplyr::pull(North) |>
-          log(), # "North" is the SS3 fleet name
-        LogisticSelectivity.inflection_point.value = 10, 
-        LogisticSelectivity.inflection_point.estimation_type = "fixed_effects",
-        LogisticSelectivity.slope.value = 2, #used age selex values
-        LogisticSelectivity.slope.estimation_type = "fixed_effects"
-      ),
-      survey1 = list(
-        LogisticSelectivity.inflection_point.value = 6, 
-        LogisticSelectivity.inflection_point.estimation_type = "fixed_effects",
-        LogisticSelectivity.slope.value = 2, 
-        LogisticSelectivity.slope.estimation_type = "fixed_effects"
-      )
-    )
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Maturity",
+      label = c("inflection_point", "slope"),
+      value = c(20.5, 1.8), # arbitrary guess of slope
+    ),
+    by = c("module_name", "label")
   ) |>
-  update_parameters(
-    modified_parameters = list(
-      recruitment = list(
-        BevertonHoltRecruitment.log_rzero.value = ss3ctl$SR_parms["SR_LN(R0)", "INIT"],
-        BevertonHoltRecruitment.log_devs.value = recdevs$Value,
-        BevertonHoltRecruitment.logit_steep.value = ss3ctl$SR_parms["SR_BH_steep", "INIT"] |>
-          steepness_transform(),
-        DnormDistribution.log_sd.value = 0.5
-      )
-    )
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Selectivity",
+      fleet_name = "fleet1",
+      label = c("inflection_point", "slope"),
+      value = c(10, 2),
+      estimation_type = "constant"
+    ),
+    by = c("module_name", "fleet_name", "label")
   ) |>
-  update_parameters(
-    modified_parameters = list(
-      # approximate age-based equivalent to length-based maturity in petrale model
-      # based on looking at model$endgrowth |> dplyr::filter(Sex == 1) |> dplyr::select(Age_Beg, Len_Mat)
-      maturity = list(
-        LogisticMaturity.inflection_point.value = 20.5, 
-        LogisticMaturity.inflection_point.estimation_type = "constant",
-        LogisticMaturity.slope.value = 1.8, # arbitrary guess
-        LogisticMaturity.slope.estimation_type = "constant"
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Selectivity",
+      fleet_name = "survey1",
+      label = c("inflection_point", "slope"),
+      value = c(6, 2),
+      estimation_type = "constant"
+    ),
+    by = c("module_name", "fleet_name", "label")
+  )  |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Recruitment",
+      label = c("log_rzero", "logit_steep", "log_sd"),
+      value = c(
+        petrale_input$ctl$SR_parms["SR_LN(R0)", "INIT"],
+        FIMS::logit(0.2, 1.0, petrale_input$ctl$SR_parms["SR_BH_steep", "INIT"]),
+        0.5
       )
-    )
+    ),
+    by = c("module_name", "label")
   ) |>
-  update_parameters(
-    modified_parameters = list(
-      population = list(
-        Population.log_init_naa.value = log(init_naa),
-        Population.log_init_naa.estimation_type = "fixed_effects",
-        Population.log_M.value = rep(
-          log(rep$parameters["NatM_uniform_Fem_GP_1", "Value"]),
-          get_n_years(fims_frame) * get_n_ages(fims_frame)
-        ),
-        Population.log_M.estimation_type = "constant"
-      )
-    )
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Recruitment",
+      label = "log_devs",
+      time = (FIMS::get_start_year(data_4_model) + 1):FIMS::get_end_year(data_4_model),
+      # The last value of the initial numbers at age is the first
+      # recruitment deviation
+      value = recdevs$Value,
+    ),
+    by = c("module_name", "label", "time")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Population",
+      label = "log_init_naa",
+      age = FIMS::get_ages(data_4_model),
+      value = log(init_naa),
+      estimation_type = "fixed_effects"
+    ),
+    by = c("module_name", "label", "age")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Population",
+      label = "log_M",
+      value = log(rep$parameters["NatM_uniform_Fem_GP_1", "Value"]),
+      estimation_type = "constant"
+    ),
+    by = c("module_name", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Fleet",
+      fleet_name = "fleet1",
+      time = years,
+      label = "log_Fmort",
+      estimation_type = "constant",
+      value = rep[["exploitation"]] |> 
+        dplyr::filter(Yr %in% years) |>
+        dplyr::mutate(North = ifelse(North == 0, -999, log(North))) |>
+        dplyr::pull(North)
+    ),
+    by = c("module_name", "fleet_name", "label", "time")
   )
 
-```
-## Initialize modules and fit the model
-
-With data and parameters in place, we can now initialize modules using `initialize_fims()` and fit the model using `fit_fims()`.
-```{r, max.height='100px', attr.output='.numberLines', fit-fims, eval = TRUE}
 # Run the model without optimization to help ensure a viable model
 test_fit <- parameters |>
-  initialize_fims(data = fims_frame) |>
-  fit_fims(optimize = FALSE)
+  FIMS::initialize_fims(data = data_4_model) |>
+  FIMS::fit_fims(optimize = FALSE)
 
 # Run the  model with optimization
 fit <- parameters |>
-  initialize_fims(data = fims_frame) |>
-  fit_fims(optimize = TRUE)
-  # TODO: why does the final message show no SB value: "i Terminal SB="
+  FIMS::initialize_fims(data = data_4_model) |>
+  FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
 ```
 
-## Plotting Results
+## Plotting results
 
-```{r data-fits-plots, eval = TRUE}
+```{r}
+#| label: comparison-plots
 # gather index fit info
 index_results <- data.frame(
-  observed = m_index(fims_frame, "survey1"),
-  expected = get_report(fit)[["index_exp"]][[2]]
+  observed = FIMS::m_index(data_4_model, "survey1"),
+  expected = FIMS::get_report(fit)[["index_expected"]][[2]]
 ) |>
   dplyr::mutate(year = years) |>
   dplyr::filter(observed > 0) # filter out -999 rows
@@ -287,8 +456,8 @@ ggplot2::ggplot(index_results, ggplot2::aes(x = year, y = observed)) +
 # gather catch info 
 catch_results <- data.frame(
   year = years,
-  observed = m_landings(fims_frame, fleet = "fleet1"),
-  expected = get_report(fit)[["landings_exp"]][[1]]
+  observed = FIMS::m_landings(data_4_model, fleet = "fleet1"),
+  expected = FIMS::get_report(fit)[["landings_expected"]][[1]]
 )
 
 # plot catch fit
@@ -299,12 +468,9 @@ ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::ylab("Catch (mt)") +
   ggplot2::geom_line(ggplot2::aes(x = year, y = expected)) + #, color = fleet)) +
   ggplot2::theme_bw()
-```
-
-```{r ss3-comparison-plots}
 
 # gather biomass info from FIMS and SS3
-biomass <- rep$timeseries |> 
+biomass <- rep$timeseries |>
   dplyr::select(Yr, SpawnBio, Bio_all) |> 
   dplyr::filter(Yr %in% years) |> 
   dplyr::rename(
@@ -312,9 +478,9 @@ biomass <- rep$timeseries |>
     "SS3_Bio" = "Bio_all"
   ) |>
   dplyr::mutate(
-    FIMS_SpawnBio = get_report(fit)[["ssb"]][[1]][-1] , 
-    FIMS_Bio = get_report(fit)[["biomass"]][[1]][-1]
-  ) |> ##CHECK: Is FIMS ssb reporting nyears+1 or initial year-1?
+    FIMS_SpawnBio = FIMS::get_report(fit)[["spawning_biomass"]][[1]][-1] , 
+    FIMS_Bio = FIMS::get_report(fit)[["biomass"]][[1]][-1]
+  ) |> ##CHECK: Is FIMS ssb reporting n_years+1 or initial year-1?
   tidyr::pivot_longer(cols = -Yr) |>
   tidyr::separate_wider_delim(
     cols = "name",
@@ -330,14 +496,22 @@ ggplot2::ggplot(biomass, ggplot2::aes(x = Yr, y = value)) +
   ggplot2::theme_bw()
 
 # gather info on recruitment
-recruits <- rep$recruit |> 
+recruits <- rep$recruit |>
   dplyr::filter(Yr %in% years) |>
   dplyr::select(Yr, exp_recr, raw_dev) |>
   dplyr::rename("SS3_recruit" = "exp_recr",
                 "SS3_recdev" = "raw_dev",
                 "Year" = "Yr") |> 
-  dplyr::mutate(FIMS_recruit = c(get_report(fit)[["recruitment"]][[1]][-1]),
-                FIMS_recdev = c(NA, get_report(fit)[["log_recruit_dev"]][[1]]),
+  dplyr::mutate(FIMS_recruit = c(FIMS::get_report(fit)[["expected_recruitment"]][[1]][-1]),
+                FIMS_recdev = c(
+                  NA,
+                  FIMS::get_estimates(fit) |>
+                    dplyr::filter(
+                      module_name == "Recruitment",
+                      label == "log_devs"
+                    ) |>
+                    dplyr::pull(estimated)
+                ),
                 SS3_recruit = SS3_recruit * 1000) |>
   tidyr::pivot_longer(cols = -Year) |>
   tidyr::separate_wider_delim(cols = "name", delim = "_", names = c("Model", "Type"))             
@@ -351,9 +525,8 @@ ggplot2::ggplot(recruits, ggplot2::aes(x = Year, y = value, color = Model)) +
 ```
 
 ```{r}
-#| warning: false
-#| label: clear
+#| label: cleanup
 #| output: false
-
-clear()
+#| warning: false
+FIMS::clear()
 ```

@@ -39,6 +39,29 @@ execute_logistic <- function(x, slope, inflection_point) {
   )
 }
 
+execute_double_logistic <- function(
+  x,
+  slope_asc,
+  inflection_point_asc,
+  slope_desc,
+  inflection_point_desc
+) {
+  out <- (
+    (1) /
+    (1.0 + exp(-1.0 * slope_asc * (x - inflection_point_asc)))
+  ) *
+  (1.0 - 
+    (1.0) /
+    (1.0 + exp(-1.0 * slope_desc * (x - inflection_point_desc)))
+  )
+  return(
+    dplyr::tibble(
+      x = x,
+      value = out
+    )
+  )
+}
+
 #' Get parameters from the estimates table of a fitted object
 #'
 #' @param string A regular expression you want to search for in names.
@@ -46,9 +69,9 @@ execute_logistic <- function(x, slope, inflection_point) {
 #' @return
 #' A named vector of parameter estimates.
 get_parameter <- function(string, fit) {
-  out <- get_estimates(fit) |>
-    dplyr::filter(grepl(string, name, ignore.case = TRUE))
-  pars <- dplyr::pull(out, value)
-  names(pars) <- dplyr::pull(out, name)
+  out <- FIMS::get_estimates(fit) |>
+    dplyr::filter(grepl(string, label, ignore.case = TRUE))
+  pars <- dplyr::pull(out, estimated)
+  names(pars) <- dplyr::pull(out, label)
   return(pars)
 }
