@@ -12,42 +12,115 @@ on:
 
 name: Render
 
+# Cancel runs happening simultaneously on the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
     env:
-          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      # Use pre-compiled binaries to avoid compilation issues
+      R_REPOS: https://packagemanager.rstudio.com/cran/__linux__/jammy/latest
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5 
+        uses: actions/checkout@v6
         
       - name: Set up R (needed for Rmd)
         uses: r-lib/actions/setup-r@v2
+        with: 
+          # use RStudio Public Package manager to prefer precompiled binaries
+          use-public-rspm: true
 
-      - name: Install system dependencies
+      - name: Install system dependencies for R packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y  \
-          libcurl4-openssl-dev \
-          libssl-dev \
-          libxml2-dev \
-          libv8-dev \
-          libfontconfig1-dev \
-          libfreetype6-dev \
+          sudo apt-get install -y \
           libharfbuzz-dev \
           libfribidi-dev \
+          libfreetype6-dev \
           libpng-dev \
           libtiff5-dev \
           libjpeg-dev \
+          libxml2-dev \
+          libcurl4-openssl-dev \
+          libssl-dev \
+          libgit2-dev
+          libv8-dev \
+          libfontconfig1-dev \
           libcairo2-dev \
-          libgit2-dev \
           libnode-dev \
           libx11-dev \
           pandoc
+      
+      - name: Determine renv profile
+        id: profile
+        run: |
+          if [[ "${{ github.ref_name }}" == *"main"* ]] || [[ "${{ github.base_ref }}" == *"main"* ]]; then
+            echo "profile=default" >> $GITHUB_OUTPUT
+          else
+            echo "profile=dev" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Restore renv package cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/R/renv
+          key: ${{ runner.os }}-renv-${{ steps.profile.outputs.profile }}-${{ hashFiles('**/renv.lock', '**/renv/profiles/*/renv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-renv-${{ steps.profile.outputs.profile }}-
+            ${{ runner.os }}-renv-
+ 
+      - name: Activate and inspect renv profile
+        run: |
+          Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
 
-      - name: Install packages (needed for Rmd)
-        run: Rscript -e 'install.packages(c("rmarkdown", "knitr", "jsonlite"))'
+          profile="${{ steps.profile.outputs.profile }}"
+          echo "Detected profile: $profile"
+
+          if [[ "$profile" == "dev" ]]; then
+            lockfile="/home/runner/work/case-studies/case-studies/renv/profiles/dev/renv.lock"
+          else
+            lockfile="/home/runner/work/case-studies/case-studies/renv/renv.lock"
+          fi
+
+          echo "Using lockfile: $lockfile"
+
+          # Pass profile and lockfile as environment variables
+          export PROFILE="$profile"
+          export LOCKFILE="$lockfile"
+
+          Rscript -e "source('./content/renv-profile.R')"
+
+          Rscript -e '
+            profile <- Sys.getenv("PROFILE")
+            lockfile <- Sys.getenv("LOCKFILE")
+
+            message("Using profile: ", profile)
+            message("Using lockfile: ", lockfile)
+
+            if (file.exists(lockfile)) {
+              lock <- renv::lockfile_read(lockfile)
+              cat("Read lockfile with", length(lock$Packages), "packages\n")
+
+              if ("FIMS" %in% names(lock$Packages)) {
+                pkg <- lock$Packages[["FIMS"]]
+                cat("FIMS version:", pkg$Version, "\n")
+                if (!is.null(pkg$RemoteRef)) cat("Git Ref:", pkg$RemoteRef, "\n")
+                if (!is.null(pkg$RemoteRepo)) cat("Repository:", pkg$RemoteRepo, "\n")
+              } else {
+                cat("FIMS not found in lockfile\n")
+              }
+            } else {
+              cat("Lockfile not found at:", lockfile, "\n")
+            }
+            renv::restore()
+          '
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2

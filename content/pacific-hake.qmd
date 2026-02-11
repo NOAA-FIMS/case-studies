@@ -661,7 +661,7 @@ output <- FIMS::get_estimates(fit) |>
 
 ```{r}
 #| label: fit-bayesian
-#| eval: false
+#| eval: true
 
 # TODO: Implement this in parallel
 mcmc <- adnuts::sample_snuts(
@@ -730,6 +730,8 @@ SB_long <- purrr::map(post, "spawning_biomass") |>
     by = c("year_i" = "index")
   )
 ```
+
+#### Bayesian
 
 #### Mapped parameters
 
