@@ -38,6 +38,11 @@ if (!"r4ss" %in% rownames(installed.packages())) {
   remotes::install_github("r4ss/r4ss")
 }
 
+# SS3 case studies require r4ss
+if (!"stockplotr" %in% rownames(installed.packages())) {
+  remotes::install_github("nmfs-ost/stockplotr")
+}
+
 # Install FIMS: main branch version if on main, dev version on any other branch
 remotes::install_github("NOAA-FIMS/FIMS", ref = "dev-hake")
 
