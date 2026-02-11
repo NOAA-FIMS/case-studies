@@ -429,7 +429,7 @@ test_fit <- parameters |>
 # Run the  model with optimization
 fit <- parameters |>
   FIMS::initialize_fims(data = data_4_model) |>
-  FIMS::fit_fims(optimize = TRUE)
+  FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
 ```
 
 ## Plotting results

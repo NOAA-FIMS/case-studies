@@ -181,7 +181,7 @@ agecomps <- rbind(fleet1_ac_df, fleet2_ac_df, survey_ac_df)
 
 data_4_model <- FIMS::FIMSFrame(
   rbind(landings, index, agecomps, weight_at_age)
-)
+)  
 ```
 
 ## Run FIMS model
@@ -314,7 +314,7 @@ default_parameters <- FIMS::create_default_configurations(data_4_model) |>
 # Run the  model with optimization
 fit <- default_parameters |>
   FIMS::initialize_fims(data = data_4_model) |>
-  FIMS::fit_fims(optimize = TRUE)
+  FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
 
 report <- FIMS::get_report(fit)
 output_fims <- FIMS::get_estimates(fit) |>
@@ -650,7 +650,7 @@ FIMS::clear()
 
 ## Figures with {stockplotr}
 
-```{r stockplotr}
+```{r}
 #| label: plot-stockplotr
 stockplotr::plot_biomass(
   list(
