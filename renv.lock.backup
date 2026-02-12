@@ -498,31 +498,6 @@
       "NeedsCompilation": "yes",
       "Repository": "CRAN"
     },
-    "TMBhelper": {
-      "Package": "TMBhelper",
-      "Version": "1.4.0",
-      "Source": "GitHub",
-      "Type": "Package",
-      "Title": "Package for basic helper functions that are not worth putting in a specialized contributed package",
-      "Date": "2022-01-31",
-      "Authors@R": "person(\"James\",\"Thorson\", email=\"James.Thorson@noaa.gov\", role=c(\"aut\",\"cre\"))",
-      "Maintainer": "James Thorson <James.Thorson@noaa.gov>",
-      "Description": "Basic functions as suggested and contributed by users and not worth making a specific contributed R package",
-      "Imports": [
-        "abind",
-        "tmbstan"
-      ],
-      "License": "GPL-3",
-      "RoxygenNote": "7.1.2",
-      "Author": "James Thorson [aut, cre]",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "kaskr",
-      "RemoteRepo": "TMB_contrib_R",
-      "RemoteSubdir": "TMBhelper",
-      "RemoteRef": "master",
-      "RemoteSha": "d275e5226d94a8b3b4b3417dbe89dac533d5f8c5"
-    },
     "UpSetR": {
       "Package": "UpSetR",
       "Version": "1.4.0",
@@ -1297,7 +1272,7 @@
       "NeedsCompilation": "yes",
       "Author": "Jeroen Ooms [aut, cre] (ORCID: <https://orcid.org/0000-0002-4035-0289>), Hadley Wickham [ctb], Posit Software, PBC [cph]",
       "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
-      "Repository": "CRAN"
+      "Repository": "RSPM"
     },
     "data.table": {
       "Package": "data.table",
@@ -4367,8 +4342,58 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.1.7",
-      "Source": "Repository"
+      "Version": "1.1.6",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Project Environments",
+      "Authors@R": "c( person(\"Kevin\", \"Ushey\", role = c(\"aut\", \"cre\"), email = \"kevin@rstudio.com\", comment = c(ORCID = \"0000-0003-2880-7407\")), person(\"Hadley\", \"Wickham\", role = c(\"aut\"), email = \"hadley@rstudio.com\", comment = c(ORCID = \"0000-0003-4757-117X\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "A dependency management toolkit for R. Using 'renv', you can create and manage project-local R libraries, save the state of these libraries to a 'lockfile', and later restore your library as required. Together, these tools can help make your projects more isolated, portable, and reproducible.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://rstudio.github.io/renv/, https://github.com/rstudio/renv",
+      "BugReports": "https://github.com/rstudio/renv/issues",
+      "Imports": [
+        "utils"
+      ],
+      "Suggests": [
+        "BiocManager",
+        "cli",
+        "compiler",
+        "covr",
+        "cpp11",
+        "curl",
+        "devtools",
+        "generics",
+        "gitcreds",
+        "jsonlite",
+        "jsonvalidate",
+        "knitr",
+        "miniUI",
+        "modules",
+        "packrat",
+        "pak",
+        "R6",
+        "remotes",
+        "reticulate",
+        "rmarkdown",
+        "rstudioapi",
+        "shiny",
+        "testthat",
+        "uuid",
+        "waldo",
+        "yaml",
+        "webfakes"
+      ],
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.3",
+      "VignetteBuilder": "knitr",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Config/testthat/edition": "3",
+      "Config/testthat/parallel": "true",
+      "Config/testthat/start-first": "bioconductor,python,install,restore,snapshot,retrieve,remotes",
+      "NeedsCompilation": "no",
+      "Author": "Kevin Ushey [aut, cre] (ORCID: <https://orcid.org/0000-0003-2880-7407>), Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>), Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Kevin Ushey <kevin@rstudio.com>",
+      "Repository": "CRAN"
     },
     "reshape2": {
       "Package": "reshape2",
@@ -5382,40 +5407,6 @@
       "Author": "Yihui Xie [aut, cre, cph] (ORCID: <https://orcid.org/0000-0003-0645-5666>), Posit Software, PBC [cph, fnd], Christophe Dervieux [ctb] (ORCID: <https://orcid.org/0000-0003-4474-2498>), Devon Ryan [ctb] (ORCID: <https://orcid.org/0000-0002-8549-0971>), Ethan Heinzen [ctb], Fernando Cagua [ctb]",
       "Maintainer": "Yihui Xie <xie@yihui.name>",
       "Repository": "https://packagemanager.posit.co/cran/latest"
-    },
-    "tmbstan": {
-      "Package": "tmbstan",
-      "Version": "1.0.91",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "MCMC Sampling from 'TMB' Model Object using 'Stan'",
-      "Date": "2023-08-26",
-      "Author": "Kasper Kristensen",
-      "Maintainer": "Kasper Kristensen <kaskr@dtu.dk>",
-      "Description": "Enables all 'rstan' functionality for a 'TMB' model object, in particular MCMC sampling and chain visualization. Sampling can be performed with or without Laplace approximation for the random effects. This is demonstrated in Monnahan & Kristensen (2018) <DOI:10.1371/journal.pone.0197954>.",
-      "Imports": [
-        "methods",
-        "Rcpp",
-        "TMB"
-      ],
-      "Depends": [
-        "rstan"
-      ],
-      "LinkingTo": [
-        "StanHeaders",
-        "rstan",
-        "BH",
-        "Rcpp",
-        "RcppEigen",
-        "TMB",
-        "RcppParallel"
-      ],
-      "License": "GPL (>= 3)",
-      "BugReports": "https://github.com/kaskr/tmbstan/issues",
-      "NeedsCompilation": "yes",
-      "SystemRequirements": "GNU make",
-      "RoxygenNote": "7.2.3",
-      "Repository": "CRAN"
     },
     "tzdb": {
       "Package": "tzdb",
