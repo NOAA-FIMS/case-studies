@@ -238,7 +238,7 @@ Natural mortality in FIMS is age and year specific. To estimate a single paramet
 #| output: true
 #| echo: false
 
-your_table_object |>
+natural_mortality_matrix |>
   dplyr::filter(age %in% 1:5, year == get_start_year(data_4_model)) |>
   dplyr::select(-year)
 ```
