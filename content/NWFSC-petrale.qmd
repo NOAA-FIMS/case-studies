@@ -12,8 +12,43 @@ format:
 ```{r}
 #| label: setup-objects
 common_name <- "Petrale sole"
+```
 
-# convert SS3 data into FIMS format and convert to FIMSFrame object
+* R version: `r R_version`
+* TMB version: `r TMB_version`
+* FIMS commit: `r FIMS_commit`
+* Stock name: `r common_name`
+* Region: NWFSC
+* Analyst: Ian G. Taylor
+
+## Simplifications to the original assessment
+
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
+
+To get the operational model to more closely match a FIMS model a simpler SS3 model was developed using code in https://github.com/NOAA-FIMS/case-studies/blob/petrale-with-new-r4ss-converter/content/R/NWFSC-petrale_simplify_assessment.R
+
+These changes included 
+* Remove data
+  * Remove male lengths and ages
+  * Remove discard fractions and discard comps
+* Simplify selectivity
+  * Remove length-based retention functions
+  * Convert to age-based logistic (from length-based double-normal, fixed asymptotic)
+* Remove priors
+  * Natural mortality
+  * Steepness
+* Use female mean weight at age from the SS3 weight-at-age file
+* Use maturity x fecundity at age from the SS3 weight-at-age file
+
+
+## Setting up the data
+
+```{r}
+#| label: prepare-fims-data
+#| output: false
+#| warning: false
+
+# convert SS3 data into FIMS format using function in r4ss and convert to FIMSFrame object
 data_4_model <- r4ss::ss3_data_to_fims(
     ss3_dir = "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a050.003_FIMS_case-study_wtatage/",
     ss_new = TRUE
@@ -78,14 +113,11 @@ init_naa[length(ages)] <- init_naa[length(ages)] /
         dplyr::pull(Value) # sum of infinite series
 
 parameters <- default_parameters |>
-    # SS3 model had length-based selectivity which leads to sex-specific
-    # age-based selectivity due to sexually-dimorphic growth.
-    # I didn't bother to calculate an age-based inflection point averaged over sexes
     dplyr::rows_update(
         tibble::tibble(
             module_name = "Maturity",
             label = c("inflection_point", "slope"),
-            value = c(20.5, 1.8), # arbitrary guess of slope
+            value = c(7.0, 1.0), # maturity based on the derived age-based pattern from original length-based SS3 model, arbitrary guess of slope
         ),
         by = c("module_name", "label")
     ) |>
