@@ -33,13 +33,9 @@ These changes included
   * Remove discard fractions and discard comps
 * Simplify selectivity
   * Remove length-based retention functions
-  * Convert to age-based logistic (from length-based double-normal, fixed asymptotic)
-* Remove priors
-  * Natural mortality
-  * Steepness
-* Use female mean weight at age from the SS3 weight-at-age file
-* Use maturity x fecundity at age from the SS3 weight-at-age file
-
+  * Convert to age-based logistic (from asymptotic length-based double-normal with time blocks)
+* Use time-invariant population-level female mean weight at age from the SS3 weight-at-age file for all fleets
+* Use time-invariant maturity x fecundity at age from the SS3 weight-at-age file
 
 ## Setting up the data
 
@@ -51,17 +47,20 @@ These changes included
 # convert SS3 data into FIMS format using function in r4ss and convert to FIMSFrame object
 data_4_model <- r4ss::ss3_data_to_fims(
     ss3_dir = "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a050.003_FIMS_case-study_wtatage/",
-    ss_new = TRUE
+    ss_new = TRUE,
+    fleets = c(-4, 1, 2, 4)
 ) |>
     FIMS::FIMSFrame()
 
-# read SS3 output files from petrale sole assessment on GitHub
+
+# read SS3 output files from modified petrale sole assessment on GitHub
 rep <- r4ss::SS_output(
     "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a050.003_FIMS_case-study_wtatage",
     printstats = FALSE,
     verbose = FALSE,
     covar = FALSE
 )
+
 # alternative output processing using stockplotr
 output_petrale <- stockplotr::convert_output(
     "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a050.003_FIMS_case-study_wtatage/Report.sso",
@@ -88,17 +87,25 @@ default_parameters <- FIMS::create_default_configurations(
         data = data_4_model
     ) |>
     tidyr::unnest(cols = data)
-
+# Note: the last value of the initial numbers at age is the first
+# recruitment deviation
+recdev_years <- default_parameters |>
+    filter(module_name == "Recruitment" & label == "log_devs") |>
+    pull(time)
 recdevs <- rep$recruitpars |> # $recruitpars is a subset of $parameters with Yr as an additional column
-    dplyr::filter(Yr %in% years) |> # filter out initial numbers parameters
-    dplyr::select(Yr, Value)
+    dplyr::filter(Yr %in% recdev_years) |>
+    dplyr::pull(Value)
 
-init_naa <- rep$natage |>
-    dplyr::filter(Time == min(years), Sex == 1) |> # numbers at age in FIMS start year, not SS3 model
-    dplyr::select(paste(ages)) |>
-    as.numeric() # TODO: figure out if *1000 is needed
+# initial numbers-at-age from SS3 output
+init_naa_ss3 <- 1000 *
+    rep$natage |>
+        dplyr::filter(Time == min(years), Sex == 1) |> # numbers at age in FIMS start year, not SS3 model
+        dplyr::select(paste(ages)) |>
+        as.numeric() # TODO: figure out if *1000 is needed
+
+# alternative initial numbers-at-age based on exponential decay using female M
 init_naa <- exp(
-    rep$parameters |> dplyr::filter(grepl("R0", Label)) |> dplyr::pull(Init)
+    rep$parameters |> dplyr::filter(grepl("R0", Label)) |> dplyr::pull(Value)
 ) *
     1000 *
     exp(
@@ -107,87 +114,108 @@ init_naa <- exp(
                 dplyr::filter(grepl("NatM.*Fem", Label)) |>
                 dplyr::pull(Value)
     )
+# init_naa calculation for plus group is based on sum of infinite series,
+# which is equivalent to dividing the initial number at the last age by M
 init_naa[length(ages)] <- init_naa[length(ages)] /
     rep$parameters |>
         dplyr::filter(grepl("NatM.*Fem", Label)) |>
         dplyr::pull(Value) # sum of infinite series
 
+# ratio is close to 1, suggesting that approximation is reasonable
+# range(init_naa / init_naa_ss3)
+# # [1] 1.037574 1.228785
+
+# function to get estimated parameter value from SS3 model
+get_ss3_estimate <- function(string) {
+    rep$parameters |>
+        filter(grepl(
+            pattern = string,
+            Label,
+            fixed = TRUE
+        )) |>
+        pull(Value)
+}
+
 parameters <- default_parameters |>
-    dplyr::rows_update(
-        tibble::tibble(
-            module_name = "Maturity",
-            label = c("inflection_point", "slope"),
-            value = c(7.0, 1.0), # maturity based on the derived age-based pattern from original length-based SS3 model, arbitrary guess of slope
-        ),
-        by = c("module_name", "label")
-    ) |>
-    dplyr::rows_update(
-        tibble::tibble(
-            module_name = "Selectivity",
-            fleet_name = "fleet1",
-            label = c("inflection_point", "slope"),
-            value = c(10, 2),
-            estimation_type = "constant"
-        ),
-        by = c("module_name", "fleet_name", "label")
-    ) |>
-    dplyr::rows_update(
-        tibble::tibble(
-            module_name = "Selectivity",
-            fleet_name = "fleet2",
-            label = c("inflection_point", "slope"),
-            value = c(10, 2),
-            estimation_type = "constant"
-        ),
-        by = c("module_name", "fleet_name", "label")
-    ) |>
-    dplyr::rows_update(
-        tibble::tibble(
-            module_name = "Selectivity",
-            fleet_name = "fleet4",
-            label = c("inflection_point", "slope"),
-            value = c(6, 2),
-            estimation_type = "constant"
-        ),
-        by = c("module_name", "fleet_name", "label")
-    ) |>
+    # dplyr::rows_update(
+    #     tibble::tibble(
+    #         module_name = "Maturity",
+    #         label = c("inflection_point", "slope"),
+    #         value = c(7.0, 1.0), # maturity based on the derived age-based pattern from original length-based SS3 model, arbitrary guess of slope
+    #     ),
+    #     by = c("module_name", "label")
+    # ) |>
+    # dplyr::rows_update(
+    #     tibble::tibble(
+    #         module_name = "Selectivity",
+    #         fleet_name = "North",
+    #         label = c("inflection_point", "slope"),
+    #         value = c(10, 2),
+    #         estimation_type = "constant"
+    #     ),
+    #     by = c("module_name", "fleet_name", "label")
+    # ) |>
+    # dplyr::rows_update(
+    #     tibble::tibble(
+    #         module_name = "Selectivity",
+    #         fleet_name = "South",
+    #         label = c("inflection_point", "slope"),
+    #         value = c(10, 2),
+    #         estimation_type = "constant"
+    #     ),
+    #     by = c("module_name", "fleet_name", "label")
+    # ) |>
+    # dplyr::rows_update(
+    #     tibble::tibble(
+    #         module_name = "Selectivity",
+    #         fleet_name = "WCGBTS",
+    #         label = c("inflection_point", "slope"),
+    #         value = c(6, 2),
+    #         estimation_type = "constant"
+    #     ),
+    #     by = c("module_name", "fleet_name", "label")
+    # ) |>
+
+    # set initial values for stock-recruitment parameters based on SS3 output
     dplyr::rows_update(
         tibble::tibble(
             module_name = "Recruitment",
             label = c("log_rzero", "logit_steep", "log_sd"),
             value = c(
-                rep$parameters |>
-                    filter(grepl(pattern = "SR_LN(R0)", Label, fixed = TRUE)) |>
-                    pull(Value),
+                log(1000) + # adding log(1000) to account for R0 units in 1000s in SS3
+                    get_ss3_estimate("SR_LN(R0)"),
                 FIMS::logit(
                     0.2,
                     1.0,
-                    rep$parameters |>
-                        filter(grepl(
-                            pattern = "SR_BH_steep",
-                            Label,
-                            fixed = TRUE
-                        )) |>
-                        pull(Value)
+                    get_ss3_estimate("SR_BH_steep")
                 ),
-                0.5
+                get_ss3_estimate("SR_sigmaR")
             )
         ),
         by = c("module_name", "label")
     ) |>
+    # set initial values for recruitment deviations based on SS3 output,
+    # starting with the second year of the SS3 model since the first recruitment deviation
+    # corresponds to the initial numbers at age
     dplyr::rows_update(
         tibble::tibble(
             module_name = "Recruitment",
             label = "log_devs",
-            time = (FIMS::get_start_year(data_4_model) + 1):(FIMS::get_end_year(
-                data_4_model
-            )),
-            # The last value of the initial numbers at age is the first
-            # recruitment deviation
-            value = recdevs$Value[-1],
+            time = recdev_years,
+            value = recdevs,
         ),
         by = c("module_name", "label", "time")
     ) |>
+    # set initial value for log_q based on SS3 output
+    dplyr::rows_update(
+        tibble::tibble(
+            fleet_name = "WCGBTS",
+            label = "log_q",
+            value = get_ss3_estimate("LnQ_base_WCGBTS(4)")
+        ),
+        by = c("fleet_name", "label")
+    ) |>
+    # set initial numbers at age based on SS3 output calculated above
     dplyr::rows_update(
         tibble::tibble(
             module_name = "Population",
@@ -198,44 +226,50 @@ parameters <- default_parameters |>
         ),
         by = c("module_name", "label", "age")
     ) |>
+    # set initial M based on SS3 output
     dplyr::rows_update(
         tibble::tibble(
             module_name = "Population",
             label = "log_M",
-            value = log(rep$parameters["NatM_uniform_Fem_GP_1", "Value"]),
+            value = log(get_ss3_estimate("NatM_uniform_Fem_GP_1")),
             estimation_type = "constant"
         ),
         by = c("module_name", "label")
-    ) |>
-    dplyr::rows_update(
-        tibble::tibble(
-            module_name = "Fleet",
-            fleet_name = "fleet1",
-            time = years,
-            label = "log_Fmort",
-            estimation_type = "constant",
-            value = rep[["exploitation"]] |>
-                dplyr::filter(Yr %in% years) |>
-                dplyr::mutate(North = ifelse(North == 0, -999, log(North))) |>
-                dplyr::pull(North)
-        ),
-        by = c("module_name", "fleet_name", "label", "time")
-    ) |>
-    dplyr::rows_update(
-        tibble::tibble(
-            module_name = "Fleet",
-            fleet_name = "fleet2",
-            time = years,
-            label = "log_Fmort",
-            estimation_type = "constant",
-            value = rep[["exploitation"]] |>
-                dplyr::filter(Yr %in% years) |>
-                dplyr::mutate(South = ifelse(South == 0, -999, log(South))) |>
-                dplyr::pull(South)
-        ),
-        by = c("module_name", "fleet_name", "label", "time")
     )
 
+# confirm that all columns except "value" and "estimation_type" are identical between parameters and default_parameters
+if (!identical(
+    parameters |>
+        dplyr::select(-value, -estimation_type),
+    default_parameters |>
+        dplyr::select(-value, -estimation_type)
+)) {
+    cli::cli_alert_danger("Columns other than 'value' and 'estimation_type' are not identical between parameters and default_parameters")
+}
+# figure out if any rows have different estimate_type
+cli::cli_alert_info("Rows with different estimation_type between default_parameters parameters:")
+diff_estimation_type <- parameters |>
+    dplyr::filter(estimation_type != default_parameters$estimation_type) |>
+    dplyr::select(module_name, fleet_name, label, estimation_type)
+
+if (nrow(diff_estimation_type) == 0) {
+    cli::cli_alert_success("No rows with different estimation_type.")
+} else {
+    print(diff_estimation_type, n = Inf, width = Inf)
+}
+
+# parameters which have been updated from defaults
+cli::cli_alert_info("Rows with updated initial values from default_parameters to parameters:")
+updated_parameter_counts <- parameters |>
+    dplyr::filter(value != default_parameters$value) |>
+    dplyr::select(module_name, fleet_name, label, value) |>
+    count(module_name, label)
+
+if (nrow(updated_parameter_counts) == 0) {
+    cli::cli_alert_success("No rows with updated initial values.")
+} else {
+    print(updated_parameter_counts, n = Inf, width = Inf)
+}
 # Run the model without optimization to help ensure a viable model
 test_fit <- parameters |>
     FIMS::initialize_fims(data = data_4_model) |>
@@ -264,24 +298,38 @@ ggplot2::ggplot(index_results, ggplot2::aes(x = year, y = observed)) +
     ggplot2::geom_point() +
     ggplot2::xlab("Year") +
     ggplot2::ylab("Index (mt)") +
-    ggplot2::geom_line(ggplot2::aes(x = year, y = expected), color = "blue") +
+    ggplot2::geom_line(
+        ggplot2::aes(x = year, y = expected),
+        color = "blue"
+    ) +
     ggplot2::theme_bw()
 
-
-# gather catch info
-catch_results <- data.frame(
+# gather catch info (code here is specific to 2-fleet model)
+catch_results1 <- data.frame(
     year = years,
-    observed = FIMS::m_landings(data_4_model, fleet = "fleet1"),
-    expected = FIMS::get_report(fit)[["landings_expected"]][[1]]
+    observed = FIMS::model_landings(data_4_model, fleet_name = "North"),
+    expected = FIMS::get_report(fit)[["landings_expected"]][[1]],
+    fleet = "North"
 )
+catch_results2 <- data.frame(
+    year = years,
+    observed = FIMS::model_landings(data_4_model, fleet_name = "South"),
+    expected = FIMS::get_report(fit)[["landings_expected"]][[2]],
+    fleet = "South"
+)
+catch_results <- dplyr::bind_rows(catch_results1, catch_results2)
 
 # plot catch fit
 ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
     ggplot2::geom_point() +
-    #ggplot2::aes(color = fleet)) +
+    ggplot2::aes(color = fleet) +
     ggplot2::xlab("Year") +
     ggplot2::ylab("Catch (mt)") +
-    ggplot2::geom_line(ggplot2::aes(x = year, y = expected)) + #, color = fleet)) +
+    ggplot2::geom_line(ggplot2::aes(
+        x = year,
+        y = expected,
+        color = fleet
+    )) +
     ggplot2::theme_bw()
 
 # gather biomass info from FIMS and SS3
@@ -293,14 +341,19 @@ biomass <- rep$timeseries |>
         "SS3_Bio" = "Bio_all"
     ) |>
     dplyr::mutate(
-        FIMS_SpawnBio = FIMS::get_report(fit)[["spawning_biomass"]][[1]][-1],
+        FIMS_SpawnBio = FIMS::get_report(fit)[["spawning_biomass"]][[1]][
+            -1
+        ],
         FIMS_Bio = FIMS::get_report(fit)[["biomass"]][[1]][-1]
-    ) |> ##CHECK: Is FIMS ssb reporting n_years+1 or initial year-1?
+    ) |> ## CHECK: Is FIMS ssb reporting n_years+1 or initial year-1?
     tidyr::pivot_longer(cols = -Yr) |>
     tidyr::separate_wider_delim(
         cols = "name",
         delim = "_",
         names = c("Model", "Type")
+    ) |>
+    dplyr::mutate(
+        value = ifelse(Model == "SS3" & Type == "SpawnBio", value * 1000, value)
     )
 
 # plot comparison of spawning biomass and total biomass time series
@@ -314,14 +367,16 @@ ggplot2::ggplot(biomass, ggplot2::aes(x = Yr, y = value)) +
 # gather info on recruitment
 recruits <- rep$recruit |>
     dplyr::filter(Yr %in% years) |>
-    dplyr::select(Yr, exp_recr, raw_dev) |>
+    dplyr::select(Yr, pred_recr, raw_dev) |>
     dplyr::rename(
-        "SS3_recruit" = "exp_recr",
+        "SS3_recruit" = "pred_recr",
         "SS3_recdev" = "raw_dev",
         "Year" = "Yr"
     ) |>
     dplyr::mutate(
-        FIMS_recruit = c(FIMS::get_report(fit)[["expected_recruitment"]][[1]][
+        FIMS_recruit = c(FIMS::get_report(fit)[["expected_recruitment"]][[
+            1
+        ]][
             -1
         ]),
         FIMS_recdev = c(
@@ -343,8 +398,12 @@ recruits <- rep$recruit |>
     )
 
 # plot recruit time series
-ggplot2::ggplot(recruits, ggplot2::aes(x = Year, y = value, color = Model)) +
-    ggplot2::geom_line() +
+ggplot2::ggplot(
+    recruits,
+    ggplot2::aes(x = Year, y = value, color = Model)
+) +
+    ggplot2::geom_line(ggplot2::aes(linetype = Model)) +
+    ggplot2::scale_linetype_manual(values = c("FIMS" = "solid", "SS3" = "dashed")) +
     ggplot2::facet_wrap(~Type, scales = "free_y") +
     ggplot2::theme_bw()
 
