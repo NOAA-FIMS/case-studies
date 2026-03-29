@@ -75,3 +75,53 @@ get_parameter <- function(string, fit) {
   names(pars) <- dplyr::pull(out, label)
   return(pars)
 }
+
+#' Add an additional year of data to a long data frame
+#'
+#' Add an additional, i.e., terminal year of data onto a long data frame that
+#' you plan on passing to FIMSFrame. This is particularly useful for
+#' weight_at_age_data where you need terminal year + 1 for the final report of
+#' spawning biomass that comes from the model.
+#'
+#' @param data A long data frame.
+#' @param timing_to_average A vector of values that are present in the timing
+#'   column that you want to average over. For example the last five years of
+#'   your data.
+#' @param type_to_filter The type of data that you want to add to. For example,
+#'   `"weight_at_age"`, which is the default. Available types are
+#'   `r glue::glue_collapse(FIMS::fims_input_types, sep = ", ", last = ", and ")`.
+#'   The default is `"age_comp"`
+#' @param ... Unquoted columns that you want to group over. The typical value is
+#'   age.
+#' @return
+#' A tibble with the same columns as `data`.
+add_additional_year <- function(
+  data,
+  timing_to_average,
+  type_to_filter = "weight_at_age",
+  ...) {
+  grouping_columns <- rlang::enquos(...)
+  type_to_filter <- rlang::arg_match(
+    type_to_filter,
+    values = FIMS::fims_input_types
+  )
+
+  filtered_data <- dplyr::filter(
+    data,
+    type == type_to_filter,
+    timing %in% timing_to_average
+  )
+  terminal_year <- max(filtered_data[["timing"]])
+
+  filtered_data |>
+    dplyr::group_by(!!!grouping_columns) |>
+    dplyr::summarize(
+      dplyr::across(
+        -c(value, timing),
+        ~ if (dplyr::n_distinct(.x, na.rm = FALSE) == 1) dplyr::first(.x) else NA
+      ),
+      value = mean(value),
+      timing = terminal_year + 1
+    ) |>
+    dplyr::select(colnames(data))
+}

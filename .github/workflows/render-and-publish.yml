@@ -38,18 +38,25 @@ jobs:
           libx11-dev \
           pandoc
 
-      - name: Install packages (needed for Rmd)
-        run: Rscript -e 'install.packages(c("rmarkdown", "knitr", "jsonlite"))'
+      - name: Set up R package dependencies (cached, via pak)
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          pak-version: stable
+          cache: true
+          packages: |
+            cran::rmarkdown
+            cran::knitr
+            cran::jsonlite
+            cran::dplyr
+            cran::ggplot2
+            cran::tidyr
+            cran::TMB
+            cran::remotes
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}        
-        with:
-          # To install LaTeX to build PDF book 
-          tinytex: true 
-          # uncomment below and fill to pin a version
-          # version: 0.9.600
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       # add software dependencies here
 

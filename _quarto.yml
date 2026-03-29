@@ -1,5 +1,10 @@
 project:
   type: website
+  render:
+    - index.qmd
+    - content/case-study-template.qmd
+    - content/NEFSC-yellowtail.qmd
+    - content/acknowledgements.qmd
 
 website:
   page-navigation: true
@@ -36,21 +41,21 @@ website:
       - href: content/case-study-template.qmd
         text: Case study template
       - href: content/NEFSC-yellowtail.qmd
-        text: NEFSC yellowtail flounder case study
-      - href: content/AFSC-GOA-pollock.qmd
-        text: AFSC GOA pollock case study
-      - href: content/SWFSC-sardine.qmd
-        text: SWFSC sardine case study
-      - href: content/PIFSC-opakapaka.qmd
-        text: PIFSC Opakapaka case study
-      - href: content/NWFSC-petrale.qmd
-        text: NWFSC petrale case study
-      - href: content/SEFSC-scamp.qmd
-        text: SEFSC scamp case study
-      - href: content/pacific-hake.qmd
-        text: Pacific Hake case study
-      - href: content/advanced-features.qmd
-        text: Advanced features case study
+      #   text: NEFSC yellowtail flounder case study
+      # - href: content/AFSC-GOA-pollock.qmd
+      #   text: AFSC GOA pollock case study
+      # - href: content/SWFSC-sardine.qmd
+      #   text: SWFSC sardine case study
+      # - href: content/PIFSC-opakapaka.qmd
+      #   text: PIFSC Opakapaka case study
+      # - href: content/NWFSC-petrale.qmd
+      #   text: NWFSC petrale case study
+      # - href: content/SEFSC-scamp.qmd
+      #   text: SEFSC scamp case study
+      # - href: content/pacific-hake.qmd
+      #   text: Pacific Hake case study
+      # - href: content/advanced-features.qmd
+      #   text: Advanced features case study
       - href: content/acknowledgements.qmd
         text: Acknowledgements
 

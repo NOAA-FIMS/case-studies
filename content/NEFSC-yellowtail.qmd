@@ -66,7 +66,7 @@ orig <- dget(file.path(data_directory, "NEFSC_YT_ORIGINAL.RDAT"))   # where star
 
 # function to create equivalent of data_mile1, basic catch and survey data
 # need to think about how to deal with multiple fleets and indices - only use 1 of each for now
-get_asap_data <- function(rdat) {
+get_asap_data <- function(asap_input) {
   res <- data.frame(type = character(),
                 name = character(),
                 age = integer(),
@@ -74,30 +74,36 @@ get_asap_data <- function(rdat) {
                 value = double(),
                 unit = character(),
                 uncertainty = double())
+  years_in_model <- seq(asap_input$parms$styr, asap_input$parms$endyr)
   
   landings <- data.frame(type = "landings",
-                     name = "fleet1",
+                     name = "fishery",
                      age = NA,
-                     timing = seq(rdat$parms$styr, rdat$parms$endyr),
-                     value = as.numeric(rdat$catch.obs[1,]),
+                     timing = years_in_model,
+                     value = as.numeric(asap_input$catch.obs[1,]),
                      unit = "mt",
                      # This was
-                     # rdat$control.parms$catch.tot.cv[,1]
+                     # asap_input$control.parms$catch.tot.cv[,1]
                      # but it was just reset to the following later in the parameters so using internal functionality to set it now
-                     # uncertainty = rep(log(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), rdat[["parms"]][["nyears"]])
-                     uncertainty = rep(sqrt(log(as.numeric(mean(rdat$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1)), rdat[["parms"]][["nyears"]])
+                     # uncertainty = rep(log(sqrt(log(as.numeric(mean(asap_input$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), asap_input[["parms"]][["nyears"]])
+                     uncertainty = rep(sqrt(log(as.numeric(mean(asap_input$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1)), asap_input[["parms"]][["nyears"]])
   )
   
   # loop over all indices
-  for (i in 1:rdat$parms$nindices){
-    index <- data.frame(type = "index",
-                        name = paste0("survey", i),
-                        age = NA,
-                        timing = seq(rdat$parms$styr, rdat$parms$endyr),
-                        value = as.numeric(rdat$index.obs[[i]]),
-                        unit = "",
-                        # uncertainty = rep(log(sqrt(log(as.numeric(mean(rdat$index.cv[[i]], na.rm=TRUE)^2 + 1)))), rdat[["parms"]][["nyears"]]))
-                        uncertainty = rep(sqrt(log(as.numeric(mean(rdat$index.cv[[i]], na.rm=TRUE)^2 + 1))), rdat[["parms"]][["nyears"]]))
+  for (i in seq(asap_input$parms$nindices)) {
+    index <- data.frame(
+      type = "index",
+      name = paste0("survey", i),
+      age = NA_integer_,
+      timing = years_in_model[asap_input$index.year.counter[[i]]],
+      value = as.numeric(asap_input$index.obs[[i]]),
+      unit = "mt",
+      # uncertainty = rep(log(sqrt(log(as.numeric(mean(asap_input$index.cv[[i]], na.rm=TRUE)^2 + 1)))), asap_input[["parms"]][["nyears"]]))
+      uncertainty = rep(
+        sqrt(log(as.numeric(mean(asap_input$index.cv[[i]], na.rm=TRUE)^2 + 1))),
+        length(asap_input$index.year.counter[[i]])
+      )
+    )
     if (i == 1){
       allinds <- index
     }else{
@@ -105,23 +111,25 @@ get_asap_data <- function(rdat) {
     }
   }
   
-  catchage <- data.frame(type = "age_comp",
-                     name = "fleet1",
-                     age = rep(seq(1,rdat$parms$nages), rdat$parms$nyears),
-                     timing = rep(seq(rdat$parms$styr, rdat$parms$endyr), each=rdat$parms$nages),
-                     value = as.numeric(t(rdat$catch.comp.mats$catch.fleet1.ob)),
-                     unit = "",
-                     uncertainty = rep(rdat$fleet.catch.Neff.init[1,], each=rdat$parms$nages))
+  catchage <- data.frame(
+    type = "age_comp",
+    name = "fishery",
+    age = rep(seq(1,asap_input$parms$nages), asap_input$parms$nyears),
+    timing = rep(seq(asap_input$parms$styr, asap_input$parms$endyr), each = asap_input$parms$nages),
+    value = as.numeric(t(asap_input$catch.comp.mats$catch.fleet1.ob)),
+    unit = "",
+    uncertainty = rep(asap_input$fleet.catch.Neff.init[1,], each = asap_input$parms$nages)
+  )
   
   # loop over all indices
-  for (i in 1:rdat$parms$nindices){
+  for (i in 1:asap_input$parms$nindices){
     indexage <- data.frame(type = "age_comp",
                            name = paste0("survey", i),
-                           age = rep(seq(1,rdat$parms$nages), rdat$parms$nyears),
-                           timing = rep(seq(rdat$parms$styr, rdat$parms$endyr), each=rdat$parms$nages),
-                           value = as.numeric(t(rdat$index.comp.mats[[i*2-1]])),
+                           age = rep(seq(1,asap_input$parms$nages), asap_input$parms$nyears),
+                           timing = rep(seq(asap_input$parms$styr, asap_input$parms$endyr), each = asap_input$parms$nages),
+                           value = as.numeric(t(asap_input$index.comp.mats[[i*2-1]])),
                            unit = "",
-                           uncertainty = rep(rdat$index.Neff.init[i,], each=rdat$parms$nages))
+                           uncertainty = rep(asap_input$index.Neff.init[i,], each = asap_input$parms$nages))
     if (i == 1){
       allindsage <- indexage
     }else{
@@ -129,18 +137,30 @@ get_asap_data <- function(rdat) {
     }
   }
   
-  # Weight at age is in rdat$WAA.mats$WAA.catch.all but for yellowtail the data
+  # Weight at age is in asap_input$WAA.mats$WAA.catch.all but for yellowtail the data
   # is time-invariant. Could just use the first row but the code below shows how
-  # to use values for every year/age combination.
+  # to use values for every year/age combination. Additionally, it adds the
+  # extra year of data needed for FIMS to predict spawning biomass after all
+  # catches are removed
+  weight_at_age_matrix <- rbind(
+      asap_input[["WAA.mats"]][["WAA.catch.all"]],
+      asap_input[["WAA.mats"]][["WAA.catch.all"]][
+        NROW(asap_input[["WAA.mats"]][["WAA.catch.all"]]), 
+      ]
+    )
+  
   weight_at_age <- data.frame(
-    type = "weight-at-age",
-    name = "fleet1",
-    age = seq(rdat[["parms"]][["nages"]]),
-    timing = rep(
-      seq(rdat[["parms"]][["styr"]], rdat[["parms"]][["endyr"]]),
-      each = rdat[["parms"]][["nages"]]
+    type = "weight_at_age",
+    name = NA_character_,
+    age = rep(
+      seq(asap_input[["parms"]][["nages"]]),
+      length(seq(asap_input[["parms"]][["styr"]], asap_input[["parms"]][["endyr"]] + 1))
     ),
-    value = c(t(rdat[["WAA.mats"]][["WAA.catch.all"]])),
+    timing = rep(
+      seq(asap_input[["parms"]][["styr"]], asap_input[["parms"]][["endyr"]] + 1),
+      each = asap_input[["parms"]][["nages"]]
+    ),
+    value = c(t(weight_at_age_matrix)),
     unit = "mt",
     uncertainty = NA
   )
@@ -162,19 +182,10 @@ n_years <- get_n_years(data_4_model)
 
 ```{r}
 #| label: setup-model
-test <- create_default_configurations(data = data_4_model) |>
+parameters <- create_default_configurations(data = data_4_model) |>
   create_default_parameters(data = data_4_model) |>
   tidyr::unnest(data) |>
   # ASAP assumes Fmult devs = 0
-  dplyr::rows_update(
-    tibble::tibble(
-      fleet_name = "fleet1",
-      label = "log_Fmort",
-      time = years,
-      value = log(rep(rdat$initial.guesses$Fmult.year1.init[1], n_years))
-    ),
-    by = c("fleet_name", "label", "time")
-  ) |>
   dplyr::rows_update(
     tibble::tibble(
       fleet_name = c("survey1", "survey2"),
@@ -182,16 +193,6 @@ test <- create_default_configurations(data = data_4_model) |>
       value = log(rdat$initial.guesses$q.year1.init)
     ),
     by = c("fleet_name", "label")
-  ) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      label = "log_devs",
-      time = years[-1],
-      # Unrealistically setting these from the ASAP run
-      value = rdat$SR.resids$logR.dev[-1],
-      estimation_type = "fixed_effects"
-    ),
-    by = c("label", "time")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -224,8 +225,7 @@ test <- create_default_configurations(data = data_4_model) |>
       label = "log_init_naa",
       age = ages,
       value = log(rdat$N.age[1, ]),
-      # TODO: Turn these on later
-      estimation_type = "constant"
+      estimation_type = "fixed_effects"
     ),
     by = c("module_name", "label", "age")
   ) |>
@@ -253,19 +253,14 @@ test <- create_default_configurations(data = data_4_model) |>
     by = c("module_name", "label")
   )
 
-# Put it all together, creating the FIMS model and making the TMB fcn
-# Run the model without optimization to help ensure a viable model
-test_fit <- test |>
-  initialize_fims(data = data_4_model) |>
-  fit_fims(optimize = FALSE)
 # Run the  model with optimization
-fit <- test |>
+fit <- parameters |>
   initialize_fims(data = data_4_model) |>
   fit_fims(optimize = TRUE)
 output <- get_estimates(fit)
 
 # eventually change to allow multiple fishing fleets similar to multiple indices - only using 1 fishing fleet for now
-# NOTE: FIMS assumes SSB calculated at the start of the year, so need to adjust ASAP to do so as well for now, need to make timing of SSB calculation part of FIMS later
+# NOTE: FIMS assumes SB calculated at the start of the year, so need to adjust ASAP to do so as well for now, need to make timing of SSB calculation part of FIMS later
 # NOTE: for now tricking FIMS into thinking age 0 is age 1, so need to adjust A50 for maturity because FIMS calculations use ages 0-5+ instead of 1-6
 
 sdr <- get_sdreport(fit)
@@ -278,9 +273,122 @@ report <- get_report(fit)
 ```{r}
 #| label: comparison-plots
 
-mycols <- c("FIMS" = "blue", "ASAP" = "red", "ASAP_orig" = "darkgreen")
+convert_output_asap <- function(report, fleet_names) {
+  years <- seq(report$parms$styr, report$parms$endyr)
+  catch <- data.frame(
+    module_name = "Fleet",
+    module_id = rep(seq(NROW(report$catch.pred)), each = length(years)),
+    label = "landings_expected",
+    year_i = rep(seq(NCOL(report$catch.pred)), NROW(report$catch.pred)),
+    estimate = c(report$catch.pred),
+    estimation_type = "derived_quantity"
+  )
+  index <- data.frame(
+    module_name = "Fleet",
+    module_id = rep(seq(report$index.pred) + NROW(report$catch.pred), each = length(years)),
+    label = "indices_expected",
+    year_i = unlist(report$index.year.counter),
+    estimate = unlist(report$index.pred),
+    estimation_type = "derived_quantity"
+  )
+  index_observed <- index |>
+    dplyr::mutate(
+      label = "indices_observed",
+      estimate = unlist(report$index.obs)
+    )
+  spawning_biomass <- data.frame(
+    module_name = "Population",
+    label = "spawning_biomass",
+    year_i = seq(years),
+    estimate = report$SSB * 0.5,
+    estimation_type = "derived_quantity"
+  )
+  expected_recruitment <- data.frame(
+    module_name = "Population",
+    label = "expected_recruitment",
+    year_i = seq(years),
+    estimate = as.numeric(report$N.age[, 1]),
+    estimation_type = "derived_quantity"
+  )
+  # I don't know the structure of F.report when more than one fleet is present
+  log_Fmort <- data.frame(
+    module_name = "Fleet",
+    module_id = 1,
+    label = "log_Fmort",
+    type = "vector",
+    year_i = seq(years),
+    estimate = log(report$F.report),
+    estimation_type = "fixed_effects"
+  )
+  log_init_naa <- data.frame(
+    module_name = "Population",
+    label = "log_init_naa",
+    type = "vector",
+    age_i = rep(
+      seq(NCOL(report$N.age)),
+      NROW(report$N.age)
+    ),
+    year_i = rep(
+      seq(NROW(report$N.age)),
+      each = NCOL(report$N.age)
+    ),
+    estimate = log(c(t(report$N.age))),
+    estimation_type = "fixed_effects"
+  )
+  dplyr::bind_rows(
+    catch, index, index_observed,
+    spawning_biomass, expected_recruitment, log_Fmort, log_init_naa
+  ) |>
+    dplyr::left_join(
+      data.frame(
+        year = years,
+        year_i = seq(years)
+      ),
+      by = "year_i"
+    ) |>
+    dplyr::mutate(
+      uncertainty = NA_real_,
+      uncertainty_label = "se",
+      fleet = as.character(factor(module_id, labels = fleet_names)),
+      era = "time"
+    )
+}
+output_asap <- convert_output_asap(rdat, get_fleets(data_4_model))
+output_fims <- output |>
+  dplyr::mutate(
+    uncertainty_label = "se",
+    year = year_i + FIMS::get_start_year(data_4_model) - 1,
+    estimate = estimated,
+    era = "time"
+  )
+stockplotr::plot_spawning_biomass(
+  list(
+    "ASAP" = output_asap,
+    "FIMS" = output_fims
+  )
+)
+stockplotr::plot_recruitment(
+  list(
+    "ASAP" = output_asap,
+    "FIMS" = output_fims
+  ),
+  facet = "model"
+)
 
-for (i in 1:rdat$parms$nindices) {
+# Not showing this plot because the hard-coded one is better
+# stockplotr::plot_indices(
+#   dat = list(
+#     "ASAP" = output_asap,
+#     "FIMS" = dplyr::mutate(output_fims,
+#       label = dplyr::if_else(label == "index_expected", "indices_expected", label),
+#       fleet = as.character(factor(module_id, labels = get_fleets(data_4_model)))
+#     ) |>
+#       dplyr::filter(!is.na(observed))
+#   )
+# )
+
+mycols <- c("FIMS" = "blue", "ASAP" = "red", "ASAP_orig" = "darkgreen")
+for (i in seq(rdat$parms$nindices)) {
   index_results <- data.frame(
     survey = i,
     year = years,
@@ -305,11 +413,11 @@ comp_index <- ggplot2::ggplot(allinds_results, ggplot2::aes(x = year, y = observ
   ggplot2::ylab("Index") +
   ggplot2::ggtitle("Blue=FIMS, Red=ASAP") +
   ggplot2::theme_bw()
-#print(comp_index)
+print(comp_index)
 
 catch_results <- data.frame(
   observed = get_data(data_4_model) |>
-    dplyr::filter(type == "index", name == "survey1") |>
+    dplyr::filter(type == "landings", name == "fishery") |>
     dplyr::pull(value),
   FIMS = report$landings_expected[[1]],
   ASAP = as.numeric(rdat$catch.pred[1,])
@@ -324,16 +432,16 @@ comp_catch <- ggplot2::ggplot(catch_results, ggplot2::aes(x = years, y = observe
   ggplot2::geom_line(ggplot2::aes(x = years, y = ASAP), color = "red") +
   ggplot2::ggtitle("Blue=FIMS, Red=ASAP") +
   ggplot2::theme_bw()
-#print(comp_catch)
+print(comp_catch)
 
 pop_results <- data.frame(
   Year = c(years, max(years)+1, years, years, years, years, max(years)+1, years),
-  Metric = c(rep("SSB", 2*n_years+1), rep("F_mort", 2*n_years), rep("Recruitment", 2*n_years+1)),
-  Model = c(rep("FIMS", n_years+1), rep("ASAP", n_years), rep(c("FIMS", "ASAP"), each=n_years), 
+  Metric = c(rep("Spawning biomass", 2*n_years+1), rep("Fishing mortality", 2*n_years), rep("Recruitment", 2*n_years+1)),
+  Model = c(rep("FIMS", n_years+1), rep("ASAP", n_years), rep(c("FIMS", "ASAP"), each = n_years), 
              rep("FIMS", n_years+1), rep("ASAP", n_years)),
   Value = c(
     report$spawning_biomass[[1]],
-    rdat$SSB,
+    rdat$SSB / 2,
     output |>
       dplyr::filter(label == "log_Fmort", module_id == 1) |>
       dplyr::pull(estimated) |>
@@ -345,35 +453,29 @@ pop_results <- data.frame(
 )
 #print(pop_results)
 
-# ggplot(filter(pop_results, Year <=2019), aes(x=Year, y=Value, color=Model)) +
-#   geom_line() +
-#   facet_wrap(~Metric, ncol=1, scales = "free_y") +
-#   theme_bw() +
-#   scale_color_manual(values = mycols)
+ggplot2::ggplot(dplyr::filter(pop_results, Year <=2019), ggplot2::aes(x=Year, y=Value, color=Model)) +
+  ggplot2::geom_line() +
+  ggplot2::facet_wrap(~Metric, ncol=1, scales = "free_y") +
+  ggplot2::theme_bw() +
+  ggplot2::scale_color_manual(values = mycols)
 
 orig_years <- seq(orig$parms$styr, orig$parms$endyr)
 orig_pop_results <- data.frame(
   Year = rep(orig_years, 3),
-  Metric = rep(c("SSB", "F_mort", "Recruitment"), each = length(orig_years)),
+  Metric = rep(c("Spawning biomass", "Fishing mortality", "Recruitment"), each = length(orig_years)),
   Model = "ASAP_orig",
-  Value = c(orig$SSB, orig$F.report, as.numeric(orig$N.age[,1]))
+  Value = c(orig$SSB / 2, orig$F.report, as.numeric(orig$N.age[,1]))
 )
 
 pop_results_3 <- rbind(pop_results, orig_pop_results)
 #print(pop_results_3)
-
-# ggplot(filter(pop_results_3, Year <=2019), aes(x=Year, y=Value, color=Model)) +
-#   geom_line() +
-#   facet_wrap(~Metric, ncol=1, scales = "free_y") +
-#   theme_bw() +
-#   scale_color_manual(values = mycols)
 
 comp_FRSSB3 <- ggplot2::ggplot(pop_results_3, ggplot2::aes(x=Year, y=Value, color=Model)) +
   ggplot2::geom_line() +
   ggplot2::facet_wrap(~Metric, ncol=1, scales = "free_y") +
   ggplot2::theme_bw() +
   ggplot2::scale_color_manual(values = mycols)
-#print(comp_FRSSB3)
+print(comp_FRSSB3)
 
 FIMS_naa_results <- data.frame(
   Year = rep(c(years, max(years)+1), each = n_ages),
@@ -401,45 +503,14 @@ orig_naa_results <- data.frame(
 naa_results <- rbind(FIMS_naa_results, ASAP_naa_results, orig_naa_results)
 #print(naa_results)
 
-# ggplot(filter(naa_results, Year <= 2019), aes(x=Year, y=Value, color=Model)) +
-#   geom_line() +
-#   facet_wrap(~Age, ncol=1, scales = "free_y") +
-#   ylab("NAA") +
-#   theme_bw() +
-#   scale_color_manual(values = mycols)
-
-comp_naa2 <- ggplot2::ggplot(
-  dplyr::filter(naa_results, Year <= 2019, Model %in% c("ASAP", "FIMS")), ggplot2::aes(x=Year, y=Value, color=Model)) +
+comp_naa3 <- ggplot2::ggplot(dplyr::filter(naa_results, Year <= 2019), ggplot2::aes(x=Year, y=Value, color=Model)) +
   ggplot2::geom_line() +
   ggplot2::facet_wrap(~Age, ncol=1, scales = "free_y") +
   ggplot2::ylab("NAA") +
   ggplot2::theme_bw() +
   ggplot2::scale_color_manual(values = mycols)
-#print(comp_naa2)
-
-# ggplot(filter(naa_results, Year == 1973, Model %in% c("ASAP", "FIMS")), aes(x=Age, y=Value, color=Model)) +
-#   geom_line() +
-#   ylab("NAA in Year 1") +
-#   theme_bw() +
-#   scale_color_manual(values = mycols)
-
-
-saveplots <- TRUE
-if(saveplots){
-  ggplot2::ggsave(filename = "figures/NEFSC_YT_compare_index.png", plot = comp_index, width = 4, height = 4, units = "in")
-  ggplot2::ggsave(filename = "figures/NEFSC_YT_compare_catch.png", plot = comp_catch, width = 4, height = 4, units = "in")
-  ggplot2::ggsave(filename = "figures/NEFSC_YT_compare_FRSSB3.png", plot = comp_FRSSB3, width = 5, height = 6.5, units = "in")
-  ggplot2::ggsave(filename = "figures/NEFSC_YT_compare_NAA2.png", plot = comp_naa2, width = 5, height = 6.5, units = "in")
-}
-
+print(comp_naa3)
 ```
-
-## Comparison figures
-
-![Catch](figures/NEFSC_YT_compare_catch.png){width=4in}
-![Indices](figures/NEFSC_YT_compare_index.png){width=4in}
-![FRSSB](figures/NEFSC_YT_compare_FRSSB3.png){width=4in}
-![NAA](figures/NEFSC_YT_compare_NAA2.png){width=4in}
 
 ## Comparison table
 
@@ -466,33 +537,29 @@ jnlltab <- data.frame(
 print(jnlltab)
 ```
 
-## What was your experience using FIMS? What could we do to improve usability?
-
-Relatively easy to use by following the vignette. Creating wrappers for data input would help so that each element did not need to be assigned directly. 
-
 ## List any issues that you ran into or found
 
 Please [open an issue](https://github.com/NOAA-FIMS/FIMS/issues/new/choose) if you found something new.
 
-* SSB calculations in FIMS assume 0.5 multiplier, which differs from ASAP [Issue #521](https://github.com/NOAA-FIMS/FIMS/issues/521).
-* Output all derived values (this is mostly done)
-* Fix recruitment estimation [Issue #364](https://github.com/NOAA-FIMS/FIMS/issues/364)
-* Handle missing data, especially surveys [Issue #502](https://github.com/NOAA-FIMS/FIMS/issues/502)
-* Weights at age that change over time
+* SB calculations in FIMS assume 0.5 multiplier, which differs from ASAP [Issue #521](https://github.com/NOAA-FIMS/FIMS/issues/521)
 * Separate weights at age for catch, SSB, Jan-1 population, indices, etc.
 * Fishery selectivity blocks or random effects
 * Allow time-varying CVs and ESS (or alternative functions)
-* Option for Index in numbers
 * Timing of Index and SSB calculations within the year
 * One-step-ahead residuals
-* Reference points, projections, pushbutton retro
+* Reference points
 
-## What features are most important to add based on this case study?
+The following items are available in FIMS but have yet to be added to this case study
 
-* Missing values, would allow inclusion of the other 3 indices (too many missing years to fill for this example)
+* Projections
+* Option for Index in numbers
+* Push-button retro
+* Inclusion of the other 3 indices because missing values are automatically filled in now
+* Include the true time-varying weight-at-age data
 
 ```{r}
 #| label: cleanup
+#| echo: false
 # Clear C++ objects from memory
 FIMS::clear()
 ```

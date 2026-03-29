@@ -63,17 +63,14 @@ The data for the FIMS model was created using `get_ss3_data()`, written by Drs. 
 inputs <- r4ss::SS_read(base_dir)
 inputs[["wtatage"]] <- r4ss::SS_readwtatage(file.path(base_dir, "wtatage.ss_new"))
 
-data_4_model <- get_ss3_data(
+stock_synthesis_data <- r4ss::ss3_data_to_fims(
+  ss_new = TRUE,
   ss3_inputs = inputs,
-  fleets = seq(inputs[["dat"]][["Nfleets"]]),
+  ss3_output = NULL,
+  # TODO: Allow for a sensitivity with age-1 index but use Numbers
+  fleets = seq(inputs[["dat"]][["Nfleets"]])[-3],
   ages = c(0, inputs[["dat"]][["agebin_vector"]])
 ) |>
-  dplyr::filter(
-    timing <= inputs[["dat"]][["endyr"]],
-    value != -999,
-    # TODO: allow fleet3 but specify units as numbers
-    name != "fleet3"
-  ) |>
   dplyr::mutate(
     name = dplyr::case_when(
       name == "fleet1" ~ "fishery",
@@ -84,8 +81,18 @@ data_4_model <- get_ss3_data(
       uncertainty * 10,
       uncertainty
     )
+  )  
+
+data_4_model <- dplyr::bind_rows(
+    stock_synthesis_data |>
+      dplyr::filter(timing <= terminal_year, timing > 1976),
+    add_additional_year(
+      stock_synthesis_data,
+      timing_to_average = terminal_year:(terminal_year - 4),
+      type_to_filter = "weight_at_age",
+      age
+    )
   ) |>
-  dplyr::filter(timing <= terminal_year, timing > 1976) |>
   FIMS::FIMSFrame()
 ```
 
@@ -206,6 +213,7 @@ The priors on the natural log of unfished recruitment and the natural log of ini
 ### Selectivity
 
 The logistic and double-logistic selectivity curves are currently the only selectivity forms that are available in FIMS. Both forms were investigated for Pacific Hake. We also investigated the use of a time-varying inflection point and/or slope for the fishing fleet. Additionally, we investigated allowing just a portion of the parameter vector to vary with time starting at several different time points, where the base model starts in 1991.
+In the end, time-invariant logistic selectivity was used for both the fleet and the survey.
 
 Work is in progress to implement an age-specific non-parametric selectivity curve in FIMS as there is a need for this option from both coasts. Consequently, we have put a high priority on it within the FIMS development team, and it will be available before the 2027 Pacific Hake assessment.
 
@@ -253,7 +261,7 @@ FIMS models are configured with a data frame or R objects rather than an input f
 #| label: setup-model
 #| output: false
 
-time_varying_selectivity <- FALSE
+time_varying_selectivity <- TRUE
 selectivity_used <- "Logistic"
 FIMS::clear()
 parameters <- FIMS::create_default_configurations(data = data_4_model) |>
@@ -499,10 +507,10 @@ recruitment_distribution$log_sd[1]$value <- log(
 )
 # TODO: check with Andrea about this not being in the parameter vector
 recruitment_distribution$log_sd[1]$estimation_type$set("fixed_effects")
-recruitment_distribution$x$resize(recruitment$log_devs$size())
+recruitment_distribution$observed_values$resize(recruitment$log_devs$size())
 recruitment_distribution$expected_values$resize(recruitment$log_devs$size())
 for (i in seq(recruitment$log_devs$size())) {
-  recruitment_distribution$x[i]$value <- 0
+  recruitment_distribution$observed_values[i]$value <- 0
   recruitment_distribution$expected_values[i]$value <- 0
 }
 recruitment_distribution$set_distribution_links(
@@ -537,7 +545,7 @@ for(i in (growth$weights$size() - get_n_ages(data_4_model)):(growth$weights$size
     i,
     get_data(data_4_model) |>
       dplyr::filter(
-        type == "weight-at-age",
+        type == "weight_at_age",
         timing %in% (get_end_year(data_4_model) - 4):get_end_year(data_4_model),
         age == ii
       ) |>
@@ -669,9 +677,9 @@ output <- FIMS::get_estimates(fit) |>
 # TODO: Implement this in parallel
 mcmc <- adnuts::sample_snuts(
   obj,
-  num_samples = 100,
+  num_samples = 5000,
   num_warmup = 200,
-  chains = 2,
+  chains = 4,
   cores = 1,
   seed = 1,
   # init = "random",
@@ -870,15 +878,15 @@ stockplotr::plot_timeseries(
 #### Parameter plots
 
 ```{r}
-#| label: plot-selectivity
-#| fig-cap: "Posterior estimates of the logistic selectivity curves for the fishery and the survey."
+#| label: plot-selectivity-survey
+#| fig-cap: "Posterior estimates of the logistic selectivity curves for the survey."
 #| fig-alt: "The slope of the survey curve was poorly estimated."
 #| echo: false
+#| warning: false
 
-# Posterior estimates of selectivity
 ggplot2::ggplot(
   posteriors_labeled |>
-    dplyr::filter(module_name == "Selectivity"),
+    dplyr::filter(module_name == "Selectivity", fleet_number == 2),
   ggplot2::aes(x = value)
 ) +
   tidybayes::stat_slabinterval(
@@ -892,10 +900,107 @@ ggplot2::ggplot(
 ```
 
 ```{r}
+#| label: plot-selectivity-fishery
+#| fig-cap: "Posterior estimates of the logistic selectivity curves for the fishery."
+#| fig-alt: "The slope of the fishery curve was poorly estimated."
+#| echo: false
+#| warning: false
+#| eval: !expr time_varying_selectivity
+
+ggplot2::ggplot(
+  posteriors_labeled |>
+    dplyr::filter(module_name == "Selectivity", fleet_number == 1),
+  ggplot2::aes(x = value)
+) +
+  tidybayes::stat_slabinterval(
+    fill = "skyblue", 
+    alpha = 0.6,
+    .width = c(.66, .95) # Shows both 66% and 95% intervals
+  ) +
+  ggplot2::facet_wrap(fleet_name ~ words, scales = "free_x") +
+  ggplot2::labs(title = "Posterior Distribution", x = "Parameter Value", y = "Density") +
+  ggplot2::theme_minimal()
+```
+
+```{r}
+#| label: plot-selectivity-fishery-inflection-point
+#| fig-cap: "Posterior estimates of the inflection point (x-axis; age) of the logistic curve for time-varying fishery selectivity."
+#| fig-alt: "Over the last decade we have been selecting younger fish."
+#| echo: false
+#| warning: false
+#| eval: expr time_varying_selectivity
+
+ggplot2::ggplot(
+  posteriors_labeled |>
+    dplyr::filter(
+      module_name == "Selectivity",
+      label == "inflection_point",
+      fleet_number == 1,
+      year < get_end_year(data_4_model)
+    ),
+  ggplot2::aes(x = value, y = as.factor(year), fill = ggplot2::after_stat(x))
+) +
+  ggridges::geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  ggplot2::scale_fill_viridis_c(name = "Value", option = "C") +
+  ggplot2::labs(title = "Posterior Shift by Year", y = "Year", x = "Inflection point") +
+  ggridges::theme_ridges()
+```
+
+```{r}
+#| label: plot-selectivity-fishery-inflection-point-zoom
+#| fig-cap: "Posterior estimates of the inflection point (x-axis; age) of the logistic curve for time-varying fishery selectivity."
+#| fig-alt: "Over the last decade we have been selecting younger fish."
+#| echo: false
+#| warning: false
+#| eval: expr time_varying_selectivity
+
+ggplot2::ggplot(
+  posteriors_labeled |>
+    dplyr::filter(
+      module_name == "Selectivity",
+      label == "inflection_point",
+      fleet_number == 1,
+      year > get_end_year(data_4_model) - 2
+    ),
+  ggplot2::aes(x = value, y = as.factor(year), fill = ggplot2::after_stat(x))
+) +
+  ggridges::geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  ggplot2::scale_fill_viridis_c(name = "Value", option = "C") +
+  ggplot2::labs(title = "Posterior Shift by Year", y = "Year", x = "Inflection point") +
+  ggridges::theme_ridges()
+```
+
+```{r}
+#| label: plot-selectivity-fishery-slope
+#| fig-cap: "Posterior estimates of the slope (x-axis) of the logistic curve for time-varying fishery selectivity."
+#| fig-alt: "There are a handful of years where the estimate is highly uncertain."
+#| echo: false
+#| warning: false
+#| eval: expr time_varying_selectivity
+
+ggplot2::ggplot(
+  posteriors_labeled |>
+    dplyr::filter(
+      module_name == "Selectivity",
+      label == "slope",
+      fleet_number == 1,
+      year < get_end_year(data_4_model) +1
+    ),
+  ggplot2::aes(x = value, y = as.factor(year), fill = ggplot2::after_stat(x))
+) +
+  ggridges::geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  ggplot2::scale_fill_viridis_c(name = "Value", option = "C") +
+  ggplot2::labs(title = "Posterior Shift by Year", y = "Year", x = "Slope") +
+  ggridges::theme_ridges()
+```
+
+```{r}
 #| label: plot-selectivity-curves
 #| fig-cap: "Estimated selectivity curves for the fishery and the survey using logistic selectivity."
 #| fig-alt: "The survey selects younger fish than the fishery but they both select older fish equally."
 #| echo: false
+#| warning: false
+#| eval: expr time_varying_selectivity
 
 temp <- purrr::map2(
   .x = dplyr::filter(
@@ -926,14 +1031,38 @@ g
 ```{r}
 #| label: plot-log-Fmort
 #| fig-cap: "Posterior estimates of the natural log of fishing mortality for each year (y axis)."
-#| fig-alt: "The terminal year was poorly estimated."
+#| fig-alt: "Fishing levels have been increasing over time."
 #| echo: false
+#| warning: false
 
-# Posterior estimates of fishing mortality
 ggplot2::ggplot(
   posteriors_labeled |>
     dplyr::filter(
-      label == "log_Fmort"
+      label == "log_Fmort",
+      fleet_number == 1,
+      year < get_end_year(data_4_model)
+    ),
+  ggplot2::aes(x = value, y = as.factor(year), fill = ggplot2::after_stat(x))
+) +
+  ggridges::geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  ggplot2::scale_fill_viridis_c(name = "Value", option = "C") +
+  ggplot2::labs(title = "Posterior Shift by Year", y = "Year", x = "Ln(Fishing Mortality)") +
+  ggridges::theme_ridges()
+```
+
+```{r}
+#| label: plot-log-Fmort-recent
+#| fig-cap: "Posterior estimates of the natural log of fishing mortality for recent years (y axis)."
+#| fig-alt: "The terminal year was poorly estimated."
+#| echo: false
+#| warning: false
+
+ggplot2::ggplot(
+  posteriors_labeled |>
+    dplyr::filter(
+      label == "log_Fmort",
+      fleet_number == 1,
+      year > get_end_year(data_4_model) - 2
     ),
   ggplot2::aes(x = value, y = as.factor(year), fill = ggplot2::after_stat(x))
 ) +
