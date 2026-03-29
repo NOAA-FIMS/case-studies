@@ -1,51 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html</loc>
-    <lastmod>2026-02-12T15:19:14.647Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/pacific-hake.html</loc>
-    <lastmod>2026-02-12T15:19:14.714Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/NWFSC-petrale.html</loc>
-    <lastmod>2026-02-12T15:19:14.647Z</lastmod>
-  </url>
-  <url>
     <loc>https://noaa-fims.github.io/case-studies/content/acknowledgements.html</loc>
-    <lastmod>2026-02-12T15:19:14.648Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/advanced-features.html</loc>
-    <lastmod>2026-02-12T15:19:14.648Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/SWFSC-sardine.html</loc>
-    <lastmod>2026-02-12T15:19:14.648Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/index.html</loc>
-    <lastmod>2026-02-12T15:19:14.714Z</lastmod>
+    <lastmod>2026-03-29T14:44:21.409Z</lastmod>
   </url>
   <url>
     <loc>https://noaa-fims.github.io/case-studies/content/case-study-template.html</loc>
-    <lastmod>2026-02-12T15:19:14.648Z</lastmod>
+    <lastmod>2026-03-29T14:44:21.409Z</lastmod>
   </url>
   <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/setup.html</loc>
-    <lastmod>2026-02-12T15:19:14.714Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/index.html</loc>
+    <lastmod>2026-03-29T14:44:21.465Z</lastmod>
   </url>
   <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/PIFSC-opakapaka.html</loc>
-    <lastmod>2026-02-12T15:19:14.647Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/SEFSC-scamp.html</loc>
-    <lastmod>2026-02-12T15:19:14.647Z</lastmod>
-  </url>
-  <url>
-    <loc>https://noaa-fims.github.io/case-studies/content/AFSC-GOA-pollock.html</loc>
-    <lastmod>2026-02-12T15:19:14.646Z</lastmod>
+    <loc>https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html</loc>
+    <lastmod>2026-03-29T14:44:21.409Z</lastmod>
   </url>
 </urlset>
