@@ -1,8 +1,9 @@
 ---
-title: FIMS Case Study of South Atlantic Scamp (SEFSC)
+title: South Atlantic Scamp
 format:
   html:
     code-fold: true
+    toc: false
 ---
 
 ## The setup
@@ -11,6 +12,8 @@ format:
 
 ```{r}
 #| label: setup-objects
+#| include: false
+#| echo: false
 common_name <- "South Atlantic scamp grouper"
 ```
 
@@ -23,27 +26,30 @@ common_name <- "South Atlantic scamp grouper"
 
 ## Simplifications to the original assessment
 
-The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
+The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration for comparing the results of a FIMS model to the results of a Beaufort Assessment Model (BAM).
 
 To get the operational model to more closely match a FIMS model the following changes were made:
 
-The original stock assessment ([SEDAR-68OA](https://sedarweb.org/documents/sedar-68oa-south-atlantic-scamp-operational-assessment-final-stock-assessment-report/)) was conducted using the Beaufort Assessment Model (BAM). That assessment included details not yet available in FIMS. So, the following simplifications or modifications were made to the BAM configuration to allow more direct comparisons with FIMS output. These assessments and comparisons are for demonstration only.
+The original stock assessment ([SEDAR-68OA](https://sedarweb.org/documents/sedar-68oa-south-atlantic-scamp-operational-assessment-final-stock-assessment-report/)) was conducted using the Beaufort Assessment Model (BAM). That assessment included options not yet available in FIMS. So, the following simplifications or modifications were made to the BAM configuration to allow more direct comparisons with FIMS output.
 
-* Set spawning biomass calculations to occur on Jan. 1, rather than the time of peak spawning.
-* Set abundance calculations for matching index data to occur on Jan. 1, rather than mid-year sampling.
-* Dropped time blocks on selectivity for fleets.
-* Dropped all length-composition data.
+* Set spawning biomass calculations to occur on January 1, rather than the time of peak spawning.
+* Set abundance calculations for matching index data to occur on January 1, rather than mid-year sampling.
 * Dropped the estimation of the variation in size at age, as this parameter is not estimable without length-composition data.
-* Converted index data and predictions to occur in weight rather than numbers.
-* Converted spawning biomass to be female only. Because scamp are a protogynous hermaphrodite, the original assessment accounted for males implicitly by computing spawning biomass as the sum of total (male + female) mature biomass. One way to match that accounting would be to assume that the female maturity vector equals that of both sexes combined, and then further assume that the population is 100% female. However, current FIMS (1 July 2024) does not allow deviation from a 50:50 sex ratio. Thus, for this example, FIMS and BAM use the maturity vector of both sexes combined, but apply that vector only to females and assume a 50:50 sex ratio when computing spawning biomass.
+* Converted spawning biomass to be female only. Because scamp are a protogynous hermaphrodite, the original assessment accounted for males implicitly by computing spawning biomass as the sum of total (male + female) mature biomass. One way to match that accounting would be to assume that the female maturity vector equals that of both sexes combined, and then further assume that the population is 100% female. However, current FIMS does not allow deviation from a 50:50 sex ratio. Thus, for this example, FIMS and BAM use the maturity vector of both sexes combined, but apply that vector only to females and assume a 50:50 sex ratio when computing spawning biomass.
 * Female maturity at age modeled as a logistic function, rather than empirical.
-* Extended estimates of recruitment deviations forward in time to the terminal year. Based on likelihood profiling, values from the last two years were not estimable, and thus were fixed in the original assessment.
-* Extended estimates of recruitment deviations backward in time to the initial year, 1969. The original assessment started estimating recruitment deviations in 1980, when age-composition data become available.
 * Dropped the fishery-dependent growth curve and set mean size at age of the landings equal to the population growth curve.
-* Converted all observed and predicted landings to weight (mt). The original assessment used units native to the data collection: commercial in pounds and recreational in numbers.
 * Replaced Dirichlet-multinomial with standard multinomial distribution for fitting age-composition data.
 * Extended age compositions to include ages 1--20+, as modeled in the population. The original assessment modeled ages 1--20+ in the population but fit ages 1--15+ in the age compositions because of many zeros in the 16--20 age range.
-* Dropped fishery-dependent indices. This was for simplicity, as modeling those indices would require mirroring a fleet's selectivity, which is not something I currently know how to do in FIMS.
+
+The following additional changes were made as well though they are not necessary:
+
+* Dropped time blocks on selectivity for fleets.
+* Dropped all length-composition data.
+* Converted index data and predictions to occur in weight rather than numbers.
+* Extended estimates of recruitment deviations forward in time to the terminal year. Based on likelihood profiling, values from the last two years were not estimable, and thus were fixed in the original assessment.
+* Extended estimates of recruitment deviations backward in time to the initial year, 1969. The original assessment started estimating recruitment deviations in 1980, when age-composition data become available.
+* Converted all observed and predicted landings to weight (mt). The original assessment used units native to the data collection: commercial in pounds and recreational in numbers.
+* Dropped fishery-dependent indices.
 
 ## Setting up the data
 
@@ -54,8 +60,6 @@ The data for the FIMS model was created from reading in a simplified version of 
 #| label: prepare-fims-data
 #| output: false
 
-# clear memory
-FIMS::clear()
 grDevices::graphics.off()
 
 # get scamp data and output from simplified version of BAM
@@ -166,10 +170,10 @@ survey_ac_df <- data.frame(
 )
 
 weight_at_age <- data.frame(
-  type = "weight-at-age",
-  name = "fleet1",
+  type = "weight_at_age",
+  name = NA_character_,
   age = seq(n_ages),
-  timing = rep(styr, n_ages),
+  timing = NA_integer_,
   value = sca$a.series$wgt.mt,
   unit = "mt",
   uncertainty = NA
@@ -181,13 +185,19 @@ agecomps <- rbind(fleet1_ac_df, fleet2_ac_df, survey_ac_df)
 
 data_4_model <- FIMS::FIMSFrame(
   rbind(landings, index, agecomps, weight_at_age)
-)  
+  #  |>
+  # dplyr::filter(timing >= 1980 | is.na(timing))
+)
 ```
 
 ## Run FIMS model
 
 ```{r}
 #| label: setup-model
+#| echo: false
+# clear memory
+FIMS::clear()
+
 default_parameters <- FIMS::create_default_configurations(data_4_model) |>
   FIMS::create_default_parameters(data_4_model) |>
   tidyr::unnest(cols = data) |> 
@@ -210,7 +220,7 @@ default_parameters <- FIMS::create_default_configurations(data_4_model) |>
       fleet_name = "fleet1",
       label = c("slope", "inflection_point"),
       value = c(sca$parm.cons$selpar_slope_COM2[8], sca$parm.cons$selpar_A50_COM2[8]),
-      estimation_type = "constant"
+      estimation_type = "fixed_effects"
     ),
     by = c("module_name", "fleet_name", "label")
   ) |>
@@ -220,7 +230,7 @@ default_parameters <- FIMS::create_default_configurations(data_4_model) |>
       fleet_name = "fleet2",
       label = c("slope", "inflection_point"),
       value = c(sca$parm.cons$selpar_slope1_REC2[8], sca$parm.cons$selpar_A50_REC2[8]),
-      estimation_type = "constant"
+      estimation_type = "fixed_effects"
     ),
     by = c("module_name", "fleet_name", "label")
   ) |>
@@ -230,7 +240,7 @@ default_parameters <- FIMS::create_default_configurations(data_4_model) |>
       fleet_name = "survey1",
       label = c("slope", "inflection_point"),
       value = c(sca$parm.cons$selpar_slope1_CVT[8], sca$parm.cons$selpar_A501_CVT[8]),
-      estimation_type = "constant"
+      estimation_type = "fixed_effects"
     ),
     by = c("module_name", "fleet_name", "label")
   ) |>
@@ -238,12 +248,12 @@ default_parameters <- FIMS::create_default_configurations(data_4_model) |>
     tibble::tibble(
       module_name = "Population",
       label = c("log_M"),
-      time = rep(years, each = n_ages),
-      age = rep(ages, n_years),
+      time = rep(seq(get_start_year(data_4_model), get_end_year(data_4_model)), each = n_ages),
+      age = rep(ages, get_n_years(data_4_model)),
       # M is vector of age1 M X nyrs then age2 M X nyrs
       value = log(as.numeric(matrix(
-        rep(sca$a.series$M, each = n_years),
-        nrow = n_years
+        rep(sca$a.series$M, each = get_n_years(data_4_model)),
+        nrow = get_n_years(data_4_model)
       )))
     ),
     by = c("module_name", "label", "time", "age")
@@ -254,7 +264,7 @@ default_parameters <- FIMS::create_default_configurations(data_4_model) |>
       label = "log_init_naa",
       age = ages,
       value = log(sca$N.age[1, ]),
-      estimation_type = "constant"
+      estimation_type = "fixed_effects"
     ),
     by = c("module_name", "label", "age")
   ) |>
@@ -268,44 +278,46 @@ default_parameters <- FIMS::create_default_configurations(data_4_model) |>
     ),
     by = c("module_name", "label")
   ) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Recruitment",
-      label = "log_devs",
-      time = years[-1],
-      # The last value of the initial numbers at age is the first
-      # recruitment deviation
-      value = sca$t.series$logR.dev[-1],
-    ),
-    by = c("module_name", "label", "time")
-  ) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Fleet",
-      fleet_name = "fleet1",
-      time = years,
-      label = "log_Fmort",
-      value = log(sca$t.series$F.COM)
-    ),
-    by = c("module_name", "fleet_name", "label", "time")
-  ) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Fleet",
-      fleet_name = "fleet2",
-      time = years,
-      label = "log_Fmort",
-      value = log(sca$t.series$F.REC)
-    ),
-    by = c("module_name", "fleet_name", "label", "time")
-  ) |>
+  # dplyr::rows_update(
+  #   tibble::tibble(
+  #     module_name = "Recruitment",
+  #     label = "log_devs",
+  #     time = years[-1],
+  #     # The last value of the initial numbers at age is the first
+  #     # recruitment deviation
+  #     value = sca$t.series$logR.dev[-1],
+  #   ),
+  #   by = c("module_name", "label", "time")
+  # ) |>
+  # dplyr::rows_update(
+  #   tibble::tibble(
+  #     module_name = "Fleet",
+  #     fleet_name = "fleet1",
+  #     time = years,
+  #     label = "log_Fmort",
+  #     value = log(sca$t.series$F.COM)
+  #   ),
+  #   by = c("module_name", "fleet_name", "label", "time")
+  # ) |>
+  # dplyr::rows_update(
+  #   tibble::tibble(
+  #     module_name = "Fleet",
+  #     fleet_name = "fleet2",
+  #     time = years,
+  #     label = "log_Fmort",
+  #     value = log(sca$t.series$F.REC)
+  #   ),
+  #   by = c("module_name", "fleet_name", "label", "time")
+  # ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
       fleet_name = "survey1",
-      time = years,
+      # time = years,
+      time = seq(get_start_year(data_4_model), get_end_year(data_4_model)),
       label = "log_Fmort",
-      value = log(sca$parms$q.CVT)
+      # value = log(sca$parms$q.CVT)
+      value = -200
     ),
     by = c("module_name", "fleet_name", "label", "time")
   )
@@ -363,54 +375,79 @@ selex.fims.fleet2 <- 1 / (1 + exp(-get_selectivity_parameter(fit, "slope")[2] * 
 selex.bam.survey <- 1 / (1 + exp(-sca$parm.cons$selpar_slope1_CVT[8] * (ages - sca$parm.cons$selpar_A501_CVT[8])))
 selex.fims.survey <- 1 / (1 + exp(-get_selectivity_parameter(fit, "slope")[3] * (ages - get_selectivity_parameter(fit, "inflection_point")[3])))
 
-
-index_results_allyr <- data.frame(
+index_results <- data.frame(
   yr = styr:endyr,
-  observed = FIMS::get_data(data_4_model) |>
-    dplyr::filter(type == "index", name == "survey1") |>
-    dplyr::pull(value),
-  fims.expected = report$index_expected[[3]],
+  observed = c(
+    rep(NA, length(styr:get_start_year(data_4_model)) - 1),
+    FIMS::get_data(data_4_model) |>
+      dplyr::filter(type == "index", name == "survey1") |>
+      dplyr::pull(value)
+  ),
+  fims.expected = c(rep(NA, length(styr:get_start_year(data_4_model)) - 1), report$index_expected[[3]]),
   bam.expected = sca$t.series$U.CVT.pr
-)
-index_results <- index_results_allyr |>
+) |>
   dplyr::filter(observed != -999.00)
 fleet1_landings_results <- data.frame(
   yr = styr:endyr,
-  observed = FIMS::get_data(data_4_model) |>
-    dplyr::filter(type == "landings", name == "fleet1") |>
-    dplyr::pull(value),
-  fims.expected = report$landings_expected[[1]],
+  observed = c(
+    rep(NA, length(styr:get_start_year(data_4_model)) - 1),
+    FIMS::get_data(data_4_model) |>
+      dplyr::filter(type == "landings", name == "fleet1") |>
+      dplyr::pull(value)
+  ),
+  fims.expected = c(rep(NA, length(styr:get_start_year(data_4_model)) - 1), report$landings_expected[[1]]),
   bam.expected = sca$t.series$L.COM.pr
 )
 fleet2_landings_results <- data.frame(
   yr = styr:endyr,
-  observed = FIMS::get_data(data_4_model) |>
-    dplyr::filter(type == "landings", name == "fleet2") |>
-    dplyr::pull(value),
-  fims.expected = report$landings_expected[[2]],
+  observed = c(
+    rep(NA, length(styr:get_start_year(data_4_model)) - 1),
+    FIMS::get_data(data_4_model) |>
+      dplyr::filter(type == "landings", name == "fleet2") |>
+      dplyr::pull(value)
+  ),
+  fims.expected = c(rep(NA, length(styr:get_start_year(data_4_model)) - 1), report$landings_expected[[2]]),
   bam.expected = sca$t.series$L.REC.pr
 )
 
 fleet1_F_results <- data.frame(
   yr = styr:endyr,
-  fims.F.fleet1 = dplyr::filter(FIMS::get_estimates(fit), label == "log_Fmort", module_id == 1) |> dplyr::pull(estimated),
+  fims.F.fleet1 = c(
+    rep(NA, length(styr:get_start_year(data_4_model)) - 1), 
+    dplyr::filter(FIMS::get_estimates(fit), label == "log_Fmort", module_id == 1) |> dplyr::pull(estimated)
+  ),
   bam.F.fleet1 = sca$t.series$F.COM
 )
 fleet2_F_results <- data.frame(
   yr = styr:endyr,
-  fims.F.fleet2 = dplyr::filter(FIMS::get_estimates(fit), label == "log_Fmort", module_id == 2) |> dplyr::pull(estimated),
+  fims.F.fleet2 = c(
+    rep(NA, length(styr:get_start_year(data_4_model)) - 1),
+    dplyr::filter(FIMS::get_estimates(fit), label == "log_Fmort", module_id == 2) |> dplyr::pull(estimated)
+  ),
   bam.F.fleet2 = sca$t.series$F.REC
 )
 
 # Dropping the last (extra) year from FIMS output, assuming it is a projection yr (not an initialization yr)
 fims.naa <- matrix(report$numbers_at_age[[1]], ncol = n_ages, byrow = TRUE)
-fims.naa <- fims.naa[-54, ]
+fims.naa <- fims.naa[-NROW(fims.naa), ]
 popn_results <- data.frame(
   yr = styr:endyr,
-  fims.ssb = report$spawning_biomass[[1]][1:n_years],
-  fims.recruits = report$expected_recruitment[[1]][1:n_years] / 1000,
-  fims.biomass = report$biomass[[1]][1:n_years],
-  fims.abundance = rowSums(fims.naa) / 1000,
+  fims.ssb = c(
+    rep(NA, length(styr:get_start_year(data_4_model)) - 1),
+    report$spawning_biomass[[1]][1:get_n_years(data_4_model)]
+  ),
+  fims.recruits = c(
+    rep(NA, length(styr:get_start_year(data_4_model)) - 1),
+    report$expected_recruitment[[1]][1:get_n_years(data_4_model)] / 1000
+  ),
+  fims.biomass = c(
+    rep(NA, length(styr:get_start_year(data_4_model)) - 1),
+    report$biomass[[1]][1:get_n_years(data_4_model)]
+  ),
+  fims.abundance = c(
+    rep(NA, length(styr:get_start_year(data_4_model)) - 1),
+    rowSums(fims.naa) / 1000
+  ),
   bam.ssb = sca$t.series$SSB,
   bam.recruits = sca$t.series$recruits / 1000,
   bam.biomass = sca$t.series$B,
@@ -460,14 +497,14 @@ legend("topright",
 )
 
 plot(fleet1_landings_results$yr, fleet1_landings_results$observed,
-  ylim = c(0, max(fleet1_landings_results[, -1])),
+  ylim = c(0, max(fleet1_landings_results[, -1], na.rm = TRUE)),
   pch = 16, col = cols[1], ylab = "Fleet1 landings (mt)", xlab = ""
 )
 lines(fleet1_landings_results$yr, fleet1_landings_results$bam.expected, lwd = 3, col = cols[2])
 lines(fleet1_landings_results$yr, fleet1_landings_results$fims.expected, lwd = 3, col = cols[4])
 
 plot(fleet2_landings_results$yr, fleet2_landings_results$observed,
-  ylim = c(0, max(fleet2_landings_results[, -1])),
+  ylim = c(0, max(fleet2_landings_results[, -1], na.rm = TRUE)),
   pch = 16, col = cols[1], ylab = "Fleet2 landings (mt)", xlab = ""
 )
 lines(fleet2_landings_results$yr, fleet2_landings_results$bam.expected, lwd = 3, col = cols[2])
@@ -482,7 +519,7 @@ layout(mat = mat, widths = rep.int(1, ncol(mat)), heights = rep.int(1, nrow(mat)
 par(las = 1, mar = c(4.1, 4.25, 1.0, 0.5), cex = 1)
 
 plot(fleet1_F_results$yr, fleet1_F_results$bam.F.fleet1,
-  ylim = c(0, max(fleet1_F_results[, -1])),
+  ylim = c(0, max(fleet1_F_results[, -1], na.rm = TRUE)),
   type = "l", lwd = 3, col = cols[2], ylab = "Fleet 1 F", xlab = ""
 )
 lines(fleet1_F_results$yr, fleet1_F_results$fims.F.fleet1, lwd = 3, col = cols[4])
@@ -491,7 +528,7 @@ legend("topleft",
   lwd = c(3, 3), col = c(cols[2], cols[4])
 )
 plot(fleet2_F_results$yr, fleet2_F_results$bam.F.fleet2,
-  ylim = c(0, max(fleet2_F_results[, -1])),
+  ylim = c(0, max(fleet2_F_results[, -1], na.rm = TRUE)),
   type = "l", lwd = 3, col = cols[2], ylab = "Fleet 2 F", xlab = ""
 )
 lines(fleet2_F_results$yr, fleet2_F_results$fims.F.fleet2, lwd = 3, col = cols[4])
@@ -527,8 +564,8 @@ layout(mat = mat, widths = rep.int(1, ncol(mat)), heights = rep.int(1, nrow(mat)
 par(las = 1, mar = c(4.1, 4.25, 1.0, 0.5), cex = 1)
 
 plot(popn_results$yr, popn_results$bam.ssb,
-  ylim = c(0, max(popn_results[, c(2, 6)])),
-  type = "l", lwd = 3, col = cols[2], ylab = "SSB (mt)", xlab = ""
+  ylim = c(0, max(popn_results[, c(2, 6)], na.rm = TRUE)),
+  type = "l", lwd = 3, col = cols[2], ylab = "Spawning biomass (mt)", xlab = ""
 )
 lines(popn_results$yr, popn_results$fims.ssb, lwd = 3, col = cols[4])
 legend("topleft",
@@ -537,19 +574,19 @@ legend("topleft",
 )
 
 plot(popn_results$yr, popn_results$bam.biomass,
-  ylim = c(0, max(popn_results[, c(4, 8)])),
+  ylim = c(0, max(popn_results[, c(4, 8)], na.rm = TRUE)),
   type = "l", lwd = 3, col = cols[2], ylab = "Biomass (mt)", xlab = ""
 )
 lines(popn_results$yr, popn_results$fims.biomass, lwd = 3, col = cols[4])
 
 plot(popn_results$yr, popn_results$bam.recruits,
-  ylim = c(0, max(popn_results[, c(3, 7)])),
+  ylim = c(0, max(popn_results[, c(3, 7)], na.rm = TRUE)),
   type = "l", lwd = 3, col = cols[2], ylab = "Recruits (1000s)", xlab = ""
 )
 lines(popn_results$yr, popn_results$fims.recruits, lwd = 3, col = cols[4])
 
 plot(popn_results$yr, popn_results$bam.abundance,
-  ylim = c(0, max(popn_results[, c(5, 9)])),
+  ylim = c(0, max(popn_results[, c(5, 9)], na.rm = TRUE)),
   type = "l", lwd = 3, col = cols[2], ylab = "Abundance (1000s)", xlab = ""
 )
 lines(popn_results$yr, popn_results$fims.abundance, lwd = 3, col = cols[4])
@@ -661,38 +698,15 @@ stockplotr::plot_biomass(
 )
 ```
 
-## What was your experience using FIMS? What could we do to improve usability?
-
-* Great joy when it finally worked!  But, it took a lot of time to first simplify the corresponding BAM implementation and then
-to run FIMS successfully. \
-* Data input seems complex for now. I was able to mimic previous examples, but would not likely have been successful starting from scratch. 
-A user interface will presumably help simplify the process.\
-*Clear distinction between "fleet" and "index" would be helpful. Examples of this confusion include 1) landings are defined using ```methods::new(Index, n_years)```
-and ```spp_fleet1$SetObservedIndexData(spp_fleet1_landings$get_id())```, and 2) surveys are defined using ```methods::new(Fleet)```.\
-*For simplification of the scamp example, I dropped two fishery dependent indices. My impression is that, in FIMS, fishery dependent indices would need to be defined as their own "fleet" and then *somehow* mirror the selectivity of the corresponding fishing fleet, presumably using TMB's mapping feature. 
-I think it would be more straightforward if a fishery dependent index could be defined as an object linked to the fleet, similar to how landings and age comp
-data are handled.\
--  When a model has multiple fleets, the function ```FIMS::m_landings``` concatenates all fleets' landings into one long vector. Thus, one must specify
-correct indexing values when pulling landings by fleet from that concatenation. This seems clunky and error-prone, and it would be preferable
-if ```FIMS::m_landings``` took fleet as an argument, similar to ```FIMS::m_agecomp```, so that landings by fleet could be obtained by fleet reference.\
-
-## List any issues that you ran into or found
-
-The FIMS feature to assign proportion female at age is not yet functional and
-it is hard-coded using a 50:50 sex ratio. Many stocks
-in the southeast are protogynous hermphrodites, such that individuals start life as females and later convert to males.
-This life history creates a sex ratio that is tilted toward females for younger ages and males for older ages.
-
-
 ## What features are most important to add based on this case study?
-* Discards. I chose this assessment as a case study because it did not explicitly model discards, and I knew that capability was not yet available in FIMS.
-However, most assessments in the Southeast model dead discards.\
-* Fitting to length composition data.\
+* Discards. I chose this assessment as a case study because it did not explicitly model discards, as I knew that capability was not yet available in FIMS. However, most assessments in the Southeast model dead discards.
 
 ## Acknowledgments
 Thanks to Nathan Vaughan and Ian Taylor, who helped troubleshoot earlier versions of the code.
 
 ```{r}
 #| label: cleanup
+#| include: false
+#| echo: false
 FIMS::clear()
 ```
