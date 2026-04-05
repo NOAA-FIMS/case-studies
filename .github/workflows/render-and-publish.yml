@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Check out repository
@@ -38,27 +39,40 @@ jobs:
           libx11-dev \
           pandoc
 
-      - name: Set up R package dependencies (cached, via pak)
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          pak-version: stable
-          cache: true
-          packages: |
-            cran::knitr
-            cran::dplyr
-            cran::ggplot2
-            cran::ggridges
-            cran::reshape2
-            cran::remotes
-            cran::shinystan
-            cran::tidybayes
-            cran::tidyr
-            cran::TMB
-          extra-packages: |
-            github::nmfs-ost/stockplotr
-            github::noaa-afsc/SparseNUTS
-            github::NOAA-FIMS/FIMS
-            github::r4ss/r4ss@convert-data-to-fims
+      - name: Install R package dependencies (via pak)
+        shell: Rscript {0}
+        run: |
+          install.packages("pak", repos = "https://cloud.r-project.org")
+
+          # Install GitHub remotes first so auth/remote failures appear early.
+          pak::pkg_install(
+            c(
+              "github::nmfs-ost/stockplotr",
+              "github::noaa-afsc/SparseNUTS",
+              "github::NOAA-FIMS/FIMS",
+              "github::r4ss/r4ss@convert-data-to-fims"
+            ),
+            ask = FALSE,
+            upgrade = FALSE
+          )
+
+          # Install CRAN dependencies after remotes succeed.
+          pak::pkg_install(
+            c(
+              "cran::knitr",
+              "cran::dplyr",
+              "cran::ggplot2",
+              "cran::ggridges",
+              "cran::reshape2",
+              "cran::remotes",
+              "cran::shinystan",
+              "cran::tidybayes",
+              "cran::tidyr",
+              "cran::TMB"
+            ),
+            ask = FALSE,
+            upgrade = FALSE
+          )
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
