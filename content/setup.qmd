@@ -5,24 +5,6 @@
 #| include: false
 #| echo: false
 
-if (!"SparseNUTS" %in% rownames(installed.packages())) {
-  remotes::install_github("noaa-afsc/SparseNUTS")
-}
-
-# SS3 case studies require r4ss
-if (!"r4ss" %in% rownames(installed.packages())) {
-  remotes::install_github("r4ss/r4ss@convert-data-to-fims")
-}
-
-# Install FIMS: main branch version if on main, dev version on any other branch
-if (!"FIMS" %in% rownames(installed.packages())) {
-  remotes::install_github("NOAA-FIMS/FIMS")
-}
-
-if (!"stockplotr" %in% rownames(installed.packages())) {
-  remotes::install_github("nmfs-ost/stockplotr")
-}
-
 library(FIMS)
 library(SparseNUTS)
 R_version <- version$version.string
