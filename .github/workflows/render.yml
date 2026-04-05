@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Check out repository
@@ -46,7 +47,7 @@ jobs:
           libx11-dev \
           pandoc
 
-      - name: Set up R package dependencies (cached, via pak)
+      - name: Set up CRAN package dependencies (cached, via pak lockfile)
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           pak-version: stable
@@ -62,11 +63,23 @@ jobs:
             cran::tidybayes
             cran::tidyr
             cran::TMB
-          extra-packages: |
-            github::nmfs-ost/stockplotr
-            github::noaa-afsc/SparseNUTS
-            github::NOAA-FIMS/FIMS
-            github::r4ss/r4ss@convert-data-to-fims
+
+      - name: Install GitHub package dependencies (via pak)
+        shell: Rscript {0}
+        run: |
+          options(Ncpus = max(1L, parallel::detectCores() - 1L))
+          install.packages("pak", repos = "https://cloud.r-project.org")
+
+          pak::pkg_install(
+            c(
+              "github::nmfs-ost/stockplotr",
+              "github::noaa-afsc/SparseNUTS",
+              "github::NOAA-FIMS/FIMS",
+              "github::r4ss/r4ss@convert-data-to-fims"
+            ),
+            ask = FALSE,
+            upgrade = FALSE
+          )
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
