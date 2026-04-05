@@ -1,22 +1,9 @@
 ```{r}
 #| warning: false
+#| message: false
 #| label: package-installation
-
-# Names of required packages
-packages <- c(
-  "ggridges",
-  "gt",
-  "lubridate",
-  "reshape2",
-  "shinystan",
-  "tidybayes"
-)
-
-# Install packages not yet installed
-installed_packages <- packages %in% rownames(installed.packages())
-if (any(installed_packages == FALSE)) {
-  install.packages(packages[!installed_packages], repos = "http://cran.us.r-project.org")
-}
+#| include: false
+#| echo: false
 
 if (!"SparseNUTS" %in% rownames(installed.packages())) {
   remotes::install_github("noaa-afsc/SparseNUTS")
@@ -27,18 +14,14 @@ if (!"r4ss" %in% rownames(installed.packages())) {
   remotes::install_github("r4ss/r4ss@convert-data-to-fims")
 }
 
-# SS3 case studies require r4ss
-if (!"stockplotr" %in% rownames(installed.packages())) {
-  remotes::install_github("nmfs-ost/stockplotr")
-}
-
 # Install FIMS: main branch version if on main, dev version on any other branch
 if (!"FIMS" %in% rownames(installed.packages())) {
   remotes::install_github("NOAA-FIMS/FIMS")
 }
 
-# Load packages
-invisible(lapply(packages, library, character.only = TRUE))
+if (!"stockplotr" %in% rownames(installed.packages())) {
+  remotes::install_github("nmfs-ost/stockplotr")
+}
 
 library(FIMS)
 library(SparseNUTS)

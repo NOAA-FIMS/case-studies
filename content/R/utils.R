@@ -125,3 +125,76 @@ add_additional_year <- function(
     ) |>
     dplyr::select(colnames(data))
 }
+
+map_time_varying <- function(
+  parameter_names,
+  parameter_name,
+  new_name,
+  indexing
+) {
+  parameter_indices <- grep(parameter_name, parameter_names)
+  year_sequence <- seq(parameter_indices)
+  change_these_entries <- parameter_indices[indexing]
+  parameter_names[change_these_entries] <- gsub(
+    "\\d+$",
+    new_name,
+    parameter_names[change_these_entries]
+  )
+  parameter_names
+}
+
+make_hake_rds_smaller <- function(full_rds_file, out_rds_file) {
+  hake <- readRDS(full_rds_file)
+  out <- hake[c(
+    "startyr",
+    "endyr",
+    "N_forecast_yrs",
+    "catch",
+    "FleetNames",
+    "mcmc"
+  )]
+  out[["mcmc"]] <- apply(out[["mcmc"]], 2, median)
+  out[["index"]] <- hake[["extra_mcmc"]][["index_fit_posts"]] |>
+    tidyr::pivot_longer(
+      cols = -c(yr, fleet),
+      names_to = "draw",
+      values_to = "median"
+    ) |>
+    dplyr::summarise(
+      median = median(median),
+      .by = c(yr, fleet)
+    )
+  out[["spawning_biomass"]] <- out[["mcmc"]][
+    grep("SSB_\\d+", names(out[["mcmc"]]), value = TRUE)
+  ]
+  names(out[["spawning_biomass"]]) <- gsub(
+    "SSB_",
+    "",
+    names(out[["spawning_biomass"]])
+  )
+  out[["recruitment"]] <- out[["mcmc"]][
+    grep("^Recr_\\d+", names(out[["mcmc"]]), value = TRUE)
+  ]
+  names(out[["recruitment"]]) <- gsub(
+    "Recr_",
+    "",
+    names(out[["recruitment"]])
+  )
+  out[["rec_dev"]] <- out[["mcmc"]][
+    grep("^Main_RecrDev_\\d+", names(out[["mcmc"]]), value = TRUE)
+  ]
+  names(out[["rec_dev"]]) <- gsub(
+    "^Main_RecrDev_",
+    "",
+    names(out[["rec_dev"]])
+  )
+  out[["log_Fmort"]] <- log(out[["mcmc"]][
+    grep("^F_\\d+", names(out[["mcmc"]]), value = TRUE)
+  ])
+  names(out[["log_Fmort"]]) <- gsub(
+    "F_",
+    "",
+    names(out[["log_Fmort"]])
+  )
+  saveRDS(out, out_rds_file)
+}

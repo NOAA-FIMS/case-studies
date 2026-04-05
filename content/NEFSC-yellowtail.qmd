@@ -1,5 +1,5 @@
 ---
-title: NEFSC Case Study Southern New England-Mid Atlantic Yellowtail Flounder
+title: Southern New England-Mid Atlantic Yellowtail Flounder
 format:
   html:
     code-fold: true
@@ -11,6 +11,8 @@ format:
 
 ```{r}
 #| label: setup-objects
+#| include: false
+#| echo: false
 common_name <- "Southern New England-Mid Atlantic Yellowtail Flounder"
 ```
 
@@ -23,32 +25,34 @@ common_name <- "Southern New England-Mid Atlantic Yellowtail Flounder"
 
 ## Simplifications to the original assessment
 
-The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
+The model presented in this case study was changed substantially from the operational assessment model that was presented to management in 2022 for `r common_name` ([NEFSC, 2022](https://doi.org/10.25923/380j-t283)) and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration for comparing the results of a FIMS model to the results of an Age-Structured Assessment Program (ASAP) model.
 
-To get the operational model to more closely match a FIMS model the following changes were made:
+To get the operational model to more closely match what is capable in a FIMS model, the following changes were made:
 
-* End year 2021 to 2019 due to missing 2020 survey
-* 5 indices to 2
-* Filled a survey missing year for one index (see below)
-* Varying weight at age to constant over time
-* Different weight at age matrices for catch, SSB, Jan-1 to same for all 3
-* SSB calculated in April to Jan-1
-* Aggregate index in numbers to weight
-* Fishery 2 selectivity blocks to 1
-* Catch and Index selectivity at age to logistic
-* Index timing from April to Jan-1
-* Varying Index CV to constant over time
-* Varying Catch ESS to constant over time
-* SR unexploited scaler SSB to recruitment
+* Changed the timing of the surveys from from April to January 1.
+* Changed the timing of when spawning biomass is calculated from April to January 1.
+* Used the catch weight-at-age matrix for weight-at-age data and ignored the matrices for spawning biomass and the timing of the surveys.
+* Changed the selectivity for both the fishing fleet and survey fleets to logistic.
+* Changed from an unexploited scaler on spawning biomass to recruitment.
+* Spawning biomass calculations in FIMS assume 0.5 multiplier, which differs from ASAP [Issue #521](https://github.com/NOAA-FIMS/FIMS/issues/521).
+* Turned on the use likelihood constants in ASAP to enable the comparison of likelihood components, an option that should not be used because recruitment deviations are estimated.
+* One-step-ahead residuals do not exist yet in FIMS.
+* Reference points are not automatically calculated and could not be compared.
 
+The following additional changes were made as well though they are not necessary:
 
-How I simplified my assessment:
+* End year 2021 to 2019 due to missing 2020 survey.
+* Removed 3 index of abundance fleets because they had years with missing data.
+* Removed the discard fishing fleet.
+* Filled a survey missing year for one index using fitted estimate from ASAP.
+* Used the mean weight at age across all years instead of allowing weight-at-age data to vary with time.
+* Changed the aggregate index unit from numbers to weight.
+* Removed the time blocks on selectivity for the fishing fleet.
+* Used the time-series mean of the coefficient of variation for each index as the measurement of uncertainty.
+* Used the time-series mean of effective sample size for age-composition data for each fleet.
+* Projections were removed from the comparison.
 
-To fill the missing year of survey data, I first ran the model in ASAP with the missing data treated as missing. I then filled the missing data with the expected value of the survey, both in aggregate and for catch at age in place of the missing data.
-
-The varying weights at age, index CVs, and ESS values were replaced by the time series mean in all years.
-
-The catch weight at age matrix was used as the weight at age for all sources.
+Missing years of survey data were filled in using predictions from the simplified ASAP model. The ASAP model was first ran with the missing data treated as missing. Then the missing data was filled in with the expected value of the survey, both in aggregate and for catch at age in place of the missing data.
 
 ## Setting up the data
 
@@ -57,131 +61,23 @@ The catch weight at age matrix was used as the weight at age for all sources.
 #| output: false
 #| warning: false
 
-# clear memory
-FIMS::clear()
-
 # read the ASAP rdat files
 rdat <- dget(file.path(data_directory, "NEFSC_YT_SIMPLIFIED.RDAT")) # to be used in FIMS, lots of modifications from original
 orig <- dget(file.path(data_directory, "NEFSC_YT_ORIGINAL.RDAT"))   # where started before modifications for use in FIMS
 
-# function to create equivalent of data_mile1, basic catch and survey data
-# need to think about how to deal with multiple fleets and indices - only use 1 of each for now
-get_asap_data <- function(asap_input) {
-  res <- data.frame(type = character(),
-                name = character(),
-                age = integer(),
-                timing = double(),
-                value = double(),
-                unit = character(),
-                uncertainty = double())
-  years_in_model <- seq(asap_input$parms$styr, asap_input$parms$endyr)
-  
-  landings <- data.frame(type = "landings",
-                     name = "fishery",
-                     age = NA,
-                     timing = years_in_model,
-                     value = as.numeric(asap_input$catch.obs[1,]),
-                     unit = "mt",
-                     # This was
-                     # asap_input$control.parms$catch.tot.cv[,1]
-                     # but it was just reset to the following later in the parameters so using internal functionality to set it now
-                     # uncertainty = rep(log(sqrt(log(as.numeric(mean(asap_input$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), asap_input[["parms"]][["nyears"]])
-                     uncertainty = rep(sqrt(log(as.numeric(mean(asap_input$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1)), asap_input[["parms"]][["nyears"]])
-  )
-  
-  # loop over all indices
-  for (i in seq(asap_input$parms$nindices)) {
-    index <- data.frame(
-      type = "index",
-      name = paste0("survey", i),
-      age = NA_integer_,
-      timing = years_in_model[asap_input$index.year.counter[[i]]],
-      value = as.numeric(asap_input$index.obs[[i]]),
-      unit = "mt",
-      # uncertainty = rep(log(sqrt(log(as.numeric(mean(asap_input$index.cv[[i]], na.rm=TRUE)^2 + 1)))), asap_input[["parms"]][["nyears"]]))
-      uncertainty = rep(
-        sqrt(log(as.numeric(mean(asap_input$index.cv[[i]], na.rm=TRUE)^2 + 1))),
-        length(asap_input$index.year.counter[[i]])
-      )
-    )
-    if (i == 1){
-      allinds <- index
-    }else{
-      allinds <- rbind(allinds, index)
-    }
-  }
-  
-  catchage <- data.frame(
-    type = "age_comp",
-    name = "fishery",
-    age = rep(seq(1,asap_input$parms$nages), asap_input$parms$nyears),
-    timing = rep(seq(asap_input$parms$styr, asap_input$parms$endyr), each = asap_input$parms$nages),
-    value = as.numeric(t(asap_input$catch.comp.mats$catch.fleet1.ob)),
-    unit = "",
-    uncertainty = rep(asap_input$fleet.catch.Neff.init[1,], each = asap_input$parms$nages)
-  )
-  
-  # loop over all indices
-  for (i in 1:asap_input$parms$nindices){
-    indexage <- data.frame(type = "age_comp",
-                           name = paste0("survey", i),
-                           age = rep(seq(1,asap_input$parms$nages), asap_input$parms$nyears),
-                           timing = rep(seq(asap_input$parms$styr, asap_input$parms$endyr), each = asap_input$parms$nages),
-                           value = as.numeric(t(asap_input$index.comp.mats[[i*2-1]])),
-                           unit = "",
-                           uncertainty = rep(asap_input$index.Neff.init[i,], each = asap_input$parms$nages))
-    if (i == 1){
-      allindsage <- indexage
-    }else{
-      allindsage <- rbind(allindsage, indexage)
-    }
-  }
-  
-  # Weight at age is in asap_input$WAA.mats$WAA.catch.all but for yellowtail the data
-  # is time-invariant. Could just use the first row but the code below shows how
-  # to use values for every year/age combination. Additionally, it adds the
-  # extra year of data needed for FIMS to predict spawning biomass after all
-  # catches are removed
-  weight_at_age_matrix <- rbind(
-      asap_input[["WAA.mats"]][["WAA.catch.all"]],
-      asap_input[["WAA.mats"]][["WAA.catch.all"]][
-        NROW(asap_input[["WAA.mats"]][["WAA.catch.all"]]), 
-      ]
-    )
-  
-  weight_at_age <- data.frame(
-    type = "weight_at_age",
-    name = NA_character_,
-    age = rep(
-      seq(asap_input[["parms"]][["nages"]]),
-      length(seq(asap_input[["parms"]][["styr"]], asap_input[["parms"]][["endyr"]] + 1))
-    ),
-    timing = rep(
-      seq(asap_input[["parms"]][["styr"]], asap_input[["parms"]][["endyr"]] + 1),
-      each = asap_input[["parms"]][["nages"]]
-    ),
-    value = c(t(weight_at_age_matrix)),
-    unit = "mt",
-    uncertainty = NA
-  )
-
-  res <- rbind(res, landings, allinds, catchage, allindsage, weight_at_age)
-  return(res)
-}
-
 # set up FIMS data objects
 data_4_model <- FIMS::FIMSFrame(get_asap_data(rdat))
 # define the dimensions
-ages <- get_ages(data_4_model)
-n_ages <- get_n_ages(data_4_model)
 years <- seq(get_start_year(data_4_model), get_end_year(data_4_model))
-n_years <- get_n_years(data_4_model)
 ```
 
 ## Run FIMS model
 
 ```{r}
 #| label: setup-model
+# clear memory
+FIMS::clear()
+
 parameters <- create_default_configurations(data = data_4_model) |>
   create_default_parameters(data = data_4_model) |>
   tidyr::unnest(data) |>
@@ -223,7 +119,7 @@ parameters <- create_default_configurations(data = data_4_model) |>
     tibble::tibble(
       module_name = "Population",
       label = "log_init_naa",
-      age = ages,
+      age = get_ages(data_4_model),
       value = log(rdat$N.age[1, ]),
       estimation_type = "fixed_effects"
     ),
@@ -232,9 +128,9 @@ parameters <- create_default_configurations(data = data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Population",
-      label = rep("log_M", n_years * n_ages),
-      time = rep(years, each = n_ages),
-      age = rep(ages, n_years),
+      label = rep("log_M", get_n_years(data_4_model) * get_n_ages(data_4_model)),
+      time = rep(years, each = get_n_ages(data_4_model)),
+      age = rep(get_ages(data_4_model), get_n_years(data_4_model)),
       # M is vector of age1 M X nyrs then age2 M X nyrs
       value = log(as.numeric(t(rdat$M.age)))
     ),
@@ -436,9 +332,9 @@ print(comp_catch)
 
 pop_results <- data.frame(
   Year = c(years, max(years)+1, years, years, years, years, max(years)+1, years),
-  Metric = c(rep("Spawning biomass", 2*n_years+1), rep("Fishing mortality", 2*n_years), rep("Recruitment", 2*n_years+1)),
-  Model = c(rep("FIMS", n_years+1), rep("ASAP", n_years), rep(c("FIMS", "ASAP"), each = n_years), 
-             rep("FIMS", n_years+1), rep("ASAP", n_years)),
+  Metric = c(rep("Spawning biomass", 2*get_n_years(data_4_model)+1), rep("Fishing mortality", 2*get_n_years(data_4_model)), rep("Recruitment", 2*get_n_years(data_4_model)+1)),
+  Model = c(rep("FIMS", get_n_years(data_4_model)+1), rep("ASAP", get_n_years(data_4_model)), rep(c("FIMS", "ASAP"), each = get_n_years(data_4_model)), 
+             rep("FIMS", get_n_years(data_4_model)+1), rep("ASAP", get_n_years(data_4_model))),
   Value = c(
     report$spawning_biomass[[1]],
     rdat$SSB / 2,
@@ -478,24 +374,24 @@ comp_FRSSB3 <- ggplot2::ggplot(pop_results_3, ggplot2::aes(x=Year, y=Value, colo
 print(comp_FRSSB3)
 
 FIMS_naa_results <- data.frame(
-  Year = rep(c(years, max(years)+1), each = n_ages),
-  Age = rep(ages, n_years+1),
+  Year = rep(c(years, max(years)+1), each = get_n_ages(data_4_model)),
+  Age = rep(get_ages(data_4_model), get_n_years(data_4_model)+1),
   Metric = "NAA",
   Model = "FIMS",
   Value = report$numbers_at_age[[1]]
 )
 
 ASAP_naa_results <- data.frame(
-  Year = rep(years, each = n_ages),
-  Age = rep(ages, n_years),
+  Year = rep(years, each = get_n_ages(data_4_model)),
+  Age = rep(get_ages(data_4_model), get_n_years(data_4_model)),
   Metric = "NAA",
   Model = "ASAP",
   Value = as.numeric(t(rdat$N.age))
 )
 
 orig_naa_results <- data.frame(
-  Year = rep(orig_years, each = n_ages),
-  Age = rep(ages, length(orig_years)),
+  Year = rep(orig_years, each = get_n_ages(data_4_model)),
+  Age = rep(get_ages(data_4_model), length(orig_years)),
   Metric = "NAA",
   Model = "ASAP_orig",
   Value = as.numeric(t(orig$N.age))
@@ -537,28 +433,9 @@ jnlltab <- data.frame(
 print(jnlltab)
 ```
 
-## List any issues that you ran into or found
-
-Please [open an issue](https://github.com/NOAA-FIMS/FIMS/issues/new/choose) if you found something new.
-
-* SB calculations in FIMS assume 0.5 multiplier, which differs from ASAP [Issue #521](https://github.com/NOAA-FIMS/FIMS/issues/521)
-* Separate weights at age for catch, SSB, Jan-1 population, indices, etc.
-* Fishery selectivity blocks or random effects
-* Allow time-varying CVs and ESS (or alternative functions)
-* Timing of Index and SSB calculations within the year
-* One-step-ahead residuals
-* Reference points
-
-The following items are available in FIMS but have yet to be added to this case study
-
-* Projections
-* Option for Index in numbers
-* Push-button retro
-* Inclusion of the other 3 indices because missing values are automatically filled in now
-* Include the true time-varying weight-at-age data
-
 ```{r}
 #| label: cleanup
+#| include: false
 #| echo: false
 # Clear C++ objects from memory
 FIMS::clear()

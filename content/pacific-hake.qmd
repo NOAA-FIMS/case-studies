@@ -28,7 +28,8 @@ steepness <- 0.8118
 natural_mortality_by_age <- dplyr::tibble(
   age = 1:5,
   cannibalism = c(
-    0.619078417, 0.038591177, 0.012472784, 0.010002492, 0.018692867
+    # 0.619078417, 0.038591177, 0.012472784, 0.010002492, 0.018692867
+    0.0, 0.0, 0.0, 0.0, 0.0
   )
 )
 
@@ -36,6 +37,34 @@ natural_mortality_by_age <- dplyr::tibble(
 # base_dir <- "/srv/hake/models/2025/01-version/01-base-models/01-base"
 base_dir <- "https://raw.githubusercontent.com/pacific-hake/hake-assessment/refs/heads/model-files/models/2025"
 maturity_data <- utils::read.csv("https://raw.githubusercontent.com/pacific-hake/hake-assessment/refs/heads/master/data-tables/maturity-ogives.csv")
+
+# Hake results are in million metric tons, i.e., 1,000,000 t
+# Read in file that was made smaller from full results
+# make_hake_rds_smaller(
+#   "c:/users/Kelli.Johnson/Documents/hake/01-base.rds",
+#   file.path("c:/github/NOAA-FIMS/case-studies/content", data_directory, "pacific_hake.RDS")
+# )
+ss3_results <- readRDS(file.path(data_directory, "pacific_hake.RDS"))
+ss3_sb <- ss3_results[["spawning_biomass"]]
+# Results from assessment in previous year
+# ss3_sb <- c(
+#   "1966" = 0.994896, "1967" = 1.00664, "1968" = 1.01708, "1969" = 1.162515,
+#   "1970" = 1.33501, "1971" = 1.36887, "1972" = 1.560225, "1973" = 1.853525,
+#   "1974" = 1.79134, "1975" = 1.548275, "1976" = 2.237185, "1977" = 2.15888,
+#   "1978" = 1.784635, "1979" = 1.92232, "1980" = 1.813545, "1981" = 1.736695,
+#   "1982" = 1.875015, "1983" = 2.393425, "1984" = 2.408205, "1985" = 2.40912,
+#   "1986" = 2.41643, "1987" = 2.4756, "1988" = 2.445505, "1989" = 2.11734,
+#   "1990" = 2.092725, "1991" = 1.89941, "1992" = 1.726115, "1993" = 1.34966,
+#   "1994" = 1.30146, "1995" = 1.159205, "1996" = 1.12109, "1997" = 1.113265,
+#   "1998" = 0.9282575, "1999" = 0.798846, "2000" = 0.925014, "2001" = 1.36914,
+#   "2002" = 1.955155, "2003" = 1.825095, "2004" = 1.48332, "2005" = 1.17802,
+#   "2006" = 0.9373315, "2007" = 0.7403355, "2008" = 0.6686465, "2009" = 0.6280765,
+#   "2010" = 0.7547615, "2011" = 0.7524495, "2012" = 0.9411375, "2013" = 1.728305,
+#   "2014" = 2.0092, "2015" = 1.46967, "2016" = 1.19547, "2017" = 1.640085,
+#   "2018" = 1.752535, "2019" = 1.439125, "2020" = 1.35688, "2021" = 1.120755,
+#   "2022" = 1.159235, "2023" = 1.47779, "2024" = 1.638705, "2025" = 1.736495,
+#   "2026" = 1.245515, "2027" = 0.865635, "2028" = 0.5916625
+# ) * 1000000
 ```
 
 * R version: `r R_version`
@@ -70,21 +99,19 @@ stock_synthesis_data <- r4ss::ss3_data_to_fims(
   # TODO: Allow for a sensitivity with age-1 index but use Numbers
   fleets = seq(inputs[["dat"]][["Nfleets"]])[-3],
   ages = c(0, inputs[["dat"]][["agebin_vector"]])
+  # ages = c(inputs[["dat"]][["agebin_vector"]])
 ) |>
   dplyr::mutate(
-    name = dplyr::case_when(
-      name == "fleet1" ~ "fishery",
-      name == "fleet2" ~ "survey"
-    ),
     uncertainty = ifelse(
-      test = type == "age" & name == "survey",
-      uncertainty * 10,
+      test = type == "age" & name == "Acoustic_Survey",
+      uncertainty * 30,
       uncertainty
     )
-  )  
+  )
 
 data_4_model <- dplyr::bind_rows(
     stock_synthesis_data |>
+      # dplyr::filter(age != 0) |>
       dplyr::filter(timing <= terminal_year, timing > 1976),
     add_additional_year(
       stock_synthesis_data,
@@ -150,7 +177,7 @@ maturity_data |>
   dplyr::summarize(empirical = mean(p_mature)) |>
   dplyr::full_join(
     execute_logistic(
-      get_ages(data_4_model),
+      unique(c(0, get_ages(data_4_model))),
       hake_maturity_slope,
       hake_maturity_inflection_point
     ) |>
@@ -269,7 +296,7 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = c("fishery", "survey"),
+      fleet_name = c("Fishery", "Acoustic_Survey"),
       module_type = c(selectivity_used, "Logistic")
     ),
     by = c("module_name", "fleet_name")
@@ -291,6 +318,7 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
     tibble::tibble(
       module_name = c("Population"),
       label = c("log_M"),
+      # estimation_type = "fixed_effects",
       value = log(dplyr::pull(natural_mortality_matrix, m)),
       time = dplyr::pull(natural_mortality_matrix, year),
       age = dplyr::pull(natural_mortality_matrix, age)
@@ -310,7 +338,7 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = rep(c("fishery", "survey"), each = 2),
+      fleet_name = rep(c("Fishery", "Acoustic_Survey"), each = 2),
       label = rep(c("inflection_point", "slope"), 2),
       # TODO: play with these start values
       value = c(2.05, 3.17, 4.4, 3.3),
@@ -321,7 +349,7 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "survey",
+      fleet_name = "Acoustic_Survey",
       label = c("log_q"),
       value = log(0.832),
       estimation_type = "fixed_effects"
@@ -348,7 +376,7 @@ for (i in seq_along(fleet_names)) {
   # Time-varying selectivity for the fishery
   if (i == 1 & time_varying_selectivity) {
     selectivity_type <- parameters |>
-      dplyr::filter(module_name == "Selectivity", fleet_name == "fishery") |>
+      dplyr::filter(module_name == "Selectivity", fleet_name == "Fishery") |>
       dplyr::slice(1) |>
       dplyr::pull(module_type)
     if (selectivity_type == "Logistic"){
@@ -502,9 +530,9 @@ recruitment_distribution <- methods::new(DnormDistribution)
 # TODO: check with Andrea about log space here
 # logR_sd needs to enter the model logged b/c the exp() is
 # taken before the likelihood calculation
-recruitment_distribution$log_sd[1]$value <- log(
+recruitment_distribution$log_sd[1]$value <- 
   inputs[["ctl"]][["SR_parms"]]["SR_sigmaR", "INIT"]
-)
+
 # TODO: check with Andrea about this not being in the parameter vector
 recruitment_distribution$log_sd[1]$estimation_type$set("fixed_effects")
 recruitment_distribution$observed_values$resize(recruitment$log_devs$size())
@@ -518,6 +546,9 @@ recruitment_distribution$set_distribution_links(
   recruitment$log_devs$get_id()
 )
 recruitment$log_devs$set_all_random(TRUE)
+# recruitment$log_devs[46]$estimation_type$set("constant")
+# recruitment$log_devs[47]$estimation_type$set("constant")
+# recruitment$log_devs[48]$estimation_type$set("constant")
 
 # Put a prior on log_rzero
 log_rzero_prior <- methods::new(DnormDistribution)
@@ -535,25 +566,6 @@ growth <- FIMS:::initialize_growth(
   parameters = parameters,
   data = data_4_model
 )
-# Add weight-at-age data for the terminal year + 1 b/c beginning of the year
-# calculations
-growth$n_years$set(get_n_years(data_4_model) + 1)
-growth$weights$resize(growth$weights$size() + get_n_ages(data_4_model))
-ii <- 0
-for(i in (growth$weights$size() - get_n_ages(data_4_model)):(growth$weights$size() - 1)) {
-  growth$weights$set(
-    i,
-    get_data(data_4_model) |>
-      dplyr::filter(
-        type == "weight_at_age",
-        timing %in% (get_end_year(data_4_model) - 4):get_end_year(data_4_model),
-        age == ii
-      ) |>
-      dplyr::pull(value) |>
-      mean()
-  )
-  ii <- ii + 1
-}
 
 # Maturity
 maturity <- FIMS:::initialize_maturity(
@@ -575,6 +587,22 @@ population <- FIMS:::initialize_population(
   # parameters tibble
   linked_ids = population_module_ids
 )
+# # Put a prior on natural mortality
+# M_prior <- methods::new(DlnormDistribution)
+# M_prior$expected_values$resize(1)
+# M_prior$expected_values[1]$value <- inputs[["ctl"]][["MG_parms"]][
+#   grep("NatM_", row.names(inputs[["ctl"]][["MG_parms"]])),
+#   "PRIOR"
+# ]
+# M_prior$log_sd$resize(1)
+# M_prior$log_sd[1]$value <- inputs[["ctl"]][["MG_parms"]][
+#   grep("NatM_", row.names(inputs[["ctl"]][["MG_parms"]])),
+#   "PR_SD"
+# ]
+# M_prior$set_distribution_links(
+#   "prior",
+#   population$log_M$get_id()
+# )
 # Put a prior on init_naa
 init_naa_prior <- methods::new(DnormDistribution)
 init_naa_prior$expected_values$resize(1)
@@ -608,7 +636,6 @@ parameter_list <- list(
   ),
   model = fims_model
 )
-# fit <- FIMS::fit_fims(input = parameter_list, optimize = TRUE)
 obj <- TMB::MakeADFun(
   data = list(),
   parameters = parameter_list$parameters,
@@ -619,6 +646,65 @@ obj <- TMB::MakeADFun(
 )
 parameter_names <- names(FIMS:::get_parameter_names(obj[["par"]]))
 random_names <- names(FIMS:::get_random_names(obj[["env"]]$parList()$re))
+
+map <- list(
+  p = parameter_names,
+  re = parameter_list[["parameters"]][["re"]]
+)
+# map[["p"]] <- map_time_varying(
+#   map[["p"]],
+#   "Population.1.log_M",
+#   "single",
+#   1:(get_n_ages(data_4_model) * get_n_years(data_4_model))
+# )
+
+if (time_varying_selectivity & TRUE) {
+  # Make selectivity constant until 1991
+  selectivity_year <- 1981
+
+  year_vector <- get_start_year(data_4_model):get_end_year(data_4_model)
+  year_sequence <- seq(year_vector)
+
+  # # Change inflection_point early years to be one parameter
+  # map[["p"]] <- map_time_varying(
+  #   parameter_names,
+  #   "Selectivity.1.inflection_point",
+  #   "early",
+  #   which(year_vector < selectivity_year)
+  # )
+  # Change inflection_point late years to be one parameter
+  map[["p"]] <- map_time_varying(
+    map[["p"]],
+    "Selectivity.1.inflection_point",
+    "late",
+    which(year_vector >= get_end_year(data_4_model) - 5)
+  )
+  # Change slope early years to be one parameter
+  map[["p"]] <- map_time_varying(
+    map[["p"]],
+    "Selectivity.1.slope",
+    "early",
+    which(year_vector < selectivity_year)
+  )
+  # Change slope late years to be one parameter
+  map[["p"]] <- map_time_varying(
+    map[["p"]],
+    "Selectivity.1.slope",
+    "late",
+    which(year_vector >= get_end_year(data_4_model) - 2)
+  )
+  map[["p"]] <- as.factor(map[["p"]])
+  # map[["re"]] <- as.factor(gsub("\\d+$", "", random_names))
+  # Bayesian estimation
+  obj <- TMB::MakeADFun(
+    data = list(),
+    parameters = parameter_list$parameters,
+    map = list(p = map[["p"]]),
+    random = "re",
+    DLL = "FIMS",
+    silent = TRUE
+  )
+}
 ```
 
 #### Maximum likelihood
@@ -646,7 +732,6 @@ for (ii in 1:3) {
     )
   )
 }
-FIMS::set_fixed(opt$par)
 sd_report <- TMB::sdreport(obj)
 # Check that the standard errors are not NA
 any(is.na(summary(
@@ -654,49 +739,46 @@ any(is.na(summary(
   "fixed"
 )[, 2]))
 
-fit <- FIMSFit(
-  input = parameter_list,
-  obj = obj,
-  opt = opt,
-  sdreport = sd_report
-)
-output <- FIMS::get_estimates(fit) |>
-  dplyr::mutate(
-    uncertainty_label = "se",
-    year = year_i + FIMS::get_start_year(data_4_model) - 1,
-    estimate = estimated
-  )
+# ggplot2::ggplot(
+#   data = data.frame(
+#     year = get_start_year(data_4_model):(get_end_year(data_4_model) + 1),
+#     spawning_biomass = sd_report$value[grepl("^spawning_biomass$", names(sd_report$value))]
+#   ),
+#   ggplot2::aes(x = year, y = spawning_biomass)
+# ) + 
+#   ggplot2::geom_line() +
+#   ggplot2::geom_line(
+#     data = data.frame(
+#       year = as.numeric(names(ss3_sb)),
+#       spawning_biomass = ss3_sb
+#     ),
+#     color = "red"
+#   )
 ```
 
 #### Bayesian
 
 ```{r}
 #| label: fit-bayesian
-#| eval: true
 
 # TODO: Implement this in parallel
-mcmc <- adnuts::sample_snuts(
+fit <- SparseNUTS::sample_snuts(
   obj,
-  num_samples = 5000,
-  num_warmup = 200,
-  chains = 4,
-  cores = 1,
-  seed = 1,
-  # init = "random",
-  control = list(adapt_delta = .95)
+  num_samples = 8000,
+  num_warmup = 1000,
+  chains = 1,
+  print = FALSE,
+  refresh = 0,
+  quiet = TRUE,
+  control = list(adapt_delta = 0.99)
 )
 
-posterior <- adnuts::extract_samples(
-  mcmc,
-  inc_lp = TRUE,
-  inc_warmup = FALSE,
-  unbounded = FALSE
-)
+posterior <- as.data.frame(fit)
 colnames(posterior) <- c(
-  parameter_names,
-  paste0("Recruitment.1.recruitment_deviation.", obj$env$random),
-  "likelihood"
+  levels(map[["p"]]),
+  paste0("Recruitment.1.recruitment_deviation.", obj$env$random)
 )
+dimnames(fit[["samples"]])[[3]] <- c(colnames(posterior), "lp__")
 
 posteriors_labeled <- tidyr::pivot_longer(
   posterior[, -NCOL(posterior)],
@@ -720,7 +802,7 @@ posteriors_labeled <- tidyr::pivot_longer(
         } else {
           dplyr::row_number(label)
         },
-        fleet_name = dplyr::if_else(fleet_number == 1, "fishery", "survey"),
+        fleet_name = dplyr::if_else(fleet_number == 1, "Fishery", "Acoustic_Survey"),
         words = gsub("_", " ", label)
       ) |>
       dplyr::ungroup(),
@@ -732,7 +814,7 @@ posteriors_labeled <- tidyr::pivot_longer(
   )
 
 # Get derived quantities using report()
-post <- apply(as.data.frame(mcmc), 1, \(x) obj$report(x))
+post <- apply(as.data.frame(posterior), 1, \(x) obj$report(x))
 SB_long <- purrr::map(post, "spawning_biomass") |>
   purrr::map(
     \(x) data.frame(value = unlist(x), year_i = 1:length(unlist(x)))
@@ -744,138 +826,9 @@ SB_long <- purrr::map(post, "spawning_biomass") |>
   )
 ```
 
-#### Mapped parameters
-
-Code to map off parameters to another parameter is the same as "mirroring" parameters in Stock Synthesis.
-
-```{r}
-#| label: fit-mapped
-#| echo: false
-#| eval: false
-
-if (time_varying_selectivity & FALSE) {
-  # Make selectivity constant until 1991
-  selectivity_year <- 1991
-  map <- parameter_list$parameters
-  map$p[grepl(parameter_names, pattern = ".1.inflection_point")] <- c(
-  # map$p[grepl(parameter_names, pattern = "inflection_point_asc")] <- c(
-    rep(2, length(get_start_year(data_4_model):(selectivity_year - 1))),
-    rnorm(
-      length(selectivity_year:get_end_year(data_4_model)),
-      mean = 2,
-      sd = 0.1
-    ) + 0.001
-  )
-  map$p[grepl(pattern = "log_Fmort", parameter_names)] <- rnorm(
-    length(grep(pattern = "log_Fmort", parameter_names)),
-    mean = -1,
-    sd = 0.05
-  )
-  map$p <- as.factor(map$p)
-  map$re <- as.factor(map$re)
-  # Bayesian estimation
-  obj <- TMB::MakeADFun(
-    data = list(),
-    parameters = parameter_list$parameters,
-    map = map,
-    random = "re",
-    DLL = "FIMS",
-    silent = TRUE
-  )
-}
-# MLE estimation
-for (ii in 1:3) {
-  # control$trace is reset to zero regardless of verbosity because the
-  # differences in values printed out using control$trace will be
-  # negligible between these different runs and is not worth printing
-  opt <- with(
-    obj,
-    nlminb(
-      start = if (ii == 1) {
-        par
-      } else {
-        opt[["par"]]
-      },
-      objective = fn,
-      gradient = gr,
-      control = list(
-        eval.max = 10000,
-        iter.max = 10000,
-        trace = 0
-      )
-    )
-  )
-}
-```
-
 ## Results
 
-### Plotting using {stockplotr}
-
-```{r}
-#| label: comparison-plots
-#| echo: false
-
-stockplotr::plot_landings(
-  dplyr::filter(output, module_id == 1)
-) +
-  ggplot2::geom_point(
-    data = dplyr::filter(output, module_id == 1, label == "landings_expected"),
-    # Plot the observed values as points
-    ggplot2::aes(x = year, y = observed)
-  )
-
-stockplotr::plot_spawning_biomass(
-  dplyr::filter(output, label == "spawning_biomass")
-)
-
-stockplotr::plot_recruitment(
-  output
-)
-
-# index
-stockplotr::plot_timeseries(
-  stockplotr::filter_data(
-    output |> dplyr::filter(module_id == 2),
-    label_name = "^index_expected$",
-    geom = "line"
-  ),
-  x = "year",
-  y = "estimated",
-  ylab = "Relative Index of Abundance"
-) +
-  ggplot2::geom_point(
-    data = dplyr::filter(
-      FIMS::get_estimates(fit),
-      module_id == 2,
-      label == "index_expected",
-      observed > -999
-    ) |>
-      dplyr::left_join(
-        year_conversion_matrix,
-        by = c("year_i" = "index")
-      ),
-    ggplot2::aes(x = year, y = observed)
-  ) +
-  stockplotr::theme_noaa()
-
-# Fishing mortality
-stockplotr::plot_timeseries(
-  stockplotr::filter_data(
-    output |> dplyr::filter(module_id == 1),
-    label_name = "log_Fmort$",
-    geom = "line"
-  ),
-  x = "year",
-  y = "estimate",
-  ylab = "natural log of Fishing Mortality"
-) +
-  stockplotr::theme_noaa()
-```
-
-### Plotting Bayesian results
-
-#### Parameter plots
+### Parameter plots
 
 ```{r}
 #| label: plot-selectivity-survey
@@ -900,35 +853,11 @@ ggplot2::ggplot(
 ```
 
 ```{r}
-#| label: plot-selectivity-fishery
-#| fig-cap: "Posterior estimates of the logistic selectivity curves for the fishery."
-#| fig-alt: "The slope of the fishery curve was poorly estimated."
-#| echo: false
-#| warning: false
-#| eval: !expr time_varying_selectivity
-
-ggplot2::ggplot(
-  posteriors_labeled |>
-    dplyr::filter(module_name == "Selectivity", fleet_number == 1),
-  ggplot2::aes(x = value)
-) +
-  tidybayes::stat_slabinterval(
-    fill = "skyblue", 
-    alpha = 0.6,
-    .width = c(.66, .95) # Shows both 66% and 95% intervals
-  ) +
-  ggplot2::facet_wrap(fleet_name ~ words, scales = "free_x") +
-  ggplot2::labs(title = "Posterior Distribution", x = "Parameter Value", y = "Density") +
-  ggplot2::theme_minimal()
-```
-
-```{r}
 #| label: plot-selectivity-fishery-inflection-point
 #| fig-cap: "Posterior estimates of the inflection point (x-axis; age) of the logistic curve for time-varying fishery selectivity."
 #| fig-alt: "Over the last decade we have been selecting younger fish."
 #| echo: false
 #| warning: false
-#| eval: expr time_varying_selectivity
 
 ggplot2::ggplot(
   posteriors_labeled |>
@@ -947,36 +876,11 @@ ggplot2::ggplot(
 ```
 
 ```{r}
-#| label: plot-selectivity-fishery-inflection-point-zoom
-#| fig-cap: "Posterior estimates of the inflection point (x-axis; age) of the logistic curve for time-varying fishery selectivity."
-#| fig-alt: "Over the last decade we have been selecting younger fish."
-#| echo: false
-#| warning: false
-#| eval: expr time_varying_selectivity
-
-ggplot2::ggplot(
-  posteriors_labeled |>
-    dplyr::filter(
-      module_name == "Selectivity",
-      label == "inflection_point",
-      fleet_number == 1,
-      year > get_end_year(data_4_model) - 2
-    ),
-  ggplot2::aes(x = value, y = as.factor(year), fill = ggplot2::after_stat(x))
-) +
-  ggridges::geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
-  ggplot2::scale_fill_viridis_c(name = "Value", option = "C") +
-  ggplot2::labs(title = "Posterior Shift by Year", y = "Year", x = "Inflection point") +
-  ggridges::theme_ridges()
-```
-
-```{r}
 #| label: plot-selectivity-fishery-slope
 #| fig-cap: "Posterior estimates of the slope (x-axis) of the logistic curve for time-varying fishery selectivity."
 #| fig-alt: "There are a handful of years where the estimate is highly uncertain."
 #| echo: false
 #| warning: false
-#| eval: expr time_varying_selectivity
 
 ggplot2::ggplot(
   posteriors_labeled |>
@@ -995,42 +899,8 @@ ggplot2::ggplot(
 ```
 
 ```{r}
-#| label: plot-selectivity-curves
-#| fig-cap: "Estimated selectivity curves for the fishery and the survey using logistic selectivity."
-#| fig-alt: "The survey selects younger fish than the fishery but they both select older fish equally."
-#| echo: false
-#| warning: false
-#| eval: expr time_varying_selectivity
-
-temp <- purrr::map2(
-  .x = dplyr::filter(
-    output,
-    module_name == "Selectivity",
-    label == "slope"
-  ) |>
-    dplyr::pull(estimated),
-  .y = dplyr::filter(
-    output,
-    module_name == "Selectivity",
-    label == "inflection_point"
-  ) |>
-    dplyr::pull(estimated),
-  .f = execute_logistic,
-  x = get_ages(data_4_model)
-)
-names(temp) <- get_fleets(data_4_model)
-
-g <- ggplot2::ggplot(
-  data = dplyr::bind_rows(temp, .id = "fleet"),
-  ggplot2::aes(x = x, y = value, group = fleet, color = fleet)
-) +
-  ggplot2::geom_line()
-g
-```
-
-```{r}
 #| label: plot-log-Fmort
-#| fig-cap: "Posterior estimates of the natural log of fishing mortality for each year (y axis)."
+#| fig-cap: "Posterior estimates of the natural log of fishing mortality for each year (y axis). Black dots are median estimates from the Stock Synthesis model."
 #| fig-alt: "Fishing levels have been increasing over time."
 #| echo: false
 #| warning: false
@@ -1039,34 +909,26 @@ ggplot2::ggplot(
   posteriors_labeled |>
     dplyr::filter(
       label == "log_Fmort",
-      fleet_number == 1,
-      year < get_end_year(data_4_model)
+      fleet_number == 1
     ),
   ggplot2::aes(x = value, y = as.factor(year), fill = ggplot2::after_stat(x))
 ) +
   ggridges::geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
-  ggplot2::scale_fill_viridis_c(name = "Value", option = "C") +
-  ggplot2::labs(title = "Posterior Shift by Year", y = "Year", x = "Ln(Fishing Mortality)") +
-  ggridges::theme_ridges()
-```
-
-```{r}
-#| label: plot-log-Fmort-recent
-#| fig-cap: "Posterior estimates of the natural log of fishing mortality for recent years (y axis)."
-#| fig-alt: "The terminal year was poorly estimated."
-#| echo: false
-#| warning: false
-
-ggplot2::ggplot(
-  posteriors_labeled |>
-    dplyr::filter(
-      label == "log_Fmort",
-      fleet_number == 1,
-      year > get_end_year(data_4_model) - 2
-    ),
-  ggplot2::aes(x = value, y = as.factor(year), fill = ggplot2::after_stat(x))
-) +
-  ggridges::geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  ggplot2::geom_point(
+    data = dplyr::tibble(
+      value = ss3_results[["log_Fmort"]],
+      year = as.numeric(names(ss3_results[["log_Fmort"]]))
+    ) |>
+      dplyr::filter(
+        year <= get_end_year(data_4_model),
+        year >= get_start_year(data_4_model)
+        
+      ),
+    mapping = ggplot2::aes(y = as.factor(year), x = value),
+    color = "black",
+    inherit.aes = FALSE,
+    size = 2.2
+  ) +
   ggplot2::scale_fill_viridis_c(name = "Value", option = "C") +
   ggplot2::labs(title = "Posterior Shift by Year", y = "Year", x = "Ln(Fishing Mortality)") +
   ggridges::theme_ridges()
@@ -1098,7 +960,7 @@ ggplot2::ggplot(
 
 ```{r}
 #| label: plot-recruitment-deviations
-#| fig-cap: "Posterior estimates of recruitment deviations."
+#| fig-cap: "Posterior estimates of recruitment deviations (red) and median estimates from Stock Synthesis."
 #| fig-alt: "The terminal year estimates were poorly estimated."
 #| echo: false
 #| warning: false
@@ -1114,12 +976,27 @@ ggplot2::ggplot(
     # .width = c(0.66, 0.95),
     color = "darkred"
   ) +
+  ggplot2::geom_point(
+    data = dplyr::tibble(
+      value = ss3_results[["rec_dev"]],
+      year = as.numeric(names(ss3_results[["rec_dev"]])) - 1
+    ) |>
+      dplyr::filter(
+        year <= get_end_year(data_4_model),
+        year >= get_start_year(data_4_model)
+        
+      ),
+    mapping = ggplot2::aes(x = as.factor(year), y = value),
+    color = "black",
+    inherit.aes = FALSE,
+    size = 2.2
+  ) +
   ggplot2::labs(x = "Year", y = "Recruitment Deviation") +
   ggplot2::theme_minimal() +
   ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
 ```
 
-#### Derived quantity plots
+### Derived quantity plots
 
 ```{r}
 #| label: plot-compare-spawning-biomass
@@ -1127,26 +1004,6 @@ ggplot2::ggplot(
 #| fig-alt: "The FIMS model overestimates values from the 1980s compared to the SS3 model and underestimates more recent values."
 #| echo: false
 #| warning: false
-
-# Hake results are in million metric tons, i.e., 1,000,000 t
-ss3_sb_median <- c(
-  "1966" = 0.994896, "1967" = 1.00664, "1968" = 1.01708, "1969" = 1.162515,
-  "1970" = 1.33501, "1971" = 1.36887, "1972" = 1.560225, "1973" = 1.853525,
-  "1974" = 1.79134, "1975" = 1.548275, "1976" = 2.237185, "1977" = 2.15888,
-  "1978" = 1.784635, "1979" = 1.92232, "1980" = 1.813545, "1981" = 1.736695,
-  "1982" = 1.875015, "1983" = 2.393425, "1984" = 2.408205, "1985" = 2.40912,
-  "1986" = 2.41643, "1987" = 2.4756, "1988" = 2.445505, "1989" = 2.11734,
-  "1990" = 2.092725, "1991" = 1.89941, "1992" = 1.726115, "1993" = 1.34966,
-  "1994" = 1.30146, "1995" = 1.159205, "1996" = 1.12109, "1997" = 1.113265,
-  "1998" = 0.9282575, "1999" = 0.798846, "2000" = 0.925014, "2001" = 1.36914,
-  "2002" = 1.955155, "2003" = 1.825095, "2004" = 1.48332, "2005" = 1.17802,
-  "2006" = 0.9373315, "2007" = 0.7403355, "2008" = 0.6686465, "2009" = 0.6280765,
-  "2010" = 0.7547615, "2011" = 0.7524495, "2012" = 0.9411375, "2013" = 1.728305,
-  "2014" = 2.0092, "2015" = 1.46967, "2016" = 1.19547, "2017" = 1.640085,
-  "2018" = 1.752535, "2019" = 1.439125, "2020" = 1.35688, "2021" = 1.120755,
-  "2022" = 1.159235, "2023" = 1.47779, "2024" = 1.638705, "2025" = 1.736495,
-  "2026" = 1.245515, "2027" = 0.865635, "2028" = 0.5916625
-) * 1000000
 
 ggplot2::ggplot(
   data = SB_long |>
@@ -1165,14 +1022,14 @@ ggplot2::ggplot(
   ) +
   ggplot2::geom_point(
     data = dplyr::tibble(
-      ss3_sb_median,
-      year = as.numeric(names(ss3_sb_median))
+      ss3_sb,
+      year = as.numeric(names(ss3_sb))
     ),
-    mapping = ggplot2::aes(x = year, y = ss3_sb_median)
+    mapping = ggplot2::aes(x = year, y = ss3_sb)
   )
 ```
 
-#### Diagnostic plots
+### Diagnostic plots
 
 ```{r}
 #| label: plot-diagnostic-slow
@@ -1180,7 +1037,7 @@ ggplot2::ggplot(
 #| fig-alt: "Correlated parameters indicate large amounts of parameter spaces were covered by the chains."
 #| echo: false
 #| warning: false
-adnuts::pairs_admb(mcmc, pars = 1:6, order = "slow")
+SparseNUTS:::pairs.tmbfit(fit, pars = 1:6, order = "slow")
 ```
 
 ```{r}
@@ -1189,7 +1046,7 @@ adnuts::pairs_admb(mcmc, pars = 1:6, order = "slow")
 #| fig-alt: "Older ages were poorly estimated."
 #| echo: false
 #| warning: false
-adnuts::plot_marginals(mcmc, pars = grep("log_init", parameter_names))
+SparseNUTS::plot_marginals(fit, pars = grep("log_init", dimnames(fit[["samples"]])[[3]]))
 ```
 
 ```{r}
@@ -1198,13 +1055,11 @@ adnuts::plot_marginals(mcmc, pars = grep("log_init", parameter_names))
 #| fig-alt: "Parameters that were poorly estimated in an MLE context had even larger estimates of uncertainty in a Bayesian context."
 #| echo: false
 #| warning: false
-adnuts::plot_uncertainties(mcmc)
+SparseNUTS::plot_uncertainties(fit)
 ```
 
-## Clean up
-
-Memory is allocated when FIMS modules are initialized and must be cleared using `FIMS::clear()`. Though, closing your R session will also clear the memory.
 ```{r}
 #| label: cleanup
+#| echo: false
 FIMS::clear()
 ```
