@@ -55,10 +55,10 @@ jobs:
             cran::tidyr
             cran::TMB
           extra-packages: |
-            any::nmfs-ost/stockplotr
-            any::noaa-afsc/SparseNUTS
-            any::NOAA-FIMS/FIMS
-            any::r4ss/r4ss@convert-data-to-fims
+            github::nmfs-ost/stockplotr
+            github::noaa-afsc/SparseNUTS
+            github::NOAA-FIMS/FIMS
+            github::r4ss/r4ss@convert-data-to-fims
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
