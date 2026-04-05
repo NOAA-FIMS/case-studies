@@ -39,11 +39,12 @@ jobs:
           libx11-dev \
           pandoc
 
-      - name: Set up CRAN package dependencies (cached, via pak lockfile)
+      - name: Set up CRAN package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           pak-version: stable
           cache: true
+          lockfile-create-lib: "none"
           packages: |
             cran::knitr
             cran::dplyr
@@ -60,7 +61,9 @@ jobs:
         shell: Rscript {0}
         run: |
           options(Ncpus = max(1L, parallel::detectCores() - 1L))
-          install.packages("pak", repos = "https://cloud.r-project.org")
+          if (!requireNamespace("pak", quietly = TRUE)) {
+            install.packages("pak", repos = "https://cloud.r-project.org")
+          }
 
           pak::pkg_install(
             c(
@@ -70,7 +73,8 @@ jobs:
               "github::r4ss/r4ss@convert-data-to-fims"
             ),
             ask = FALSE,
-            upgrade = FALSE
+            upgrade = FALSE,
+            dependencies = TRUE
           )
 
       - name: Set up Quarto
