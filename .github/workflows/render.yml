@@ -52,14 +52,21 @@ jobs:
           pak-version: stable
           cache: true
           packages: |
-            cran::rmarkdown
             cran::knitr
-            cran::jsonlite
             cran::dplyr
             cran::ggplot2
+            cran::ggridges
+            cran::reshape2
+            cran::remotes
+            cran::shinystan
+            cran::tidybayes
             cran::tidyr
             cran::TMB
-            cran::remotes
+          extra-packages: |
+            any::nmfs-ost/stockplotr
+            any::noaa-afsc/SparseNUTS
+            any::NOAA-FIMS/FIMS
+            any::r4ss/r4ss@convert-data-to-fims
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
