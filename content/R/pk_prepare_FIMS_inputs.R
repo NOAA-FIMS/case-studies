@@ -1,5 +1,5 @@
 ## Quick function to compare models
-get_long_outputs <- function(fims, tmb) {
+get_long_outputs <- function(fims, tmb, output) {
   ## estimated catch is pretty close I think
   naa <- matrix(fims$numbers_at_age[[1]], ncol = n_ages, byrow = TRUE) / 1e9
   catch <-
@@ -27,7 +27,13 @@ get_long_outputs <- function(fims, tmb) {
     data.frame(
       year = years,
       name = "F",
-      FIMS = fims$mortality_F[[1]],
+      FIMS = dplyr::filter(
+        output,
+        label == "log_Fmort",
+        module_id == 1
+      ) |>
+        dplyr::pull(estimated) |>
+        exp(),
       TMB = tmb$F
     )
   recruit <-
@@ -263,17 +269,26 @@ prepare_pollock_data <- function(
       each = n_ages
     )
   )
-  weightsfishery <- data.frame(
-    type = "weight-at-age",
-    name = "fleet1",
-    age = seq(1, n_ages),
-    value = pkinput$dat$wt_srv1[1, ],
-    uncertainty = NA,
-    unit = "mt"
+  weightsfishery <- rbind(
+    pkinput$dat$wt_srv1,
+    pkinput$dat$wt_srv1[NROW(pkinput$dat$wt_srv1), ]
   )
-  weightatage_data <- merge(timingfishery, weightsfishery)
+  colnames(weightsfishery) <- ages
+  rownames(weightsfishery) <- c(years, max(years) + 1)
+  weightatage_data <- tidyr::pivot_longer(
+    as.data.frame(weightsfishery) |>
+      tibble::rownames_to_column(var = "timing"),
+    !timing,
+    names_to = "age"
+  ) |>
+    dplyr::mutate(
+      type = "weight_at_age",
+      unit = "mt",
+      timing = as.numeric(timing),
+      age = as.numeric(age)
+    )
 
-  res <- rbind(res, weightatage_data)
+  res <- dplyr::bind_rows(res, weightatage_data)
 
   data_4_model <- FIMS::FIMSFrame(res)
 }

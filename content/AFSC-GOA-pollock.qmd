@@ -271,27 +271,41 @@ fit <- default_parameters  |>
 rep1 <- FIMS::get_report(test_fit) # FIMS initial values
 FIMS::get_max_gradient(fit) # TODO: from Cole, can use TMBhelper::fit_tmb to get val to <1e-10
 rep2 <- FIMS::get_report(fit)
+output <- get_estimates(fit)
 ```
 
 ## Plotting results
 
 ```{r}
-#| label: comparison-plots
-out1 <- get_long_outputs(rep1, rep0) |>
+#| label: comparison-plots-raw
+#| fig-cap: "Comparisons of biomass, catch, fishing mortality (F), survey indices of abundance, recruitment, and spawning biomass between the Template Model Builder (TMB) model and the optimized FIMS model."
+#| fig-alt: "All metrics match quite well between the two models."
+#| echo: false
+#| warning: false
+out1 <- get_long_outputs(rep1, rep0, output) |>
   dplyr::mutate(platform = ifelse(platform == "FIMS", "FIMS init", "TMB"))
-out2 <- get_long_outputs(rep2, rep0) |>
+out2 <- get_long_outputs(rep2, rep0, output) |>
   dplyr::filter(platform == "FIMS") |>
   dplyr::mutate(platform = "FIMS opt")
 out <- rbind(out1, out2)
 g <- ggplot2::ggplot(
-  out,
+  out |>
+    dplyr::filter(platform != "FIMS init"),
   ggplot2::aes(year, value, color = platform)
 ) +
   ggplot2::geom_line() +
   ggplot2::facet_wrap("name", scales = "free") +
   ggplot2::ylim(0,NA) +
   ggplot2::labs(x = NULL, y = NULL)
-ggplot2::ggsave("figures/AFSC_PK_ts_comparison.png", g, width = 9, height = 5, units = "in")
+g
+```
+
+```{r}
+#| label: comparison-plots-re
+#| fig-cap: "Relative error in biomass, catch, fishing mortality (F), survey indices of abundance, recruitment, and spawning biomass between the Template Model Builder (TMB) model and the optimized FIMS model. Relative error is also shown for the pre-optimized FIMS models (FIMS init)."
+#| fig-alt: "All metrics match quite well between the two models."
+#| echo: false
+#| warning: false
 g <- ggplot2::ggplot(
   dplyr::filter(out, platform != "TMB"),
   ggplot2::aes(year, relerror, color = platform)
@@ -300,32 +314,52 @@ g <- ggplot2::ggplot(
   ggplot2::facet_wrap("name", scales = "free") +
   ggplot2::labs(x = NULL, y = "Relative difference") +
   ggplot2::coord_cartesian(ylim = c(-.5,.5))
-ggplot2::ggsave("figures/AFSC_PK_ts_comparison_relerror.png", g, width = 9, height = 5, units = "in")
+g
+```
 
-## Quick check on age comp fits
+```{r}
+#| label: comparison-plots-age-comp
+#| fig-cap: "Proportion at age (paa) by year (panel) for the fishing fleet for the initialized FIMS model (FIMS init), the optimized FIMS model (FIMS opt), the Template Model Builder model (TMB), and observed data (obs)."
+#| fig-alt: "Older ages are overestimated in 2010 by all models."
+#| echo: false
+#| warning: false
 p1 <- get_acomp_fits(rep0, rep1, rep2, fleet = 1, years = pkdat0$fshyrs)
 g <- ggplot2::ggplot(p1, ggplot2::aes(age, paa, color = platform)) +
   ggplot2::facet_wrap("year") +
   ggplot2::geom_line()
-ggplot2::ggsave("figures/AFSC_PK_age_comp_fits_1.png", g, width = 9, height = 8, units = "in")
+g
+```
+
+```{r}
+#| label: comparison-plots-age-comp-survey
+#| fig-cap: "Proportion at age (paa) by year (panel) for the first survey for the initialized FIMS model (FIMS init), the optimized FIMS model (FIMS opt), the Template Model Builder model (TMB), and observed data (obs)."
+#| fig-alt: "The best fits are in year 2001."
+#| echo: false
+#| warning: false
 p2 <- get_acomp_fits(rep0, rep1, rep2, fleet = 2, years = pkdat0$srv_acyrs2)
 g <- ggplot2::ggplot(p2, ggplot2::aes(age, paa, color = platform)) +
   ggplot2::facet_wrap("year") +
   ggplot2::geom_line()
-ggplot2::ggsave("figures/AFSC_PK_age_comp_fits_2.png", g, width = 9, height = 8, units = "in")
+g
 ## p3 <- get_acomp_fits(rep0, rep1, rep2, fleet = 3, years = pkdat0$srv_acyrs3)
 ## g <- ggplot2::ggplot(p3, ggplot2::aes(age, paa, color = platform)) + ggplot2::facet_wrap("year") + ggplot2::geom_line()
 ## p6 <- get_acomp_fits(rep0, rep1, rep2, fleet = 4, years = pkdat0$srv_acyrs6)
 ## g <- ggplot2::ggplot(p6, ggplot2::aes(age, paa, color = platform)) + ggplot2::facet_wrap("year") + ggplot2::geom_line()
+```
 
-## index fits
+
+```{r}
+#| label: comparison-plots-index
+#| fig-cap: "Fits to the indices of abundance (million metric tons) by survey (panel) for the initialized FIMS model (FIMS init), the optimized FIMS model (FIMS opt), the Template Model Builder model (TMB). Observed data with uncertainty measurements are plotted using points."
+#| fig-alt: "All models fit the same."
+#| echo: false
+#| warning: false
 addsegs <- function(yrs, obs, CV){
   getlwr <- function(obs, CV) qlnorm(p = .025, meanlog = log(obs), sdlog = sqrt(log(1+CV^2)))
   getupr <- function(obs, CV) qlnorm(p = .975, meanlog = log(obs), sdlog = sqrt(log(1+CV^2)))
   segments(yrs, y0 = getlwr(obs,CV), y1 = getupr(obs,CV))
   points(yrs, obs, pch = 22, bg = "white")
 }
-png("figures/AFSC_PK_index_fits.png", res = 300, width = 6, height = 7, units = "in")
 par(mfrow = c(3,1), mar = c(3,3,.5,.5), mgp = c(1.5,.5,0), tck = -0.02)
 plot(years, rep0$Eindxsurv2, type = "l",
      ylim = c(0,2), lwd = 5.5,
@@ -363,17 +397,7 @@ lines(years,x2$value, col = 3, lwd = 1.5)
 addsegs(yrs = pkdat0$srvyrs6, obs = pkdat0$indxsurv6, CV = pkdat0$indxsurv_log_sd6)
 mtext("Survey 6", line = -1.5)
 legend("topright", legend = c("TMB", "FIMS init", "FIMS opt"), lty = 1, col = 1:3)
-dev.off()
 ```
-## Comparison figures for basic model
-![Time Series](figures/AFSC_PK_ts_comparison.png){width=7in}
-![Time Series (relative error)](figures/AFSC_PK_ts_comparison_relerror.png){width=7in}
-![Indices](figures/AFSC_PK_index_fits.png){width=7in}
-![Fishery Age Composition Fits](figures/AFSC_PK_age_comp_fits_1.png){width=7in}
-![Survey 2 Age Composition Fits](figures/AFSC_PK_age_comp_fits_2.png){width=7in}
-
-
-
 
 ## Comparison table
 
@@ -387,7 +411,6 @@ To do
 
 * Output more derived quantities like selectivity, maturity, etc.
 * NLL components are not separated by fleet and need to be. So age comp NLL for fleets 1 and 2 need to be separate to make, e.g., the likelihood profile plot above.
-* Need more ADREPORTed values like SSB
 
 ## What features are most important to add based on this case study?
 
