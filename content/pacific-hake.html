@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>U.S. West Coast Case Study of Pacific Hake – NOAA FIMS case studies</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../content/acknowledgements.qmd" rel="next">
+<link href="../content/AFSC-GOA-pollock.html" rel="prev">
+<link href="../images/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-8432ee26c2eb86eb0659ec3d4cbd73c9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-049b89148c041f11256bd001a988d46e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-8432ee26c2eb86eb0659ec3d4cbd73c9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../content/pacific-hake.html">Pacific Hake</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-center sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="https://raw.githubusercontent.com/nmfs-opensci/assets/main/logo/nmfs-opensci-logo3.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="https://raw.githubusercontent.com/nmfs-opensci/assets/main/logo/nmfs-opensci-logo3.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      <div class="sidebar-tools-main tools-wide">
+    <a href="https://nmfs-opensci.github.io" title="NMFS Open Science" class="quarto-navigation-tool px-1" aria-label="NMFS Open Science"><i class="bi bi-globe"></i></a>
+    <a href="https://github.com/NOAA-FIMS/case-studies" title="NOAA FIMS case studies" class="quarto-navigation-tool px-1" aria-label="NOAA FIMS case studies"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/NEFSC-yellowtail.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">S New England-Mid Atlantic yellowtail flounder</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/AFSC-GOA-pollock.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gulf of Alaska pollock</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/pacific-hake.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Pacific Hake</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/acknowledgements.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Acknowledgements</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-setup" id="toc-the-setup" class="nav-link active" data-scroll-target="#the-setup">The setup</a></li>
+  <li><a href="#simplifications-to-the-original-assessment" id="toc-simplifications-to-the-original-assessment" class="nav-link" data-scroll-target="#simplifications-to-the-original-assessment">Simplifications to the original assessment</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a>
+  <ul class="collapse">
+  <li><a href="#weight-at-age-data" id="toc-weight-at-age-data" class="nav-link" data-scroll-target="#weight-at-age-data">Weight-at-age data</a></li>
+  <li><a href="#maturity" id="toc-maturity" class="nav-link" data-scroll-target="#maturity">Maturity</a></li>
+  <li><a href="#fisheries-data" id="toc-fisheries-data" class="nav-link" data-scroll-target="#fisheries-data">Fisheries data</a></li>
+  <li><a href="#survey-data" id="toc-survey-data" class="nav-link" data-scroll-target="#survey-data">Survey data</a></li>
+  </ul></li>
+  <li><a href="#model-configurations" id="toc-model-configurations" class="nav-link" data-scroll-target="#model-configurations">Model configurations</a>
+  <ul class="collapse">
+  <li><a href="#fishing-mortality" id="toc-fishing-mortality" class="nav-link" data-scroll-target="#fishing-mortality">Fishing mortality</a></li>
+  <li><a href="#recruitment" id="toc-recruitment" class="nav-link" data-scroll-target="#recruitment">Recruitment</a></li>
+  <li><a href="#selectivity" id="toc-selectivity" class="nav-link" data-scroll-target="#selectivity">Selectivity</a></li>
+  <li><a href="#natural-mortality" id="toc-natural-mortality" class="nav-link" data-scroll-target="#natural-mortality">Natural mortality</a></li>
+  <li><a href="#parameterization" id="toc-parameterization" class="nav-link" data-scroll-target="#parameterization">Parameterization</a></li>
+  <li><a href="#fit" id="toc-fit" class="nav-link" data-scroll-target="#fit">Fit</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <ul class="collapse">
+  <li><a href="#parameter-plots" id="toc-parameter-plots" class="nav-link" data-scroll-target="#parameter-plots">Parameter plots</a></li>
+  <li><a href="#derived-quantity-plots" id="toc-derived-quantity-plots" class="nav-link" data-scroll-target="#derived-quantity-plots">Derived quantity plots</a></li>
+  <li><a href="#diagnostic-plots" id="toc-diagnostic-plots" class="nav-link" data-scroll-target="#diagnostic-plots">Diagnostic plots</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/NOAA-FIMS/case-studies/edit/main/content/pacific-hake.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/NOAA-FIMS/case-studies/blob/main/content/pacific-hake.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/NOAA-FIMS/case-studies/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">U.S. West Coast Case Study of Pacific Hake</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="the-setup" class="level2">
+<h2 class="anchored" data-anchor-id="the-setup">The setup</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>common_name <span class="ot">&lt;-</span> <span class="st">"Pacific Hake"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>terminal_year <span class="ot">&lt;-</span> <span class="dv">2024</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>hake_maturity_inflection_point <span class="ot">&lt;-</span> <span class="fl">2.2</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>hake_maturity_slope <span class="ot">&lt;-</span> <span class="fl">1.8</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>sample_size_multiplier <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>log_rzero_prior_mean <span class="ot">&lt;-</span> <span class="dv">15</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>log_rzero_prior_sd <span class="ot">&lt;-</span> <span class="fl">1.155</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>init_naa_prior_mean <span class="ot">&lt;-</span> <span class="dv">18</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>init_naa_prior_sd <span class="ot">&lt;-</span> <span class="fl">0.155</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>natural_mortality <span class="ot">&lt;-</span> <span class="fl">0.235</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>steepness <span class="ot">&lt;-</span> <span class="fl">0.8118</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Taken from CEATTLE estimates</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>natural_mortality_by_age <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">cannibalism =</span> <span class="fu">c</span>(</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 0.619078417, 0.038591177, 0.012472784, 0.010002492, 0.018692867</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># The model can be found within the following folder on the hake server </span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># base_dir &lt;- "/srv/hake/models/2025/01-version/01-base-models/01-base"</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>base_dir <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/pacific-hake/hake-assessment/refs/heads/model-files/models/2025"</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>maturity_data <span class="ot">&lt;-</span> utils<span class="sc">::</span><span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/pacific-hake/hake-assessment/refs/heads/master/data-tables/maturity-ogives.csv"</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Hake results are in million metric tons, i.e., 1,000,000 t</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Read in file that was made smaller from full results</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># make_hake_rds_smaller(</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co">#   "c:/users/Kelli.Johnson/Documents/hake/01-base.rds",</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co">#   file.path("c:/github/NOAA-FIMS/case-studies/content", data_directory, "pacific_hake.RDS")</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co"># )</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>ss3_results <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="fu">file.path</span>(data_directory, <span class="st">"pacific_hake.RDS"</span>))</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>ss3_sb <span class="ot">&lt;-</span> ss3_results[[<span class="st">"spawning_biomass"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<ul>
+<li>R version: R version 4.5.3 (2026-03-11)</li>
+<li>TMB version: 1.9.21</li>
+<li>FIMS commit: 5666d0b</li>
+<li>Stock name: Pacific Hake</li>
+<li>Region: U.S. West Coast</li>
+<li>Analyst: Kelli F. Johnson</li>
+</ul>
+</section>
+<section id="simplifications-to-the-original-assessment" class="level2">
+<h2 class="anchored" data-anchor-id="simplifications-to-the-original-assessment">Simplifications to the original assessment</h2>
+<p>The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the Pacific Hake stock. These results are intended to be a demonstration and nothing more.</p>
+<p>The operational model was not altered in an attempt to more closely match a FIMS model.</p>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<p>The data for the FIMS model was created using <code>get_ss3_data()</code>, written by Drs. Ian G. Taylor and Megumi C. Oshima. The function was provided the 2025 Stock Synthesis model files using <code>r4ss::SS_read()</code>. All data for a FIMS model is contained in one data frame, using a long format, i.e., one row per observation instead of a matrix format. Here, we call this object <code>data_4_model</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>inputs <span class="ot">&lt;-</span> r4ss<span class="sc">::</span><span class="fu">SS_read</span>(base_dir)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>inputs[[<span class="st">"wtatage"</span>]] <span class="ot">&lt;-</span> r4ss<span class="sc">::</span><span class="fu">SS_readwtatage</span>(<span class="fu">file.path</span>(base_dir, <span class="st">"wtatage.ss_new"</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>stock_synthesis_data <span class="ot">&lt;-</span> r4ss<span class="sc">::</span><span class="fu">ss3_data_to_fims</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ss_new =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ss3_inputs =</span> inputs,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># </span><span class="al">TODO</span><span class="co">: Allow for a sensitivity with age-1 index but use Numbers</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">fleets =</span> <span class="fu">seq</span>(inputs[[<span class="st">"dat"</span>]][[<span class="st">"Nfleets"</span>]])[<span class="sc">-</span><span class="dv">3</span>]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">uncertainty =</span> <span class="fu">ifelse</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">test =</span> type <span class="sc">==</span> <span class="st">"age"</span> <span class="sc">&amp;</span> name <span class="sc">==</span> <span class="st">"Acoustic_Survey"</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      uncertainty <span class="sc">*</span> <span class="dv">30</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      uncertainty</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>start_year <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  stock_synthesis_data,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  type <span class="sc">==</span> <span class="st">"age_comp"</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  value <span class="sc">!=</span> <span class="sc">-</span><span class="dv">999</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(timing) <span class="sc">|&gt;</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">min</span>()</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>data_4_model <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    stock_synthesis_data <span class="sc">|&gt;</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">filter</span>(timing <span class="sc">&lt;=</span> terminal_year, timing <span class="sc">&gt;=</span> start_year),</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">add_additional_year</span>(</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>      stock_synthesis_data,</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">timing_to_average =</span> terminal_year<span class="sc">:</span>(terminal_year <span class="sc">-</span> <span class="dv">4</span>),</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">type_to_filter =</span> <span class="st">"weight_at_age"</span>,</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>      age</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  FIMS<span class="sc">::</span><span class="fu">FIMSFrame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Default print method of a FIMSFrame object</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>data_4_model</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>tbl_df of class 'FIMSFrame'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>with the following 'types': age_comp, index, landings, weight_at_age</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+  type     name              age length timing value unit       uncertainty
+  &lt;chr&gt;    &lt;chr&gt;           &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt;
+1 age_comp Acoustic_Survey     0     NA   1975  -999 proportion          NA
+2 age_comp Acoustic_Survey     1     NA   1975  -999 proportion          NA
+3 age_comp Acoustic_Survey     2     NA   1975  -999 proportion          NA
+4 age_comp Acoustic_Survey     3     NA   1975  -999 proportion          NA
+5 age_comp Acoustic_Survey     4     NA   1975  -999 proportion          NA
+6 age_comp Acoustic_Survey     5     NA   1975  -999 proportion          NA
+additional slots include the following:fleets:
+[1] "Fishery"         "Acoustic_Survey"
+n_years:
+[1] 50
+ages:
+ [1]  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
+n_ages:
+[1] 16
+lengths:
+numeric(0)
+n_lengths:
+[1] 0
+start_year:
+[1] 1975
+end_year:
+[1] 2024</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of the data types available</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>FIMS<span class="sc">::</span><span class="fu">get_data</span>(data_4_model) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(value <span class="sc">!=</span> <span class="sc">-</span><span class="dv">999</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(type, name) <span class="sc">|&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+# Groups:   type, name [5]
+  type          name                n
+  &lt;chr&gt;         &lt;chr&gt;           &lt;int&gt;
+1 age_comp      Acoustic_Survey   240
+2 age_comp      Fishery           800
+3 index         Acoustic_Survey    15
+4 landings      Fishery            50
+5 weight_at_age Fishery           816</code></pre>
+</div>
+</div>
+<section id="weight-at-age-data" class="level3">
+<h3 class="anchored" data-anchor-id="weight-at-age-data">Weight-at-age data</h3>
+<p>Currently, FIMS uses a single weight-at-age matrix as there is no seasonality or timing in FIMS and weight-at-age is assumed to be the same across the population and fleets. Thus, no simplifications were needed for the FIMS model regarding weight-at-age data because all of the weight-at-age matrices in the Stock Synthesis model are replicates of each other, e.g., weight at age for fleet two is the same as beginning and middle of the year population weight at age in this model.</p>
+<p>The last five years of weight-at-age data were averaged to provide weight-at-age information for the beginning of the year after the last year of landings were removed from the population.</p>
+</section>
+<section id="maturity" class="level3">
+<h3 class="anchored" data-anchor-id="maturity">Maturity</h3>
+<p>For the 2025 base model, year-specific maturity at age was derived from a temperature-specific relationship. FIMS uses a single set of logistic maturity parameters for all years, and thus, the year-specific maturity ogives had to be translated to a single logistic curve.</p>
+<p>First, annual estimates of maturity at age for day 278 were averaged across years. Subsequently, this averaged ogive was fit using a logistic curve external to the assessment model. This lead to a curve with an inflection of 2.2 and a slope of 1.8 (Fig. <span class="citation" data-cites="fig:maturity-plot">@fig:maturity-plot</span>). These values were specified as fixed inputs to the FIMS model.</p>
+<p>Changes to the maturity model in FIMS can easily be accommodated but there are few populations that require changes, and thus, efforts have not been placed here. If desired, we could easily make the logistic parameters vary with time.</p>
+<div class="cell" fig:align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pacific-hake_files/figure-html/maturity-plot-1.png" class="img-fluid figure-img" alt="The two maturity ogives are quite similar with only small differences near the origin of lower empirical maturity for age-1 fish." width="672"></p>
+<figcaption>Averaged maturity at age from the 2025 base model (empirical) compared to logistic maturity (logistic).</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="fisheries-data" class="level3">
+<h3 class="anchored" data-anchor-id="fisheries-data">Fisheries data</h3>
+<p>Any number of fleets, their landings, compositions, and catch-per-unit effort data can be accommodated in FIMS, and thus, regardless if the U.S. and Canadian fishery data are grouped into a single fleet, the fishery data can be accommodated in a FIMS model.</p>
+<p>The Dirichlet-multinomial distribution is not yet available in FIMS. Compositional data were fit using a multinomial distribution. The input sample sizes for the survey age-composition data were multiplied by 10 to up-weight the survey data.</p>
+<p>A separate analysis was conducted to investigate the fit of the age-composition data to each of the distributions available in Stock Synthesis. The analysis concluded that, if the true sample size is known, that the hake ages can be fit using a multinomial distribution. More research is being conducted regarding how true these conclusions are when the input sample size is not properly specified.</p>
+</section>
+<section id="survey-data" class="level3">
+<h3 class="anchored" data-anchor-id="survey-data">Survey data</h3>
+<p>Any number of surveys can be accommodated in a FIMS model. Additionally, the units of the data can be in metric tons or numbers.</p>
+<!-- TODO: run a sensitivity with the age-1 index -->
+<p>Regardless, the age-1 index is not fit to in this case study because it is not in the 2025 base model.</p>
+<p>No extra uncertainty was estimated for the index of abundance because this feature is not available in FIMS.</p>
+</section>
+</section>
+<section id="model-configurations" class="level2">
+<h2 class="anchored" data-anchor-id="model-configurations">Model configurations</h2>
+<section id="fishing-mortality" class="level3">
+<h3 class="anchored" data-anchor-id="fishing-mortality">Fishing mortality</h3>
+<p>Annual fishing mortality was estimated using fixed effects.</p>
+</section>
+<section id="recruitment" class="level3">
+<h3 class="anchored" data-anchor-id="recruitment">Recruitment</h3>
+<p>The natural log of initial recruitment was estimated as a fixed effect, initialized at the same value as the base model (14.592). In the base model, this parameter is bounded between 13 and 17. Parameter bounds do not exist in FIMS but priors do, and thus, a normal prior with a mean of 15 and a standard deviation of 1.155 was used.</p>
+<p>Steepness was fixed at the median estimate from the 2025 base model of 0.8118. The beta prior used in the base model is not yet available in FIMS.</p>
+<p>FIMS models are currently powered by Template Model Builder (TMB), which allows for the estimation of random effects, similar to models built using the Woods Hole Assessment Model (WHAM). We harnessed this capability and estimated recruitment deviations as a random effect with a normal distribution and an estimated standard deviation.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>init_naa <span class="ot">&lt;-</span> <span class="fu">exp</span>(init_naa_prior_mean) <span class="sc">*</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1000</span> <span class="sc">*</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">exp</span>(<span class="sc">-</span>(<span class="fu">get_ages</span>(data_4_model) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> natural_mortality)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>init_naa[<span class="fu">get_n_ages</span>(data_4_model)] <span class="ot">&lt;-</span> init_naa[<span class="fu">get_n_ages</span>(data_4_model)] <span class="sc">/</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  natural_mortality <span class="co"># sum of infinite series</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>The time series of recruitment deviations is one element shorter than the time series in a Stock Synthesis model because the initial numbers at age object includes initial numbers for age-zero fish. The vector of the natural log of initial numbers at age was estimated using fixed effects and initialized at values in line with initial values for unfished recruitment and natural mortality. Additionally, a normal prior with a mean of 18 and a standard deviation of 0.155 was placed on the natural log of initial numbers at age in an attempt to aid model convergence. The input data to the model was also truncated to exclude the early years before age-composition data is available. This aided in the estimation of these parameters.</p>
+<p>The priors on the natural log of unfished recruitment and the natural log of initial numbers at age should be transformed using a Jacobian transformation because the parameters are in log space but that transformation is not currently available in FIMS. The Jacobian allows for adjustment of the scale of integration so the total measure is preserved.</p>
+</section>
+<section id="selectivity" class="level3">
+<h3 class="anchored" data-anchor-id="selectivity">Selectivity</h3>
+<p>The logistic and double-logistic selectivity curves are currently the only selectivity forms that are available in FIMS. Both forms were investigated for Pacific Hake. We also investigated the use of a time-varying inflection point and/or slope for the fishing fleet. Additionally, we investigated allowing just a portion of the parameter vector to vary with time starting at several different time points, where the base model starts in 1991. In the end, time-invariant logistic selectivity was used for both the fleet and the survey.</p>
+<p>Work is in progress to implement an age-specific non-parametric selectivity curve in FIMS as there is a need for this option from both coasts. Consequently, we have put a high priority on it within the FIMS development team, and it will be available before the 2027 Pacific Hake assessment.</p>
+</section>
+<section id="natural-mortality" class="level3">
+<h3 class="anchored" data-anchor-id="natural-mortality">Natural mortality</h3>
+<!-- TODO: Get the median of the base model -->
+<!-- TODO: Fix the parameter naming when parameters are mapped -->
+<!-- TODO: Do a sensitivity where M is fixed at the values estimated from the RCEATTLE model -->
+<!-- TODO: Do a sensitivity where M is estimated using a single value with the lognormal prior -->
+<p>Natural mortality in FIMS is age and year specific. To estimate a single parameter, the entire parameter vector could be mapped to a single value. That was not investigated here. Instead, natural mortality for all years was fixed at the sum of the median estimate of natural mortality from the 2025 base model (0.235) and the mean estimate of cannibalism across all years for a given age group. The use of age-specific natural mortality was to help stabilize the estimates of initial numbers at age, though the endeavour was not entirely successful.</p>
+<div class="cell" data-tbl-cap="Estimates of cannibalism from the CEATTLE model for ages 1--5.">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+    age cannibalism     m
+  &lt;int&gt;       &lt;dbl&gt; &lt;dbl&gt;
+1     1           0 0.235
+2     2           0 0.235
+3     3           0 0.235
+4     4           0 0.235
+5     5           0 0.235</code></pre>
+</div>
+</div>
+<p>The lognormal prior is available in FIMS, and thus, the age- and year-specific parameter vector could be mapped to a single value and estimated using a log-normal prior but that was not investigated here.</p>
+</section>
+<section id="parameterization" class="level3">
+<h3 class="anchored" data-anchor-id="parameterization">Parameterization</h3>
+<p>FIMS models are configured with a data frame or R objects rather than an input file.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>time_varying_selectivity <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>selectivity_used <span class="ot">&lt;-</span> <span class="st">"Logistic"</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>FIMS<span class="sc">::</span><span class="fu">clear</span>()</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">create_default_configurations</span>(<span class="at">data =</span> data_4_model) <span class="sc">|&gt;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unnest</span>(data) <span class="sc">|&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Selectivity"</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet_name =</span> <span class="fu">c</span>(<span class="st">"Fishery"</span>, <span class="st">"Acoustic_Survey"</span>),</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_type =</span> <span class="fu">c</span>(selectivity_used, <span class="st">"Logistic"</span>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"fleet_name"</span>)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  FIMS<span class="sc">::</span><span class="fu">create_default_parameters</span>(<span class="at">data =</span> data_4_model) <span class="sc">|&gt;</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unnest</span>(data) <span class="sc">|&gt;</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="fu">c</span>(<span class="st">"Maturity"</span>, <span class="st">"Maturity"</span>),</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"inflection_point"</span>, <span class="st">"slope"</span>),</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">c</span>(</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        hake_maturity_inflection_point,</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>        hake_maturity_slope</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="fu">c</span>(<span class="st">"Population"</span>),</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"log_M"</span>),</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>      <span class="co"># estimation_type = "fixed_effects",</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">log</span>(dplyr<span class="sc">::</span><span class="fu">pull</span>(natural_mortality_matrix, m)),</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">time =</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(natural_mortality_matrix, year),</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">age =</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(natural_mortality_matrix, age)</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>, <span class="st">"time"</span>, <span class="st">"age"</span>)</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Population"</span>,</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="st">"log_init_naa"</span>,</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>      <span class="at">age =</span> FIMS<span class="sc">::</span><span class="fu">get_ages</span>(data_4_model),</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">log</span>(init_naa),</span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">estimation_type =</span> <span class="st">"fixed_effects"</span></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>, <span class="st">"age"</span>)</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Selectivity"</span>,</span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet_name =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"Fishery"</span>, <span class="st">"Acoustic_Survey"</span>), <span class="at">each =</span> <span class="dv">2</span>),</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"inflection_point"</span>, <span class="st">"slope"</span>), <span class="dv">2</span>),</span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>      <span class="co"># </span><span class="al">TODO</span><span class="co">: play with these start values</span></span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">c</span>(<span class="fl">2.05</span>, <span class="fl">3.17</span>, <span class="fl">4.4</span>, <span class="fl">3.3</span>),</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>      <span class="at">estimation_type =</span> <span class="st">"fixed_effects"</span></span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"fleet_name"</span>, <span class="st">"label"</span>)</span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Fleet"</span>,</span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet_name =</span> <span class="st">"Acoustic_Survey"</span>,</span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"log_q"</span>),</span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">log</span>(<span class="fl">0.832</span>),</span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a>      <span class="at">estimation_type =</span> <span class="st">"fixed_effects"</span></span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"fleet_name"</span>, <span class="st">"label"</span>)</span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>fleet_names <span class="ot">&lt;-</span> <span class="fu">get_fleets</span>(data_4_model)</span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize lists to store fleet-related objects</span></span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a>fleet <span class="ot">&lt;-</span> fleet_selectivity <span class="ot">&lt;-</span></span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>  fleet_landings <span class="ot">&lt;-</span> fleet_landings_distribution <span class="ot">&lt;-</span></span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a>  fleet_index <span class="ot">&lt;-</span> fleet_index_distribution <span class="ot">&lt;-</span></span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a>  fleet_age_comp <span class="ot">&lt;-</span> fleet_agecomp_distribution <span class="ot">&lt;-</span></span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vector</span>(<span class="st">"list"</span>, <span class="fu">length</span>(fleet_names))</span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(fleet_names)) {</span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Selectivity</span></span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a>  fleet_selectivity[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_selectivity</span>(</span>
+<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">parameters =</span> parameters,</span>
+<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_4_model,</span>
+<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a>    <span class="at">fleet_name =</span> fleet_names[i]</span>
+<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Time-varying selectivity for the fishery</span></span>
+<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (i <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> time_varying_selectivity) {</span>
+<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a>    selectivity_type <span class="ot">&lt;-</span> parameters <span class="sc">|&gt;</span></span>
+<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">filter</span>(module_name <span class="sc">==</span> <span class="st">"Selectivity"</span>, fleet_name <span class="sc">==</span> <span class="st">"Fishery"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">pull</span>(module_type)</span>
+<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (selectivity_type <span class="sc">==</span> <span class="st">"Logistic"</span>){</span>
+<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a>      fleet_selectivity[[i]]<span class="sc">$</span>inflection_point<span class="sc">$</span><span class="fu">resize</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
+<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (ii <span class="cf">in</span> <span class="fu">seq</span>(<span class="fu">get_n_years</span>(data_4_model))) {</span>
+<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>inflection_point[ii]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>inflection_point[ii]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
+<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a>      fleet_selectivity[[i]]<span class="sc">$</span>slope<span class="sc">$</span><span class="fu">resize</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
+<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (ii <span class="cf">in</span> <span class="fu">seq</span>(<span class="fu">get_n_years</span>(data_4_model))) {</span>
+<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>slope[ii]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>slope[ii]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
+<span id="cb11-102"><a href="#cb11-102" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb11-103"><a href="#cb11-103" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (selectivity_type <span class="sc">==</span> <span class="st">"DoubleLogistic"</span>) {</span>
+<span id="cb11-105"><a href="#cb11-105" aria-hidden="true" tabindex="-1"></a>      fleet_selectivity[[i]]<span class="sc">$</span>inflection_point_asc<span class="sc">$</span><span class="fu">resize</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
+<span id="cb11-106"><a href="#cb11-106" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (ii <span class="cf">in</span> <span class="fu">seq</span>(<span class="fu">get_n_years</span>(data_4_model))) {</span>
+<span id="cb11-107"><a href="#cb11-107" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>inflection_point_asc[ii]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb11-108"><a href="#cb11-108" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>inflection_point_asc[ii]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
+<span id="cb11-109"><a href="#cb11-109" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb11-110"><a href="#cb11-110" aria-hidden="true" tabindex="-1"></a>      <span class="co"># fleet_selectivity[[i]]$inflection_point_desc$resize(get_n_years(data_4_model))</span></span>
+<span id="cb11-111"><a href="#cb11-111" aria-hidden="true" tabindex="-1"></a>      <span class="co"># for (ii in seq(get_n_years(data_4_model))) {</span></span>
+<span id="cb11-112"><a href="#cb11-112" aria-hidden="true" tabindex="-1"></a>      <span class="co">#   fleet_selectivity[[i]]$inflection_point_desc[ii]$value &lt;- 1</span></span>
+<span id="cb11-113"><a href="#cb11-113" aria-hidden="true" tabindex="-1"></a>      <span class="co">#   fleet_selectivity[[i]]$inflection_point_desc[ii]$estimation_type$set("fixed_effects")</span></span>
+<span id="cb11-114"><a href="#cb11-114" aria-hidden="true" tabindex="-1"></a>      <span class="co"># }</span></span>
+<span id="cb11-115"><a href="#cb11-115" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-116"><a href="#cb11-116" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-117"><a href="#cb11-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-118"><a href="#cb11-118" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Setup the fleets</span></span>
+<span id="cb11-119"><a href="#cb11-119" aria-hidden="true" tabindex="-1"></a>  fleet_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb11-120"><a href="#cb11-120" aria-hidden="true" tabindex="-1"></a>    <span class="at">selectivity =</span> fleet_selectivity[[i]]<span class="sc">$</span><span class="fu">get_id</span>()</span>
+<span id="cb11-121"><a href="#cb11-121" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-122"><a href="#cb11-122" aria-hidden="true" tabindex="-1"></a>  fleet_types <span class="ot">&lt;-</span> <span class="fu">get_data</span>(data_4_model) <span class="sc">|&gt;</span></span>
+<span id="cb11-123"><a href="#cb11-123" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(name <span class="sc">==</span> fleet_names[i]) <span class="sc">|&gt;</span></span>
+<span id="cb11-124"><a href="#cb11-124" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(type) <span class="sc">|&gt;</span></span>
+<span id="cb11-125"><a href="#cb11-125" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unique</span>()</span>
+<span id="cb11-126"><a href="#cb11-126" aria-hidden="true" tabindex="-1"></a>  data_distribution_names_for_fleet_i <span class="ot">&lt;-</span> parameters <span class="sc">|&gt;</span></span>
+<span id="cb11-127"><a href="#cb11-127" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(fleet_name <span class="sc">==</span> fleet_names[i] <span class="sc">&amp;</span> distribution_type <span class="sc">==</span> <span class="st">"Data"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-128"><a href="#cb11-128" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(module_type)</span>
+<span id="cb11-129"><a href="#cb11-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-130"><a href="#cb11-130" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Landings</span></span>
+<span id="cb11-131"><a href="#cb11-131" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"landings"</span> <span class="sc">%in%</span> fleet_types <span class="sc">&amp;&amp;</span></span>
+<span id="cb11-132"><a href="#cb11-132" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Landings"</span> <span class="sc">%in%</span> data_distribution_names_for_fleet_i) {</span>
+<span id="cb11-133"><a href="#cb11-133" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize landings module for the current fleet</span></span>
+<span id="cb11-134"><a href="#cb11-134" aria-hidden="true" tabindex="-1"></a>    fleet_landings[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_landings</span>(</span>
+<span id="cb11-135"><a href="#cb11-135" aria-hidden="true" tabindex="-1"></a>      <span class="at">data =</span> data_4_model,</span>
+<span id="cb11-136"><a href="#cb11-136" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet_name =</span> fleet_names[i]</span>
+<span id="cb11-137"><a href="#cb11-137" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-138"><a href="#cb11-138" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add the module ID for the initialized landings to the list of fleet module IDs</span></span>
+<span id="cb11-139"><a href="#cb11-139" aria-hidden="true" tabindex="-1"></a>    fleet_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb11-140"><a href="#cb11-140" aria-hidden="true" tabindex="-1"></a>      fleet_module_ids,</span>
+<span id="cb11-141"><a href="#cb11-141" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(<span class="at">landings =</span> fleet_landings[[i]]<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb11-142"><a href="#cb11-142" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-143"><a href="#cb11-143" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-144"><a href="#cb11-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-145"><a href="#cb11-145" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Index</span></span>
+<span id="cb11-146"><a href="#cb11-146" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"index"</span> <span class="sc">%in%</span> fleet_types <span class="sc">&amp;&amp;</span></span>
+<span id="cb11-147"><a href="#cb11-147" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Index"</span> <span class="sc">%in%</span> data_distribution_names_for_fleet_i) {</span>
+<span id="cb11-148"><a href="#cb11-148" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize index module for the current fleet</span></span>
+<span id="cb11-149"><a href="#cb11-149" aria-hidden="true" tabindex="-1"></a>    fleet_index[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_index</span>(</span>
+<span id="cb11-150"><a href="#cb11-150" aria-hidden="true" tabindex="-1"></a>      <span class="at">data =</span> data_4_model,</span>
+<span id="cb11-151"><a href="#cb11-151" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet_name =</span> fleet_names[i]</span>
+<span id="cb11-152"><a href="#cb11-152" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-153"><a href="#cb11-153" aria-hidden="true" tabindex="-1"></a>    fleet_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb11-154"><a href="#cb11-154" aria-hidden="true" tabindex="-1"></a>      fleet_module_ids,</span>
+<span id="cb11-155"><a href="#cb11-155" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(<span class="at">index =</span> fleet_index[[i]]<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb11-156"><a href="#cb11-156" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-157"><a href="#cb11-157" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-158"><a href="#cb11-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-159"><a href="#cb11-159" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Age composition</span></span>
+<span id="cb11-160"><a href="#cb11-160" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"age_comp"</span> <span class="sc">%in%</span> fleet_types <span class="sc">&amp;&amp;</span></span>
+<span id="cb11-161"><a href="#cb11-161" aria-hidden="true" tabindex="-1"></a>    <span class="st">"AgeComp"</span> <span class="sc">%in%</span> data_distribution_names_for_fleet_i) {</span>
+<span id="cb11-162"><a href="#cb11-162" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize age composition module for the current fleet</span></span>
+<span id="cb11-163"><a href="#cb11-163" aria-hidden="true" tabindex="-1"></a>    fleet_age_comp[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_comp</span>(</span>
+<span id="cb11-164"><a href="#cb11-164" aria-hidden="true" tabindex="-1"></a>      <span class="at">data =</span> data_4_model,</span>
+<span id="cb11-165"><a href="#cb11-165" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet_name =</span> fleet_names[i],</span>
+<span id="cb11-166"><a href="#cb11-166" aria-hidden="true" tabindex="-1"></a>      <span class="at">type =</span> <span class="st">"AgeComp"</span></span>
+<span id="cb11-167"><a href="#cb11-167" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-168"><a href="#cb11-168" aria-hidden="true" tabindex="-1"></a>    fleet_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb11-169"><a href="#cb11-169" aria-hidden="true" tabindex="-1"></a>      fleet_module_ids,</span>
+<span id="cb11-170"><a href="#cb11-170" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(<span class="at">age_comp =</span> fleet_age_comp[[i]]<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb11-171"><a href="#cb11-171" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-172"><a href="#cb11-172" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-173"><a href="#cb11-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-174"><a href="#cb11-174" aria-hidden="true" tabindex="-1"></a>  fleet[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_fleet</span>(</span>
+<span id="cb11-175"><a href="#cb11-175" aria-hidden="true" tabindex="-1"></a>    <span class="at">parameters =</span> parameters,</span>
+<span id="cb11-176"><a href="#cb11-176" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_4_model,</span>
+<span id="cb11-177"><a href="#cb11-177" aria-hidden="true" tabindex="-1"></a>    <span class="at">fleet_name =</span> fleet_names[i],</span>
+<span id="cb11-178"><a href="#cb11-178" aria-hidden="true" tabindex="-1"></a>    <span class="at">linked_ids =</span> fleet_module_ids</span>
+<span id="cb11-179"><a href="#cb11-179" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-180"><a href="#cb11-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-181"><a href="#cb11-181" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Fleet uncertainty</span></span>
+<span id="cb11-182"><a href="#cb11-182" aria-hidden="true" tabindex="-1"></a>  fleet_sd_input <span class="ot">&lt;-</span> parameters <span class="sc">|&gt;</span></span>
+<span id="cb11-183"><a href="#cb11-183" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(fleet_name <span class="sc">==</span> fleet_names[i] <span class="sc">&amp;</span> label <span class="sc">==</span> <span class="st">"log_sd"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-184"><a href="#cb11-184" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb11-185"><a href="#cb11-185" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="st">"sd"</span>,</span>
+<span id="cb11-186"><a href="#cb11-186" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">exp</span>(value)</span>
+<span id="cb11-187"><a href="#cb11-187" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-188"><a href="#cb11-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-189"><a href="#cb11-189" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"index"</span> <span class="sc">%in%</span> fleet_types <span class="sc">&amp;&amp;</span></span>
+<span id="cb11-190"><a href="#cb11-190" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Index"</span> <span class="sc">%in%</span> data_distribution_names_for_fleet_i) {</span>
+<span id="cb11-191"><a href="#cb11-191" aria-hidden="true" tabindex="-1"></a>    fleet_index_distribution[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_data_distribution</span>(</span>
+<span id="cb11-192"><a href="#cb11-192" aria-hidden="true" tabindex="-1"></a>      <span class="at">module =</span> fleet[[i]],</span>
+<span id="cb11-193"><a href="#cb11-193" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="fu">lognormal</span>(<span class="at">link =</span> <span class="st">"log"</span>),</span>
+<span id="cb11-194"><a href="#cb11-194" aria-hidden="true" tabindex="-1"></a>      <span class="at">sd =</span> fleet_sd_input,</span>
+<span id="cb11-195"><a href="#cb11-195" aria-hidden="true" tabindex="-1"></a>      <span class="at">data_type =</span> <span class="st">"index"</span></span>
+<span id="cb11-196"><a href="#cb11-196" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-197"><a href="#cb11-197" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-198"><a href="#cb11-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-199"><a href="#cb11-199" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"landings"</span> <span class="sc">%in%</span> fleet_types <span class="sc">&amp;&amp;</span></span>
+<span id="cb11-200"><a href="#cb11-200" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Landings"</span> <span class="sc">%in%</span> data_distribution_names_for_fleet_i) {</span>
+<span id="cb11-201"><a href="#cb11-201" aria-hidden="true" tabindex="-1"></a>    fleet_landings_distribution[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_data_distribution</span>(</span>
+<span id="cb11-202"><a href="#cb11-202" aria-hidden="true" tabindex="-1"></a>      <span class="at">module =</span> fleet[[i]],</span>
+<span id="cb11-203"><a href="#cb11-203" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="fu">lognormal</span>(<span class="at">link =</span> <span class="st">"log"</span>),</span>
+<span id="cb11-204"><a href="#cb11-204" aria-hidden="true" tabindex="-1"></a>      <span class="at">sd =</span> fleet_sd_input,</span>
+<span id="cb11-205"><a href="#cb11-205" aria-hidden="true" tabindex="-1"></a>      <span class="at">data_type =</span> <span class="st">"landings"</span></span>
+<span id="cb11-206"><a href="#cb11-206" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-207"><a href="#cb11-207" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-208"><a href="#cb11-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-209"><a href="#cb11-209" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"age_comp"</span> <span class="sc">%in%</span> fleet_types <span class="sc">&amp;&amp;</span></span>
+<span id="cb11-210"><a href="#cb11-210" aria-hidden="true" tabindex="-1"></a>    <span class="st">"AgeComp"</span> <span class="sc">%in%</span> data_distribution_names_for_fleet_i) {</span>
+<span id="cb11-211"><a href="#cb11-211" aria-hidden="true" tabindex="-1"></a>    fleet_agecomp_distribution[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_data_distribution</span>(</span>
+<span id="cb11-212"><a href="#cb11-212" aria-hidden="true" tabindex="-1"></a>      <span class="at">module =</span> fleet[[i]],</span>
+<span id="cb11-213"><a href="#cb11-213" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="fu">multinomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>),</span>
+<span id="cb11-214"><a href="#cb11-214" aria-hidden="true" tabindex="-1"></a>      <span class="at">data_type =</span> <span class="st">"agecomp"</span></span>
+<span id="cb11-215"><a href="#cb11-215" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-216"><a href="#cb11-216" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-217"><a href="#cb11-217" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-218"><a href="#cb11-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-219"><a href="#cb11-219" aria-hidden="true" tabindex="-1"></a><span class="co"># Recruitment</span></span>
+<span id="cb11-220"><a href="#cb11-220" aria-hidden="true" tabindex="-1"></a>recruitment <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(BevertonHoltRecruitment)</span>
+<span id="cb11-221"><a href="#cb11-221" aria-hidden="true" tabindex="-1"></a>recruitment_process <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(LogDevsRecruitmentProcess)</span>
+<span id="cb11-222"><a href="#cb11-222" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span><span class="fu">SetRecruitmentProcessID</span>(recruitment_process<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb11-223"><a href="#cb11-223" aria-hidden="true" tabindex="-1"></a><span class="co"># set up log_rzero (equilibrium recruitment)</span></span>
+<span id="cb11-224"><a href="#cb11-224" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_rzero[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> inputs[[<span class="st">"ctl"</span>]][[<span class="st">"SR_parms"</span>]][<span class="st">"SR_LN(R0)"</span>, <span class="st">"INIT"</span>]</span>
+<span id="cb11-225"><a href="#cb11-225" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_rzero[<span class="dv">1</span>]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
+<span id="cb11-226"><a href="#cb11-226" aria-hidden="true" tabindex="-1"></a><span class="co"># set up logit_steep</span></span>
+<span id="cb11-227"><a href="#cb11-227" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>logit_steep[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">logit</span>(<span class="fl">0.2</span>, <span class="fl">1.0</span>, steepness)</span>
+<span id="cb11-228"><a href="#cb11-228" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>logit_steep[<span class="dv">1</span>]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"constant"</span>)</span>
+<span id="cb11-229"><a href="#cb11-229" aria-hidden="true" tabindex="-1"></a><span class="co"># recruit deviations should enter the model in normal space.</span></span>
+<span id="cb11-230"><a href="#cb11-230" aria-hidden="true" tabindex="-1"></a><span class="co"># The log is taken in the likelihood calculations</span></span>
+<span id="cb11-231"><a href="#cb11-231" aria-hidden="true" tabindex="-1"></a><span class="co"># Added an element to the log_devs vector because we need recruitment in the</span></span>
+<span id="cb11-232"><a href="#cb11-232" aria-hidden="true" tabindex="-1"></a><span class="co"># terminal year + 1</span></span>
+<span id="cb11-233"><a href="#cb11-233" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">resize</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
+<span id="cb11-234"><a href="#cb11-234" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (y <span class="cf">in</span> <span class="fu">seq</span>(recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">size</span>())) {</span>
+<span id="cb11-235"><a href="#cb11-235" aria-hidden="true" tabindex="-1"></a>  recruitment<span class="sc">$</span>log_devs[y]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-236"><a href="#cb11-236" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-237"><a href="#cb11-237" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">set_all_estimable</span>(<span class="cn">TRUE</span>)</span>
+<span id="cb11-238"><a href="#cb11-238" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>n_years<span class="sc">$</span><span class="fu">set</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
+<span id="cb11-239"><a href="#cb11-239" aria-hidden="true" tabindex="-1"></a>recruitment_distribution <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(DnormDistribution)</span>
+<span id="cb11-240"><a href="#cb11-240" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: check with Andrea about log space here</span></span>
+<span id="cb11-241"><a href="#cb11-241" aria-hidden="true" tabindex="-1"></a><span class="co"># logR_sd needs to enter the model logged b/c the exp() is</span></span>
+<span id="cb11-242"><a href="#cb11-242" aria-hidden="true" tabindex="-1"></a><span class="co"># taken before the likelihood calculation</span></span>
+<span id="cb11-243"><a href="#cb11-243" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span>log_sd[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> </span>
+<span id="cb11-244"><a href="#cb11-244" aria-hidden="true" tabindex="-1"></a>  inputs[[<span class="st">"ctl"</span>]][[<span class="st">"SR_parms"</span>]][<span class="st">"SR_sigmaR"</span>, <span class="st">"INIT"</span>]</span>
+<span id="cb11-245"><a href="#cb11-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-246"><a href="#cb11-246" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: check with Andrea about this not being in the parameter vector</span></span>
+<span id="cb11-247"><a href="#cb11-247" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span>log_sd[<span class="dv">1</span>]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
+<span id="cb11-248"><a href="#cb11-248" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span>observed_values<span class="sc">$</span><span class="fu">resize</span>(recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">size</span>())</span>
+<span id="cb11-249"><a href="#cb11-249" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span>expected_values<span class="sc">$</span><span class="fu">resize</span>(recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">size</span>())</span>
+<span id="cb11-250"><a href="#cb11-250" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq</span>(recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">size</span>())) {</span>
+<span id="cb11-251"><a href="#cb11-251" aria-hidden="true" tabindex="-1"></a>  recruitment_distribution<span class="sc">$</span>observed_values[i]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-252"><a href="#cb11-252" aria-hidden="true" tabindex="-1"></a>  recruitment_distribution<span class="sc">$</span>expected_values[i]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-253"><a href="#cb11-253" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-254"><a href="#cb11-254" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span><span class="fu">set_distribution_links</span>(</span>
+<span id="cb11-255"><a href="#cb11-255" aria-hidden="true" tabindex="-1"></a>  <span class="st">"random_effects"</span>,</span>
+<span id="cb11-256"><a href="#cb11-256" aria-hidden="true" tabindex="-1"></a>  recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">get_id</span>()</span>
+<span id="cb11-257"><a href="#cb11-257" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-258"><a href="#cb11-258" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">set_all_random</span>(<span class="cn">TRUE</span>)</span>
+<span id="cb11-259"><a href="#cb11-259" aria-hidden="true" tabindex="-1"></a><span class="co"># recruitment$log_devs[46]$estimation_type$set("constant")</span></span>
+<span id="cb11-260"><a href="#cb11-260" aria-hidden="true" tabindex="-1"></a><span class="co"># recruitment$log_devs[47]$estimation_type$set("constant")</span></span>
+<span id="cb11-261"><a href="#cb11-261" aria-hidden="true" tabindex="-1"></a><span class="co"># recruitment$log_devs[48]$estimation_type$set("constant")</span></span>
+<span id="cb11-262"><a href="#cb11-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-263"><a href="#cb11-263" aria-hidden="true" tabindex="-1"></a><span class="co"># Put a prior on log_rzero</span></span>
+<span id="cb11-264"><a href="#cb11-264" aria-hidden="true" tabindex="-1"></a>log_rzero_prior <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(DnormDistribution)</span>
+<span id="cb11-265"><a href="#cb11-265" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span>expected_values<span class="sc">$</span><span class="fu">resize</span>(<span class="dv">1</span>)</span>
+<span id="cb11-266"><a href="#cb11-266" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span>expected_values[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> log_rzero_prior_mean</span>
+<span id="cb11-267"><a href="#cb11-267" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span>log_sd<span class="sc">$</span><span class="fu">resize</span>(<span class="dv">1</span>)</span>
+<span id="cb11-268"><a href="#cb11-268" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span>log_sd[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="fu">log</span>(log_rzero_prior_sd)</span>
+<span id="cb11-269"><a href="#cb11-269" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span><span class="fu">set_distribution_links</span>(</span>
+<span id="cb11-270"><a href="#cb11-270" aria-hidden="true" tabindex="-1"></a>  <span class="st">"prior"</span>,</span>
+<span id="cb11-271"><a href="#cb11-271" aria-hidden="true" tabindex="-1"></a>  recruitment<span class="sc">$</span>log_rzero<span class="sc">$</span><span class="fu">get_id</span>()</span>
+<span id="cb11-272"><a href="#cb11-272" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-273"><a href="#cb11-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-274"><a href="#cb11-274" aria-hidden="true" tabindex="-1"></a><span class="co"># Growth</span></span>
+<span id="cb11-275"><a href="#cb11-275" aria-hidden="true" tabindex="-1"></a>growth <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_growth</span>(</span>
+<span id="cb11-276"><a href="#cb11-276" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> parameters,</span>
+<span id="cb11-277"><a href="#cb11-277" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_4_model</span>
+<span id="cb11-278"><a href="#cb11-278" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-279"><a href="#cb11-279" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-280"><a href="#cb11-280" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="cb11-281"><a href="#cb11-281" aria-hidden="true" tabindex="-1"></a>maturity <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_maturity</span>(</span>
+<span id="cb11-282"><a href="#cb11-282" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> parameters,</span>
+<span id="cb11-283"><a href="#cb11-283" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_4_model</span>
+<span id="cb11-284"><a href="#cb11-284" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-285"><a href="#cb11-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-286"><a href="#cb11-286" aria-hidden="true" tabindex="-1"></a><span class="co"># Population</span></span>
+<span id="cb11-287"><a href="#cb11-287" aria-hidden="true" tabindex="-1"></a>population_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb11-288"><a href="#cb11-288" aria-hidden="true" tabindex="-1"></a>  <span class="at">recruitment =</span> recruitment<span class="sc">$</span><span class="fu">get_id</span>(),</span>
+<span id="cb11-289"><a href="#cb11-289" aria-hidden="true" tabindex="-1"></a>  <span class="at">growth =</span> growth<span class="sc">$</span><span class="fu">get_id</span>(),</span>
+<span id="cb11-290"><a href="#cb11-290" aria-hidden="true" tabindex="-1"></a>  <span class="at">maturity =</span> maturity<span class="sc">$</span><span class="fu">get_id</span>(),</span>
+<span id="cb11-291"><a href="#cb11-291" aria-hidden="true" tabindex="-1"></a>  <span class="at">fleets =</span> purrr<span class="sc">::</span><span class="fu">map</span>(fleet, \(x) x<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb11-292"><a href="#cb11-292" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-293"><a href="#cb11-293" aria-hidden="true" tabindex="-1"></a>population <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_population</span>(</span>
+<span id="cb11-294"><a href="#cb11-294" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> parameters,</span>
+<span id="cb11-295"><a href="#cb11-295" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_4_model,</span>
+<span id="cb11-296"><a href="#cb11-296" aria-hidden="true" tabindex="-1"></a>  <span class="co"># </span><span class="al">TODO</span><span class="co">: need to remove linked_ids from the function and add module_id to the</span></span>
+<span id="cb11-297"><a href="#cb11-297" aria-hidden="true" tabindex="-1"></a>  <span class="co"># parameters tibble</span></span>
+<span id="cb11-298"><a href="#cb11-298" aria-hidden="true" tabindex="-1"></a>  <span class="at">linked_ids =</span> population_module_ids</span>
+<span id="cb11-299"><a href="#cb11-299" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-300"><a href="#cb11-300" aria-hidden="true" tabindex="-1"></a><span class="co"># # Put a prior on natural mortality</span></span>
+<span id="cb11-301"><a href="#cb11-301" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior &lt;- methods::new(DlnormDistribution)</span></span>
+<span id="cb11-302"><a href="#cb11-302" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$expected_values$resize(1)</span></span>
+<span id="cb11-303"><a href="#cb11-303" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$expected_values[1]$value &lt;- inputs[["ctl"]][["MG_parms"]][</span></span>
+<span id="cb11-304"><a href="#cb11-304" aria-hidden="true" tabindex="-1"></a><span class="co">#   grep("NatM_", row.names(inputs[["ctl"]][["MG_parms"]])),</span></span>
+<span id="cb11-305"><a href="#cb11-305" aria-hidden="true" tabindex="-1"></a><span class="co">#   "PRIOR"</span></span>
+<span id="cb11-306"><a href="#cb11-306" aria-hidden="true" tabindex="-1"></a><span class="co"># ]</span></span>
+<span id="cb11-307"><a href="#cb11-307" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$log_sd$resize(1)</span></span>
+<span id="cb11-308"><a href="#cb11-308" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$log_sd[1]$value &lt;- inputs[["ctl"]][["MG_parms"]][</span></span>
+<span id="cb11-309"><a href="#cb11-309" aria-hidden="true" tabindex="-1"></a><span class="co">#   grep("NatM_", row.names(inputs[["ctl"]][["MG_parms"]])),</span></span>
+<span id="cb11-310"><a href="#cb11-310" aria-hidden="true" tabindex="-1"></a><span class="co">#   "PR_SD"</span></span>
+<span id="cb11-311"><a href="#cb11-311" aria-hidden="true" tabindex="-1"></a><span class="co"># ]</span></span>
+<span id="cb11-312"><a href="#cb11-312" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$set_distribution_links(</span></span>
+<span id="cb11-313"><a href="#cb11-313" aria-hidden="true" tabindex="-1"></a><span class="co">#   "prior",</span></span>
+<span id="cb11-314"><a href="#cb11-314" aria-hidden="true" tabindex="-1"></a><span class="co">#   population$log_M$get_id()</span></span>
+<span id="cb11-315"><a href="#cb11-315" aria-hidden="true" tabindex="-1"></a><span class="co"># )</span></span>
+<span id="cb11-316"><a href="#cb11-316" aria-hidden="true" tabindex="-1"></a><span class="co"># Put a prior on init_naa</span></span>
+<span id="cb11-317"><a href="#cb11-317" aria-hidden="true" tabindex="-1"></a>init_naa_prior <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(DnormDistribution)</span>
+<span id="cb11-318"><a href="#cb11-318" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span>expected_values<span class="sc">$</span><span class="fu">resize</span>(<span class="dv">1</span>)</span>
+<span id="cb11-319"><a href="#cb11-319" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span>expected_values[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> init_naa_prior_mean</span>
+<span id="cb11-320"><a href="#cb11-320" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span>log_sd<span class="sc">$</span><span class="fu">resize</span>(<span class="dv">1</span>)</span>
+<span id="cb11-321"><a href="#cb11-321" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span>log_sd[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> init_naa_prior_sd</span>
+<span id="cb11-322"><a href="#cb11-322" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span><span class="fu">set_distribution_links</span>(</span>
+<span id="cb11-323"><a href="#cb11-323" aria-hidden="true" tabindex="-1"></a>  <span class="st">"prior"</span>,</span>
+<span id="cb11-324"><a href="#cb11-324" aria-hidden="true" tabindex="-1"></a>  population<span class="sc">$</span>log_init_naa<span class="sc">$</span><span class="fu">get_id</span>()</span>
+<span id="cb11-325"><a href="#cb11-325" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-326"><a href="#cb11-326" aria-hidden="true" tabindex="-1"></a>fims_model <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(CatchAtAge)</span>
+<span id="cb11-327"><a href="#cb11-327" aria-hidden="true" tabindex="-1"></a>fims_model<span class="sc">$</span><span class="fu">AddPopulation</span>(population<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb11-328"><a href="#cb11-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-329"><a href="#cb11-329" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize the model</span></span>
+<span id="cb11-330"><a href="#cb11-330" aria-hidden="true" tabindex="-1"></a><span class="fu">CreateTMBModel</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="fit" class="level3">
+<h3 class="anchored" data-anchor-id="fit">Fit</h3>
+<section id="set-up-the-fit" class="level4">
+<h4 class="anchored" data-anchor-id="set-up-the-fit">Set up the fit</h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create parameter list from Rcpp modules</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>parameter_list <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> <span class="fu">list</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">p =</span> <span class="fu">get_fixed</span>(),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">re =</span> <span class="fu">get_random</span>()</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> fims_model</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>obj <span class="ot">&lt;-</span> TMB<span class="sc">::</span><span class="fu">MakeADFun</span>(</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> <span class="fu">list</span>(),</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> parameter_list<span class="sc">$</span>parameters,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">map =</span> parameter_list<span class="sc">$</span>map,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">random =</span> <span class="st">"re"</span>,</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">DLL =</span> <span class="st">"FIMS"</span>,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">silent =</span> <span class="cn">TRUE</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>parameter_names <span class="ot">&lt;-</span> <span class="fu">names</span>(FIMS<span class="sc">:::</span><span class="fu">get_parameter_names</span>(obj[[<span class="st">"par"</span>]]))</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>random_names <span class="ot">&lt;-</span> <span class="fu">names</span>(FIMS<span class="sc">:::</span><span class="fu">get_random_names</span>(obj[[<span class="st">"env"</span>]]<span class="sc">$</span><span class="fu">parList</span>()<span class="sc">$</span>re))</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>map <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">p =</span> parameter_names,</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">re =</span> parameter_list[[<span class="st">"parameters"</span>]][[<span class="st">"re"</span>]]</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="co"># map[["p"]] &lt;- map_time_varying(</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a><span class="co">#   map[["p"]],</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a><span class="co">#   "Population.1.log_M",</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="co">#   "single",</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="co">#   1:(get_n_ages(data_4_model) * get_n_years(data_4_model))</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a><span class="co"># )</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (time_varying_selectivity <span class="sc">&amp;</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make selectivity constant until 1991</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># selectivity_year &lt;- 1981</span></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>  selectivity_year <span class="ot">&lt;-</span> <span class="dv">2010</span></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>  year_vector <span class="ot">&lt;-</span> <span class="fu">get_start_year</span>(data_4_model)<span class="sc">:</span><span class="fu">get_end_year</span>(data_4_model)</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>  year_sequence <span class="ot">&lt;-</span> <span class="fu">seq</span>(year_vector)</span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># # Change inflection_point early years to be one parameter</span></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>  map[[<span class="st">"p"</span>]] <span class="ot">&lt;-</span> <span class="fu">map_time_varying</span>(</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>    map[[<span class="st">"p"</span>]],</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Selectivity.1.inflection_point"</span>,</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>    <span class="st">"early"</span>,</span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>    <span class="fu">which</span>(year_vector <span class="sc">&lt;</span> selectivity_year)</span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Change inflection_point late years to be one parameter</span></span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>  map[[<span class="st">"p"</span>]] <span class="ot">&lt;-</span> <span class="fu">map_time_varying</span>(</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>    map[[<span class="st">"p"</span>]],</span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Selectivity.1.inflection_point"</span>,</span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>    <span class="st">"late"</span>,</span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>    <span class="fu">which</span>(year_vector <span class="sc">&gt;=</span> <span class="fu">get_end_year</span>(data_4_model) <span class="sc">-</span> <span class="dv">5</span>)</span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Change slope early years to be one parameter</span></span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>  map[[<span class="st">"p"</span>]] <span class="ot">&lt;-</span> <span class="fu">map_time_varying</span>(</span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>    map[[<span class="st">"p"</span>]],</span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Selectivity.1.slope"</span>,</span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>    <span class="st">"early"</span>,</span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>    <span class="fu">which</span>(year_vector <span class="sc">&lt;</span> selectivity_year)</span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Change slope late years to be one parameter</span></span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>  map[[<span class="st">"p"</span>]] <span class="ot">&lt;-</span> <span class="fu">map_time_varying</span>(</span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>    map[[<span class="st">"p"</span>]],</span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Selectivity.1.slope"</span>,</span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>    <span class="st">"late"</span>,</span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>    <span class="fu">which</span>(year_vector <span class="sc">&gt;=</span> <span class="fu">get_end_year</span>(data_4_model) <span class="sc">-</span> <span class="dv">2</span>)</span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a>  map[[<span class="st">"p"</span>]] <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(map[[<span class="st">"p"</span>]])</span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a>  <span class="co"># map[["re"]] &lt;- as.factor(gsub("\\d+$", "", random_names))</span></span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Bayesian estimation</span></span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a>  obj <span class="ot">&lt;-</span> TMB<span class="sc">::</span><span class="fu">MakeADFun</span>(</span>
+<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">list</span>(),</span>
+<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">parameters =</span> parameter_list<span class="sc">$</span>parameters,</span>
+<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">map =</span> <span class="fu">list</span>(<span class="at">p =</span> map[[<span class="st">"p"</span>]]),</span>
+<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">random =</span> <span class="st">"re"</span>,</span>
+<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a>    <span class="at">DLL =</span> <span class="st">"FIMS"</span>,</span>
+<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a>    <span class="at">silent =</span> <span class="cn">TRUE</span></span>
+<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="maximum-likelihood" class="level4">
+<h4 class="anchored" data-anchor-id="maximum-likelihood">Maximum likelihood</h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># MLE estimation using code from FIMS::fit_fims()</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (ii <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) {</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># control$trace is reset to zero regardless of verbosity because the</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># differences in values printed out using control$trace will be</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># negligible between these different runs and is not worth printing</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  opt <span class="ot">&lt;-</span> <span class="fu">with</span>(</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    obj,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nlminb</span>(</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">start =</span> <span class="cf">if</span> (ii <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>        par</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>        opt[[<span class="st">"par"</span>]]</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>      },</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">objective =</span> fn,</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">gradient =</span> gr,</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">control =</span> <span class="fu">list</span>(<span class="at">eval.max =</span> <span class="dv">10000</span>, <span class="at">iter.max =</span> <span class="dv">10000</span>, <span class="at">trace =</span> <span class="dv">0</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>sd_report <span class="ot">&lt;-</span> TMB<span class="sc">::</span><span class="fu">sdreport</span>(obj)</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Check that the standard errors are not NA</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">is.na</span>(<span class="fu">summary</span>(</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>  TMB<span class="sc">::</span><span class="fu">sdreport</span>(obj, <span class="at">skip.delta.method =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">"fixed"</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>)[, <span class="dv">2</span>]))</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot2::ggplot(</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="co">#   data = data.frame(</span></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="co">#     year = get_start_year(data_4_model):(get_end_year(data_4_model) + 1),</span></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a><span class="co">#     spawning_biomass = sd_report$value[grepl("^spawning_biomass$", names(sd_report$value))]</span></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a><span class="co">#   ),</span></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a><span class="co">#   ggplot2::aes(x = year, y = spawning_biomass)</span></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a><span class="co"># ) + </span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a><span class="co">#   ggplot2::geom_line() +</span></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a><span class="co">#   ggplot2::geom_line(</span></span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a><span class="co">#     data = data.frame(</span></span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a><span class="co">#       year = as.numeric(names(ss3_sb)),</span></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="co">#       spawning_biomass = ss3_sb</span></span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a><span class="co">#     ),</span></span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a><span class="co">#     color = "red"</span></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a><span class="co">#   )</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="bayesian" class="level4">
+<h4 class="anchored" data-anchor-id="bayesian">Bayesian</h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: Implement this in parallel</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> SparseNUTS<span class="sc">::</span><span class="fu">sample_snuts</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  obj,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">num_samples =</span> <span class="dv">8000</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">num_warmup =</span> <span class="dv">1000</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">chains =</span> <span class="dv">1</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">print =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">refresh =</span> <span class="dv">0</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">quiet =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.99</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Optimizing marginal posterior with 96 fixed effects and 50 random effects...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in .get_inputs(obj = obj, skip_optimization = skip_optimization, :
+Optimization convergence code indicated failed convergence</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in .get_inputs(obj = obj, skip_optimization = skip_optimization, :
+Maximum absolute marginal gradient is large (2.804e+01) which may indicate Q is
+unreliable</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Getting Q and its stats...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Q is 1.38% sparse | Ratio of marginal SDs=52899.5 | Max abs cor &gt;=1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rebuilding TMB obj without random effects...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>dense metric selected b/c faster than sparse and high correlation (max=1)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>log-posterior at inits=(-3539.95); at conditional mode=-3539.953</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Starting MCMC sampling...</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Gradient evaluation took 0.000375 seconds
+1000 transitions using 10 leapfrog steps per transition would take 3.75 seconds.
+Adjust your expectations accordingly!
+
+
+
+ Elapsed Time: 520.93 seconds (Warm-up)
+               4098.77 seconds (Sampling)
+               4619.7 seconds (Total)</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(fit)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(posterior) <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">levels</span>(map[[<span class="st">"p"</span>]]),</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="st">"Recruitment.1.recruitment_deviation."</span>, obj<span class="sc">$</span>env<span class="sc">$</span>random)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dimnames</span>(fit[[<span class="st">"samples"</span>]])[[<span class="dv">3</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">colnames</span>(posterior), <span class="st">"lp__"</span>)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>posteriors_labeled <span class="ot">&lt;-</span> tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  posterior[, <span class="sc">-</span><span class="fu">NCOL</span>(posterior)],</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols =</span> dplyr<span class="sc">::</span><span class="fu">everything</span>(),</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">names_to =</span> <span class="st">"name"</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">colnames</span>(posterior) <span class="sc">|&gt;</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>      tidyr<span class="sc">::</span><span class="fu">separate_wider_delim</span>(</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">delim =</span> <span class="st">"."</span>,</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">cols =</span> value,</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"fleet_number"</span>, <span class="st">"label"</span>, <span class="st">"module_id"</span>),</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">cols_remove =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">too_few =</span> <span class="st">"align_start"</span></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">|&gt;</span></span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">group_by</span>(fleet_number, label) <span class="sc">|&gt;</span></span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">index =</span> <span class="cf">if</span> (dplyr<span class="sc">::</span><span class="fu">n</span>() <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>          <span class="cn">NA_integer_</span></span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>          dplyr<span class="sc">::</span><span class="fu">row_number</span>(label)</span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">fleet_name =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(fleet_number <span class="sc">==</span> <span class="dv">1</span>, <span class="st">"Fishery"</span>, <span class="st">"Acoustic_Survey"</span>),</span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>        <span class="at">words =</span> <span class="fu">gsub</span>(<span class="st">"_"</span>, <span class="st">" "</span>, label)</span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">|&gt;</span></span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">ungroup</span>(),</span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"name"</span> <span class="ot">=</span> <span class="st">"value"</span>)</span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(</span>
+<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> year_conversion_matrix,</span>
+<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"index"</span>)</span>
+<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Get derived quantities using report()</span></span>
+<span id="cb25-42"><a href="#cb25-42" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">apply</span>(<span class="fu">as.data.frame</span>(posterior), <span class="dv">1</span>, \(x) obj<span class="sc">$</span><span class="fu">report</span>(x))</span>
+<span id="cb25-43"><a href="#cb25-43" aria-hidden="true" tabindex="-1"></a>SB_long <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map</span>(post, <span class="st">"spawning_biomass"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-44"><a href="#cb25-44" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">map</span>(</span>
+<span id="cb25-45"><a href="#cb25-45" aria-hidden="true" tabindex="-1"></a>    \(x) <span class="fu">data.frame</span>(<span class="at">value =</span> <span class="fu">unlist</span>(x), <span class="at">year_i =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(<span class="fu">unlist</span>(x)))</span>
+<span id="cb25-46"><a href="#cb25-46" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb25-47"><a href="#cb25-47" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(<span class="at">.id =</span> <span class="st">"simulation"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-48"><a href="#cb25-48" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(</span>
+<span id="cb25-49"><a href="#cb25-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> year_conversion_matrix,</span>
+<span id="cb25-50"><a href="#cb25-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"year_i"</span> <span class="ot">=</span> <span class="st">"index"</span>)</span>
+<span id="cb25-51"><a href="#cb25-51" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+</section>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
+<section id="parameter-plots" class="level3">
+<h3 class="anchored" data-anchor-id="parameter-plots">Parameter plots</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pacific-hake_files/figure-html/plot-selectivity-survey-1.png" class="img-fluid figure-img" alt="The slope of the survey curve was poorly estimated." width="672"></p>
+<figcaption>Posterior estimates of the logistic selectivity curves for the survey.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pacific-hake_files/figure-html/plot-selectivity-fishery-inflection-point-1.png" class="img-fluid figure-img" alt="Over the last decade we have been selecting younger fish." width="672"></p>
+<figcaption>Posterior estimates of the inflection point (x-axis; age) of the logistic curve for time-varying fishery selectivity.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pacific-hake_files/figure-html/plot-selectivity-fishery-slope-1.png" class="img-fluid figure-img" alt="There are a handful of years where the estimate is highly uncertain." width="672"></p>
+<figcaption>Posterior estimates of the slope (x-axis) of the logistic curve for time-varying fishery selectivity.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pacific-hake_files/figure-html/plot-log-Fmort-1.png" class="img-fluid figure-img" alt="Fishing levels have been increasing over time." width="672"></p>
+<figcaption>Posterior estimates of the natural log of fishing mortality for each year (y axis). Black dots are median estimates from the Stock Synthesis model.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pacific-hake_files/figure-html/plot-init-naa-1.png" class="img-fluid figure-img" alt="Older ages were poorly estimated." width="672"></p>
+<figcaption>Posterior estimates of the natural log of initial numbers at age.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pacific-hake_files/figure-html/plot-recruitment-deviations-1.png" class="img-fluid figure-img" alt="The terminal year estimates were poorly estimated." width="672"></p>
+<figcaption>Posterior estimates of recruitment deviations (red) and median estimates from Stock Synthesis.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="derived-quantity-plots" class="level3">
+<h3 class="anchored" data-anchor-id="derived-quantity-plots">Derived quantity plots</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pacific-hake_files/figure-html/plot-compare-spawning-biomass-1.png" class="img-fluid figure-img" alt="The FIMS model overestimates values from the 1980s compared to the SS3 model and underestimates more recent values." width="672"></p>
+<figcaption>Comparisons of spawning biomass between the 2025 base model (points are median estimates) and the FIMS model (line with 95 percent credibility interval).</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="diagnostic-plots" class="level3">
+<h3 class="anchored" data-anchor-id="diagnostic-plots">Diagnostic plots</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pacific-hake_files/figure-html/plot-diagnostic-slow-1.png" class="img-fluid figure-img" alt="Correlated parameters indicate large amounts of parameter spaces were covered by the chains." width="672"></p>
+<figcaption>Pairs plots of the six slowest mixing parameters in the FIMS model. Most of the parameters shown relate to the estimation of initial numbers at age.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pacific-hake_files/figure-html/plot-diagnostic-marginals-1.png" class="img-fluid figure-img" alt="Older ages were poorly estimated." width="672"></p>
+<figcaption>Posterior distributions (bins) and marginal estimates (red lines) for the natural log of initial numbers at age for each age, where smaller numbered parameters pertain to younger ages.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pacific-hake_files/figure-html/plot-diagnostics-uncertainties-1.png" class="img-fluid figure-img" alt="Parameters that were poorly estimated in an MLE context had even larger estimates of uncertainty in a Bayesian context." width="672"></p>
+<figcaption>Estimates of parameter uncertainty from the Bayesian estimation (x axis) compared to the same model fit using maximum likelihood estimation (MLE; y axis).</figcaption>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/noaa-fims\.github\.io\/case-studies");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../content/AFSC-GOA-pollock.html" class="pagination-link" aria-label="Gulf of Alaska pollock">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Gulf of Alaska pollock</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../content/acknowledgements.qmd" class="pagination-link" aria-label="Acknowledgements">
+        <span class="nav-page-text">Acknowledgements</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© CC-1.0</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/NOAA-FIMS/case-studies/edit/main/content/pacific-hake.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/NOAA-FIMS/case-studies/blob/main/content/pacific-hake.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/NOAA-FIMS/case-studies/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>This page is built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
