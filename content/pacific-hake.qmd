@@ -21,7 +21,7 @@ sample_size_multiplier <- 10
 log_rzero_prior_mean <- 15
 log_rzero_prior_sd <- 1.155
 init_naa_prior_mean <- 18
-init_naa_prior_sd <- 1.155
+init_naa_prior_sd <- 0.155
 natural_mortality <- 0.235
 steepness <- 0.8118
 # Taken from CEATTLE estimates
@@ -46,25 +46,6 @@ maturity_data <- utils::read.csv("https://raw.githubusercontent.com/pacific-hake
 # )
 ss3_results <- readRDS(file.path(data_directory, "pacific_hake.RDS"))
 ss3_sb <- ss3_results[["spawning_biomass"]]
-# Results from assessment in previous year
-# ss3_sb <- c(
-#   "1966" = 0.994896, "1967" = 1.00664, "1968" = 1.01708, "1969" = 1.162515,
-#   "1970" = 1.33501, "1971" = 1.36887, "1972" = 1.560225, "1973" = 1.853525,
-#   "1974" = 1.79134, "1975" = 1.548275, "1976" = 2.237185, "1977" = 2.15888,
-#   "1978" = 1.784635, "1979" = 1.92232, "1980" = 1.813545, "1981" = 1.736695,
-#   "1982" = 1.875015, "1983" = 2.393425, "1984" = 2.408205, "1985" = 2.40912,
-#   "1986" = 2.41643, "1987" = 2.4756, "1988" = 2.445505, "1989" = 2.11734,
-#   "1990" = 2.092725, "1991" = 1.89941, "1992" = 1.726115, "1993" = 1.34966,
-#   "1994" = 1.30146, "1995" = 1.159205, "1996" = 1.12109, "1997" = 1.113265,
-#   "1998" = 0.9282575, "1999" = 0.798846, "2000" = 0.925014, "2001" = 1.36914,
-#   "2002" = 1.955155, "2003" = 1.825095, "2004" = 1.48332, "2005" = 1.17802,
-#   "2006" = 0.9373315, "2007" = 0.7403355, "2008" = 0.6686465, "2009" = 0.6280765,
-#   "2010" = 0.7547615, "2011" = 0.7524495, "2012" = 0.9411375, "2013" = 1.728305,
-#   "2014" = 2.0092, "2015" = 1.46967, "2016" = 1.19547, "2017" = 1.640085,
-#   "2018" = 1.752535, "2019" = 1.439125, "2020" = 1.35688, "2021" = 1.120755,
-#   "2022" = 1.159235, "2023" = 1.47779, "2024" = 1.638705, "2025" = 1.736495,
-#   "2026" = 1.245515, "2027" = 0.865635, "2028" = 0.5916625
-# ) * 1000000
 ```
 
 * R version: `r R_version`
@@ -95,11 +76,8 @@ inputs[["wtatage"]] <- r4ss::SS_readwtatage(file.path(base_dir, "wtatage.ss_new"
 stock_synthesis_data <- r4ss::ss3_data_to_fims(
   ss_new = TRUE,
   ss3_inputs = inputs,
-  ss3_output = NULL,
   # TODO: Allow for a sensitivity with age-1 index but use Numbers
-  fleets = seq(inputs[["dat"]][["Nfleets"]])[-3],
-  ages = c(0, inputs[["dat"]][["agebin_vector"]])
-  # ages = c(inputs[["dat"]][["agebin_vector"]])
+  fleets = seq(inputs[["dat"]][["Nfleets"]])[-3]
 ) |>
   dplyr::mutate(
     uncertainty = ifelse(
@@ -108,11 +86,17 @@ stock_synthesis_data <- r4ss::ss3_data_to_fims(
       uncertainty
     )
   )
+start_year <- dplyr::filter(
+  stock_synthesis_data,
+  type == "age_comp",
+  value != -999
+) |>
+  dplyr::pull(timing) |>
+  min()
 
 data_4_model <- dplyr::bind_rows(
     stock_synthesis_data |>
-      # dplyr::filter(age != 0) |>
-      dplyr::filter(timing <= terminal_year, timing > 1976),
+      dplyr::filter(timing <= terminal_year, timing >= start_year),
     add_additional_year(
       stock_synthesis_data,
       timing_to_average = terminal_year:(terminal_year - 4),
@@ -608,7 +592,7 @@ init_naa_prior <- methods::new(DnormDistribution)
 init_naa_prior$expected_values$resize(1)
 init_naa_prior$expected_values[1]$value <- init_naa_prior_mean
 init_naa_prior$log_sd$resize(1)
-init_naa_prior$log_sd[1]$value <- log(init_naa_prior_sd)
+init_naa_prior$log_sd[1]$value <- init_naa_prior_sd
 init_naa_prior$set_distribution_links(
   "prior",
   population$log_init_naa$get_id()
@@ -660,18 +644,19 @@ map <- list(
 
 if (time_varying_selectivity & TRUE) {
   # Make selectivity constant until 1991
-  selectivity_year <- 1981
+  # selectivity_year <- 1981
+  selectivity_year <- 2010
 
   year_vector <- get_start_year(data_4_model):get_end_year(data_4_model)
   year_sequence <- seq(year_vector)
 
   # # Change inflection_point early years to be one parameter
-  # map[["p"]] <- map_time_varying(
-  #   parameter_names,
-  #   "Selectivity.1.inflection_point",
-  #   "early",
-  #   which(year_vector < selectivity_year)
-  # )
+  map[["p"]] <- map_time_varying(
+    map[["p"]],
+    "Selectivity.1.inflection_point",
+    "early",
+    which(year_vector < selectivity_year)
+  )
   # Change inflection_point late years to be one parameter
   map[["p"]] <- map_time_varying(
     map[["p"]],
