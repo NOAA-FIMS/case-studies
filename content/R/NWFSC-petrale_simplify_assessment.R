@@ -179,18 +179,29 @@ wtatage_pop <- wtatage |>
   dplyr::select(1:6, paste(0:dat$Nages)) |>
   dplyr::filter(year == 1876 & sex == 1 & fleet == -1) |>
   dplyr::mutate(year = -year)
-wtatage_matfec <- wtatage |>
-  dplyr::select(1:6, paste(0:dat$Nages)) |>
-  dplyr::filter(year == 1876 & sex == 1 & fleet == -2) |>
-  dplyr::mutate(year = -year)
+# original model had a fecundity relationship
+# so recalculate the maturity * fecundity based on the population weight-at-age
+# and an age-based maturity curve (logistic with 50% maturity at age 6 and slope of 1.5)
+# this is a rough approximation to the length-based maturity converted to age
+# within the original model, but should be sufficient for testing the simplified model
+maturity <- 1 / (1 + exp(-1.5 * (0:dat$Nages - 6)))
+matfec <- maturity * as.numeric(dplyr::select(wtatage_pop, paste0(0:dat$Nages)))
+wtatage_matfec <- wtatage_pop
+wtatage_matfec[, paste(0:dat$Nages)] <- matfec
+
+# # old code to use SS3 output for maturity * fecundity
+# wtatage_matfec <- wtatage |>
+#   dplyr::select(1:6, paste(0:dat$Nages)) |>
+#   dplyr::filter(year == 1876 & sex == 1 & fleet == -2) |>
+#   dplyr::mutate(year = -year)
 wtatage_simple <- rbind(
-  wtatage_matfec,
-  wtatage_pop,
-  wtatage_pop,
-  wtatage_pop,
-  wtatage_pop,
-  wtatage_pop,
-  wtatage_pop
+  wtatage_matfec, # fleet = -2
+  wtatage_pop, # fleet = -1
+  wtatage_pop, # fleet = 0
+  wtatage_pop, # fleet = 1
+  wtatage_pop, # fleet = 2
+  wtatage_pop, # fleet = 3
+  wtatage_pop  # fleet = 4
 ) |>
   dplyr::mutate(fleet = -2:4)
 
