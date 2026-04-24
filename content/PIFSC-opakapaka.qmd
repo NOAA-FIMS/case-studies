@@ -1,5 +1,5 @@
 ---
-title: PIFSC Opakapaka Case Study
+title: PIFSC ‘Ōpakapaka Case Study
 format:
   html:
     code-fold: true
@@ -44,203 +44,200 @@ To get the operational model to more closely match a FIMS model the following ch
 # code to modify original model and create bootstrap data
 # this creates the .Rdata file which is included with the case studies but is not run when rendering the case study. The code is included here for transparency and reproducibility but is not intended to be run by users of the case study.
 if (FALSE) {
- 
-# local directory to write modified data and control files to and run SS3
-local_dir <- tempdir()
+  # local directory to write modified data and control files to and run SS3
+  local_dir <- tempdir()
 
-opaka_inputs_original <- r4ss::SS_read(
-  "https://raw.githubusercontent.com/MOshima-PIFSC/Opaka-FIMS-Case-Study/refs/heads/main/Model/01_original_model/",
-  ss_new = TRUE
-)
+  opaka_inputs_original <- r4ss::SS_read(
+    "https://raw.githubusercontent.com/MOshima-PIFSC/Opaka-FIMS-Case-Study/refs/heads/main/Model/01_original_model/",
+    ss_new = TRUE
+  )
 
-opaka_dat <- opaka_inputs_original$dat
-opaka_ctl <- opaka_inputs_original$ctl
+  opaka_dat <- opaka_inputs_original$dat
+  opaka_ctl <- opaka_inputs_original$ctl
 
-# create directory for new simplified model
-opaka_length_dir <- file.path(local_dir, "09_case_study_lengths")
-dir.create(opaka_length_dir)
+  # create directory for new simplified model
+  opaka_length_dir <- file.path(local_dir, "09_case_study_lengths")
+  dir.create(opaka_length_dir)
 
-# changes to data file
+  # changes to data file
 
-# remove size freq data
-opaka_dat$N_sizefreq_methods_rd <- 0
-opaka_dat$N_sizefreq_methods <- NULL
-opaka_dat$nbins_per_method <- NULL
-opaka_dat$units_per_method <- NULL
-opaka_dat$scale_per_method <- NULL
-opaka_dat$mincomp_per_method <- NULL
-opaka_dat$Nobs_per_method <- NULL
-opaka_dat$Comp_Error_per_method <- NULL
-opaka_dat$ParmSelect_per_method <- NULL
-opaka_dat$sizefreq_bins_list <- NULL
-opaka_dat$sizefreq_data_list <- NULL
+  # remove size freq data
+  opaka_dat$N_sizefreq_methods_rd <- 0
+  opaka_dat$N_sizefreq_methods <- NULL
+  opaka_dat$nbins_per_method <- NULL
+  opaka_dat$units_per_method <- NULL
+  opaka_dat$scale_per_method <- NULL
+  opaka_dat$mincomp_per_method <- NULL
+  opaka_dat$Nobs_per_method <- NULL
+  opaka_dat$Comp_Error_per_method <- NULL
+  opaka_dat$ParmSelect_per_method <- NULL
+  opaka_dat$sizefreq_bins_list <- NULL
+  opaka_dat$sizefreq_data_list <- NULL
 
-# remove super periods for length comp data
-len_dat_original <- read.csv(
-  "https://raw.githubusercontent.com/MOshima-PIFSC/Opaka-FIMS-Case-Study/refs/heads/main/Data/Opaka_len_data.csv"
-)
-opaka_dat$lencomp <- len_dat_original
+  # remove super periods for length comp data
+  len_dat_original <- read.csv(
+    "https://raw.githubusercontent.com/MOshima-PIFSC/Opaka-FIMS-Case-Study/refs/heads/main/Data/Opaka_len_data.csv"
+  )
+  opaka_dat$lencomp <- len_dat_original
 
-# remove dirichlet weighting for length comps
-opaka_dat$len_info$CompError <- 0
-opaka_dat$len_info$ParmSelect <- 0
+  # remove dirichlet weighting for length comps
+  opaka_dat$len_info$CompError <- 0
+  opaka_dat$len_info$ParmSelect <- 0
 
-# remove initial F estimation
-opaka_dat$catch[1, 'catch'] <- 0
-# add agecomp dummy data
-opaka_dat$N_agebins <- 21
-opaka_dat$agebin_vector <- seq(1, 21)
-opaka_dat$N_ageerror_definitions <- 1
-opaka_dat$ageerror <- rbind(
-  seq(0.5, 43.5),
-  rep(.01, 44)
-)
-opaka_dat$age_info <- data.frame(
-  mintailcomp = rep(0, 4),
-  addtocomp = 1e-7,
-  combine_M_F = 1,
-  CompressBins = 0,
-  CompError = 0,
-  ParmSelect = 0,
-  minsamplesize = 1
-)
-opaka_dat$Lbin_method <- 1
-agecomp_info <- data.frame(
-  year = rep(seq(2017, 2023), 2),
-  month = 1,
-  fleet = rep(c(2, 4), each = 7),
-  sex = 0,
-  part = 0,
-  ageerr = 1,
-  Lbin_lo = -1,
-  Lbin_hi = -1,
-  Nsamp = 10
-)
-dummy_agecomp <- as.data.frame(matrix(
-  data = 1,
-  nrow = nrow(agecomp_info),
-  ncol = length(opaka_dat$agebin_vector)
-))
-colnames(dummy_agecomp) <- paste0("a", opaka_dat$agebin_vector)
-opaka_dat$agecomp <- cbind(agecomp_info, dummy_agecomp)
+  # remove initial F estimation
+  opaka_dat$catch[1, "catch"] <- 0
+  # add agecomp dummy data
+  opaka_dat$N_agebins <- 21
+  opaka_dat$agebin_vector <- seq(1, 21)
+  opaka_dat$N_ageerror_definitions <- 1
+  opaka_dat$ageerror <- rbind(
+    seq(0.5, 43.5),
+    rep(.01, 44)
+  )
+  opaka_dat$age_info <- data.frame(
+    mintailcomp = rep(0, 4),
+    addtocomp = 1e-7,
+    combine_M_F = 1,
+    CompressBins = 0,
+    CompError = 0,
+    ParmSelect = 0,
+    minsamplesize = 1
+  )
+  opaka_dat$Lbin_method <- 1
+  agecomp_info <- data.frame(
+    year = rep(seq(2017, 2023), 2),
+    month = 1,
+    fleet = rep(c(2, 4), each = 7),
+    sex = 0,
+    part = 0,
+    ageerr = 1,
+    Lbin_lo = -1,
+    Lbin_hi = -1,
+    Nsamp = 10
+  )
+  dummy_agecomp <- as.data.frame(matrix(
+    data = 1,
+    nrow = nrow(agecomp_info),
+    ncol = length(opaka_dat$agebin_vector)
+  ))
+  colnames(dummy_agecomp) <- paste0("a", opaka_dat$agebin_vector)
+  opaka_dat$agecomp <- cbind(agecomp_info, dummy_agecomp)
 
-# changes to control file
+  # changes to control file
 
-# remove growth platoon
-opaka_ctl$N_platoon <- 1
-opaka_ctl$sd_ratio <- NULL
-opaka_ctl$submorphdist <- NULL
+  # remove growth platoon
+  opaka_ctl$N_platoon <- 1
+  opaka_ctl$sd_ratio <- NULL
+  opaka_ctl$submorphdist <- NULL
 
-# remove intial F estimation
-opaka_ctl$init_F <- NULL
+  # remove intial F estimation
+  opaka_ctl$init_F <- NULL
 
-# remove extra SE parameter
-opaka_ctl$Q_options[1, "extra_se"] <- 0
-opaka_ctl$Q_parms <- opaka_ctl$Q_parms[-2, ]
-opaka_ctl$Variance_adjustment_list <- NULL
-opaka_ctl$DoVar_adjust <- 0
-opaka_ctl$sd_offset <- 0
+  # remove extra SE parameter
+  opaka_ctl$Q_options[1, "extra_se"] <- 0
+  opaka_ctl$Q_parms <- opaka_ctl$Q_parms[-2, ]
+  opaka_ctl$Variance_adjustment_list <- NULL
+  opaka_ctl$DoVar_adjust <- 0
+  opaka_ctl$sd_offset <- 0
 
-# remove dirichlet weighting parameter lines
-opaka_ctl$dirichlet_parms <- NULL
+  # remove dirichlet weighting parameter lines
+  opaka_ctl$dirichlet_parms <- NULL
 
-# fix commercial selectivity
-opaka_ctl$size_selex_parms$PHASE[1:2] <- -2
+  # fix commercial selectivity
+  opaka_ctl$size_selex_parms$PHASE[1:2] <- -2
 
-# add age selectivity
-opaka_ctl$age_selex_types <- data.frame(
-  Pattern = rep(12, 4),
-  Discard = 0,
-  Male = 0,
-  Special = 0
-)
+  # add age selectivity
+  opaka_ctl$age_selex_types <- data.frame(
+    Pattern = rep(12, 4),
+    Discard = 0,
+    Male = 0,
+    Special = 0
+  )
 
-# control file wouldn't write when age_selex_params are manually added
-# opaka_ctl$age_selex_parms <-  data.frame(
-#   "LO" = c(0, -5, 0, 0, 0, -10, 0, -20),
-#   "HI" = c(40, 50, 40, 40, 60, 60, 10, 50),
-#   "INIT" = c(1.81975, 0.0093046, 1, 3, 1.97182, 0.00040, 1.29111, 0.00115),
-#   "PRIOR" = c(5, 6, 5, 6, 5, 6, 2, .5),
-#   "PR_SD" = c(99, 99, 99, 99, 99, 99, 5, 2),
-#   "PR_type" = 0,
-#   "PHASE" = c(-2, -2, -2, -2, -99, -99, -2, -2),
-#   "env-var" = 0,
-#   "use_dev" = 0,
-#   "dev_mnyr" = 0,
-#   "dev_mxyr" = 0,
-#   "dev_PH" = 0,
-#   "Block" = 0,
-#   "Block_Fxn" = 0
-# )
+  # control file wouldn't write when age_selex_params are manually added
+  # opaka_ctl$age_selex_parms <-  data.frame(
+  #   "LO" = c(0, -5, 0, 0, 0, -10, 0, -20),
+  #   "HI" = c(40, 50, 40, 40, 60, 60, 10, 50),
+  #   "INIT" = c(1.81975, 0.0093046, 1, 3, 1.97182, 0.00040, 1.29111, 0.00115),
+  #   "PRIOR" = c(5, 6, 5, 6, 5, 6, 2, .5),
+  #   "PR_SD" = c(99, 99, 99, 99, 99, 99, 5, 2),
+  #   "PR_type" = 0,
+  #   "PHASE" = c(-2, -2, -2, -2, -99, -99, -2, -2),
+  #   "env-var" = 0,
+  #   "use_dev" = 0,
+  #   "dev_mnyr" = 0,
+  #   "dev_mxyr" = 0,
+  #   "dev_PH" = 0,
+  #   "Block" = 0,
+  #   "Block_Fxn" = 0
+  # )
 
-age_ctl <- r4ss::SS_read(
-  "https://raw.githubusercontent.com/MOshima-PIFSC/Opaka-FIMS-Case-Study/refs/heads/main/Model/03_age_comps/",
-  ss_new = TRUE
-)$ctl
+  age_ctl <- r4ss::SS_read(
+    "https://raw.githubusercontent.com/MOshima-PIFSC/Opaka-FIMS-Case-Study/refs/heads/main/Model/03_age_comps/",
+    ss_new = TRUE
+  )$ctl
 
-age_selex_params <- age_ctl$age_selex_parms
-opaka_ctl$age_selex_parms <- age_selex_params
-opaka_ctl$age_selex_parms$PHASE <- -2
+  age_selex_params <- age_ctl$age_selex_parms
+  opaka_ctl$age_selex_parms <- age_selex_params
+  opaka_ctl$age_selex_parms$PHASE <- -2
 
-# gather modified elements into new list of inputs
-opaka_inputs_modified <- opaka_inputs_original
-opaka_inputs_modified$dat <- opaka_dat
-opaka_inputs_modified$ctl <- opaka_ctl
-# create a bootstrap data file to get age comp data
-opaka_inputs_modified$start$N_bootstraps <- 3
+  # gather modified elements into new list of inputs
+  opaka_inputs_modified <- opaka_inputs_original
+  opaka_inputs_modified$dat <- opaka_dat
+  opaka_inputs_modified$ctl <- opaka_ctl
+  # create a bootstrap data file to get age comp data
+  opaka_inputs_modified$start$N_bootstraps <- 3
 
-# write modified input files to local directory to run SS3
-r4ss::SS_write(
-  opaka_inputs_modified,
-  dir = opaka_length_dir,
-  overwrite = TRUE
-)
+  # write modified input files to local directory to run SS3
+  r4ss::SS_write(
+    opaka_inputs_modified,
+    dir = opaka_length_dir,
+    overwrite = TRUE
+  )
 
-# run SS3
-## specify SS3 exe name:
-# exe <- "ss_opt_win.exe" 
-exe <- "ss3"
-r4ss::run(dir = opaka_length_dir, exe = exe, skipfinished = FALSE)
+  # run SS3
+  ## specify SS3 exe name:
+  # exe <- "ss_opt_win.exe"
+  exe <- "ss3"
+  r4ss::run(dir = opaka_length_dir, exe = exe, skipfinished = FALSE)
 
-file.copy(
-  file.path(opaka_length_dir, "data_boot_001.ss"),
-  file.path(opaka_length_dir, "data.ss"),
-  overwrite = TRUE
-)
+  file.copy(
+    file.path(opaka_length_dir, "data_boot_001.ss"),
+    file.path(opaka_length_dir, "data.ss"),
+    overwrite = TRUE
+  )
 
-# run SS3 using bootstrap data
-r4ss::run(dir = opaka_length_dir, exe = exe, skipfinished = FALSE)
+  # run SS3 using bootstrap data
+  r4ss::run(dir = opaka_length_dir, exe = exe, skipfinished = FALSE)
 
-# check model
-rep <- r4ss::SS_output(dir = opaka_length_dir)
-r4ss::SS_plots(rep)
+  # check model
+  rep <- r4ss::SS_output(dir = opaka_length_dir)
+  r4ss::SS_plots(rep)
 
-# package up data, control and rep file for using in FIMS
-rm("opaka_dat")
-rm("opaka_ctl")
+  # package up data, control and rep file for using in FIMS
+  rm("opaka_dat")
+  rm("opaka_ctl")
 
-# read input files again (to get the bootstrap data and the wtatage.ss_new)
-opaka_inputs_bootstrap <- r4ss::SS_read(opaka_length_dir, read_wtatage = TRUE)
-# save to model directory
-save(
-  list = c("opaka_inputs_bootstrap", "rep"),
-  file = file.path(opaka_length_dir, "opaka_model.RDS")
-)
-# copy to data directory for case studies repository
-file.copy(
-  file.path(opaka_length_dir, "opaka_model.RDS"),
-  file.path(data_directory, "opaka_model.RDS"),
-  overwrite = TRUE
-)
+  # read input files again (to get the bootstrap data and the wtatage.ss_new)
+  opaka_inputs_bootstrap <- r4ss::SS_read(opaka_length_dir, read_wtatage = TRUE)
+  # save to model directory
+  save(
+    list = c("opaka_inputs_bootstrap", "rep"),
+    file = file.path(opaka_length_dir, "opaka_model.RDS")
+  )
+  # copy to data directory for case studies repository
+  file.copy(
+    file.path(opaka_length_dir, "opaka_model.RDS"),
+    file.path(data_directory, "opaka_model.RDS"),
+    overwrite = TRUE
+  )
 } # end if (FALSE) for code used to prepare .Rdata
-
 ```
 
 ```{r}
 #| label: prepare-fims-data
 #| output: false
 #| warning: false
-
 # load opaka_inputs_bootstrap and rep objects with model input and output
 load(file.path(data_directory, "opaka_model.RDS"))
 include_age_comps <- FALSE
@@ -254,27 +251,26 @@ nlengths <- length(comp_lengths) # the number of length bins.
 opaka_dat_fims <- r4ss::ss3_data_to_fims(
   ss3_inputs = opaka_inputs_bootstrap,
   ss3_output = rep,
-  fleets = c(1,2,3),
+  fleets = c(1, 2, 3),
   maxage = max(ages),
   lengths = comp_lengths
 ) |>
   dplyr::filter(type != "age_comp")
 
-# Changing the CPUE indices for FRS to be a new fleet, FRS_CPUE. This helps with model convergence and fitting as it is the longest time series of data available along with the landings. 
+# Changing the CPUE indices for FRS to be a new fleet, FRS_CPUE. This helps with model convergence and fitting as it is the longest time series of data available along with the landings.
 opaka_dat_fims <- opaka_dat_fims |>
   dplyr::mutate(name = ifelse(name == "FRS" & type == "index", "FRS_CPUE", name))
 
 # Set sample size for length compositions to 1.0.
-opaka_dat_fims <- opaka_dat_fims |> 
+opaka_dat_fims <- opaka_dat_fims |>
   dplyr::mutate(uncertainty = ifelse(type == "length_comp" & name == "BFISH", 1, uncertainty)) #|>
-  ## there is no index for the Non_comm fleet
-  #dplyr::filter(!(type == "index" & name == "Non_comm"))
+## there is no index for the Non_comm fleet
+# dplyr::filter(!(type == "index" & name == "Non_comm"))
 
 data_4_model <- FIMS::FIMSFrame(opaka_dat_fims)
 
 # get range of timing values for each type within data_4_model@data
-#data_4_model@data |>
-
+# data_4_model@data |>
 ```
 
 The `data_4_model` object contains a `@data` slot that holds a long data frame with:
@@ -296,14 +292,18 @@ recdevs <- rep$parameters |>
 
 init_naa <- (exp(opaka_inputs_bootstrap$ctl$SR_parms["SR_LN(R0)", "INIT"]) * 1000) * exp(-(ages - 1) * 0.135)
 init_naa[n_ages] <- init_naa[n_ages] / 0.135
+
 # Create default parameters
 default_parameters <- FIMS::create_default_configurations(
-    data = data_4_model
-  ) |>
+  data = data_4_model
+) |>
   FIMS::create_default_parameters(
     data = data_4_model
   ) |>
-  tidyr::unnest(cols = data) |>
+  tidyr::unnest(cols = data)
+
+# modify the default parameters
+parameters <- default_parameters |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Maturity",
@@ -378,7 +378,16 @@ default_parameters <- FIMS::create_default_configurations(
       # Wondering if we should use logit(0.75) as noted previously for scamp
       # as the null recruitment model?
       label = c("log_rzero", "logit_steep", "log_sd"),
-      value = c(opaka_inputs_bootstrap$ctl$SR_parms["SR_LN(R0)", "INIT"], -log(1.0 - 0.76) + log(0.76 - 0.2), opaka_inputs_bootstrap$ctl$SR_parms["SR_sigmaR", "INIT"])
+      value = c(
+        # log of R0
+        log(1000) + # adding log(1000) to account for R0 units in 1000s in SS3
+          opaka_inputs_bootstrap$ctl$SR_parms["SR_LN(R0)", "INIT"],
+        # steepness (with logit transformation)
+        -log(1.0 - opaka_inputs_bootstrap$ctl$SR_parms["SR_BH_steep", "INIT"]) +
+          log(opaka_inputs_bootstrap$ctl$SR_parms["SR_BH_steep", "INIT"] - 0.2),
+        # sigmaR
+        opaka_inputs_bootstrap$ctl$SR_parms["SR_sigmaR", "INIT"]
+      )
     ),
     by = c("module_name", "label")
   ) |>
@@ -427,13 +436,19 @@ default_parameters <- FIMS::create_default_configurations(
       module_name = "Fleet",
       fleet_name = "FRS_CPUE",
       label = "log_q",
-      value = -3.90281 #value from SS
+      value = -3.90281 # value from SS
     ),
     by = c("module_name", "fleet_name", "label")
   )
 
-# Run the  model with optimization
-fit <- default_parameters |>
+# Run the model without optimization
+fit_init <- parameters |>
+  FIMS::initialize_fims(data = data_4_model) |>
+  # Model is too big to run on GitHub action if you estimate uncertainty
+  FIMS::fit_fims(optimize = FALSE, get_sd = FALSE)
+
+# Run the model with optimization
+fit_est <- parameters |>
   FIMS::initialize_fims(data = data_4_model) |>
   # Model is too big to run on GitHub action if you estimate uncertainty
   FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
@@ -442,14 +457,17 @@ fit <- default_parameters |>
 ## Plotting Results
 
 ```{r}
+# fit <- fit_init
+fit <- fit_est
+
 #| label: comparison-plots
 index_results <- data.frame(
-  observed = FIMS::m_index(data_4_model, "fleet2"),
+  observed = FIMS::model_index(data_4_model, "BFISH"),
   expected = FIMS::get_report(fit)[["index_expected"]][[2]]
 ) |>
   dplyr::mutate(year = years) |>
   dplyr::filter(year > 2016)
-#print(index_results)
+# print(index_results)
 
 ggplot2::ggplot(index_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::geom_point() +
@@ -459,12 +477,12 @@ ggplot2::ggplot(index_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::theme_bw()
 
 cpue_results <- data.frame(
-  observed = FIMS::m_index(data_4_model, "fleet4"),
+  observed = FIMS::model_index(data_4_model, "FRS_CPUE"),
   expected = FIMS::get_report(fit)[["index_expected"]][[2]]
 ) |>
   dplyr::mutate(year = years) |>
   dplyr::filter(observed > 0)
-#print(cpue_results)
+# print(cpue_results)
 ggplot2::ggplot(cpue_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::geom_point() +
   ggplot2::xlab("Year") +
@@ -475,17 +493,17 @@ ggplot2::ggplot(cpue_results, ggplot2::aes(x = year, y = observed)) +
 
 catch_results <- data.frame(
   observed = c(
-    FIMS::m_landings(data_4_model, fleet = "fleet1"),
-    FIMS::m_landings(data_4_model, fleet = "fleet3")
+    FIMS::model_landings(data_4_model, fleet = "FRS"),
+    FIMS::model_landings(data_4_model, fleet = "Non_comm")
   ),
   expected = c(
     FIMS::get_report(fit)[["landings_expected"]][[1]],
     FIMS::get_report(fit)[["landings_expected"]][[3]]
   ),
-  fleet = rep(c("fleet1", "fleet3"), each = 75)
+  fleet = rep(c("FRS", "Non_comm"), each = 75)
 ) |>
   dplyr::mutate(year = rep(years, 2))
-#print(catch_results)
+# print(catch_results)
 
 ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::geom_point(ggplot2::aes(color = fleet)) +
@@ -496,12 +514,12 @@ ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
 
 biomass <- rep$timeseries |>
   dplyr::select(Yr, SpawnBio, Bio_all) |>
-  dplyr::filter(Yr > 1947) |> ##CHECK: including "initial year" to match length with FIMS but need to check on FIMS
+  dplyr::filter(Yr > 1947) |> ## CHECK: including "initial year" to match length with FIMS but need to check on FIMS
   dplyr::rename("SS_SpawnBio" = "SpawnBio", "SS_Bio" = "Bio_all") |>
   dplyr::mutate(
     FIMS_SpawnBio = FIMS::get_report(fit)[["spawning_biomass"]][[1]],
     FIMS_Bio = FIMS::get_report(fit)[["biomass"]][[1]]
-  ) |> ##CHECK: Is FIMS ssb reporting n_years+1 or initial year-1?
+  ) |> ## CHECK: Is FIMS ssb reporting n_years+1 or initial year-1?
   tidyr::pivot_longer(cols = -Yr) |>
   tidyr::separate_wider_delim(
     cols = "name",
@@ -514,7 +532,8 @@ ggplot2::ggplot(biomass, ggplot2::aes(x = Yr, y = value)) +
   ggplot2::xlab("Year") +
   ggplot2::ylab("") +
   ggplot2::facet_wrap(~Type, scales = "free_y") +
-  ggplot2::theme_bw()
+  ggplot2::theme_bw() +
+  ggplot2::ylim(0, NA)
 
 recruits <- rep$recruit |>
   dplyr::select(Yr, exp_recr, raw_dev) |>
@@ -554,7 +573,7 @@ ggplot2::ggplot(recruits, ggplot2::aes(x = Year, y = value, color = Model)) +
 pcnal <- matrix(data = fit@report$pcnal[[2]], nrow = nlengths)
 
 prop.dat <- opaka_dat_fims |>
-  filter(type == "length" & name == "fleet2") |>
+  filter(type == "length" & name == "BFISH") |>
   group_by(datestart) |>
   reframe(prop = value / sum(value))
 pcnal.obs <- matrix(data = prop.dat$prop, nrow = nlengths)
