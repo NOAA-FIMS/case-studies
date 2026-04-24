@@ -260,24 +260,28 @@ opaka_dat_fims <- r4ss::ss3_data_to_fims(
 ) |>
   dplyr::filter(type != "age_comp")
 
-# Changing the CPUE indices for BFISH to be a new fleet, BFISH_CPUE. This helps with model convergence and fitting as it is the longest time series of data available along with the landings. 
+# Changing the CPUE indices for FRS to be a new fleet, FRS_CPUE. This helps with model convergence and fitting as it is the longest time series of data available along with the landings. 
 opaka_dat_fims <- opaka_dat_fims |>
-  dplyr::mutate(name = ifelse(name == "BFISH" & type == "index", "BFISH_CPUE", name))
+  dplyr::mutate(name = ifelse(name == "FRS" & type == "index", "FRS_CPUE", name))
 
 # Set sample size for length compositions to 1.0.
 opaka_dat_fims <- opaka_dat_fims |> 
-  dplyr::mutate(uncertainty = ifelse(type == "length_comp" & name == "FRS", 1, uncertainty)) #|>
+  dplyr::mutate(uncertainty = ifelse(type == "length_comp" & name == "BFISH", 1, uncertainty)) #|>
   ## there is no index for the Non_comm fleet
   #dplyr::filter(!(type == "index" & name == "Non_comm"))
 
 data_4_model <- FIMS::FIMSFrame(opaka_dat_fims)
+
+# get range of timing values for each type within data_4_model@data
+#data_4_model@data |>
+
 ```
 
 The `data_4_model` object contains a `@data` slot that holds a long data frame with:
-* 4 fleets: commercial fishery (BFISH) and non-commercial fishery (Non_comm), survey (FRS), and a new fleet for the CPUE of the commercial fishery (BFISH_CPUE)
-* landings for BFISH and Non_comm
-* cpue for FRS and BFISH_CPUE
-* length composition data for FRS
+* 4 fleets: commercial fishery (FRS) and non-commercial fishery (Non_comm), survey (BFISH), and a new fleet for the CPUE of the commercial fishery (FRS_CPUE)
+* landings for FRS and Non_comm
+* indices for BFISH and FRS_CPUE
+* length composition data for the survey (BFISH)
 * weight-at-age data
 * age-to-length-conversion data
 
@@ -311,7 +315,7 @@ default_parameters <- FIMS::create_default_configurations(
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = "BFISH",
+      fleet_name = "FRS",
       label = c("slope", "inflection_point"),
       # Used age selectivity values
       value = c(4.5, 1.81),
@@ -322,7 +326,7 @@ default_parameters <- FIMS::create_default_configurations(
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = "FRS",
+      fleet_name = "BFISH",
       label = c("slope", "inflection_point"),
       value = c(3, 1),
       estimation_type = "constant"
@@ -342,7 +346,7 @@ default_parameters <- FIMS::create_default_configurations(
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = "BFISH_CPUE",
+      fleet_name = "FRS_CPUE",
       label = c("slope", "inflection_point"),
       value = c(4.5, 1.81),
       estimation_type = "constant"
@@ -392,7 +396,7 @@ default_parameters <- FIMS::create_default_configurations(
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "BFISH",
+      fleet_name = "FRS",
       time = years,
       label = "log_Fmort",
       value = log(rep$exploitation$FRS)
@@ -402,7 +406,7 @@ default_parameters <- FIMS::create_default_configurations(
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "FRS",
+      fleet_name = "BFISH",
       label = "log_q",
       value = -4.12772
     ),
@@ -421,7 +425,7 @@ default_parameters <- FIMS::create_default_configurations(
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "BFISH_CPUE",
+      fleet_name = "FRS_CPUE",
       label = "log_q",
       value = -3.90281 #value from SS
     ),

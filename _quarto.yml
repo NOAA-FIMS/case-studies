@@ -5,6 +5,7 @@ project:
     - content/AFSC-GOA-pollock.qmd
     - content/NEFSC-yellowtail.qmd
     - content/pacific-hake.qmd
+    - content/PIFSC-opakapaka.qmd
 
 website:
   page-navigation: true
