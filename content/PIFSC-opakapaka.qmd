@@ -259,11 +259,19 @@ opaka_dat_fims <- r4ss::ss3_data_to_fims(
 
 # Changing the CPUE indices for FRS to be a new fleet, FRS_CPUE. This helps with model convergence and fitting as it is the longest time series of data available along with the landings.
 opaka_dat_fims <- opaka_dat_fims |>
-  dplyr::mutate(name = ifelse(name == "FRS" & type == "index", "FRS_CPUE", name))
+  dplyr::mutate(
+    name = ifelse(name == "FRS" & type == "index", "FRS_CPUE", name)
+  )
 
 # Set sample size for length compositions to 1.0.
 opaka_dat_fims <- opaka_dat_fims |>
-  dplyr::mutate(uncertainty = ifelse(type == "length_comp" & name == "BFISH", 1, uncertainty)) #|>
+  dplyr::mutate(
+    uncertainty = ifelse(
+      type == "length_comp" & name == "BFISH",
+      1,
+      uncertainty
+    )
+  ) #|>
 ## there is no index for the Non_comm fleet
 # dplyr::filter(!(type == "index" & name == "Non_comm"))
 
@@ -290,7 +298,9 @@ recdevs <- rep$parameters |>
   dplyr::filter(stringr::str_detect(Label, "RecrDev")) |>
   dplyr::select(Label, Value)
 
-init_naa <- (exp(opaka_inputs_bootstrap$ctl$SR_parms["SR_LN(R0)", "INIT"]) * 1000) * exp(-(ages - 1) * 0.135)
+init_naa <- (exp(opaka_inputs_bootstrap$ctl$SR_parms["SR_LN(R0)", "INIT"]) *
+  1000) *
+  exp(-(ages - 1) * 0.135)
 init_naa[n_ages] <- init_naa[n_ages] / 0.135
 
 # Create default parameters
@@ -464,35 +474,64 @@ fit_est <- parameters |>
 # fit <- fit_init
 fit <- fit_est
 
-#| label: comparison-plots
-index_results <- data.frame(
-  observed = FIMS::model_index(data_4_model, "BFISH"),
-  expected = FIMS::get_report(fit)[["index_expected"]][[2]]
-) |>
-  dplyr::mutate(year = years) |>
-  dplyr::filter(year > 2016)
-# print(index_results)
+#  
+output <- FIMS::get_estimates(fit) |>
+  dplyr::mutate(
+    uncertainty_label = "se",
+    year = year_i + FIMS::get_start_year(data_4_model) - 1,
+    estimate = estimated
+  )
 
-ggplot2::ggplot(index_results, ggplot2::aes(x = year, y = observed)) +
-  ggplot2::geom_point() +
-  ggplot2::xlab("Year") +
-  ggplot2::ylab("Index (mt)") +
-  ggplot2::geom_line(ggplot2::aes(x = year, y = expected), color = "blue") +
-  ggplot2::theme_bw()
+# index
+stockplotr::plot_timeseries(
+  stockplotr::filter_data(
+    output |> dplyr::filter(module_id == 1),
+    label_name = "^index_expected$",
+    geom = "line"
+  ),
+  x = "year",
+  y = "estimated",
+  ylab = "Relative Index of Abundance for BFISH"
+) +
+  ggplot2::geom_point(
+    data = dplyr::filter(
+      FIMS::get_estimates(fit),
+      module_id == 1,
+      label == "index_expected",
+      observed > -999
+    ) |>
+      dplyr::left_join(
+        year_conversion_matrix,
+        by = c("year_i" = "index")
+      ),
+    ggplot2::aes(x = year, y = observed)
+  ) +
+  stockplotr::theme_noaa()
 
-cpue_results <- data.frame(
-  observed = FIMS::model_index(data_4_model, "FRS_CPUE"),
-  expected = FIMS::get_report(fit)[["index_expected"]][[2]]
-) |>
-  dplyr::mutate(year = years) |>
-  dplyr::filter(observed > 0)
-# print(cpue_results)
-ggplot2::ggplot(cpue_results, ggplot2::aes(x = year, y = observed)) +
-  ggplot2::geom_point() +
-  ggplot2::xlab("Year") +
-  ggplot2::ylab("CPUE") +
-  ggplot2::geom_line(ggplot2::aes(x = year, y = expected), color = "blue") +
-  ggplot2::theme_bw()
+stockplotr::plot_timeseries(
+  stockplotr::filter_data(
+    output |> dplyr::filter(module_id == 3),
+    label_name = "^index_expected$",
+    geom = "line"
+  ),
+  x = "year",
+  y = "estimated",
+  ylab = "Relative CPUE for FRS"
+) +
+  ggplot2::geom_point(
+    data = dplyr::filter(
+      FIMS::get_estimates(fit),
+      module_id == 3,
+      label == "index_expected",
+      observed > -999
+    ) |>
+      dplyr::left_join(
+        year_conversion_matrix,
+        by = c("year_i" = "index")
+      ),
+    ggplot2::aes(x = year, y = observed)
+  ) +
+  stockplotr::theme_noaa()
 
 
 catch_results <- data.frame(
@@ -501,8 +540,8 @@ catch_results <- data.frame(
     FIMS::model_landings(data_4_model, fleet = "Non_comm")
   ),
   expected = c(
-    FIMS::get_report(fit)[["landings_expected"]][[1]],
-    FIMS::get_report(fit)[["landings_expected"]][[3]]
+    FIMS::get_report(fit)[["landings_expected"]][[2]],
+    FIMS::get_report(fit)[["landings_expected"]][[4]]
   ),
   fleet = rep(c("FRS", "Non_comm"), each = 75)
 ) |>
