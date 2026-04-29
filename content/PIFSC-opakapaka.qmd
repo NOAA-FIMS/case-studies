@@ -482,6 +482,14 @@ output <- FIMS::get_estimates(fit) |>
     estimate = estimated
   )
 
+# year conversion matrix and index plots copied from pacific-hake.qmd
+year_conversion_matrix <- dplyr::tibble(
+  year = FIMS::get_start_year(data_4_model):(FIMS::get_end_year(data_4_model) + 1)
+) |>
+  dplyr::mutate(
+    index = dplyr::row_number()
+  )
+
 # index
 stockplotr::plot_timeseries(
   stockplotr::filter_data(
@@ -579,9 +587,9 @@ ggplot2::ggplot(biomass, ggplot2::aes(x = Yr, y = value)) +
   ggplot2::ylim(0, NA)
 
 recruits <- rep$recruit |>
-  dplyr::select(Yr, exp_recr, raw_dev) |>
+  dplyr::select(Yr, pred_recr, raw_dev) |>
   dplyr::rename(
-    "SS_recruit" = "exp_recr",
+    "SS_recruit" = "pred_recr",
     "SS_recdev" = "raw_dev",
     "Year" = "Yr"
   ) |>
