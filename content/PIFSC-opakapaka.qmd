@@ -282,6 +282,7 @@ data_4_model <- FIMS::FIMSFrame(opaka_dat_fims)
 ```
 
 The `data_4_model` object contains a `@data` slot that holds a long data frame with:
+
 * 4 fleets: commercial fishery (FRS) and non-commercial fishery (Non_comm), survey (BFISH), and a new fleet for the CPUE of the commercial fishery (FRS_CPUE)
 * landings for FRS and Non_comm
 * indices for BFISH and FRS_CPUE
