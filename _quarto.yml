@@ -45,8 +45,8 @@ website:
         text: Gulf of Alaska pollock
       # - href: content/SWFSC-sardine.qmd
       #   text: sardine
-      # - href: content/PIFSC-opakapaka.qmd
-      #   text: Opakapaka
+      - href: content/PIFSC-opakapaka.qmd
+        text: ‘Ōpakapaka
       # - href: content/NWFSC-petrale.qmd
       #   text: petrale sole
       # - href: content/SEFSC-scamp.qmd
