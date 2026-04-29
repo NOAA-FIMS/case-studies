@@ -417,7 +417,7 @@ parameters <- default_parameters |>
       module_name = "Fleet",
       fleet_name = "BFISH",
       label = "log_q",
-      value = -4.12772
+      value = rep$parameters["LnQ_base_BFISH(2)", "Value"]
     ),
     by = c("module_name", "fleet_name", "label")
   ) |>
@@ -436,10 +436,13 @@ parameters <- default_parameters |>
       module_name = "Fleet",
       fleet_name = "FRS_CPUE",
       label = "log_q",
-      value = -3.90281 # value from SS
+      value = rep$parameters["LnQ_base_FRS(1)", "Value"]
     ),
     by = c("module_name", "fleet_name", "label")
   )
+
+# # optionally use the defaults instead of the modified parameters
+# parameters <- default_parameters
 
 # Run the model without optimization
 fit_init <- parameters |>
@@ -457,6 +460,7 @@ fit_est <- parameters |>
 ## Plotting Results
 
 ```{r}
+# # optionally plot the initial values without optimization
 # fit <- fit_init
 fit <- fit_est
 
