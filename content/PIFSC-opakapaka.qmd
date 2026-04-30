@@ -1,5 +1,5 @@
 ---
-title: PIFSC ‘Ōpakapaka Case Study
+title: PIFSC ʻŌpakapaka Case Study
 format:
   html:
     code-fold: true
