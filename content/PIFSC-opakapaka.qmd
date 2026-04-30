@@ -42,7 +42,7 @@ To get the operational model to more closely match a FIMS model the following ch
 # C:/Users/Megumi.Oshima/Documents/Opaka-FIMS-Case-Study/Model/01_original_model
 
 # code to modify original model and create bootstrap data
-# this creates the .Rdata file which is included with the case studies but is not run when rendering the case study. The code is included here for transparency and reproducibility but is not intended to be run by users of the case study.
+# this creates the .RDS file which is included with the case studies but is not run when rendering the case study. The code is included here for transparency and reproducibility but is not intended to be run by users of the case study.
 if (FALSE) {
   # local directory to write modified data and control files to and run SS3
   local_dir <- tempdir()
@@ -130,7 +130,7 @@ if (FALSE) {
   opaka_ctl$sd_ratio <- NULL
   opaka_ctl$submorphdist <- NULL
 
-  # remove intial F estimation
+  # remove initial F estimation
   opaka_ctl$init_F <- NULL
 
   # remove extra SE parameter
@@ -231,7 +231,7 @@ if (FALSE) {
     file.path(data_directory, "opaka_model.RDS"),
     overwrite = TRUE
   )
-} # end if (FALSE) for code used to prepare .Rdata
+} # end if (FALSE) for code used to prepare .RDS file
 ```
 
 ```{r}
@@ -409,7 +409,7 @@ parameters <- default_parameters |>
       time = years[-1],
       # The last value of the initial numbers at age is the first
       # recruitment deviation
-      value = recdevs$Value,
+      value = recdevs$Value
     ),
     by = c("module_name", "label", "time")
   ) |>
@@ -475,7 +475,7 @@ fit_est <- parameters |>
 # fit <- fit_init
 fit <- fit_est
 
-#  
+#
 output <- FIMS::get_estimates(fit) |>
   dplyr::mutate(
     uncertainty_label = "se",
@@ -609,36 +609,45 @@ recruits <- rep$recruit |>
     cols = "name",
     delim = "_",
     names = c("Model", "Type")
-  )
+  ) |>
+  dplyr::filter(!is.na(value))
 
 ggplot2::ggplot(recruits, ggplot2::aes(x = Year, y = value, color = Model)) +
   ggplot2::geom_line() +
   ggplot2::facet_wrap(~Type, scales = "free_y") +
+  ggplot2::ggtitle("Recruitment and Recruitment Deviations") +
   ggplot2::theme_bw()
 ```
 
 
 ```{r}
-#| eval: false
-#| label: proportions-plots-not-run
-## Checking fit to proportion catch number at length
-pcnal <- matrix(data = fit@report$pcnal[[2]], nrow = nlengths)
+#| eval: true
+#| label: length-composition-plots
+## Checking fit to length compositions
 
-prop.dat <- opaka_dat_fims |>
-  filter(type == "length" & name == "BFISH") |>
-  group_by(datestart) |>
-  reframe(prop = value / sum(value))
-pcnal.obs <- matrix(data = prop.dat$prop, nrow = nlengths)
-head(pcnal.obs)
+lengthcomp <- rbind(
+  # length comps from FIMS output
+  output |>
+    dplyr::filter(label == "lengthcomp_expected", observed != -999) |>
+    dplyr::mutate(
+      length = comp_lengths[length_i]
+    ) |>
+    dplyr::select(year, length, estimated, observed) |>
+    dplyr::mutate(platform = "FIMS"),
 
-plot(x = 1:nlengths, y = pcnal.obs[, 73], pch = 16, ylim = c(0, 1))
-lines(x = 1:nlengths, y = pcnal[, 73])
-pcnal[, 69]
+  # get length comps from SS3 output for comparison
+  rep$lendbase |>
+    dplyr::filter(Fleet == which(rep$FleetNames == "BFISH")) |>
+    dplyr::select(year = Yr, length = Bin, estimated = Exp, observed = Obs) |>
+    dplyr::mutate(platform = "SS3")
+)
 
-## checking estimated numbers at age
-head(fit@report$naa[[1]])
-naa_mat <- matrix(data = fit@report$naa[[1]], nrow = n_ages)
-head(naa_mat)
+lengthcomp |> ggplot2::ggplot(ggplot2::aes(length, estimated, color = platform)) +
+  ggplot2::facet_wrap("year") +
+  ggplot2::geom_line() +
+  ggplot2::geom_point(ggplot2::aes(y = observed, color = "data")) +
+  ggplot2::ggtitle("Fit to Length Composition Data") +
+  ggplot2::theme_bw()
 ```
 
 ```{r}
