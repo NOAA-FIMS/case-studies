@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }} 
 
     steps:
       - name: Check out repository
@@ -165,6 +168,14 @@ jobs:
           } else {
             warning("Error: Could not find and markers in README.")
           }
+
+      - name: Deploy successfully rendered files (and not failed ones) to GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site  
+          keep_files: true
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
