@@ -4,15 +4,20 @@
 If you want to run a FIMS model and don't know where to start, you can submit your model to this test-bed 🧪🛏️ repository and we can work with you on getting your model running in [Fisheries Integrated Modeling System](https://NOAA-FIMS/FIMS/)! The associated [GitHub pages site](https://noaa-fims.github.io/case-studies/) with this repo "shows the work" of getting each model running in FIMS. Once the model is completed and running, it will graduate :mortar_board: to it's own repository. In the future, we will have a way to track assessments that use FIMS, so be on the lookout for that!
 
 ## Case studies included so far
+
+<!-- TABLE_START -->
+
 Stock | Previous Model | Status | Notable Features |
 -- | -- | -- | --
 NEFSC yellowtail flounder | ASAP | working |
 AFSC GOA pollock | Cole's TMB model | non-updated | Bayesian |
 SWFSC sardine | SS3 | not updated |
 NWFSC petrale | SS3 | not updated |
-PIFSC opakapaka | SS3 | not updated |Age-to-length conversion matrix |
+PIFSC opakapaka | SS3 | not updated | Age-to-length conversion matrix |
 SEFSC scamp | BAM | working |
 NWFSC Pacific hake | SS3 | failing | Bayesian |
+
+<!-- TABLE_END -->
 
 ## How to add a case study
 
