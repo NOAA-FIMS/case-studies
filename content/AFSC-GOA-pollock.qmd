@@ -1,5 +1,8 @@
 ---
 title: AFSC Case Study Gulf of Alaska Walleye Pollock
+stock: "AFSC GOA walleye pollock"
+previous_model: "AFSC custom ADMB model"
+features: "Bayesian"
 format:
   html:
     code-fold: true
