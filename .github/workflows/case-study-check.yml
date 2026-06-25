@@ -20,7 +20,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          ref: readme-and-auto-update-workflow
+          ref: readme-and-auto-table-update-workflow
 
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
