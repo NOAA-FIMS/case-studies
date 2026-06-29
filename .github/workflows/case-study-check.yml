@@ -156,8 +156,8 @@ jobs:
           
           # --- Update README.md ---
           readme <- readLines(readme_file, warn = FALSE)
-          start_idx <- which(trimws(readme) == "")
-          end_idx <- which(trimws(readme) == "")
+          start_idx <- which(trimws(readme) == "<!-- TABLE_START -->")
+          end_idx <- which(trimws(readme) == "<!-- TABLE_END -->")
 
           if (length(start_idx) > 0 && length(end_idx) > 0) {
             new_readme <- c(
