@@ -2,15 +2,19 @@
 
 This is a [website](https://noaa-fims.github.io/case-studies/) (`type: website`) showcasing test cases of the [Fisheries Integrated Modeling System](https://NOAA-FIMS/FIMS/).
 
-Case studies included so far:
-Stock | Status
--- | --
-NEFSC yellowtail flounder | working
-AFSC GOA pollock | working
-SWFSC sardine | working
-NWFSC petrale | working
-PIFSC opakapaka | working
-SEFSC scamp | working
+## Case studies included so far
+
+<!-- TABLE_START -->
+Stock | Previous Model | Status | Notable Features |
+-- | -- | -- | --
+AFSC GOA walleye pollock | AFSC custom ADMB model | ![Status](badges/AFSC-GOA-pollock.svg) | Bayesian |
+NEFSC yellowtail Flounder | ASAP | ![Status](badges/NEFSC-yellowtail.svg) |  |
+NWFSC petrale | SS3 | ![Status](badges/NWFSC-petrale.svg) |  |
+pacific hake | SS3 | ![Status](badges/pacific-hake.svg) | Bayesian |
+PIFSC Opakapaka | SS3 | ![Status](badges/PIFSC-opakapaka.svg) | Age-to-length conversion matrix |
+SEFSC scamp | BAM | ![Status](badges/SEFSC-scamp.svg) |  |
+SWFSC sardine | SS3 | ![Status](badges/SWFSC-sardine.svg) |  |
+<!-- TABLE_END -->
 
 ## How to add a case study
 
