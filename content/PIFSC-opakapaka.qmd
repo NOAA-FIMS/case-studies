@@ -1,5 +1,8 @@
 ---
 title: PIFSC Opakapaka Case Study
+stock: "PIFSC Opakapaka"
+previous_model: "SS3"
+features: "Age-to-length conversion matrix"
 format:
   html:
     code-fold: true

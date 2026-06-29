@@ -1,5 +1,8 @@
 ---
 title: South Atlantic Scamp
+stock: "SEFSC scamp"
+previous_model: "BAM"
+features: ""
 format:
   html:
     code-fold: true

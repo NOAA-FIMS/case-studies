@@ -1,5 +1,8 @@
 ---
 title: U.S. West Coast Case Study of Pacific Hake
+model: "NWFSC Pacific Hake"
+previous_model: "SS3"
+features: "Bayesian"
 format:
   html:
     code-fold: true

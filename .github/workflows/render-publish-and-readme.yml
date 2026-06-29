@@ -1,0 +1,199 @@
+name: Render, Publish, Auto-Gen README Table
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+  schedule: 
+    - cron: '30 0 * * 0' # runs At 00:00 on Sunday
+
+jobs:
+  render-and-badge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }} 
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+    
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y  \
+          libcurl4-openssl-dev \
+          libssl-dev \
+          libxml2-dev \
+          libv8-dev \
+          libfontconfig1-dev \
+          libfreetype6-dev \
+          libharfbuzz-dev \
+          libfribidi-dev \
+          libpng-dev \
+          libtiff5-dev \
+          libjpeg-dev \
+          libcairo2-dev \
+          libgit2-dev \
+          libnode-dev \
+          libx11-dev \
+          pandoc
+
+      - name: Set up R package dependencies (cached, via pak)
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          pak-version: stable
+          cache: true
+          packages: |
+            cran::rmarkdown
+            cran::knitr
+            cran::jsonlite
+            cran::dplyr
+            cran::ggplot2
+            cran::tidyr
+            cran::TMB
+            cran::remotes
+            cran::reshape2
+            cran::Rcpp
+            cran::glue
+            cran::purrr
+            cran::ggridges
+          extra-packages: |
+            github::nmfs-ost/stockplotr
+            github::stan-dev/cmdstanr
+            github::mjskay/tidybayes
+            github::stan-dev/shinystan
+            github::noaa-afsc/SparseNUTS
+            github::NOAA-FIMS/FIMS
+            github::r4ss/r4ss
+
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Render core website pages
+        run: |
+          # Render the homepage (assuming it's in the root)
+          if [ -f "index.qmd" ]; then quarto render index.qmd; fi
+          
+          # Render the excluded instructional files
+          quarto render content/setup.qmd
+          quarto render content/acknowledgements.qmd
+          quarto render content/advanced-features.qmd
+          quarto render content/case-study-template.qmd
+
+      - name: Update Table and Badges (R Script)
+        shell: Rscript {0}
+        run: |
+          # --- Configuration ---
+          content_dir <- "content"
+          badge_dir <- "badges"
+          readme_file <- "README.md"
+          excluded <- c("acknowledgements.qmd", "advanced-features.qmd", "case-study-template.qmd", "setup.qmd")
+          
+          dir.create(badge_dir, showWarnings = FALSE)
+          
+          # --- Helper Function: Parse YAML ---
+          parse_yaml <- function(filepath) {
+            lines <- readLines(filepath, warn = FALSE)
+            dash_lines <- which(lines == "---")
+            
+            res <- list(stock = NA, previous_model = "", features = "")
+            
+            if (length(dash_lines) >= 2) {
+              yaml_lines <- lines[(dash_lines[1] + 1):(dash_lines[2] - 1)]
+              for (line in yaml_lines) {
+                if (grepl("^stock:", line)) res$stock <- trimws(gsub("^stock:\\s*|\"|'", "", line))
+                if (grepl("^previous_model:", line)) res$previous_model <- trimws(gsub("^previous_model:\\s*|\"|'", "", line))
+                if (grepl("^features:", line)) res$features <- trimws(gsub("^features:\\s*|\"|'", "", line))
+              }
+            }
+            return(res)
+          }
+          
+          # --- Initialize Table ---
+          table_lines <- c(
+            "Stock | Previous Model | Status | Notable Features |",
+            "-- | -- | -- | --"
+          )
+          
+          # --- Process Quarto Files One at a Time ---
+          files <- list.files(content_dir, pattern = "\\.qmd$", full.names = TRUE)
+          basenames <- basename(files)
+          
+          # Filter out excluded files
+          valid_idx <- !(basenames %in% excluded)
+          files <- files[valid_idx]
+          basenames <- basenames[valid_idx]
+          
+          for (i in seq_along(files)) {
+            file <- files[i]
+            base <- gsub("\\.qmd$", "", basenames[i])
+            
+            # Extract metadata
+            meta <- parse_yaml(file)
+            
+            # Fallback if stock isn't defined in YAML
+            stock <- ifelse(is.na(meta$stock), gsub("[-_]", " ", base), meta$stock)
+            
+            # Attempt to render the file
+            message(sprintf("Testing %s...", base))
+            cmd <- sprintf("quarto render %s", file)
+            exit_code <- system(cmd)
+            
+            # Assign badge
+            if (exit_code == 0) {
+              message("✅ ", base, " rendered successfully.")
+              badge_url <- "https://img.shields.io/badge/Status-working-brightgreen"
+            } else {
+              message("❌ ", base, " failed to render.")
+              badge_url <- "https://img.shields.io/badge/Status-failing-red"
+            }
+            
+            # Download badge
+            badge_path <- file.path(badge_dir, paste0(base, ".svg"))
+            download.file(badge_url, destfile = badge_path, mode = "wb", quiet = TRUE)
+            
+            # Add row to table
+            badge_md <- sprintf("![Status](%s/%s.svg)", badge_dir, base)
+            table_lines <- c(table_lines, sprintf("%s | %s | %s | %s |", stock, meta$previous_model, badge_md, meta$features))
+          }
+          
+          # --- Update README.md ---
+          readme <- readLines(readme_file, warn = FALSE)
+          start_idx <- which(trimws(readme) == "<!-- TABLE_START -->")
+          end_idx <- which(trimws(readme) == "<!-- TABLE_END -->")
+
+          if (length(start_idx) > 0 && length(end_idx) > 0) {
+            new_readme <- c(
+              readme[1:start_idx],
+              table_lines,
+              readme[end_idx:length(readme)]
+            )
+            writeLines(new_readme, readme_file)
+            message("README.md updated successfully!")
+          } else {
+            warning("Error: Could not find and markers in README.")
+          }
+
+      - name: Deploy successfully rendered files (and not failed ones) to GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site  
+          keep_files: true
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          # Added [skip ci] to prevent triggering workflows on merge
+          commit-message: "chore: auto-update case study table and badges [skip ci]"
+          title: "🤖 Auto-update case study table and badges"
+          body: "Automated updates to case study status badges and README table based on the latest Quarto renders."
+          branch: "auto-update-badges"
+          base: "main"

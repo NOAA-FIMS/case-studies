@@ -1,5 +1,8 @@
 ---
 title: SWFSC Case Study Pacific Sardine
+stock: "SWFSC sardine"
+previous_model: "SS3"
+features: ""
 format:
   html:
     code-fold: true

@@ -1,48 +1,43 @@
 # FIMS case studies
 
-This is a [website](https://noaa-fims.github.io/case-studies/) (`type: website`) showcasing test cases of the [Fisheries Integrated Modeling System](https://NOAA-FIMS/FIMS/).
+## Goal
+If you want to run a FIMS model and don't know where to start, you can submit your model to this test-bed 🧪🛏️ repository and we can work with you on getting your model running in [Fisheries Integrated Modeling System](https://NOAA-FIMS/FIMS/)! The associated [GitHub pages site](https://noaa-fims.github.io/case-studies/) with this repo "shows the work" of getting each model running in FIMS. Once the model is completed and running, it will graduate :mortar_board: to it's own repository. In the future, we will have a way to track assessments that use FIMS, so be on the lookout for that!
 
-Case studies included so far:
-Stock | Status
--- | --
-NEFSC yellowtail flounder | working
-AFSC GOA pollock | working
-SWFSC sardine | working
-NWFSC petrale | working
-PIFSC opakapaka | working
-SEFSC scamp | working
+## Case studies included so far
+
+<!-- TABLE_START -->
+
+Stock | Previous Model | Status | Notable Features |
+-- | -- | -- | --
+NEFSC yellowtail flounder | ASAP | working |
+AFSC GOA pollock | Cole's TMB model | non-updated | Bayesian |
+SWFSC sardine | SS3 | not updated |
+NWFSC petrale | SS3 | not updated |
+PIFSC opakapaka | SS3 | not updated | Age-to-length conversion matrix |
+SEFSC scamp | BAM | working |
+NWFSC Pacific hake | SS3 | failing | Bayesian |
+
+<!-- TABLE_END -->
 
 ## How to add a case study
 
 * Create a new branch to work on a case study.
-* Edit the qmd or md files in the `content` folder. qmd files can include code (R) and lots of Quarto markdown bells and whistles (like call-outs, cross-references, auto-citations and much more).
+* Edit the `.qmd` or `.md` files in the `content` folder. `.qmd` files can include code (R) and lots of Quarto markdown bells and whistles (like call-outs, cross-references, auto-citations and much more).
 * Add the files to `_quarto.yml`.
-* Submit a pull request when finished working on a case study. If the case study renders successfully, the rendered pages will be uploaded to the artifacts section of the GitHub Actions page. If the case study fails to render, developers can review the GitHub Actions log to debug.
+* Submit a pull request when finished working on a case study. If the case study renders successfully, the rendered pages will be uploaded to the artifacts section of the GitHub Actions page. If the case study fails to render, you can review the GitHub Actions log to debug.
+* FIMS team members will review the pull request and make comments, suggestions, etc. about how to get your model running.
 
-<hr>
-
-## Main and dev branches
-
-- The `main` branch of case-studies should always work with the `main` branch of FIMS. It should always be passing GitHub Actions.
-- The `dev` branch of case-studies should work with the `dev` branch of FIMS. It may sometimes be broken.
-
-## Working off of main
-
-It may be necessary to work off of main in order to apply a "hot fix" to case-studies between FIMS releases. Create a new branch off of main that includes the word "main" somewhere in its name - the Quarto setup file will automatically install the main version of FIMS as long as the word main is somewhere in the branch name. Otherwise, the dev version of FIMS will be installed.
-
-## Working off of dev
-
-Create a branch off of dev that does NOT include the word "main" somwhere in its name.
-
-## How to use codespaces 
+## Using codespaces to develop case studies
 
 See the [GitHub codespaces documentation](https://docs.github.com/en/codespaces) for general codespaces help.
 
 After launching a codespace, to code in Rstudio rather than VSCode, type `rserver` into the command line.
 
-If needed for use, reshape2 will need to be install on the R terminal using `install.packages("reshape2")`. It was failing to install as part of the codespaces devcontainer.json file, and so was not included for now.
+If needed for use, `reshape2` will need to be install on the R terminal using `install.packages("reshape2")`. It was failing to install as part of the codespaces `devcontainer.json` file, and so was not included for now.
 
-gdb is installed in the codespace.
+`gdb` is installed in the codespace.
+
+<hr>
 
 ### Disclaimer
 
