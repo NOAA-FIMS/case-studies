@@ -1,8 +1,8 @@
-name: Auto-Generate Case Study Table
+name: Render, Publish, Auto-Gen README Table
 
 on:
   push:
-    # branches: [ main ]
+    branches: [ main ]
   workflow_dispatch:
   schedule: 
     - cron: '30 0 * * 0' # runs At 00:00 on Sunday
@@ -19,8 +19,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: readme-and-auto-table-update-workflow
 
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
@@ -72,10 +70,21 @@ jobs:
             github::stan-dev/shinystan
             github::noaa-afsc/SparseNUTS
             github::NOAA-FIMS/FIMS
-            github::r4ss/r4ss@convert-data-to-fims
+            github::r4ss/r4ss
 
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Render core website pages
+        run: |
+          # Render the homepage (assuming it's in the root)
+          if [ -f "index.qmd" ]; then quarto render index.qmd; fi
+          
+          # Render the excluded instructional files
+          quarto render content/setup.qmd
+          quarto render content/acknowledgements.qmd
+          quarto render content/advanced-features.qmd
+          quarto render content/case-study-template.qmd
 
       - name: Update Table and Badges (R Script)
         shell: Rscript {0}
@@ -182,7 +191,8 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: "chore: auto-update case study table and badges"
+          # Added [skip ci] to prevent triggering workflows on merge
+          commit-message: "chore: auto-update case study table and badges [skip ci]"
           title: "🤖 Auto-update case study table and badges"
           body: "Automated updates to case study status badges and README table based on the latest Quarto renders."
           branch: "auto-update-badges"
