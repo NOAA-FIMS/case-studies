@@ -65,7 +65,6 @@ pak::pak(deps)
 - Dependency sources currently used in this repo:
   - CI renders: `.github/workflows/render.yml` and `.github/workflows/render-and-publish.yml`
   - Codespaces: `.devcontainer/devcontainer.json`
-- Big-picture idea for future cleanup: keep one canonical dependency list (for example `config/r-packages.txt`) and have workflows, devcontainer setup, and local install instructions all read from that single file.
 
 ### Disclaimer
 
