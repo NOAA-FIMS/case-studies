@@ -45,9 +45,27 @@ If needed for use, `reshape2` will need to be install on the R terminal using `i
 - If this repository includes a `renv.lock` file, use `{renv}` to install and activate packages:
   - `install.packages("renv")`
   - `renv::restore()`
-- If you are not using `{renv}`, install packages from the dependency lists used by CI/development:
-  - R packages: `.github/workflows/render.yml` (and `.github/workflows/render-and-publish.yml`) under `Set up R package dependencies (cached, via pak)`
-  - Codespaces package list: `.devcontainer/devcontainer.json`
+- If you are not using `{renv}`, you can install the same R package list used by CI without manually copying package names:
+
+```r
+install.packages(c("pak", "yaml"))
+workflow <- yaml::read_yaml(".github/workflows/render.yml")
+steps <- workflow$jobs[["build-deploy"]]$steps
+dep_step <- steps[[which(vapply(
+  steps,
+  function(step) identical(step$uses, "r-lib/actions/setup-r-dependencies@v2"),
+  logical(1)
+))]]
+deps <- c(dep_step$with$packages, dep_step$with$`extra-packages`)
+deps <- trimws(unlist(strsplit(paste(deps, collapse = "\n"), "\n", fixed = TRUE)))
+deps <- deps[nzchar(deps)]
+pak::pak(deps)
+```
+
+- Dependency sources currently used in this repo:
+  - CI renders: `.github/workflows/render.yml` and `.github/workflows/render-and-publish.yml`
+  - Codespaces: `.devcontainer/devcontainer.json`
+- Big-picture idea for future cleanup: keep one canonical dependency list (for example `config/r-packages.txt`) and have workflows, devcontainer setup, and local install instructions all read from that single file.
 
 ### Disclaimer
 
