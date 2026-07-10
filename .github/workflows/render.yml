@@ -84,7 +84,7 @@ jobs:
             github::stan-dev/shinystan
             github::noaa-afsc/SparseNUTS
             github::NOAA-FIMS/FIMS
-            github::r4ss/r4ss@convert-data-to-fims
+            github::r4ss/r4ss
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2

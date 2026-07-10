@@ -7,10 +7,11 @@ Stock | Status
 -- | --
 NEFSC yellowtail flounder | working
 AFSC GOA pollock | working
-SWFSC sardine | working
-NWFSC petrale | working
-PIFSC opakapaka | working
-SEFSC scamp | working
+PIFSC ʻŌpakapaka | working
+Pacific Hake | working
+SWFSC sardine | in development
+NWFSC petrale | in development
+SEFSC scamp | in development
 
 ## How to add a case study
 
