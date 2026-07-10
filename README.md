@@ -40,6 +40,32 @@ If needed for use, `reshape2` will need to be install on the R terminal using `i
 
 <hr>
 
+## R package dependencies
+
+- If this repository includes a `renv.lock` file, use `{renv}` to install and activate packages:
+  - `install.packages("renv")`
+  - `renv::restore()`
+- If you are not using `{renv}`, you can install the same R package list used by CI without manually copying package names:
+
+```r
+install.packages(c("pak", "yaml"))
+workflow <- yaml::read_yaml(".github/workflows/render.yml")
+steps <- workflow$jobs[["build-deploy"]]$steps
+dep_step <- steps[[which(vapply(
+  steps,
+  function(step) identical(step$uses, "r-lib/actions/setup-r-dependencies@v2"),
+  logical(1)
+))]]
+deps <- c(dep_step$with$packages, dep_step$with$`extra-packages`)
+deps <- trimws(unlist(strsplit(paste(deps, collapse = "\n"), "\n", fixed = TRUE)))
+deps <- deps[nzchar(deps)]
+pak::pak(deps)
+```
+
+- Dependency sources currently used in this repo:
+  - CI renders: `.github/workflows/render.yml` and `.github/workflows/render-and-publish.yml`
+  - Codespaces: `.devcontainer/devcontainer.json`
+
 ### Disclaimer
 
 This repository is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project content is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.
@@ -47,4 +73,3 @@ This repository is a scientific product and is not official communication of the
 ### License
 
 This content was created by U.S. Government employees as part of their official duties. This content is not subject to copyright in the United States (17 U.S.C. §105) and is in the public domain within the United States of America. Additionally, copyright is waived worldwide through the CC0 1.0 Universal public domain dedication.
-
