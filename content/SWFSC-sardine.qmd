@@ -1,5 +1,8 @@
 ---
 title: SWFSC Case Study Pacific Sardine
+stock: "SWFSC sardine"
+previous_model: "SS3"
+features: ""
 format:
   html:
     code-fold: true
@@ -462,7 +465,6 @@ ggplot2::ggplot(
 Tools to check:
 * data were inputted correctly (dimension checks)
 * starting values and settings are reasonable
-* Perhaps have a model template file that will work as is, then users can modify as necessary
 * I had issues installing FIMS with install_github that seemed to be related to R settings
 
 Model:

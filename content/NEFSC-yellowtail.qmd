@@ -1,5 +1,8 @@
 ---
 title: Southern New England-Mid Atlantic Yellowtail Flounder
+stock: NEFSC yellowtail Flounder
+previous_model: "ASAP"
+features: ""
 format:
   html:
     code-fold: true

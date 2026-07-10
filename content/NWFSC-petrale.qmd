@@ -1,5 +1,8 @@
 ---
 title: NWFSC Case Study Petrale Sole
+stock: "NWFSC petrale"
+previous_model: "SS3"
+features: ""
 format:
   html:
     code-fold: true
