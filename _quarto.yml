@@ -36,27 +36,7 @@ website:
     style: "docked"
     search: true
     collapse-level: 1
-    contents:
-      - href: index.qmd
-        text: Home
-      - href: content/NEFSC-yellowtail.qmd
-        text: S New England-Mid Atlantic yellowtail flounder
-      - href: content/AFSC-GOA-pollock.qmd
-        text: Gulf of Alaska pollock
-      # - href: content/SWFSC-sardine.qmd
-      #   text: sardine
-      # - href: content/PIFSC-opakapaka.qmd
-      #   text: Opakapaka
-      # - href: content/NWFSC-petrale.qmd
-      #   text: petrale sole
-      # - href: content/SEFSC-scamp.qmd
-      #   text: scamp
-      - href: content/pacific-hake.qmd
-        text: Pacific Hake
-      # - href: content/advanced-features.qmd
-      #   text: Advanced features
-      - href: content/acknowledgements.qmd
-        text: Acknowledgements
+    contents: auto
 
 format:
   html:
