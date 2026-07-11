@@ -1088,27 +1088,6 @@
       "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
       "Repository": "https://packagemanager.posit.co/cran/latest"
     },
-    "corpcor": {
-      "Package": "corpcor",
-      "Version": "1.6.10",
-      "Source": "Repository",
-      "Date": "2021-09-16",
-      "Title": "Efficient Estimation of Covariance and (Partial) Correlation",
-      "Author": "Juliane Schafer, Rainer Opgen-Rhein, Verena Zuber, Miika Ahdesmaki,  A. Pedro Duarte Silva, and Korbinian Strimmer.",
-      "Maintainer": "Korbinian Strimmer <strimmerlab@gmail.com>",
-      "Depends": [
-        "R (>= 3.0.2)"
-      ],
-      "Imports": [
-        "stats"
-      ],
-      "Suggests": [],
-      "Description": "Implements a James-Stein-type shrinkage estimator for  the covariance matrix, with separate shrinkage for variances and correlations.   The details of the method are explained in Schafer and Strimmer (2005)  <DOI:10.2202/1544-6115.1175> and Opgen-Rhein and Strimmer (2007)  <DOI:10.2202/1544-6115.1252>.  The approach is both computationally as well as statistically very efficient, it is applicable to \"small n, large p\" data,  and always returns a positive definite and well-conditioned covariance matrix.   In addition to inferring the covariance matrix the package also provides  shrinkage estimators for partial correlations and partial variances.   The inverse of the covariance and correlation matrix  can be efficiently computed, as well as any arbitrary power of the  shrinkage correlation matrix.  Furthermore, functions are available for fast  singular value decomposition, for computing the pseudoinverse, and for  checking the rank and positive definiteness of a matrix.",
-      "License": "GPL (>= 3)",
-      "URL": "https://strimmerlab.github.io/software/corpcor/",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
     "cpp11": {
       "Package": "cpp11",
       "Version": "0.5.3",
@@ -1788,44 +1767,6 @@
       "Maintainer": "GÃ¡bor CsÃ¡rdi <csardi.gabor@gmail.com>",
       "Repository": "CRAN"
     },
-    "furrr": {
-      "Package": "furrr",
-      "Version": "0.4.0",
-      "Source": "Repository",
-      "Title": "Apply Mapping Functions in Parallel using Futures",
-      "Authors@R": "c( person(\"Davis\", \"Vaughan\", , \"davis@posit.co\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0003-4777-038X\")), person(\"Henrik\", \"Bengtsson\", , \"henrikb@braju.com\", role = \"aut\", comment = c(ORCID = \"0000-0002-7579-5165\")), person(\"Matt\", \"Dancho\", , \"mdancho@business-science.io\", role = \"aut\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
-      "Description": "Implementations of the family of map() functions from 'purrr' that can be resolved using any 'future'-supported backend, e.g. parallel on the local machine or distributed on a compute cluster.",
-      "License": "MIT + file LICENSE",
-      "URL": "https://github.com/futureverse/furrr, https://furrr.futureverse.org/",
-      "BugReports": "https://github.com/futureverse/furrr/issues",
-      "Depends": [
-        "future (>= 1.70.0)",
-        "R (>= 4.1.0)"
-      ],
-      "Imports": [
-        "globals (>= 0.19.1)",
-        "purrr (>= 1.2.1)",
-        "rlang (>= 1.1.7)",
-        "vctrs (>= 0.7.0)"
-      ],
-      "Suggests": [
-        "carrier",
-        "covr",
-        "dplyr (>= 1.1.4)",
-        "knitr",
-        "parallelly (>= 1.46.1)",
-        "testthat (>= 3.3.2)",
-        "tidyselect"
-      ],
-      "Config/Needs/website": "progressr",
-      "Config/testthat/edition": "3",
-      "Encoding": "UTF-8",
-      "RoxygenNote": "7.3.3",
-      "NeedsCompilation": "no",
-      "Author": "Davis Vaughan [aut, cre] (ORCID: <https://orcid.org/0000-0003-4777-038X>), Henrik Bengtsson [aut] (ORCID: <https://orcid.org/0000-0002-7579-5165>), Matt Dancho [aut], Posit Software, PBC [cph, fnd]",
-      "Maintainer": "Davis Vaughan <davis@posit.co>",
-      "Repository": "CRAN"
-    },
     "future": {
       "Package": "future",
       "Version": "1.70.0",
@@ -2151,84 +2092,6 @@
       "NeedsCompilation": "no",
       "Author": "Claus O. Wilke [aut, cre] (ORCID: <https://orcid.org/0000-0002-7470-9261>)",
       "Maintainer": "Claus O. Wilke <wilke@austin.utexas.edu>",
-      "Repository": "CRAN"
-    },
-    "gh": {
-      "Package": "gh",
-      "Version": "1.4.1",
-      "Source": "Repository",
-      "Title": "'GitHub' 'API'",
-      "Authors@R": "c( person(\"GÃ¡bor\", \"CsÃ¡rdi\", , \"csardi.gabor@gmail.com\", role = c(\"cre\", \"ctb\")), person(\"Jennifer\", \"Bryan\", role = \"aut\"), person(\"Hadley\", \"Wickham\", role = \"aut\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
-      "Description": "Minimal client to access the 'GitHub' 'API'.",
-      "License": "MIT + file LICENSE",
-      "URL": "https://gh.r-lib.org/, https://github.com/r-lib/gh#readme",
-      "BugReports": "https://github.com/r-lib/gh/issues",
-      "Depends": [
-        "R (>= 3.6)"
-      ],
-      "Imports": [
-        "cli (>= 3.0.1)",
-        "gitcreds",
-        "glue",
-        "httr2",
-        "ini",
-        "jsonlite",
-        "lifecycle",
-        "rlang (>= 1.0.0)"
-      ],
-      "Suggests": [
-        "covr",
-        "knitr",
-        "mockery",
-        "rmarkdown",
-        "rprojroot",
-        "spelling",
-        "testthat (>= 3.0.0)",
-        "withr"
-      ],
-      "VignetteBuilder": "knitr",
-      "Config/Needs/website": "tidyverse/tidytemplate",
-      "Config/testthat/edition": "3",
-      "Encoding": "UTF-8",
-      "Language": "en-US",
-      "RoxygenNote": "7.3.1.9000",
-      "NeedsCompilation": "no",
-      "Author": "GÃ¡bor CsÃ¡rdi [cre, ctb], Jennifer Bryan [aut], Hadley Wickham [aut], Posit Software, PBC [cph, fnd]",
-      "Maintainer": "GÃ¡bor CsÃ¡rdi <csardi.gabor@gmail.com>",
-      "Repository": "CRAN"
-    },
-    "gitcreds": {
-      "Package": "gitcreds",
-      "Version": "0.1.2",
-      "Source": "Repository",
-      "Title": "Query 'git' Credentials from 'R'",
-      "Authors@R": "c( person(\"GÃ¡bor\", \"CsÃ¡rdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")), person(\"RStudio\", role = c(\"cph\", \"fnd\")) )",
-      "Description": "Query, set, delete credentials from the 'git' credential store. Manage 'GitHub' tokens and other 'git' credentials. This package is to be used by other packages that need to authenticate to 'GitHub' and/or other 'git' repositories.",
-      "License": "MIT + file LICENSE",
-      "URL": "https://gitcreds.r-lib.org/, https://github.com/r-lib/gitcreds",
-      "BugReports": "https://github.com/r-lib/gitcreds/issues",
-      "Depends": [
-        "R (>= 3.4)"
-      ],
-      "Suggests": [
-        "codetools",
-        "covr",
-        "knitr",
-        "mockery",
-        "oskeyring",
-        "rmarkdown",
-        "testthat (>= 3.0.0)",
-        "withr"
-      ],
-      "VignetteBuilder": "knitr",
-      "Config/Needs/website": "tidyverse/tidytemplate",
-      "Encoding": "UTF-8",
-      "RoxygenNote": "7.2.1.9000",
-      "SystemRequirements": "git",
-      "Config/testthat/edition": "3",
-      "NeedsCompilation": "no",
-      "Author": "GÃ¡bor CsÃ¡rdi [aut, cre], RStudio [cph, fnd]",
-      "Maintainer": "GÃ¡bor CsÃ¡rdi <csardi.gabor@gmail.com>",
       "Repository": "CRAN"
     },
     "globals": {
@@ -2665,85 +2528,6 @@
       "Author": "Hadley Wickham [aut, cre], Posit Software, PBC [cph, fnd]",
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
       "Repository": "https://packagemanager.posit.co/cran/latest"
-    },
-    "httr2": {
-      "Package": "httr2",
-      "Version": "1.1.2",
-      "Source": "Repository",
-      "Title": "Perform HTTP Requests and Process the Responses",
-      "Authors@R": "c( person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\", \"cre\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")), person(\"Maximilian\", \"Girlich\", role = \"ctb\") )",
-      "Description": "Tools for creating and modifying HTTP requests, then performing them and processing the results. 'httr2' is a modern re-imagining of 'httr' that uses a pipe-based interface and solves more of the problems that API wrapping packages face.",
-      "License": "MIT + file LICENSE",
-      "URL": "https://httr2.r-lib.org, https://github.com/r-lib/httr2",
-      "BugReports": "https://github.com/r-lib/httr2/issues",
-      "Depends": [
-        "R (>= 4.0)"
-      ],
-      "Imports": [
-        "cli (>= 3.0.0)",
-        "curl (>= 6.2.1)",
-        "glue",
-        "lifecycle",
-        "magrittr",
-        "openssl",
-        "R6",
-        "rappdirs",
-        "rlang (>= 1.1.0)",
-        "vctrs (>= 0.6.3)",
-        "withr"
-      ],
-      "Suggests": [
-        "askpass",
-        "bench",
-        "clipr",
-        "covr",
-        "docopt",
-        "httpuv",
-        "jose",
-        "jsonlite",
-        "knitr",
-        "later (>= 1.4.0)",
-        "nanonext",
-        "paws.common",
-        "promises",
-        "rmarkdown",
-        "testthat (>= 3.1.8)",
-        "tibble",
-        "webfakes",
-        "xml2"
-      ],
-      "VignetteBuilder": "knitr",
-      "Config/Needs/website": "tidyverse/tidytemplate",
-      "Config/testthat/edition": "3",
-      "Config/testthat/parallel": "true",
-      "Config/testthat/start-first": "multi-req, resp-stream, req-perform",
-      "Encoding": "UTF-8",
-      "RoxygenNote": "7.3.2",
-      "NeedsCompilation": "no",
-      "Author": "Hadley Wickham [aut, cre], Posit Software, PBC [cph, fnd], Maximilian Girlich [ctb]",
-      "Maintainer": "Hadley Wickham <hadley@posit.co>",
-      "Repository": "CRAN"
-    },
-    "ini": {
-      "Package": "ini",
-      "Version": "0.3.1",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Read and Write '.ini' Files",
-      "Date": "2018-05-19",
-      "Author": "David Valentim Dias",
-      "Maintainer": "David Valentim Dias <dvdscripter@gmail.com>",
-      "Description": "Parse simple '.ini' configuration files to an structured list. Users can manipulate this resulting list with lapply() functions. This same structured list can be used to write back to file after modifications.",
-      "License": "GPL-3",
-      "URL": "https://github.com/dvdscripter/ini",
-      "BugReports": "https://github.com/dvdscripter/ini/issues",
-      "LazyData": "FALSE",
-      "RoxygenNote": "6.0.1",
-      "Suggests": [
-        "testthat"
-      ],
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
     },
     "isoband": {
       "Package": "isoband",
@@ -4042,69 +3826,6 @@
       "Repository": "https://packagemanager.posit.co/cran/latest",
       "Encoding": "UTF-8"
     },
-    "r4ss": {
-      "Package": "r4ss",
-      "Version": "1.53.0",
-      "Source": "GitHub",
-      "Type": "Package",
-      "Title": "R Code for Stock Synthesis",
-      "Authors@R": "c( person(\"Ian G.\", \"Taylor\", , \"Ian.Taylor@noaa.gov\", role = c(\"aut\", \"cre\")), person(\"Ian J.\", \"Stewart\", role = \"aut\"), person(\"Allan C.\", \"Hicks\", role = \"aut\"), person(\"Tommy M.\", \"Garrison\", role = \"aut\"), person(\"Andre E.\", \"Punt\", role = \"aut\"), person(\"R.I.C. Chris\", \"Francis\", role = \"aut\"), person(\"John R.\", \"Wallace\", role = \"aut\"), person(\"Chantel R.\", \"Wetzel\", role = \"aut\"), person(\"James T.\", \"Thorson\", role = \"aut\"), person(\"Yukio\", \"Takeuchi\", role = \"aut\"), person(\"Kotaro\", \"Ono\", role = \"aut\"), person(\"Cole C.\", \"Monnahan\", role = \"aut\"), person(\"Christine C.\", \"Stawitz\", role = \"aut\"), person(\"Z. Teresa\", \"A'mar\", role = \"aut\"), person(\"Athol R.\", \"Whitten\", role = \"aut\"), person(\"Kelli F.\", \"Johnson\", role = \"aut\"), person(\"Robbie L.\", \"Emmet\", role = \"aut\"), person(\"Sean C.\", \"Anderson\", role = \"aut\"), person(\"Gwladys I.\", \"Lambert\", role = \"aut\"), person(\"Megan M.\", \"Stachura\", role = \"aut\"), person(\"Andrew B.\", \"Cooper\", role = \"aut\"), person(\"Andi\", \"Stephens\", role = \"aut\"), person(\"Neil L.\", \"Klaer\", role = \"aut\"), person(\"Carey R.\", \"McGilliard\", role = \"aut\"), person(\"Iago\", \"Mosqueira\", role = \"aut\"), person(\"Watal M.\", \"Iwasaki\", role = \"aut\"), person(\"Kathryn L.\", \"Doering\", role = \"aut\"), person(\"Andrea M.\", \"Havron\", role = \"aut\"), person(\"Nathan R.\", \"Vaughan\", role = \"aut\"), person(\"LaTreese S.\", \"Denson\", role = \"aut\"), person(\"Ashleigh J.\", \"Novak\", role = \"aut\"), person(\"Henning\", \"Winker\", role = \"aut\"), person(\"Lee\", \"Qi\", role = \"aut\"), person(\"Megumi\", \"Oshima\", role = \"aut\"), person(\"Eric\", \"Fletcher\", role = \"aut\"), person(\"Elizabeth\", \"Perl\", role = \"aut\"), person(\"Kiva L.\", \"Oken\", role = \"aut\"), person(\"Arni\", \"Magnusson\", role = \"aut\"), person(\"Peter\", \"Kuriyama\", role = \"aut\") )",
-      "Description": "A collection of R functions for use with Stock Synthesis, a fisheries stock assessment modeling platform written in ADMB by Dr. Richard D. Methot at the NOAA Northwest Fisheries Science Center. The functions include tools for summarizing and plotting results, manipulating files, visualizing model parameterizations, and various other common stock assessment tasks.  This version of '{r4ss}' is compatible with Stock Synthesis versions 3.24 through 3.30 (specifically version 3.30.24.00-prerel, from July 2025). Support for 3.24 models is only through the core functions for reading output and plotting.",
-      "License": "GPL-3",
-      "URL": "https://github.com/r4ss/r4ss, https://r4ss.github.io/r4ss/",
-      "BugReports": "https://github.com/r4ss/r4ss/issues",
-      "Depends": [
-        "R (>= 4.1.0)"
-      ],
-      "Imports": [
-        "cli",
-        "coda",
-        "corpcor",
-        "dplyr (>= 1.2.0)",
-        "forcats",
-        "furrr",
-        "future",
-        "ggplot2",
-        "gh",
-        "kableExtra",
-        "lifecycle",
-        "purrr",
-        "stringr",
-        "tidyr",
-        "viridis"
-      ],
-      "Suggests": [
-        "flextable",
-        "ggpubr",
-        "gplots",
-        "gtools",
-        "knitr",
-        "maps",
-        "parallelly",
-        "pso",
-        "reshape2",
-        "rmarkdown",
-        "shiny",
-        "testthat",
-        "truncnorm"
-      ],
-      "VignetteBuilder": "knitr",
-      "Encoding": "UTF-8",
-      "Language": "en-US",
-      "LazyLoad": "yes",
-      "Roxygen": "list(markdown = TRUE)",
-      "RoxygenNote": "7.3.3",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "r4ss",
-      "RemoteUsername": "r4ss",
-      "RemotePkgRef": "github::r4ss/r4ss@convert-data-to-fims",
-      "RemoteRef": "convert-data-to-fims",
-      "RemoteSha": "49ab26ba67192a133fa364a912bcaf07f0ad73be",
-      "NeedsCompilation": "no",
-      "Author": "Ian G. Taylor [aut, cre], Ian J. Stewart [aut], Allan C. Hicks [aut], Tommy M. Garrison [aut], Andre E. Punt [aut], R.I.C. Chris Francis [aut], John R. Wallace [aut], Chantel R. Wetzel [aut], James T. Thorson [aut], Yukio Takeuchi [aut], Kotaro Ono [aut], Cole C. Monnahan [aut], Christine C. Stawitz [aut], Z. Teresa A'mar [aut], Athol R. Whitten [aut], Kelli F. Johnson [aut], Robbie L. Emmet [aut], Sean C. Anderson [aut], Gwladys I. Lambert [aut], Megan M. Stachura [aut], Andrew B. Cooper [aut], Andi Stephens [aut], Neil L. Klaer [aut], Carey R. McGilliard [aut], Iago Mosqueira [aut], Watal M. Iwasaki [aut], Kathryn L. Doering [aut], Andrea M. Havron [aut], Nathan R. Vaughan [aut], LaTreese S. Denson [aut], Ashleigh J. Novak [aut], Henning Winker [aut], Lee Qi [aut], Megumi Oshima [aut], Eric Fletcher [aut], Elizabeth Perl [aut], Kiva L. Oken [aut], Arni Magnusson [aut], Peter Kuriyama [aut]",
-      "Maintainer": "Ian G. Taylor <Ian.Taylor@noaa.gov>"
-    },
     "ragg": {
       "Package": "ragg",
       "Version": "1.5.0",
@@ -4928,8 +4649,7 @@
       "NeedsCompilation": "yes",
       "Author": "Terry M Therneau [aut, cre], Thomas Lumley [ctb, trl] (original S->R port and R maintainer until 2009), Atkinson Elizabeth [ctb], Crowson Cynthia [ctb]",
       "Maintainer": "Terry M Therneau <therneau.terry@mayo.edu>",
-      "Repository": "RSPM",
-      "Encoding": "UTF-8"
+      "Repository": "CRAN"
     },
     "svUnit": {
       "Package": "svUnit",
