@@ -195,10 +195,11 @@ if (FALSE) {
     overwrite = TRUE
   )
 
-  # run SS3
-  ## specify SS3 exe name:
-  # exe <- "ss_opt_win.exe"
+
+  ## specify SS3 exe name and get exe from repo:
   exe <- "ss3"
+  r4ss::get_ss3_exe(dir = opaka_length_dir, version = "v3.30.21")
+  ## run SS3
   r4ss::run(dir = opaka_length_dir, exe = exe, skipfinished = FALSE)
 
   file.copy(
@@ -239,7 +240,7 @@ if (FALSE) {
 #| output: false
 #| warning: false
 # load opaka_inputs_bootstrap and rep objects with model input and output
-load(file.path(data_directory, "opaka_model.RDS"))
+load(file.path("content",data_directory, "opaka_model.RDS"))
 include_age_comps <- FALSE
 years <- seq(opaka_inputs_bootstrap$dat$styr, opaka_inputs_bootstrap$dat$endyr)
 alk_years <- c(years, max(years) + 1)
@@ -256,47 +257,29 @@ opaka_dat_fims_raw <- r4ss::ss3_data_to_fims(
   maxage = max(ages),
   lengths = comp_lengths
 ) |>
-  dplyr::mutate(
-    type = dplyr::case_when(
-      type == "weight_at_age" ~ "weight-at-age",
-      type == "age_to_length_conversion" ~ "age-to-length-conversion",
-      TRUE ~ type
-    )
-  ) |>
   dplyr::filter(type != "age_comp")
 
 opaka_age_to_length <- opaka_dat_fims_raw |>
-  dplyr::filter(type == "age-to-length-conversion") |>
+  dplyr::filter(type == "age_to_length_conversion") |>
   dplyr::select(-timing) |>
   dplyr::mutate(
-    name = "BFISH"
+    fleet = "BFISH"
   ) |>
   tidyr::crossing(timing = alk_years)
 
-# Changing the CPUE indices for FRS to be a new fleet, FRS_CPUE.
-# This helps with model convergence and fitting as it is the longest
-# time series of data available along with the landings.
 opaka_dat_fims <- opaka_dat_fims_raw |>
-  dplyr::filter(type != "age-to-length-conversion") |>
+  dplyr::filter(type != "age_to_length_conversion") |>
   dplyr::bind_rows(opaka_age_to_length) |>
   dplyr::mutate(
-    name = dplyr::case_when(
-      name == "FRS" & type == "index" ~ "FRS_CPUE",
-      TRUE ~ name
-    ),
     uncertainty = dplyr::if_else(
-      type == "length_comp" & name == "BFISH",
+      type == "length_comp" & fleet == "BFISH",
       1,
       uncertainty
     )
   )
-## there is no index for the Non_comm fleet
-# dplyr::filter(!(type == "index" & name == "Non_comm"))
 
 data_4_model <- FIMS::FIMSFrame(opaka_dat_fims)
 
-# get range of timing values for each type within data_4_model@data
-# data_4_model@data |>
 ```
 
 The `data_4_model` object contains a `@data` slot that holds a long data frame with:
@@ -344,43 +327,33 @@ parameters <- default_parameters |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = "FRS",
+      fleet = "FRS",
       label = c("slope", "inflection_point"),
       # Used age selectivity values
       value = c(4.5, 1.81),
       estimation_type = "constant"
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = "BFISH",
+      fleet = "BFISH",
       label = c("slope", "inflection_point"),
       value = c(3, 1),
       estimation_type = "constant"
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = "Non_comm",
+      fleet = "Non_comm",
       label = c("slope", "inflection_point"),
       value = c(4.5, 1.97),
       estimation_type = "constant"
     ),
-    by = c("module_name", "fleet_name", "label")
-  ) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Selectivity",
-      fleet_name = "FRS_CPUE",
-      label = c("slope", "inflection_point"),
-      value = c(4.5, 1.81),
-      estimation_type = "constant"
-    ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -434,46 +407,37 @@ parameters <- default_parameters |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "FRS",
+      fleet = "FRS",
       time = years,
       label = "log_Fmort",
-      value = log(rep$exploitation$FRS)
+      value = log(rep$exploitation$FRS[-76]) #removing F value for forecast year
     ),
-    by = c("module_name", "fleet_name", "label", "time")
+    by = c("module_name", "fleet", "label", "time")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "BFISH",
+      fleet = "BFISH",
       label = "log_q",
       value = rep$parameters["LnQ_base_BFISH(2)", "Value"]
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "Non_comm",
+      fleet = "Non_comm",
       label = "log_Fmort",
       time = years,
-      value = log(rep$exploitation$Non_comm)
+      value = log(rep$exploitation$Non_comm[-76]) #removing F value for forecast year
     ),
-    by = c("module_name", "fleet_name", "label", "time")
-  ) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Fleet",
-      fleet_name = "FRS_CPUE",
-      label = "log_q",
-      value = rep$parameters["LnQ_base_FRS(1)", "Value"]
-    ),
-    by = c("module_name", "fleet_name", "label")
-  )
+    by = c("module_name", "fleet", "label", "time")
+   ) 
 
 # # optionally use the defaults instead of the modified parameters
 # parameters <- default_parameters
-
 # Run the model without optimization
+## Getting error here about mismatch in size of log_sd vector
 fit_init <- parameters |>
   FIMS::initialize_fims(data = data_4_model) |>
   # Model is too big to run on GitHub action if you estimate uncertainty
