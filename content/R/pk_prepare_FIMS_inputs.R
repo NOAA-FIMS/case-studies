@@ -5,7 +5,7 @@ get_long_outputs <- function(fims, tmb, output) {
   catch <-
     data.frame(
       year = years,
-      fleet = "catch",
+      name = "catch",
       FIMS = fims$landings_expected[[1]] / 1e3,
       TMB = tmb$Ecattot
     )
@@ -47,21 +47,21 @@ get_long_outputs <- function(fims, tmb, output) {
   eind2 <-
     data.frame(
       year = years,
-      fleet = "Index2",
+      name = "Index2",
       FIMS = fims$index_expected[[2]] / 1e9,
       TMB = tmb$Eindxsurv2
     )
   eind3 <-
     data.frame(
       year = years,
-      fleet = "Index3",
+      name = "Index3",
       FIMS = fims$index_expected[[3]] / 1e9,
       TMB = tmb$Eindxsurv3
     )
   eind6 <-
     data.frame(
       year = years,
-      fleet = "Index6",
+      name = "Index6",
       FIMS = fims$index_expected[[4]] / 1e9,
       TMB = tmb$Eindxsurv6
     )

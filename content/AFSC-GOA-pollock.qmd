@@ -102,10 +102,10 @@ default_parameters <- FIMS::create_default_configurations(
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = c("fleet1", "survey2", "survey6"), 
+      fleet = c("fleet1", "survey2", "survey6"), 
       module_type = "DoubleLogistic"
     ),
-    by = c("module_name", "fleet_name")
+    by = c("module_name", "fleet")
   ) |>
   FIMS::create_default_parameters(
     data = data_4_model
@@ -114,7 +114,7 @@ default_parameters <- FIMS::create_default_configurations(
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = "fleet1", 
+      fleet = "fleet1", 
       label = c(
         "inflection_point_asc", "slope_asc",
         "inflection_point_desc", "slope_desc"
@@ -127,12 +127,12 @@ default_parameters <- FIMS::create_default_configurations(
       ),
       estimation_type = "fixed_effects"
     ),
-    by = c("module_name", "fleet_name", "label") 
+    by = c("module_name", "fleet", "label") 
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = "survey2", 
+      fleet = "survey2", 
       label = c(
         "inflection_point_asc", "slope_asc",
         "inflection_point_desc", "slope_desc"
@@ -145,12 +145,12 @@ default_parameters <- FIMS::create_default_configurations(
       ),
       estimation_type = rep(c("fixed_effects", "constant"), each = 2)
     ),
-    by = c("module_name", "fleet_name", "label") 
+    by = c("module_name", "fleet", "label") 
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = "survey6", 
+      fleet = "survey6", 
       label = c(
         "inflection_point_asc", "slope_asc",
         "inflection_point_desc", "slope_desc"
@@ -163,19 +163,19 @@ default_parameters <- FIMS::create_default_configurations(
       ),
       estimation_type = rep(c("constant", "fixed_effects"), each = 2)
     ),
-    by = c("module_name", "fleet_name", "label") 
+    by = c("module_name", "fleet", "label") 
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = "survey3", 
+      fleet = "survey3", 
       label = c("inflection_point", "slope"),
       value = c(
         parfinal$inf1_srv3,
         exp(parfinal$log_slp1_srv3)
       )
     ),
-    by = c("module_name", "fleet_name", "label") 
+    by = c("module_name", "fleet", "label") 
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -238,22 +238,22 @@ default_parameters <- FIMS::create_default_configurations(
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "fleet1", 
+      fleet = "fleet1", 
       time = years,
       label = "log_Fmort",
       value = log(pkfitfinal$rep$F)
     ),
-    by = c("module_name", "fleet_name", "label", "time") 
+    by = c("module_name", "fleet", "label", "time") 
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = c("survey2", "survey3", "survey6"), 
+      fleet = c("survey2", "survey3", "survey6"), 
       label = "log_q",
       value = c(parfinal$log_q2_mean, parfinal$log_q3_mean, parfinal$log_q6),
       estimation_type = "constant"
     ),
-    by = c("module_name", "fleet_name", "label") 
+    by = c("module_name", "fleet", "label") 
   )
 
 # Put it all together, creating the FIMS model and making the TMB fcn
@@ -263,7 +263,7 @@ test_fit <- default_parameters  |>
   FIMS::fit_fims(optimize = FALSE)
 FIMS::get_obj(test_fit)$report()$nll_components |> length()
 FIMS::get_data(data_4_model) |>
-  dplyr::filter(name == "fleet1", type == "age_comp") |>
+  dplyr::filter(fleet == "fleet1", type == "age_comp") |>
   print(n = 10)
 # Run the  model with optimization
 fit <- default_parameters  |>
