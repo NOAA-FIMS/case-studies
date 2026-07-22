@@ -30,82 +30,6 @@
       "RemoteRef": "master",
       "RemoteSha": "b3906e55a7068e8567edbabfe276a36c190c8583"
     },
-    "FIMS": {
-      "Package": "FIMS",
-      "Version": "0.9.3.9000",
-      "Source": "Repository",
-      "Title": "The Fisheries Integrated Modeling System",
-      "Authors@R": "c( person(c(\"Kelli\", \"F.\"), \"Johnson\", , \"kelli.johnson@noaa.gov\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-5149-451X\")), person(c(\"Grant\", \"D.\"), \"Adams\", role = \"aut\", comment = c(ORCID = \"0000-0003-0297-8347\")), person(c(\"Jon\", \"K.\", \"T.\"), \"Brodziak\", role = \"aut\", comment = c(ORCID = \"0000-0001-8690-5588\")), person(c(\"Kathryn\", \"L.\"), \"Doering\", role = \"aut\", comment = c(ORCID = \"0000-0002-0396-7044\")), person(c(\"Daniel\", \"R.\"), \"Goethel\", role = \"aut\", comment = c(ORCID = \"0000-0003-0066-431X\")), person(c(\"Andrea\", \"M.\"), \"Havron\", role = \"aut\", comment = c(ORCID = \"0000-0002-4080-448X\")), person(\"Ronald\", \"Klasky\", role = \"aut\", comment = c(ORCID = \"0009-0004-7563-7716\")), person(c(\"Peter\", \"T.\"), \"Kuriyama\", role = \"aut\", comment = c(ORCID = \"0000-0002-6971-4015\")), person(c(\"Emily\", \"M.\"), \"Liljestrand\", role = \"aut\", comment = c(ORCID = \"0000-0002-1118-3872\")), person(c(\"Christopher\", \"M.\"), \"Legault\", role = \"aut\", comment = c(ORCID = \"0000-0002-0328-1376\")), person(\"Bai\", \"Li\", role = \"aut\", comment = c(ORCID = \"0000-0002-8249-1442\")), person(c(\"Timothy\", \"J.\"), \"Miller\", role = \"aut\", comment = c(ORCID = \"0000-0003-1411-1206\")), person(c(\"Cole\", \"C.\"), \"Monnahan\", role = \"aut\", comment = c(ORCID = \"0000-0003-0871-6700\")), person(c(\"Elizabeth\", \"F.\"), \"Perl\", role = \"aut\", comment = c(ORCID = \"0000-0003-1608-8628\")), person(c(\"Megumi\", \"C.\"), \"Oshima\", role = \"aut\", comment = c(ORCID = \"0009-0002-2239-1594\")), person(c(\"Kyle\", \"W.\"), \"Shertzer\", role = \"aut\", comment = c(ORCID = \"0000-0001-7196-5959\")), person(c(\"Christine\", \"C.\"), \"Stawitz\", role = \"aut\", comment = c(ORCID = \"0000-0003-3122-4501\")), person(c(\"Jane\", \"Y.\"), \"Sullivan\", role = \"aut\", comment = c(ORCID = \"0000-0002-8094-1673\")), person(\"Matthew\", \"Supernaw\", role = \"aut\", comment = c(ORCID = \"0009-0007-3681-7433\")), person(c(\"Ian\", \"G.\"), \"Taylor\", role = \"aut\", comment = c(ORCID = \"0000-0002-4232-5669\")), person(c(\"Nathan\", \"R.\"), \"Vaughan\", role = \"aut\", comment = c(ORCID = \"0009-0000-3054-6950\")), person(c(\"Erik\", \"H.\"), \"Williams\", role = \"aut\", comment = c(ORCID = \"0000-0001-6623-4254\")), person(c(\"Adrianne\", \"T.\"), \"Wilson\", role = \"aut\", comment = c(ORCID = \"0009-0006-1171-6014\")), person(\"Kristan\", \"Blackhart\", role = \"ctb\", comment = c(ORCID = \"0000-0003-4232-2510\")), person(c(\"Edward\", \"J.\"), \"Dick\", role = \"ctb\", comment = c(ORCID = \"0000-0001-7681-9176\")), person(c(\"James\", \"N.\"), \"Ianelli\", role = \"ctb\", comment = c(ORCID = \"0000-0002-7170-8677\")), person(\"Huihua\", \"Lee\", role = \"ctb\", comment = c(ORCID = \"0009-0009-1506-9098\")) )",
-      "Description": "The Fisheries Integrated Modeling System is a next-generation framework of stock assessment models, assisting fishery managers with the goal of achieving sustainable fisheries. This system, when completed in a few years, offers the NOAA Fisheries and global fisheries science communities an advanced set of stock assessment models. These tools can be used separately or in combination to incorporate ecosystem and socioeconomic data and models, as well as climate effects and other drivers within the marine environment, into stock assessment models.",
-      "License": "GPL (>= 3) | file LICENSE",
-      "URL": "https://github.com/noaa-fims/fims, https://noaa-fims.github.io, https://noaa-fisheries-integrated-toolbox.r-universe.dev/FIMS, https://noaa-fims.github.io/FIMS",
-      "BugReports": "https://github.com/noaa-fims/fims/issues",
-      "Depends": [
-        "R (>= 4.1.0)"
-      ],
-      "Imports": [
-        "cli",
-        "dplyr",
-        "generics (>= 0.1.3)",
-        "ggplot2",
-        "glue",
-        "graphics",
-        "jsonlite",
-        "methods",
-        "purrr",
-        "Rcpp",
-        "rlang",
-        "stats",
-        "tibble",
-        "TMB (>= 1.8.0)",
-        "utils",
-        "yardstick (>= 1.3.0)"
-      ],
-      "Suggests": [
-        "covr",
-        "devtools",
-        "knitr",
-        "microbenchmark",
-        "parallel",
-        "pkgdown",
-        "remotes",
-        "rmarkdown",
-        "snowfall",
-        "SparseNUTS",
-        "stockplotr",
-        "styler",
-        "testthat (>= 3.0.0)",
-        "tidyr",
-        "usethis",
-        "withr"
-      ],
-      "LinkingTo": [
-        "Rcpp",
-        "RcppEigen",
-        "TMB"
-      ],
-      "VignetteBuilder": "knitr",
-      "Remotes": "github::nmfs-ost/stockplotr, github::noaa-afsc/SparseNUTS",
-      "Additional_repositories": "https://noaa-fisheries-integrated-toolbox.r-universe.dev",
-      "Config/Rcpp/registration": "none",
-      "Config/roxygen2/version": "8.0.0",
-      "Config/testthat/edition": "3",
-      "Config/testthat/parallel": "false",
-      "Encoding": "UTF-8",
-      "Language": "en-US",
-      "LazyData": "true",
-      "NeedsCompilation": "yes",
-      "Roxygen": "list(markdown = TRUE)",
-      "RoxygenNote": "7.3.3",
-      "SystemRequirements": "GNU make",
-      "Config/pak/sysreqs": "make",
-      "Repository": "https://noaa-fisheries-integrated-toolbox.r-universe.dev",
-      "RemoteUrl": "https://github.com/noaa-fims/fims",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "9e7c74c0c353c4877dc6baef4e06f50848a66f9d",
-      "Author": "Kelli F. Johnson [aut, cre] (ORCID: <https://orcid.org/0000-0002-5149-451X>), Grant D. Adams [aut] (ORCID: <https://orcid.org/0000-0003-0297-8347>), Jon K. T. Brodziak [aut] (ORCID: <https://orcid.org/0000-0001-8690-5588>), Kathryn L. Doering [aut] (ORCID: <https://orcid.org/0000-0002-0396-7044>), Daniel R. Goethel [aut] (ORCID: <https://orcid.org/0000-0003-0066-431X>), Andrea M. Havron [aut] (ORCID: <https://orcid.org/0000-0002-4080-448X>), Ronald Klasky [aut] (ORCID: <https://orcid.org/0009-0004-7563-7716>), Peter T. Kuriyama [aut] (ORCID: <https://orcid.org/0000-0002-6971-4015>), Emily M. Liljestrand [aut] (ORCID: <https://orcid.org/0000-0002-1118-3872>), Christopher M. Legault [aut] (ORCID: <https://orcid.org/0000-0002-0328-1376>), Bai Li [aut] (ORCID: <https://orcid.org/0000-0002-8249-1442>), Timothy J. Miller [aut] (ORCID: <https://orcid.org/0000-0003-1411-1206>), Cole C. Monnahan [aut] (ORCID: <https://orcid.org/0000-0003-0871-6700>), Elizabeth F. Perl [aut] (ORCID: <https://orcid.org/0000-0003-1608-8628>), Megumi C. Oshima [aut] (ORCID: <https://orcid.org/0009-0002-2239-1594>), Kyle W. Shertzer [aut] (ORCID: <https://orcid.org/0000-0001-7196-5959>), Christine C. Stawitz [aut] (ORCID: <https://orcid.org/0000-0003-3122-4501>), Jane Y. Sullivan [aut] (ORCID: <https://orcid.org/0000-0002-8094-1673>), Matthew Supernaw [aut] (ORCID: <https://orcid.org/0009-0007-3681-7433>), Ian G. Taylor [aut] (ORCID: <https://orcid.org/0000-0002-4232-5669>), Nathan R. Vaughan [aut] (ORCID: <https://orcid.org/0009-0000-3054-6950>), Erik H. Williams [aut] (ORCID: <https://orcid.org/0000-0001-6623-4254>), Adrianne T. Wilson [aut] (ORCID: <https://orcid.org/0009-0006-1171-6014>), Kristan Blackhart [ctb] (ORCID: <https://orcid.org/0000-0003-4232-2510>), Edward J. Dick [ctb] (ORCID: <https://orcid.org/0000-0001-7681-9176>), James N. Ianelli [ctb] (ORCID: <https://orcid.org/0000-0002-7170-8677>), Huihua Lee [ctb] (ORCID: <https://orcid.org/0009-0009-1506-9098>)",
-      "Maintainer": "Kelli F. Johnson <kelli.johnson@noaa.gov>"
-    },
     "KernSmooth": {
       "Package": "KernSmooth",
       "Version": "2.23-24",
@@ -1088,6 +1012,27 @@
       "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
       "Repository": "https://packagemanager.posit.co/cran/latest"
     },
+    "corpcor": {
+      "Package": "corpcor",
+      "Version": "1.6.10",
+      "Source": "Repository",
+      "Date": "2021-09-16",
+      "Title": "Efficient Estimation of Covariance and (Partial) Correlation",
+      "Author": "Juliane Schafer, Rainer Opgen-Rhein, Verena Zuber, Miika Ahdesmaki,  A. Pedro Duarte Silva, and Korbinian Strimmer.",
+      "Maintainer": "Korbinian Strimmer <strimmerlab@gmail.com>",
+      "Depends": [
+        "R (>= 3.0.2)"
+      ],
+      "Imports": [
+        "stats"
+      ],
+      "Suggests": [],
+      "Description": "Implements a James-Stein-type shrinkage estimator for  the covariance matrix, with separate shrinkage for variances and correlations.   The details of the method are explained in Schafer and Strimmer (2005)  <DOI:10.2202/1544-6115.1175> and Opgen-Rhein and Strimmer (2007)  <DOI:10.2202/1544-6115.1252>.  The approach is both computationally as well as statistically very efficient, it is applicable to \"small n, large p\" data,  and always returns a positive definite and well-conditioned covariance matrix.   In addition to inferring the covariance matrix the package also provides  shrinkage estimators for partial correlations and partial variances.   The inverse of the covariance and correlation matrix  can be efficiently computed, as well as any arbitrary power of the  shrinkage correlation matrix.  Furthermore, functions are available for fast  singular value decomposition, for computing the pseudoinverse, and for  checking the rank and positive definiteness of a matrix.",
+      "License": "GPL (>= 3)",
+      "URL": "https://strimmerlab.github.io/software/corpcor/",
+      "NeedsCompilation": "no",
+      "Repository": "CRAN"
+    },
     "cpp11": {
       "Package": "cpp11",
       "Version": "0.5.3",
@@ -1767,6 +1712,44 @@
       "Maintainer": "GÃ¡bor CsÃ¡rdi <csardi.gabor@gmail.com>",
       "Repository": "CRAN"
     },
+    "furrr": {
+      "Package": "furrr",
+      "Version": "0.4.0",
+      "Source": "Repository",
+      "Title": "Apply Mapping Functions in Parallel using Futures",
+      "Authors@R": "c( person(\"Davis\", \"Vaughan\", , \"davis@posit.co\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0003-4777-038X\")), person(\"Henrik\", \"Bengtsson\", , \"henrikb@braju.com\", role = \"aut\", comment = c(ORCID = \"0000-0002-7579-5165\")), person(\"Matt\", \"Dancho\", , \"mdancho@business-science.io\", role = \"aut\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Implementations of the family of map() functions from 'purrr' that can be resolved using any 'future'-supported backend, e.g. parallel on the local machine or distributed on a compute cluster.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://github.com/futureverse/furrr, https://furrr.futureverse.org/",
+      "BugReports": "https://github.com/futureverse/furrr/issues",
+      "Depends": [
+        "future (>= 1.70.0)",
+        "R (>= 4.1.0)"
+      ],
+      "Imports": [
+        "globals (>= 0.19.1)",
+        "purrr (>= 1.2.1)",
+        "rlang (>= 1.1.7)",
+        "vctrs (>= 0.7.0)"
+      ],
+      "Suggests": [
+        "carrier",
+        "covr",
+        "dplyr (>= 1.1.4)",
+        "knitr",
+        "parallelly (>= 1.46.1)",
+        "testthat (>= 3.3.2)",
+        "tidyselect"
+      ],
+      "Config/Needs/website": "progressr",
+      "Config/testthat/edition": "3",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.3",
+      "NeedsCompilation": "no",
+      "Author": "Davis Vaughan [aut, cre] (ORCID: <https://orcid.org/0000-0003-4777-038X>), Henrik Bengtsson [aut] (ORCID: <https://orcid.org/0000-0002-7579-5165>), Matt Dancho [aut], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Davis Vaughan <davis@posit.co>",
+      "Repository": "CRAN"
+    },
     "future": {
       "Package": "future",
       "Version": "1.70.0",
@@ -2094,6 +2077,84 @@
       "Maintainer": "Claus O. Wilke <wilke@austin.utexas.edu>",
       "Repository": "CRAN"
     },
+    "gh": {
+      "Package": "gh",
+      "Version": "1.4.1",
+      "Source": "Repository",
+      "Title": "'GitHub' 'API'",
+      "Authors@R": "c( person(\"GÃ¡bor\", \"CsÃ¡rdi\", , \"csardi.gabor@gmail.com\", role = c(\"cre\", \"ctb\")), person(\"Jennifer\", \"Bryan\", role = \"aut\"), person(\"Hadley\", \"Wickham\", role = \"aut\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Minimal client to access the 'GitHub' 'API'.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://gh.r-lib.org/, https://github.com/r-lib/gh#readme",
+      "BugReports": "https://github.com/r-lib/gh/issues",
+      "Depends": [
+        "R (>= 3.6)"
+      ],
+      "Imports": [
+        "cli (>= 3.0.1)",
+        "gitcreds",
+        "glue",
+        "httr2",
+        "ini",
+        "jsonlite",
+        "lifecycle",
+        "rlang (>= 1.0.0)"
+      ],
+      "Suggests": [
+        "covr",
+        "knitr",
+        "mockery",
+        "rmarkdown",
+        "rprojroot",
+        "spelling",
+        "testthat (>= 3.0.0)",
+        "withr"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Config/testthat/edition": "3",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "RoxygenNote": "7.3.1.9000",
+      "NeedsCompilation": "no",
+      "Author": "GÃ¡bor CsÃ¡rdi [cre, ctb], Jennifer Bryan [aut], Hadley Wickham [aut], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "GÃ¡bor CsÃ¡rdi <csardi.gabor@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "gitcreds": {
+      "Package": "gitcreds",
+      "Version": "0.1.2",
+      "Source": "Repository",
+      "Title": "Query 'git' Credentials from 'R'",
+      "Authors@R": "c( person(\"GÃ¡bor\", \"CsÃ¡rdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")), person(\"RStudio\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Query, set, delete credentials from the 'git' credential store. Manage 'GitHub' tokens and other 'git' credentials. This package is to be used by other packages that need to authenticate to 'GitHub' and/or other 'git' repositories.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://gitcreds.r-lib.org/, https://github.com/r-lib/gitcreds",
+      "BugReports": "https://github.com/r-lib/gitcreds/issues",
+      "Depends": [
+        "R (>= 3.4)"
+      ],
+      "Suggests": [
+        "codetools",
+        "covr",
+        "knitr",
+        "mockery",
+        "oskeyring",
+        "rmarkdown",
+        "testthat (>= 3.0.0)",
+        "withr"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.2.1.9000",
+      "SystemRequirements": "git",
+      "Config/testthat/edition": "3",
+      "NeedsCompilation": "no",
+      "Author": "GÃ¡bor CsÃ¡rdi [aut, cre], RStudio [cph, fnd]",
+      "Maintainer": "GÃ¡bor CsÃ¡rdi <csardi.gabor@gmail.com>",
+      "Repository": "CRAN"
+    },
     "globals": {
       "Package": "globals",
       "Version": "0.19.1",
@@ -2302,53 +2363,6 @@
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
       "Repository": "https://packagemanager.posit.co/cran/latest"
     },
-    "hardhat": {
-      "Package": "hardhat",
-      "Version": "1.4.3",
-      "Source": "Repository",
-      "Title": "Construct Modeling Packages",
-      "Authors@R": "c( person(\"Hannah\", \"Frick\", , \"hannah@posit.co\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-6049-5258\")), person(\"Davis\", \"Vaughan\", , \"davis@posit.co\", role = \"aut\"), person(\"Max\", \"Kuhn\", , \"max@posit.co\", role = \"aut\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"), comment = c(ROR = \"03wc8by49\")) )",
-      "Description": "Building modeling packages is hard. A large amount of effort generally goes into providing an implementation for a new method that is efficient, fast, and correct, but often less emphasis is put on the user interface. A good interface requires specialized knowledge about S3 methods and formulas, which the average package developer might not have. The goal of 'hardhat' is to reduce the burden around building new modeling packages by providing functionality for preprocessing, predicting, and validating input.",
-      "License": "MIT + file LICENSE",
-      "URL": "https://github.com/tidymodels/hardhat, https://hardhat.tidymodels.org",
-      "BugReports": "https://github.com/tidymodels/hardhat/issues",
-      "Depends": [
-        "R (>= 4.1)"
-      ],
-      "Imports": [
-        "cli (>= 3.6.0)",
-        "glue (>= 1.6.2)",
-        "rlang (>= 1.1.0)",
-        "sparsevctrs (>= 0.2.0)",
-        "tibble (>= 3.2.1)",
-        "vctrs (>= 0.6.0)"
-      ],
-      "Suggests": [
-        "covr",
-        "crayon",
-        "devtools",
-        "knitr",
-        "Matrix",
-        "modeldata (>= 0.0.2)",
-        "recipes (>= 1.3.0)",
-        "rmarkdown (>= 2.3)",
-        "roxygen2",
-        "testthat (>= 3.0.0)",
-        "usethis (>= 2.1.5)",
-        "withr (>= 3.0.0)"
-      ],
-      "VignetteBuilder": "knitr",
-      "Config/Needs/website": "tidyverse/tidytemplate",
-      "Config/testthat/edition": "3",
-      "Config/usethis/last-upkeep": "2025-04-23",
-      "Encoding": "UTF-8",
-      "LazyData": "true",
-      "RoxygenNote": "7.3.3",
-      "NeedsCompilation": "no",
-      "Author": "Hannah Frick [aut, cre] (ORCID: <https://orcid.org/0000-0002-6049-5258>), Davis Vaughan [aut], Max Kuhn [aut], Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
-      "Maintainer": "Hannah Frick <hannah@posit.co>",
-      "Repository": "CRAN"
-    },
     "highr": {
       "Package": "highr",
       "Version": "0.12",
@@ -2528,6 +2542,85 @@
       "Author": "Hadley Wickham [aut, cre], Posit Software, PBC [cph, fnd]",
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
       "Repository": "https://packagemanager.posit.co/cran/latest"
+    },
+    "httr2": {
+      "Package": "httr2",
+      "Version": "1.1.2",
+      "Source": "Repository",
+      "Title": "Perform HTTP Requests and Process the Responses",
+      "Authors@R": "c( person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\", \"cre\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")), person(\"Maximilian\", \"Girlich\", role = \"ctb\") )",
+      "Description": "Tools for creating and modifying HTTP requests, then performing them and processing the results. 'httr2' is a modern re-imagining of 'httr' that uses a pipe-based interface and solves more of the problems that API wrapping packages face.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://httr2.r-lib.org, https://github.com/r-lib/httr2",
+      "BugReports": "https://github.com/r-lib/httr2/issues",
+      "Depends": [
+        "R (>= 4.0)"
+      ],
+      "Imports": [
+        "cli (>= 3.0.0)",
+        "curl (>= 6.2.1)",
+        "glue",
+        "lifecycle",
+        "magrittr",
+        "openssl",
+        "R6",
+        "rappdirs",
+        "rlang (>= 1.1.0)",
+        "vctrs (>= 0.6.3)",
+        "withr"
+      ],
+      "Suggests": [
+        "askpass",
+        "bench",
+        "clipr",
+        "covr",
+        "docopt",
+        "httpuv",
+        "jose",
+        "jsonlite",
+        "knitr",
+        "later (>= 1.4.0)",
+        "nanonext",
+        "paws.common",
+        "promises",
+        "rmarkdown",
+        "testthat (>= 3.1.8)",
+        "tibble",
+        "webfakes",
+        "xml2"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Config/testthat/edition": "3",
+      "Config/testthat/parallel": "true",
+      "Config/testthat/start-first": "multi-req, resp-stream, req-perform",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "no",
+      "Author": "Hadley Wickham [aut, cre], Posit Software, PBC [cph, fnd], Maximilian Girlich [ctb]",
+      "Maintainer": "Hadley Wickham <hadley@posit.co>",
+      "Repository": "CRAN"
+    },
+    "ini": {
+      "Package": "ini",
+      "Version": "0.3.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Read and Write '.ini' Files",
+      "Date": "2018-05-19",
+      "Author": "David Valentim Dias",
+      "Maintainer": "David Valentim Dias <dvdscripter@gmail.com>",
+      "Description": "Parse simple '.ini' configuration files to an structured list. Users can manipulate this resulting list with lapply() functions. This same structured list can be used to write back to file after modifications.",
+      "License": "GPL-3",
+      "URL": "https://github.com/dvdscripter/ini",
+      "BugReports": "https://github.com/dvdscripter/ini/issues",
+      "LazyData": "FALSE",
+      "RoxygenNote": "6.0.1",
+      "Suggests": [
+        "testthat"
+      ],
+      "NeedsCompilation": "no",
+      "Repository": "CRAN"
     },
     "isoband": {
       "Package": "isoband",
@@ -3826,6 +3919,67 @@
       "Repository": "https://packagemanager.posit.co/cran/latest",
       "Encoding": "UTF-8"
     },
+    "r4ss": {
+      "Package": "r4ss",
+      "Version": "1.55.0",
+      "Source": "GitHub",
+      "Type": "Package",
+      "Title": "R Code for Stock Synthesis",
+      "Authors@R": "c( person(\"Ian G.\", \"Taylor\", , \"Ian.Taylor@noaa.gov\", role = c(\"aut\", \"cre\")), person(\"Ian J.\", \"Stewart\", role = \"aut\"), person(\"Allan C.\", \"Hicks\", role = \"aut\"), person(\"Tommy M.\", \"Garrison\", role = \"aut\"), person(\"Andre E.\", \"Punt\", role = \"aut\"), person(\"R.I.C. Chris\", \"Francis\", role = \"aut\"), person(\"John R.\", \"Wallace\", role = \"aut\"), person(\"Chantel R.\", \"Wetzel\", role = \"aut\"), person(\"James T.\", \"Thorson\", role = \"aut\"), person(\"Yukio\", \"Takeuchi\", role = \"aut\"), person(\"Kotaro\", \"Ono\", role = \"aut\"), person(\"Cole C.\", \"Monnahan\", role = \"aut\"), person(\"Christine C.\", \"Stawitz\", role = \"aut\"), person(\"Z. Teresa\", \"A'mar\", role = \"aut\"), person(\"Athol R.\", \"Whitten\", role = \"aut\"), person(\"Kelli F.\", \"Johnson\", role = \"aut\"), person(\"Robbie L.\", \"Emmet\", role = \"aut\"), person(\"Sean C.\", \"Anderson\", role = \"aut\"), person(\"Gwladys I.\", \"Lambert\", role = \"aut\"), person(\"Megan M.\", \"Stachura\", role = \"aut\"), person(\"Andrew B.\", \"Cooper\", role = \"aut\"), person(\"Andi\", \"Stephens\", role = \"aut\"), person(\"Neil L.\", \"Klaer\", role = \"aut\"), person(\"Carey R.\", \"McGilliard\", role = \"aut\"), person(\"Iago\", \"Mosqueira\", role = \"aut\"), person(\"Watal M.\", \"Iwasaki\", role = \"aut\"), person(\"Kathryn L.\", \"Doering\", role = \"aut\"), person(\"Andrea M.\", \"Havron\", role = \"aut\"), person(\"Nathan R.\", \"Vaughan\", role = \"aut\"), person(\"LaTreese S.\", \"Denson\", role = \"aut\"), person(\"Ashleigh J.\", \"Novak\", role = \"aut\"), person(\"Henning\", \"Winker\", role = \"aut\"), person(\"Lee\", \"Qi\", role = \"aut\"), person(\"Megumi\", \"Oshima\", role = \"aut\"), person(\"Eric\", \"Fletcher\", role = \"aut\"), person(\"Elizabeth\", \"Perl\", role = \"aut\"), person(\"Kiva L.\", \"Oken\", role = \"aut\"), person(\"Arni\", \"Magnusson\", role = \"aut\"), person(\"Peter\", \"Kuriyama\", role = \"aut\") )",
+      "Description": "A collection of R functions for use with Stock Synthesis, a fisheries stock assessment modeling platform written in ADMB by Dr. Richard D. Methot at the NOAA Northwest Fisheries Science Center. The functions include tools for summarizing and plotting results, manipulating files, visualizing model parameterizations, and various other common stock assessment tasks.  This version of '{r4ss}' is compatible with Stock Synthesis versions 3.24 through 3.30 (specifically version 3.30.25, from June 2026). Support for 3.24 models is only through the core functions for reading output and plotting.",
+      "License": "GPL-3",
+      "URL": "https://github.com/r4ss/r4ss, https://r4ss.github.io/r4ss/",
+      "BugReports": "https://github.com/r4ss/r4ss/issues",
+      "Depends": [
+        "R (>= 4.1.0)"
+      ],
+      "Imports": [
+        "cli",
+        "coda",
+        "corpcor",
+        "dplyr (>= 1.2.0)",
+        "forcats",
+        "furrr",
+        "future",
+        "ggplot2",
+        "gh",
+        "kableExtra",
+        "lifecycle",
+        "purrr",
+        "stringr",
+        "tidyr",
+        "viridis"
+      ],
+      "Suggests": [
+        "flextable",
+        "ggpubr",
+        "gplots",
+        "gtools",
+        "knitr",
+        "maps",
+        "parallelly",
+        "pso",
+        "reshape2",
+        "rmarkdown",
+        "shiny",
+        "testthat",
+        "truncnorm"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/roxygen2/version": "8.0.0",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "LazyLoad": "yes",
+      "Roxygen": "list(markdown = TRUE)",
+      "Author": "Ian G. Taylor [aut, cre], Ian J. Stewart [aut], Allan C. Hicks [aut], Tommy M. Garrison [aut], Andre E. Punt [aut], R.I.C. Chris Francis [aut], John R. Wallace [aut], Chantel R. Wetzel [aut], James T. Thorson [aut], Yukio Takeuchi [aut], Kotaro Ono [aut], Cole C. Monnahan [aut], Christine C. Stawitz [aut], Z. Teresa A'mar [aut], Athol R. Whitten [aut], Kelli F. Johnson [aut], Robbie L. Emmet [aut], Sean C. Anderson [aut], Gwladys I. Lambert [aut], Megan M. Stachura [aut], Andrew B. Cooper [aut], Andi Stephens [aut], Neil L. Klaer [aut], Carey R. McGilliard [aut], Iago Mosqueira [aut], Watal M. Iwasaki [aut], Kathryn L. Doering [aut], Andrea M. Havron [aut], Nathan R. Vaughan [aut], LaTreese S. Denson [aut], Ashleigh J. Novak [aut], Henning Winker [aut], Lee Qi [aut], Megumi Oshima [aut], Eric Fletcher [aut], Elizabeth Perl [aut], Kiva L. Oken [aut], Arni Magnusson [aut], Peter Kuriyama [aut]",
+      "Maintainer": "Ian G. Taylor <Ian.Taylor@noaa.gov>",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "r4ss",
+      "RemoteRepo": "r4ss",
+      "RemoteRef": "main",
+      "RemoteSha": "980a1ca22bca4da4beb8e0e1af0d09fc6ec9ab3e"
+    },
     "ragg": {
       "Package": "ragg",
       "Version": "1.5.0",
@@ -4442,44 +4596,6 @@
         "Rcpp"
       ],
       "Author": "Andrew Zammit-Mangion [aut, cre], Timothy Davis [ctb], Patrick Amestoy [ctb], Iain Duff [ctb], John K. Reid [ctb]",
-      "Repository": "CRAN"
-    },
-    "sparsevctrs": {
-      "Package": "sparsevctrs",
-      "Version": "0.3.6",
-      "Source": "Repository",
-      "Title": "Sparse Vectors for Use in Data Frames",
-      "Authors@R": "c( person(\"Emil\", \"Hvitfeldt\", , \"emil.hvitfeldt@posit.co\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-0679-1945\")), person(\"Davis\", \"Vaughan\", , \"davis@posit.co\", role = \"ctb\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"), comment = c(ROR = \"03wc8by49\")) )",
-      "Description": "Provides sparse vectors powered by ALTREP (Alternative Representations for R Objects) that behave like regular vectors, and can thus be used in data frames. Also provides tools to convert between sparse matrices and data frames with sparse columns and functions to interact with sparse vectors.",
-      "License": "MIT + file LICENSE",
-      "URL": "https://github.com/r-lib/sparsevctrs, https://r-lib.github.io/sparsevctrs/",
-      "BugReports": "https://github.com/r-lib/sparsevctrs/issues",
-      "Depends": [
-        "R (>= 4.1)"
-      ],
-      "Imports": [
-        "cli (>= 3.4.0)",
-        "rlang (>= 1.1.0)",
-        "vctrs"
-      ],
-      "Suggests": [
-        "knitr",
-        "Matrix",
-        "methods",
-        "rmarkdown",
-        "testthat (>= 3.0.0)",
-        "tibble",
-        "withr"
-      ],
-      "VignetteBuilder": "knitr",
-      "Config/Needs/website": "tidyverse/tidytemplate, rmarkdown, lobstr, ggplot2, bench, tidyr, ggbeeswarm",
-      "Config/testthat/edition": "3",
-      "Encoding": "UTF-8",
-      "RoxygenNote": "7.3.3",
-      "Config/usethis/last-upkeep": "2025-05-25",
-      "NeedsCompilation": "yes",
-      "Author": "Emil Hvitfeldt [aut, cre] (ORCID: <https://orcid.org/0000-0002-0679-1945>), Davis Vaughan [ctb], Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
-      "Maintainer": "Emil Hvitfeldt <emil.hvitfeldt@posit.co>",
       "Repository": "CRAN"
     },
     "stockplotr": {
@@ -5606,56 +5722,6 @@
       "NeedsCompilation": "yes",
       "Author": "Hadley Wickham [cre] (ORCID: <https://orcid.org/0000-0003-4757-117X>), Shawn Garbett [ctb] (ORCID: <https://orcid.org/0000-0003-4079-5621>), Jeremy Stephens [aut, ctb], Kirill Simonov [aut], Yihui Xie [ctb] (ORCID: <https://orcid.org/0000-0003-0645-5666>), Zhuoer Dong [ctb], Jeffrey Horner [ctb], reikoch [ctb], Will Beasley [ctb] (ORCID: <https://orcid.org/0000-0002-5613-5006>), Brendan O'Connor [ctb], Michael Quinn [ctb], Charlie Gao [ctb], Gregory R. Warnes [ctb], Zhian N. Kamvar [ctb]",
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
-      "Repository": "CRAN"
-    },
-    "yardstick": {
-      "Package": "yardstick",
-      "Version": "1.4.0",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Tidy Characterizations of Model Performance",
-      "Authors@R": "c( person(\"Max\", \"Kuhn\", , \"max@posit.co\", role = \"aut\"), person(\"Davis\", \"Vaughan\", , \"davis@posit.co\", role = \"aut\"), person(\"Emil\", \"Hvitfeldt\", , \"emil.hvitfeldt@posit.co\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-0679-1945\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"), comment = c(ROR = \"03wc8by49\")) )",
-      "Description": "Tidy tools for quantifying how well model fits to a data set such as confusion matrices, class probability curve summaries, and regression metrics (e.g., RMSE).",
-      "License": "MIT + file LICENSE",
-      "URL": "https://github.com/tidymodels/yardstick, https://yardstick.tidymodels.org",
-      "BugReports": "https://github.com/tidymodels/yardstick/issues",
-      "Depends": [
-        "R (>= 4.1)"
-      ],
-      "Imports": [
-        "cli",
-        "dplyr (>= 1.1.0)",
-        "generics (>= 0.1.2)",
-        "hardhat (>= 1.4.3)",
-        "lifecycle (>= 1.0.3)",
-        "rlang (>= 1.1.4)",
-        "tibble",
-        "tidyselect (>= 1.2.0)",
-        "utils",
-        "vctrs (>= 0.5.0)",
-        "withr"
-      ],
-      "Suggests": [
-        "covr",
-        "ggplot2",
-        "knitr",
-        "probably (>= 1.0.0)",
-        "rmarkdown",
-        "survival (>= 3.5-0)",
-        "testthat (>= 3.0.0)",
-        "tidyr"
-      ],
-      "VignetteBuilder": "knitr",
-      "Config/Needs/website": "tidyverse/tidytemplate",
-      "Config/testthat/edition": "3",
-      "Config/usethis/last-upkeep": "2025-04-24",
-      "Encoding": "UTF-8",
-      "LazyData": "true",
-      "RoxygenNote": "7.3.3",
-      "Collate": "'aaa-get_metrics.R' 'aaa-metric_set.R' 'aaa-metrics.R' 'import-standalone-types-check.R' 'aaa-new.R' 'aaa.R' 'check-metric.R' 'class-accuracy.R' 'class-bal_accuracy.R' 'class-detection_prevalence.R' 'class-f_meas.R' 'class-fall_out.R' 'class-j_index.R' 'class-kap.R' 'class-markedness.R' 'class-mcc.R' 'class-miss_rate.R' 'class-npv.R' 'class-ppv.R' 'class-precision.R' 'class-recall.R' 'class-roc_dist.R' 'class-sedi.R' 'class-sens.R' 'class-spec.R' 'conf_mat.R' 'data.R' 'deprecated-prob_helpers.R' 'deprecated-template.R' 'estimator-helpers.R' 'event-level.R' 'fair-aaa.R' 'fair-demographic_parity.R' 'fair-equal_opportunity.R' 'fair-equalized_odds.R' 'import-standalone-obj-type.R' 'import-standalone-survival.R' 'metric-tweak.R' 'metric-type-docs.R' 'misc.R' 'missings.R' 'num-ccc.R' 'num-gini_coef.R' 'num-huber_loss.R' 'num-huber_loss_pseudo.R' 'num-iic.R' 'num-mae.R' 'num-mape.R' 'num-mase.R' 'num-mpe.R' 'num-msd.R' 'num-mse.R' 'num-poisson_log_loss.R' 'num-rmse.R' 'num-rmse_relative.R' 'num-rpd.R' 'num-rpiq.R' 'num-rsq.R' 'num-rsq_trad.R' 'num-smape.R' 'orderedprob-ranked_prob_score.R' 'prob-average_precision.R' 'prob-binary-thresholds.R' 'prob-brier_class.R' 'prob-classification_cost.R' 'prob-gain_capture.R' 'prob-helpers.R' 'prob-mn_log_loss.R' 'prob-pr_auc.R' 'prob-roc_auc.R' 'prob-roc_aunp.R' 'prob-roc_aunu.R' 'probcurve-gain_curve.R' 'probcurve-lift_curve.R' 'probcurve-pr_curve.R' 'probcurve-roc_curve.R' 'quant-weighted_interval_score.R' 'reexports.R' 'surv-brier_survival.R' 'surv-brier_survival_integrated.R' 'surv-concordance_survival.R' 'surv-roc_auc_survival.R' 'surv-roc_curve_survival.R' 'surv-royston.R' 'template.R' 'validation.R' 'yardstick-package.R'",
-      "NeedsCompilation": "yes",
-      "Author": "Max Kuhn [aut], Davis Vaughan [aut], Emil Hvitfeldt [aut, cre] (ORCID: <https://orcid.org/0000-0002-0679-1945>), Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
-      "Maintainer": "Emil Hvitfeldt <emil.hvitfeldt@posit.co>",
       "Repository": "CRAN"
     },
     "zip": {
