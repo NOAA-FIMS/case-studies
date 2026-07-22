@@ -139,8 +139,9 @@ jobs:
         shell: bash
         run: |
           set -e
-          mkdir -p _site
-          quarto render "${{ matrix.qmd_path }}" --output-dir _site
+          quarto render "${{ matrix.qmd_path }}"
+          mkdir -p _site/content
+          cp "${{ matrix.qmd_path%.qmd }}.html" _site/content/
 
       - name: Record status
         shell: bash
