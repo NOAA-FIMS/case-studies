@@ -144,7 +144,9 @@ jobs:
           set -e
           quarto render "${{ matrix.qmd_path }}"
           mkdir -p _site/content
-          cp "${{ matrix.qmd_path%.qmd }}.html" _site/content/
+          base="${{ matrix.qmd_path }}"
+          base="${base%.qmd}"
+          cp "${base}.html" _site/content/
 
       - name: Record status
         shell: bash
