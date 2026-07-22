@@ -31,14 +31,6 @@ jobs:
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
 
-      - name: Set up R package dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          pak-version: stable
-          cache: true
-          packages: |
-            cran::jsonlite
-
       - name: Build matrix from content directory
         id: set-matrix
         shell: Rscript {0}
@@ -56,7 +48,23 @@ jobs:
             )
           })
 
-          matrix_json <- jsonlite::toJSON(list(include = include), auto_unbox = TRUE)
+          json_escape <- function(x) {
+            x <- gsub("\\\\", "\\\\\\\\", x)
+            x <- gsub('"', '\\"', x)
+            x
+          }
+
+          entries <- vapply(include, function(x) {
+            sprintf(
+              '{"qmd_path":"%s","artifact_name":"%s","case_id":"%s"}',
+              json_escape(x$qmd_path),
+              json_escape(x$artifact_name),
+              json_escape(x$case_id)
+            )
+          }, character(1))
+
+          matrix_json <- paste0('{"include":[', paste(entries, collapse = ","), ']}')
+
           cat("matrix=", matrix_json, "\n", sep = "", file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
 
   render:

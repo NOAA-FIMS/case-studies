@@ -1,13 +1,13 @@
-name: Render and Deploy Full Site 
+name: Render and Deploy Full Site
 # for everything other than case studies
 
 on:
   push:
     branches: [ main ]
     paths:
-      - "!content/**
-      - "!.github/workflows/render-case-studies.yml"
-      - "README.md"
+      - '!content/**'
+      - '!.github/workflows/render-case-studies.yml'
+      - 'README.md'
   workflow_dispatch:
   schedule:
     - cron: "0 2 * * 0"
