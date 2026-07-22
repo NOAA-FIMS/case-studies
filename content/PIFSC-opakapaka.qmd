@@ -240,7 +240,7 @@ if (FALSE) {
 #| output: false
 #| warning: false
 # load opaka_inputs_bootstrap and rep objects with model input and output
-load(file.path("content", data_directory, "opaka_model.RDS"))
+load(file.path(data_directory, "opaka_model.RDS"))
 include_age_comps <- FALSE
 years <- seq(opaka_inputs_bootstrap$dat$styr, opaka_inputs_bootstrap$dat$endyr)
 alk_years <- c(years, max(years) + 1)
@@ -316,15 +316,15 @@ init_naa[n_ages] <- init_naa[n_ages] / 0.135
 default_parameters <- FIMS::create_default_configurations(
   data = data_4_model
 ) |>
-  # add parametric growth to the configuration
-  tidyr::unnest(cols = data) |>
-  dplyr::mutate(
-    module_type = dplyr::if_else(
-      module_name == "Growth",
-      "VonBertalanffy",
-      module_type
-    )
-  ) |>
+  # # add parametric growth to the configuration (depends on in-development growth module)
+  # tidyr::unnest(cols = data) |>
+  # dplyr::mutate(
+  #   module_type = dplyr::if_else(
+  #     module_name == "Growth",
+  #     "VonBertalanffy",
+  #     module_type
+  #   )
+  # ) |>
   # tidyr::nest(.by = c(model_family, module_name, fleet)) |>
   FIMS::create_default_parameters(
     data = data_4_model
@@ -341,21 +341,21 @@ parameters <- default_parameters |>
     ),
     by = c("module_name", "label")
   ) |>
-  # update the growth parameters with initial values from SS3
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Growth",
-      label = c(
-        "length_at_ref_age_1",
-        "length_at_ref_age_2",
-        "growth_coefficient_K",
-        "reference_age_for_length_1",
-        "reference_age_for_length_2"
-      ),
-      value = c(6, 67.5, .242, 0, 21)
-    ),
-    by = c("module_name", "label")
-  ) |>
+  # # update the growth parameters with initial values from SS3 (depends on in-development growth module)
+  # dplyr::rows_update(
+  #   tibble::tibble(
+  #     module_name = "Growth",
+  #     label = c(
+  #       "length_at_ref_age_1",
+  #       "length_at_ref_age_2",
+  #       "growth_coefficient_K",
+  #       "reference_age_for_length_1",
+  #       "reference_age_for_length_2"
+  #     ),
+  #     value = c(6, 67.5, .242, 0, 21)
+  #   ),
+  #   by = c("module_name", "label")
+  # ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
@@ -484,252 +484,7 @@ fit_est <- parameters |>
 
 ## Plotting Results
 
-```{r}
-# # optionally plot the initial values without optimization
-# fit <- fit_init
-fit <- fit_est
-
-#
-output <- FIMS::get_estimates(fit) |>
-  dplyr::mutate(
-    uncertainty_label = "se",
-    year = year_i + FIMS::get_start_year(data_4_model) - 1,
-    estimate = estimated
-  )
-
-fleet_module_lookup <- parameters |>
-  dplyr::filter(module_name == "Fleet", !is.na(fleet_name)) |>
-  dplyr::distinct(fleet_name) |>
-  dplyr::mutate(module_id = dplyr::row_number())
-
-index_module_lookup <- fleet_module_lookup |>
-  dplyr::filter(fleet_name %in% c("BFISH", "FRS_CPUE"))
-
-# year conversion matrix and index plots copied from pacific-hake.qmd
-year_conversion_matrix <- dplyr::tibble(
-  year = FIMS::get_start_year(data_4_model):(FIMS::get_end_year(data_4_model) + 1)
-) |>
-  dplyr::mutate(
-    index = dplyr::row_number()
-  )
-
-# index
-stockplotr::plot_timeseries(
-  stockplotr::filter_data(
-    output |>
-      dplyr::inner_join(index_module_lookup, by = "module_id") |>
-      dplyr::filter(fleet_name == "BFISH"),
-    label_name = "^index_expected$",
-    geom = "line"
-  ),
-  x = "year",
-  y = "estimated",
-  ylab = "Relative Index of Abundance for BFISH"
-) +
-  ggplot2::geom_point(
-    data = FIMS::get_estimates(fit) |>
-      dplyr::inner_join(index_module_lookup, by = "module_id") |>
-      dplyr::filter(
-        fleet_name == "BFISH",
-        label == "index_expected",
-        observed > -999
-      ) |>
-      dplyr::left_join(
-        year_conversion_matrix,
-        by = c("year_i" = "index")
-      ),
-    ggplot2::aes(x = year, y = observed)
-  ) +
-  stockplotr::theme_noaa()
-
-stockplotr::plot_timeseries(
-  stockplotr::filter_data(
-    output |>
-      dplyr::inner_join(index_module_lookup, by = "module_id") |>
-      dplyr::filter(fleet_name == "FRS_CPUE"),
-    label_name = "^index_expected$",
-    geom = "line"
-  ),
-  x = "year",
-  y = "estimated",
-  ylab = "Relative CPUE for FRS"
-) +
-  ggplot2::geom_point(
-    data = FIMS::get_estimates(fit) |>
-      dplyr::inner_join(index_module_lookup, by = "module_id") |>
-      dplyr::filter(
-        fleet_name == "FRS_CPUE",
-        label == "index_expected",
-        observed > -999
-      ) |>
-      dplyr::left_join(
-        year_conversion_matrix,
-        by = c("year_i" = "index")
-      ),
-    ggplot2::aes(x = year, y = observed)
-  ) +
-  stockplotr::theme_noaa()
-
-
-landings_years <- FIMS::get_start_year(data_4_model):FIMS::get_end_year(data_4_model)
-
-observed_landings <- tibble::tibble(
-  fleet = rep(c("FRS", "Non_comm"), each = length(landings_years)),
-  year = rep(landings_years, times = 2),
-  observed = c(
-    FIMS::m_landings(data_4_model, fleet_name = "FRS"),
-    FIMS::m_landings(data_4_model, fleet_name = "Non_comm")
-  )
-)
-
-expected_landings <- output |>
-  dplyr::filter(label == "landings_expected") |>
-  dplyr::inner_join(fleet_module_lookup, by = "module_id") |>
-  dplyr::filter(fleet_name %in% c("FRS", "Non_comm")) |>
-  dplyr::transmute(
-    fleet = fleet_name,
-    year,
-    expected = estimate
-  )
-
-catch_results <- observed_landings |>
-  dplyr::left_join(expected_landings, by = c("fleet", "year")) |>
-  dplyr::filter(observed > -999)
-
-# print(catch_results)
-
-ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
-  ggplot2::geom_point(ggplot2::aes(color = fleet)) +
-  ggplot2::xlab("Year") +
-  ggplot2::ylab("Catch (mt)") +
-  ggplot2::geom_line(ggplot2::aes(x = year, y = expected, color = fleet)) +
-  ggplot2::theme_bw()
-
-# SS3 timeseries includes one extra initial biomass year before the first
-# modeled year. In this case that initial comparison year is 1948, so keep
-# `Yr > 1947` to align the SS3 biomass series with the FIMS comparison.
-ss3_biomass <- rep$timeseries |>
-  dplyr::select(Yr, SpawnBio, Bio_all) |>
-  dplyr::filter(Yr > 1947) |>
-  dplyr::rename(
-    year = Yr,
-    Bio = Bio_all
-  ) |>
-  tidyr::pivot_longer(
-    cols = c(SpawnBio, Bio),
-    names_to = "Type",
-    values_to = "value"
-  ) |>
-  dplyr::mutate(Model = "SS3")
-
-# FIMS biomass and spawning biomass include one extra initial-year value.
-# That first value corresponds to start_year - 1, so plot FIMS on
-# (start_year - 1):end_year rather than start_year:end_year.
-fims_biomass <- tibble::tibble(
-  year = (FIMS::get_start_year(data_4_model) - 1):FIMS::get_end_year(data_4_model),
-  SpawnBio = FIMS::get_report(fit)[["spawning_biomass"]][[1]],
-  Bio = FIMS::get_report(fit)[["biomass"]][[1]]
-) |>
-  tidyr::pivot_longer(
-    cols = c(SpawnBio, Bio),
-    names_to = "Type",
-    values_to = "value"
-  ) |>
-  dplyr::mutate(Model = "FIMS")
-
-biomass <- dplyr::bind_rows(ss3_biomass, fims_biomass)
-
-ggplot2::ggplot(biomass, ggplot2::aes(x = year, y = value)) +
-  ggplot2::geom_line(ggplot2::aes(color = Model)) +
-  ggplot2::xlab("Year") +
-  ggplot2::ylab("") +
-  ggplot2::facet_wrap(~Type, scales = "free_y") +
-  ggplot2::theme_bw() +
-  ggplot2::ylim(0, NA)
-
-# SS3 recruitment output is already indexed by report year in `Yr`, so use
-# those years directly for the recruitment comparison plot.
-ss3_recruits <- rep$recruit |>
-  dplyr::select(Yr, pred_recr, raw_dev) |>
-  dplyr::rename(
-    Year = Yr,
-    recruit = pred_recr,
-    recdev = raw_dev
-  ) |>
-  dplyr::mutate(
-    recruit = recruit * 1000
-  ) |>
-  tidyr::pivot_longer(
-    cols = c(recruit, recdev),
-    names_to = "Type",
-    values_to = "value"
-  ) |>
-  dplyr::mutate(Model = "SS3")
-
-# FIMS expected recruitment is reported on modeled years start_year:end_year.
-# Recruitment deviations are not defined for the first modeled year, so pad
-# that first year with NA before plotting.
-fims_recruit_years <- FIMS::get_start_year(data_4_model):FIMS::get_end_year(data_4_model)
-
-fims_recruits <- tibble::tibble(
-  Year = fims_recruit_years,
-  recruit = FIMS::get_report(fit)[["expected_recruitment"]][[1]][seq_along(fims_recruit_years)],
-  recdev = c(
-    NA,
-    FIMS::get_estimates(fit) |>
-      dplyr::filter(label == "log_devs", module_name == "Recruitment") |>
-      dplyr::pull(estimated)
-  )
-) |>
-  tidyr::pivot_longer(
-    cols = c(recruit, recdev),
-    names_to = "Type",
-    values_to = "value"
-  ) |>
-  dplyr::mutate(Model = "FIMS") |>
-  dplyr::filter(!is.na(value))
-
-# Drop undefined recruitment deviations before plotting time series.
-recruits <- dplyr::bind_rows(ss3_recruits, fims_recruits) |>
-  dplyr::filter(!is.na(value))
-
-ggplot2::ggplot(recruits, ggplot2::aes(x = Year, y = value, color = Model)) +
-  ggplot2::geom_line() +
-  ggplot2::facet_wrap(~Type, scales = "free_y") +
-  ggplot2::ggtitle("Recruitment and Recruitment Deviations") +
-  ggplot2::theme_bw()
-```
-
-
-```{r}
-#| eval: true
-#| label: length-composition-plots
-## Checking fit to length compositions
-
-lengthcomp <- rbind(
-  # length comps from FIMS output
-  output |>
-    dplyr::filter(label == "lengthcomp_expected", observed != -999) |>
-    dplyr::mutate(
-      length = comp_lengths[length_i]
-    ) |>
-    dplyr::select(year, length, estimated, observed) |>
-    dplyr::mutate(platform = "FIMS"),
-
-  # get length comps from SS3 output for comparison
-  rep$lendbase |>
-    dplyr::filter(Fleet == which(rep$FleetNames == "BFISH")) |>
-    dplyr::select(year = Yr, length = Bin, estimated = Exp, observed = Obs) |>
-    dplyr::mutate(platform = "SS3")
-)
-
-lengthcomp |> ggplot2::ggplot(ggplot2::aes(length, estimated, color = platform)) +
-  ggplot2::facet_wrap("year") +
-  ggplot2::geom_line() +
-  ggplot2::geom_point(ggplot2::aes(y = observed, color = "data")) +
-  ggplot2::ggtitle("Fit to Length Composition Data") +
-  ggplot2::theme_bw()
-```
+TODO: add plots in the future
 
 ```{r}
 #| label: cleanup
