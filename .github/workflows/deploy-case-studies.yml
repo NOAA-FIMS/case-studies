@@ -1,0 +1,167 @@
+name: Deploy Case Studies
+
+on:
+  workflow_run:
+    workflows: ["Render Case Studies"]
+    types:
+      - completed
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_branch == 'main' &&
+        (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')
+      )
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download current run artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: current-artifacts
+
+      - name: Fetch existing gh-pages branch
+        shell: bash
+        run: |
+          git fetch origin gh-pages:gh-pages || true
+
+      - name: Prepare site from previous deployment
+        shell: bash
+        run: |
+          rm -rf _site
+          mkdir -p _site
+
+          if git show-ref --verify --quiet refs/heads/gh-pages; then
+            git checkout gh-pages -- .
+            # Copy previously published site into _site if it exists in repo checkout
+            if [ -d "docs" ]; then
+              cp -R docs/. _site/ || true
+            fi
+            if [ -d "_site" ]; then
+              true
+            fi
+          fi
+
+      - name: Overlay successful renders
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for artifact_dir in current-artifacts/*; do
+            if [ -d "$artifact_dir" ] && [[ "$(basename "$artifact_dir")" != status-* ]]; then
+              cp -R "$artifact_dir"/. _site/
+            fi
+          done
+
+      - name: Copy status files for README update
+        shell: bash
+        run: |
+          mkdir -p statuses
+          find current-artifacts -name '*.json' -path '*/status-*' -exec cp {} statuses/ \;
+
+      - name: Update README table
+        shell: Rscript {0}
+        run: |
+          readme_file <- "README.md"
+          content_dir <- "content"
+          excluded <- c("setup.qmd", "acknowledgements.qmd", "advanced-features.qmd")
+
+          parse_yaml <- function(filepath) {
+            lines <- readLines(filepath, warn = FALSE)
+            dash_lines <- which(lines == "---")
+            res <- list(stock = NA_character_, previous_model = "", features = "")
+
+            if (length(dash_lines) >= 2) {
+              yaml_lines <- lines[(dash_lines[1] + 1):(dash_lines[2] - 1)]
+              for (line in yaml_lines) {
+                if (grepl("^stock:", line)) res$stock <- trimws(gsub("^stock:\\s*|\"|'", "", line))
+                if (grepl("^previous_model:", line)) res$previous_model <- trimws(gsub("^previous_model:\\s*|\"|'", "", line))
+                if (grepl("^features:", line)) res$features <- trimws(gsub("^features:\\s*|\"|'", "", line))
+              }
+            }
+            res
+          }
+
+          status_files <- list.files("statuses", pattern = "\\.json$", full.names = TRUE)
+          status_map <- list()
+
+          if (length(status_files) > 0) {
+            for (sf in status_files) {
+              obj <- jsonlite::fromJSON(sf)
+              status_map[[obj$case_id]] <- obj$status
+            }
+          }
+
+          files <- list.files(content_dir, pattern = "\\.qmd$", full.names = TRUE)
+          basenames <- basename(files)
+          valid_idx <- !(basenames %in% excluded)
+          files <- files[valid_idx]
+          basenames <- basenames[valid_idx]
+
+          table_lines <- c(
+            "Stock | Previous Model | Status | Notable Features |",
+            "-- | -- | -- | --"
+          )
+
+          dir.create("badges", showWarnings = FALSE)
+
+          for (i in seq_along(files)) {
+            file <- files[i]
+            case_id <- sub("\\.qmd$", "", basenames[i])
+            meta <- parse_yaml(file)
+
+            stock <- if (!is.na(meta$stock) && nzchar(meta$stock)) meta$stock else gsub("[-_]", " ", case_id)
+            status <- if (!is.null(status_map[[case_id]])) status_map[[case_id]] else "failing"
+
+            badge_url <- if (status == "working") {
+              "https://img.shields.io/badge/Status-working-brightgreen"
+            } else {
+              "https://img.shields.io/badge/Status-failing-red"
+            }
+
+            badge_path <- file.path("badges", paste0(case_id, ".svg"))
+            download.file(badge_url, destfile = badge_path, mode = "wb", quiet = TRUE)
+
+            badge_md <- paste0("![Status](", badge_path, ")")
+            table_lines <- c(table_lines, paste(stock, meta$previous_model, badge_md, meta$features, sep = " | "))
+          }
+
+          readme <- readLines(readme_file, warn = FALSE)
+          start_idx <- which(trimws(readme) == "<!-- TABLE_START -->")
+          end_idx <- which(trimws(readme) == "<!-- TABLE_END -->")
+
+          if (length(start_idx) > 0 && length(end_idx) > 0) {
+            new_readme <- c(
+              readme[1:start_idx],
+              table_lines,
+              readme[end_idx:length(readme)]
+            )
+            writeLines(new_readme, readme_file)
+          } else {
+            stop("Could not find TABLE_START/TABLE_END markers in README.md")
+          }
+
+      - name: Commit README update
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore: auto-update README case study table [skip ci]"
+          title: "🤖 Auto-update case study table"
+          body: "Automated update of the case study status table."
+          branch: "auto-update-readme-table"
+          base: "main"
+
+      - name: Deploy merged site to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          keep_files: true
