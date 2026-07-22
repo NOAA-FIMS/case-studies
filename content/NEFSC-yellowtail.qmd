@@ -87,11 +87,11 @@ parameters <- create_default_configurations(data = data_4_model) |>
   # ASAP assumes Fmult devs = 0
   dplyr::rows_update(
     tibble::tibble(
-      fleet_name = c("survey1", "survey2"),
+      fleet = c("survey1", "survey2"),
       label = "log_q",
       value = log(rdat$initial.guesses$q.year1.init)
     ),
-    by = c("fleet_name", "label")
+    by = c("fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -172,7 +172,7 @@ report <- get_report(fit)
 ```{r}
 #| label: comparison-plots
 
-convert_output_asap <- function(report, fleet_names) {
+convert_output_asap <- function(report, fleets) {
   years <- seq(report$parms$styr, report$parms$endyr)
   catch <- data.frame(
     module_name = "Fleet",
@@ -248,7 +248,7 @@ convert_output_asap <- function(report, fleet_names) {
     dplyr::mutate(
       uncertainty = NA_real_,
       uncertainty_label = "se",
-      fleet = as.character(factor(module_id, labels = fleet_names)),
+      fleet = as.character(factor(module_id, labels = fleets)),
       era = "time"
     )
 }
@@ -316,7 +316,7 @@ print(comp_index)
 
 catch_results <- data.frame(
   observed = get_data(data_4_model) |>
-    dplyr::filter(type == "landings", name == "fishery") |>
+    dplyr::filter(type == "landings", fleet == "fishery") |>
     dplyr::pull(value),
   FIMS = report$landings_expected[[1]],
   ASAP = as.numeric(rdat$catch.pred[1,])
