@@ -2,7 +2,7 @@ name: Render Case Studies
 
 on:
   push:
-    # branches: [ main ]
+    branches: [ main ]
     paths:
       - "content/**"
       - ".github/workflows/render-case-studies.yml"
