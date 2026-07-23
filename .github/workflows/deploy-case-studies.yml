@@ -6,6 +6,13 @@ on:
     types:
       - completed
   workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Run ID of Render Case Studies to get artifacts from (for testing)'
+        required: false
+        type: string
+  push:
+    branches: [ "**" ] # Temporarily trigger on any push for testing
 
 permissions:
   contents: write
@@ -17,7 +24,7 @@ concurrency:
 jobs:
   deploy:
     if: >
-      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
       (
         github.event.workflow_run.event == 'push' &&
         github.event.workflow_run.head_branch == 'main' &&
@@ -33,6 +40,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: current-artifacts
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Temporarily hardcode a run ID below to fetch artifacts during push tests:
+          run-id: ${{ inputs.run_id || github.event.workflow_run.id || 'REPLACE_ME_WITH_RUN_ID' }}
 
       - name: Fetch existing gh-pages branch
         shell: bash
@@ -153,8 +163,18 @@ jobs:
           } else {
             stop("Could not find TABLE_START/TABLE_END markers in README.md")
           }
+          
+      - name: Upload test artifacts
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-deploy-outputs
+          path: |
+            _site/
+            README.md
 
       - name: Commit README update
+        if: github.event_name == 'workflow_run'
         uses: peter-evans/create-pull-request@v6
         with:
           commit-message: "chore: auto-update README case study table [skip ci]"
@@ -164,6 +184,7 @@ jobs:
           base: "main"
 
       - name: Deploy merged site to gh-pages
+        if: github.event_name == 'workflow_run'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
