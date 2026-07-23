@@ -145,6 +145,7 @@ jobs:
           quarto render "${{ matrix.qmd_path }}"
 
       - name: Record status
+        if: always()
         shell: bash
         run: |
           mkdir -p statuses
