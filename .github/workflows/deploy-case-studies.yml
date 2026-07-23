@@ -42,7 +42,7 @@ jobs:
           path: current-artifacts
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # Temporarily hardcode a run ID below to fetch artifacts during push tests:
-          run-id: ${{ inputs.run_id || github.event.workflow_run.id || 'REPLACE_ME_WITH_RUN_ID' }}
+          run-id: ${{ inputs.run_id || github.event.workflow_run.id || '30027405047' }}
 
       - name: Fetch existing gh-pages branch
         shell: bash
