@@ -56,14 +56,9 @@ jobs:
           mkdir -p _site
 
           if git show-ref --verify --quiet refs/heads/gh-pages; then
-            git checkout gh-pages -- .
-            # Copy previously published site into _site if it exists in repo checkout
-            if [ -d "docs" ]; then
-              cp -R docs/. _site/ || true
-            fi
-            if [ -d "_site" ]; then
-              true
-            fi
+            # The previous site is deployed to the root of the gh-pages branch.
+            # We extract it directly into the _site directory.
+            git archive gh-pages | tar -x -C _site/
           fi
 
       - name: Overlay successful renders
