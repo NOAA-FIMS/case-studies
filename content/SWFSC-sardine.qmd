@@ -96,7 +96,11 @@ fimsindex$unit <- ""
 
 #-----Age compositions
 acomps <- utils::read.csv(file.path(data_directory, "sardine_acomps.csv")) |>
-  dplyr::mutate(value_prop = value / Nsamp) # convert age-comp data to proportions, to match fims-demo.Rmd
+  dplyr::group_by(name, Yr) |>
+  # convert value column to proportions, to match fims-demo.Rmd
+  dplyr::mutate(value_prop = value / sum(value)) |>
+  dplyr::ungroup()
+
 
 fimsage <- tibble::tibble(type = "age_comp", fleet = acomps$name,
                   age = acomps$age, timing = acomps$Yr,
@@ -114,7 +118,7 @@ wtatage <- r4ss::SS_readwtatage(file.path(data_directory, "sardine_wtatage.ss_ne
   dplyr::filter(fleet %in% c(1, 2)) |>
   dplyr::mutate(fleet = ifelse(fleet == 1, "fleet1", "survey1")) |>
   tidyr::pivot_longer(cols = `0`:`10`, names_to = "age", values_to = "value") |>
-  dplyr::filter(year != 2024, !(age %in% c("9", "10"))) |> # Trim ages 9 and 10 to match age-comps
+  dplyr::filter(!(age %in% c("9", "10"))) |> # Trim ages 9 and 10 to match age-comps
   dplyr::mutate(value = value / 1000) # WAA converted from kg to mt
 fimswaa <- tibble::tibble(
   type = "weight_at_age",
@@ -153,9 +157,9 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
       label = rep(c("inflection_point", "slope"), 2),
       value = c(1, 5, 1.2, 2),
       estimation_type = "constant",
-      fleet_name = rep(c("fleet1", "survey1"), each = 2)
+      fleet = rep(c("fleet1", "survey1"), each = 2)
     ),
-    by = c("module_name", "label", "fleet_name")
+    by = c("module_name", "label", "fleet")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -192,21 +196,21 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "survey1",
+      fleet = "survey1",
       label = "log_q",
       value = 0,
       estimation_type = "constant"
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "fleet1",
+      fleet = "fleet1",
       label = "log_Fmort",
       value = log(0.2)
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -229,22 +233,22 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Data",
-      fleet_name = "fleet1",
+      fleet = "fleet1",
       label = "log_sd",
       value = log(sqrt(log(0.01^2 + 1))),
       estimation_type = "fixed_effects"
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Data",
-      fleet_name = "survey1",
+      fleet = "survey1",
       label = "log_sd",
       value = log(sqrt(log(0.1^2 + 1))),
       estimation_type = "fixed_effects"
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   )
 ```
 
