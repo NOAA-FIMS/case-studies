@@ -269,7 +269,7 @@ output <- FIMS::get_estimates(fit) |>
   )
 
 # Get information about the model and print a few characters to the screen
-log <- FIMS::get_log_module("information")
+# log <- FIMS::get_log_module("information")
 ```
 
 ## Add your comparison figures
@@ -415,27 +415,28 @@ ggplot2::ggsave("figures/SWFSC-sardine-recruitment.png", width = 6.8, height = 5
 #Are fixed but plot for comparison's sake
 ##Fishery
 
-sel_fishery <- logistic(ages,
-                        slope = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "slope", module_id == 1) |>
-                          dplyr::pull(estimated),
-                        inflection_point = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "inflection_point", module_id == 1) |>
-                          dplyr::pull(estimated))
+### commented out due to error "! object 'value' not found"
+# sel_fishery <- logistic(ages,
+#                         slope = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "slope", module_id == 1) |>
+#                           dplyr::pull(estimated),
+#                         inflection_point = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "inflection_point", module_id == 1) |>
+#                           dplyr::pull(estimated))
 
-names(sel_fishery) <- c("age", "fims")
+# names(sel_fishery) <- c("age", "fims")
 
-sel_fishery$ss3 <- ssres$ageselex |>
-  dplyr::filter(Yr == 2005, Factor == "Asel", Fleet == 1) |>
-  dplyr::select(as.character(0:8)) |>
-  t()
-sel_fishery <- sel_fishery |>
-  reshape2::melt(id.var = "age")
+# sel_fishery$ss3 <- ssres$ageselex |>
+#   dplyr::filter(Yr == 2005, Factor == "Asel", Fleet == 1) |>
+#   dplyr::select(as.character(0:8)) |>
+#   t()
+# sel_fishery <- sel_fishery |>
+#   reshape2::melt(id.var = "age")
 
-ggplot2::ggplot(
-  sel_fishery,
-  ggplot2::aes(x = age, y = value, group = variable, color = variable)
-) +
-  ggplot2::geom_point() +
-  ggplot2::geom_line()
+# ggplot2::ggplot(
+#   sel_fishery,
+#   ggplot2::aes(x = age, y = value, group = variable, color = variable)
+# ) +
+#   ggplot2::geom_point() +
+#   ggplot2::geom_line()
 
 #-----------Survey
 sel_survey <- logistic(ages,
