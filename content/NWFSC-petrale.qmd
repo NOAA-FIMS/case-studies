@@ -64,11 +64,12 @@ rep <- r4ss::SS_output(
     covar = FALSE
 )
 
-# alternative output processing using stockplotr
-output_petrale <- stockplotr::convert_output(
-    "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a050.003_FIMS_case-study_wtatage/Report.sso",
-    model = "ss3"
-)
+# # commented out pending fix to https://github.com/nmfs-ost/stockplotr/pull/317
+# # alternative output processing using stockplotr
+# output_petrale <- stockplotr::convert_output(
+#     "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a050.003_FIMS_case-study_wtatage/Report.sso",
+#     model = "ss3"
+# )
 
 ```
 
