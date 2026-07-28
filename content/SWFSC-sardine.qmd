@@ -75,7 +75,7 @@ catch <- data.frame(year = 2005:2023, catch = c(29188.50, 53107.00, 69929.40,
 #   geom_line() + scale_y_continuous(label = comma)
 
 
-fimscatch <- tibble::tibble(type = "landings", name = "fleet1",
+fimscatch <- tibble::tibble(type = "landings", fleet = "fleet1",
                     age = NA, timing = catch$year, value = catch$catch,
                     unit = "mt", uncertainty = 0.05)
 
@@ -89,7 +89,7 @@ cpue <- data.frame(year = 2005:2023, obs = c(649619.0, 899635.0, 956354.0, 86328
 # ggplot(cpue, aes(x = year, y = obs)) + geom_point() + geom_line() +
 #   scale_y_continuous(label = comma)
 
-fimsindex <- tibble::tibble(type = "index", name = "survey1",
+fimsindex <- tibble::tibble(type = "index", fleet = "survey1",
                     age = NA, timing = cpue$year,
                     value = cpue$obs, unit = "mt", uncertainty = .3)
 fimsindex$unit <- ""
@@ -98,7 +98,7 @@ fimsindex$unit <- ""
 acomps <- utils::read.csv(file.path(data_directory, "sardine_acomps.csv")) |>
   dplyr::mutate(value_prop = value / Nsamp) # convert age-comp data to proportions, to match fims-demo.Rmd
 
-fimsage <- tibble::tibble(type = "age_comp", name = acomps$name,
+fimsage <- tibble::tibble(type = "age_comp", fleet = acomps$name,
                   age = acomps$age, timing = acomps$Yr,
                   value = acomps$value_prop, unit = "proportion", uncertainty = acomps$Nsamp)
 #fimsage$uncertainty <- 50 Leave as empirical values
@@ -117,8 +117,8 @@ wtatage <- r4ss::SS_readwtatage(file.path(data_directory, "sardine_wtatage.ss_ne
   dplyr::filter(year != 2024, !(age %in% c("9", "10"))) |> # Trim ages 9 and 10 to match age-comps
   dplyr::mutate(value = value / 1000) # WAA converted from kg to mt
 fimswaa <- tibble::tibble(
-  type = "weight-at-age",
-  name = wtatage$fleet,
+  type = "weight_at_age",
+  fleet = wtatage$fleet,
   age = wtatage$age,
   timing = wtatage$year,
   value = wtatage$value,
