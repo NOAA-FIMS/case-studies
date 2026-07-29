@@ -278,12 +278,6 @@ opaka_dat_fims <- opaka_dat_fims_raw |>
     )
   )
 
-# TODO clean this up later
-# filter to just landings for FRS
-# to avoid a bug in FIMS
-opaka_dat_fims <- opaka_dat_fims |>
-  dplyr::filter_out(fleet == "FRS" & type == "index")
-
 data_4_model <- FIMS::FIMSFrame(opaka_dat_fims)
 
 
@@ -307,9 +301,7 @@ recdevs <- rep$parameters |>
   dplyr::filter(stringr::str_detect(Label, "RecrDev")) |>
   dplyr::select(Label, Value)
 
-init_naa <- (exp(opaka_inputs_bootstrap$ctl$SR_parms["SR_LN(R0)", "INIT"]) *
-  1000) *
-  exp(-(ages - 1) * 0.135)
+init_naa <- (exp(opaka_inputs_bootstrap$ctl$SR_parms["SR_LN(R0)", "INIT"])) * exp(-(0:max(ages)) * 0.135)
 init_naa[n_ages] <- init_naa[n_ages] / 0.135
 
 # Create default parameters
@@ -325,7 +317,6 @@ default_parameters <- FIMS::create_default_configurations(
       module_type
     )
   ) |>
-  # tidyr::nest(.by = c(model_family, module_name, fleet)) |>
   FIMS::create_default_parameters(
     data = data_4_model
   ) |>
@@ -350,11 +341,23 @@ parameters <- default_parameters |>
         "length_at_ref_age_2",
         "growth_coefficient_K",
         "reference_age_for_length_1",
-        "reference_age_for_length_2"
+        "reference_age_for_length_2",
+        "length_weight_a", # added length-weight relationship parameters
+        "length_weight_b"
       ),
-      value = c(6, 67.5, .242, 0, 21)
+      value = c(6, 67.5, .242, 0, 21, 1.75e-05, 2.99),
+      estimation_type = "constant"
     ),
     by = c("module_name", "label")
+  ) |>
+  dplyr::rows_update( #Note: this could probably be combined with Growth block above and put NAs for age for the other parameters
+    tibble::tibble(
+      module_name = "Growth",
+      label = "length_at_age_sd_at_ref_ages",
+      age = c(0, 21),
+      value = c(0.51, 5.71)
+    ),
+    by=c("module_name", "label", "age")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -399,7 +402,7 @@ parameters <- default_parameters |>
     tibble::tibble(
       module_name = "Population",
       label = "log_init_naa",
-      age = ages,
+      age = 0:max(ages), #fixed init_naa to be from age 0 - max age instead of age 1
       value = log(init_naa),
       estimation_type = "constant"
     ),
@@ -421,7 +424,8 @@ parameters <- default_parameters |>
           log(opaka_inputs_bootstrap$ctl$SR_parms["SR_BH_steep", "INIT"] - 0.2),
         # sigmaR
         opaka_inputs_bootstrap$ctl$SR_parms["SR_sigmaR", "INIT"]
-      )
+      ),
+      estimation_type = c("constant", "constant", "constant") #fixing for convergence
     ),
     by = c("module_name", "label")
   ) |>
@@ -466,10 +470,8 @@ parameters <- default_parameters |>
     by = c("module_name", "fleet", "label", "time")
   )
 
-# # optionally use the defaults instead of the modified parameters
-# parameters <- default_parameters
+
 # Run the model without optimization
-## Getting error here about mismatch in size of log_sd vector
 fit_init <- parameters |>
   FIMS::initialize_fims(data = data_4_model) |>
   # Model is too big to run on GitHub action if you estimate uncertainty
@@ -480,6 +482,31 @@ fit_est <- parameters |>
   FIMS::initialize_fims(data = data_4_model) |>
   # Model is too big to run on GitHub action if you estimate uncertainty
   FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
+```
+
+## Examining convergence and parameter estimates
+
+```{r}
+obj_fit_est <- methods::slot(fit_est,"obj")
+opt_par_fit_est <- FIMS::get_opt(fit_est)$par
+grad_fit_est <- obj_fit_est$gr(opt_par_fit_est)
+
+gradient_fit_est <- tibble::tibble(
+      parameter = names(obj_fit_est$par),
+      value = as.numeric(opt_par_fit_est),
+      gradient = as.numeric(grad_fit_est),
+      abs_gradient = abs(gradient)
+    ) |>
+      dplyr::arrange(parameter)
+
+gradient_fit_est |>
+      dplyr::slice_head(n = 30) |>
+      print(width = 200)
+gradient_fit_est |>
+      dplyr::slice_tail(n = 30) |>
+      print(width = 200)
+
+
 ```
 
 ## Plotting Results
@@ -498,12 +525,12 @@ output <- FIMS::get_estimates(fit) |>
   )
 
 fleet_module_lookup <- parameters |>
-  dplyr::filter(module_name == "Fleet", !is.na(fleet_name)) |>
-  dplyr::distinct(fleet_name) |>
+  dplyr::filter(module_name == "Fleet", !is.na(fleet)) |>
+  dplyr::distinct(fleet) |>
   dplyr::mutate(module_id = dplyr::row_number())
 
 index_module_lookup <- fleet_module_lookup |>
-  dplyr::filter(fleet_name %in% c("BFISH", "FRS_CPUE"))
+  dplyr::filter(fleet %in% c("BFISH", "FRS_CPUE"))
 
 # year conversion matrix and index plots copied from pacific-hake.qmd
 year_conversion_matrix <- dplyr::tibble(
@@ -518,7 +545,7 @@ stockplotr::plot_timeseries(
   stockplotr::filter_data(
     output |>
       dplyr::inner_join(index_module_lookup, by = "module_id") |>
-      dplyr::filter(fleet_name == "BFISH"),
+      dplyr::filter(fleet == "BFISH"),
     label_name = "^index_expected$",
     geom = "line"
   ),
@@ -530,7 +557,7 @@ stockplotr::plot_timeseries(
     data = FIMS::get_estimates(fit) |>
       dplyr::inner_join(index_module_lookup, by = "module_id") |>
       dplyr::filter(
-        fleet_name == "BFISH",
+        fleet == "BFISH",
         label == "index_expected",
         observed > -999
       ) |>
@@ -546,7 +573,7 @@ stockplotr::plot_timeseries(
   stockplotr::filter_data(
     output |>
       dplyr::inner_join(index_module_lookup, by = "module_id") |>
-      dplyr::filter(fleet_name == "FRS_CPUE"),
+      dplyr::filter(fleet == "FRS_CPUE"),
     label_name = "^index_expected$",
     geom = "line"
   ),
@@ -558,7 +585,7 @@ stockplotr::plot_timeseries(
     data = FIMS::get_estimates(fit) |>
       dplyr::inner_join(index_module_lookup, by = "module_id") |>
       dplyr::filter(
-        fleet_name == "FRS_CPUE",
+        fleet == "FRS_CPUE",
         label == "index_expected",
         observed > -999
       ) |>
@@ -577,17 +604,17 @@ observed_landings <- tibble::tibble(
   fleet = rep(c("FRS", "Non_comm"), each = length(landings_years)),
   year = rep(landings_years, times = 2),
   observed = c(
-    FIMS::m_landings(data_4_model, fleet_name = "FRS"),
-    FIMS::m_landings(data_4_model, fleet_name = "Non_comm")
+    FIMS::m_landings(data_4_model, fleet = "FRS"),
+    FIMS::m_landings(data_4_model, fleet = "Non_comm")
   )
 )
 
 expected_landings <- output |>
   dplyr::filter(label == "landings_expected") |>
   dplyr::inner_join(fleet_module_lookup, by = "module_id") |>
-  dplyr::filter(fleet_name %in% c("FRS", "Non_comm")) |>
+  dplyr::filter(fleet %in% c("FRS", "Non_comm")) |>
   dplyr::transmute(
-    fleet = fleet_name,
+    fleet = fleet,
     year,
     expected = estimate
   )

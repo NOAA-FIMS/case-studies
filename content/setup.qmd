@@ -6,7 +6,7 @@
 #| echo: false
 
 # installing branch with growth for Code Club 
-remotes::install_github("NOAA-FIMS/FIMS@dev-vonb-sizeRefactor-rebase")
+#remotes::install_github("NOAA-FIMS/FIMS@dev-vonb-sizeRefactor-rebase")
 library(FIMS)
 library(SparseNUTS)
 R_version <- version$version.string
