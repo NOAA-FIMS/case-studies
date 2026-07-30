@@ -491,6 +491,7 @@ obj_fit_est <- methods::slot(fit_est,"obj")
 opt_par_fit_est <- FIMS::get_opt(fit_est)$par
 grad_fit_est <- obj_fit_est$gr(opt_par_fit_est)
 
+# Create tibble of parameter estimates
 gradient_fit_est <- tibble::tibble(
       parameter = names(obj_fit_est$par),
       value = as.numeric(opt_par_fit_est),
@@ -521,16 +522,22 @@ output <- FIMS::get_estimates(fit) |>
   dplyr::mutate(
     uncertainty_label = "se",
     year = year_i + FIMS::get_start_year(data_4_model) - 1,
-    estimate = estimated
+    estimate = estimated,
+    fleet = dplyr::recode_values(
+      module_id,
+      1 ~ "BFISH",
+      2 ~ "FRS",
+      3 ~ "Non_comm",
+      default = NA_character_
+    )
   )
 
 fleet_module_lookup <- parameters |>
-  dplyr::filter(module_name == "Fleet", !is.na(fleet)) |>
-  dplyr::distinct(fleet) |>
-  dplyr::mutate(module_id = dplyr::row_number())
+  dplyr::filter(module_name == "Fleet") |>
+  dplyr::distinct(fleet)
 
 index_module_lookup <- fleet_module_lookup |>
-  dplyr::filter(fleet %in% c("BFISH", "FRS_CPUE"))
+  dplyr::filter(fleet %in% c("BFISH", "FRS"))
 
 # year conversion matrix and index plots copied from pacific-hake.qmd
 year_conversion_matrix <- dplyr::tibble(
@@ -544,8 +551,8 @@ year_conversion_matrix <- dplyr::tibble(
 stockplotr::plot_timeseries(
   stockplotr::filter_data(
     output |>
-      dplyr::inner_join(index_module_lookup, by = "module_id") |>
-      dplyr::filter(fleet == "BFISH"),
+      dplyr::filter(fleet == "BFISH") |>
+      dplyr::filter(year > 2016), #there are estimated values for years before observed data so removing them
     label_name = "^index_expected$",
     geom = "line"
   ),
@@ -555,7 +562,15 @@ stockplotr::plot_timeseries(
 ) +
   ggplot2::geom_point(
     data = FIMS::get_estimates(fit) |>
-      dplyr::inner_join(index_module_lookup, by = "module_id") |>
+      dplyr::mutate(
+        fleet = dplyr::recode_values(
+          module_id,
+          1 ~ "BFISH",
+          2 ~ "FRS",
+          3 ~ "Non_comm",
+          default = NA_character_
+        ) 
+      )|>
       dplyr::filter(
         fleet == "BFISH",
         label == "index_expected",
@@ -572,8 +587,7 @@ stockplotr::plot_timeseries(
 stockplotr::plot_timeseries(
   stockplotr::filter_data(
     output |>
-      dplyr::inner_join(index_module_lookup, by = "module_id") |>
-      dplyr::filter(fleet == "FRS_CPUE"),
+      dplyr::filter(fleet == "FRS"),
     label_name = "^index_expected$",
     geom = "line"
   ),
@@ -583,9 +597,17 @@ stockplotr::plot_timeseries(
 ) +
   ggplot2::geom_point(
     data = FIMS::get_estimates(fit) |>
-      dplyr::inner_join(index_module_lookup, by = "module_id") |>
+      dplyr::mutate(
+        fleet = dplyr::recode_values(
+          module_id,
+          1 ~ "BFISH",
+          2 ~ "FRS",
+          3 ~ "Non_comm",
+          default = NA_character_
+        ) 
+      )|>
       dplyr::filter(
-        fleet == "FRS_CPUE",
+        fleet == "FRS",
         label == "index_expected",
         observed > -999
       ) |>
@@ -600,18 +622,22 @@ stockplotr::plot_timeseries(
 
 landings_years <- FIMS::get_start_year(data_4_model):FIMS::get_end_year(data_4_model)
 
-observed_landings <- tibble::tibble(
-  fleet = rep(c("FRS", "Non_comm"), each = length(landings_years)),
-  year = rep(landings_years, times = 2),
-  observed = c(
-    FIMS::m_landings(data_4_model, fleet = "FRS"),
-    FIMS::m_landings(data_4_model, fleet = "Non_comm")
-  )
-)
+observed_landings <- data_4_model@data |> 
+  dplyr::filter(type == "landings" & fleet != "BFISH") |> 
+  dplyr::select(fleet, timing, value) |> 
+  dplyr::rename(fleet = "fleet", year = "timing", observed = "value")
 
 expected_landings <- output |>
   dplyr::filter(label == "landings_expected") |>
-  dplyr::inner_join(fleet_module_lookup, by = "module_id") |>
+  dplyr::mutate(
+        fleet = dplyr::recode_values(
+          module_id,
+          1 ~ "BFISH",
+          2 ~ "FRS",
+          3 ~ "Non_comm",
+          default = NA_character_
+        ) 
+      )|>
   dplyr::filter(fleet %in% c("FRS", "Non_comm")) |>
   dplyr::transmute(
     fleet = fleet,
@@ -684,7 +710,7 @@ ss3_recruits <- rep$recruit |>
     recdev = raw_dev
   ) |>
   dplyr::mutate(
-    recruit = recruit * 1000
+    recruit = recruit
   ) |>
   tidyr::pivot_longer(
     cols = c(recruit, recdev),
