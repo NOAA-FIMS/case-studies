@@ -240,7 +240,7 @@ if (FALSE) {
 #| output: false
 #| warning: false
 # load opaka_inputs_bootstrap and rep objects with model input and output
-load(file.path("content", data_directory, "opaka_model.RDS"))
+load(file.path(data_directory, "opaka_model.RDS"))
 include_age_comps <- FALSE
 years <- seq(opaka_inputs_bootstrap$dat$styr, opaka_inputs_bootstrap$dat$endyr)
 alk_years <- c(years, max(years) + 1)
@@ -731,6 +731,7 @@ fims_recruits <- tibble::tibble(
     NA,
     FIMS::get_estimates(fit) |>
       dplyr::filter(label == "log_devs", module_name == "Recruitment") |>
+      dplyr::mutate(estimated = exp(estimated)) |>
       dplyr::pull(estimated)
   )
 ) |>
