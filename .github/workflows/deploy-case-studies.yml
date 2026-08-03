@@ -11,8 +11,6 @@ on:
         description: 'Run ID of Render Case Studies to get artifacts from (for testing)'
         required: false
         type: string
-  push:
-    branches: [ "**" ] # Temporarily trigger on any push for testing
 
 permissions:
   contents: write
