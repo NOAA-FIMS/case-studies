@@ -164,8 +164,23 @@ jobs:
           }
           EOF
 
+      - name: Check whether this case study is published
+        id: publish_check
+        shell: Rscript {0}
+        run: |
+          quarto <- yaml::read_yaml("_quarto.yml")
+          render_list <- quarto$project$render
+
+          published_qmds <- render_list[grepl("^content/.*\\.qmd$", render_list)]
+          published_cases <- tools::file_path_sans_ext(basename(published_qmds))
+
+          is_published <- "${{ matrix.case_id }}" %in% published_cases
+
+          cat("published=", if (is_published) "true" else "false", "\n",
+              sep = "", file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
+
       - name: Upload rendered artifact
-        if: steps.render.outcome == 'success'
+        if: steps.render.outcome == 'success' && steps.publish_check.outputs.published == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
