@@ -84,7 +84,7 @@ stock_synthesis_data <- r4ss::ss3_data_to_fims(
 ) |>
   dplyr::mutate(
     uncertainty = ifelse(
-      test = type == "age" & name == "Acoustic_Survey",
+      test = type == "age" & fleet == "Acoustic_Survey",
       uncertainty * 30,
       uncertainty
     )
@@ -133,7 +133,7 @@ data_4_model
 # Summary of the data types available
 FIMS::get_data(data_4_model) |>
   dplyr::filter(value != -999) |>
-  dplyr::group_by(type, name) |>
+  dplyr::group_by(type, fleet) |>
   dplyr::count()
 ```
 
@@ -283,10 +283,10 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = c("Fishery", "Acoustic_Survey"),
+      fleet = c("Fishery", "Acoustic_Survey"),
       module_type = c(selectivity_used, "Logistic")
     ),
-    by = c("module_name", "fleet_name")
+    by = c("module_name", "fleet")
   ) |>
   FIMS::create_default_parameters(data = data_4_model) |>
   tidyr::unnest(data) |>
@@ -325,45 +325,45 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = rep(c("Fishery", "Acoustic_Survey"), each = 2),
+      fleet = rep(c("Fishery", "Acoustic_Survey"), each = 2),
       label = rep(c("inflection_point", "slope"), 2),
       # TODO: play with these start values
       value = c(2.05, 3.17, 4.4, 3.3),
       estimation_type = "fixed_effects"
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "Acoustic_Survey",
+      fleet = "Acoustic_Survey",
       label = c("log_q"),
       value = log(0.832),
       estimation_type = "fixed_effects"
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   )
   
-fleet_names <- get_fleets(data_4_model)
+fleets <- get_fleets(data_4_model)
 
 # Initialize lists to store fleet-related objects
 fleet <- fleet_selectivity <-
   fleet_landings <- fleet_landings_distribution <-
   fleet_index <- fleet_index_distribution <-
   fleet_age_comp <- fleet_agecomp_distribution <-
-  vector("list", length(fleet_names))
+  vector("list", length(fleets))
 
-for (i in seq_along(fleet_names)) {
+for (i in seq_along(fleets)) {
   # Selectivity
   fleet_selectivity[[i]] <- FIMS:::initialize_selectivity(
     parameters = parameters,
     data = data_4_model,
-    fleet_name = fleet_names[i]
+    fleet = fleets[i]
   )
   # Time-varying selectivity for the fishery
   if (i == 1 & time_varying_selectivity) {
     selectivity_type <- parameters |>
-      dplyr::filter(module_name == "Selectivity", fleet_name == "Fishery") |>
+      dplyr::filter(module_name == "Selectivity", fleet == "Fishery") |>
       dplyr::slice(1) |>
       dplyr::pull(module_type)
     if (selectivity_type == "Logistic"){
@@ -397,11 +397,11 @@ for (i in seq_along(fleet_names)) {
     selectivity = fleet_selectivity[[i]]$get_id()
   )
   fleet_types <- get_data(data_4_model) |>
-    dplyr::filter(name == fleet_names[i]) |>
+    dplyr::filter(fleet == fleets[i]) |>
     dplyr::pull(type) |>
     unique()
   data_distribution_names_for_fleet_i <- parameters |>
-    dplyr::filter(fleet_name == fleet_names[i] & distribution_type == "Data") |>
+    dplyr::filter(fleet == fleets[i] & distribution_type == "Data") |>
     dplyr::pull(module_type)
 
   # Landings
@@ -410,7 +410,7 @@ for (i in seq_along(fleet_names)) {
     # Initialize landings module for the current fleet
     fleet_landings[[i]] <- FIMS:::initialize_landings(
       data = data_4_model,
-      fleet_name = fleet_names[i]
+      fleet = fleets[i]
     )
     # Add the module ID for the initialized landings to the list of fleet module IDs
     fleet_module_ids <- c(
@@ -425,7 +425,7 @@ for (i in seq_along(fleet_names)) {
     # Initialize index module for the current fleet
     fleet_index[[i]] <- FIMS:::initialize_index(
       data = data_4_model,
-      fleet_name = fleet_names[i]
+      fleet = fleets[i]
     )
     fleet_module_ids <- c(
       fleet_module_ids,
@@ -439,7 +439,7 @@ for (i in seq_along(fleet_names)) {
     # Initialize age composition module for the current fleet
     fleet_age_comp[[i]] <- FIMS:::initialize_comp(
       data = data_4_model,
-      fleet_name = fleet_names[i],
+      fleet = fleets[i],
       type = "AgeComp"
     )
     fleet_module_ids <- c(
@@ -451,13 +451,13 @@ for (i in seq_along(fleet_names)) {
   fleet[[i]] <- FIMS:::initialize_fleet(
     parameters = parameters,
     data = data_4_model,
-    fleet_name = fleet_names[i],
+    fleet = fleets[i],
     linked_ids = fleet_module_ids
   )
 
   # Fleet uncertainty
   fleet_sd_input <- parameters |>
-    dplyr::filter(fleet_name == fleet_names[i] & label == "log_sd") |>
+    dplyr::filter(fleet == fleets[i] & label == "log_sd") |>
     dplyr::mutate(
       label = "sd",
       value = exp(value)
@@ -511,7 +511,7 @@ recruitment$log_devs$resize(get_n_years(data_4_model))
 for (y in seq(recruitment$log_devs$size())) {
   recruitment$log_devs[y]$value <- 0
 }
-recruitment$log_devs$set_all_estimable(TRUE)
+recruitment$log_devs$set_estimation_types(c("constant"))
 recruitment$n_years$set(get_n_years(data_4_model))
 recruitment_distribution <- methods::new(DnormDistribution)
 # TODO: check with Andrea about log space here
@@ -532,7 +532,8 @@ recruitment_distribution$set_distribution_links(
   "random_effects",
   recruitment$log_devs$get_id()
 )
-recruitment$log_devs$set_all_random(TRUE)
+recruitment$log_devs$set_estimation_types(c("random_effects"))
+
 # recruitment$log_devs[46]$estimation_type$set("constant")
 # recruitment$log_devs[47]$estimation_type$set("constant")
 # recruitment$log_devs[48]$estimation_type$set("constant")
@@ -790,7 +791,7 @@ posteriors_labeled <- tidyr::pivot_longer(
         } else {
           dplyr::row_number(label)
         },
-        fleet_name = dplyr::if_else(fleet_number == 1, "Fishery", "Acoustic_Survey"),
+        fleet = dplyr::if_else(fleet_number == 1, "Fishery", "Acoustic_Survey"),
         words = gsub("_", " ", label)
       ) |>
       dplyr::ungroup(),
@@ -835,7 +836,7 @@ ggplot2::ggplot(
     alpha = 0.6,
     .width = c(.66, .95) # Shows both 66% and 95% intervals
   ) +
-  ggplot2::facet_wrap(fleet_name ~ words, scales = "free_x") +
+  ggplot2::facet_wrap(fleet ~ words, scales = "free_x") +
   ggplot2::labs(title = "Posterior Distribution", x = "Parameter Value", y = "Density") +
   ggplot2::theme_minimal()
 ```
