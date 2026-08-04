@@ -75,7 +75,7 @@ catch <- data.frame(year = 2005:2023, catch = c(29188.50, 53107.00, 69929.40,
 #   geom_line() + scale_y_continuous(label = comma)
 
 
-fimscatch <- tibble::tibble(type = "landings", name = "fleet1",
+fimscatch <- tibble::tibble(type = "landings", fleet = "fleet1",
                     age = NA, timing = catch$year, value = catch$catch,
                     unit = "mt", uncertainty = 0.05)
 
@@ -89,16 +89,20 @@ cpue <- data.frame(year = 2005:2023, obs = c(649619.0, 899635.0, 956354.0, 86328
 # ggplot(cpue, aes(x = year, y = obs)) + geom_point() + geom_line() +
 #   scale_y_continuous(label = comma)
 
-fimsindex <- tibble::tibble(type = "index", name = "survey1",
+fimsindex <- tibble::tibble(type = "index", fleet = "survey1",
                     age = NA, timing = cpue$year,
                     value = cpue$obs, unit = "mt", uncertainty = .3)
 fimsindex$unit <- ""
 
 #-----Age compositions
 acomps <- utils::read.csv(file.path(data_directory, "sardine_acomps.csv")) |>
-  dplyr::mutate(value_prop = value / Nsamp) # convert age-comp data to proportions, to match fims-demo.Rmd
+  dplyr::group_by(name, Yr) |>
+  # convert value column to proportions, to match fims-demo.Rmd
+  dplyr::mutate(value_prop = value / sum(value)) |>
+  dplyr::ungroup()
 
-fimsage <- tibble::tibble(type = "age_comp", name = acomps$name,
+
+fimsage <- tibble::tibble(type = "age_comp", fleet = acomps$name,
                   age = acomps$age, timing = acomps$Yr,
                   value = acomps$value_prop, unit = "proportion", uncertainty = acomps$Nsamp)
 #fimsage$uncertainty <- 50 Leave as empirical values
@@ -114,11 +118,11 @@ wtatage <- r4ss::SS_readwtatage(file.path(data_directory, "sardine_wtatage.ss_ne
   dplyr::filter(fleet %in% c(1, 2)) |>
   dplyr::mutate(fleet = ifelse(fleet == 1, "fleet1", "survey1")) |>
   tidyr::pivot_longer(cols = `0`:`10`, names_to = "age", values_to = "value") |>
-  dplyr::filter(year != 2024, !(age %in% c("9", "10"))) |> # Trim ages 9 and 10 to match age-comps
+  dplyr::filter(!(age %in% c("9", "10"))) |> # Trim ages 9 and 10 to match age-comps
   dplyr::mutate(value = value / 1000) # WAA converted from kg to mt
 fimswaa <- tibble::tibble(
-  type = "weight-at-age",
-  name = wtatage$fleet,
+  type = "weight_at_age",
+  fleet = wtatage$fleet,
   age = wtatage$age,
   timing = wtatage$year,
   value = wtatage$value,
@@ -153,9 +157,9 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
       label = rep(c("inflection_point", "slope"), 2),
       value = c(1, 5, 1.2, 2),
       estimation_type = "constant",
-      fleet_name = rep(c("fleet1", "survey1"), each = 2)
+      fleet = rep(c("fleet1", "survey1"), each = 2)
     ),
-    by = c("module_name", "label", "fleet_name")
+    by = c("module_name", "label", "fleet")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -192,21 +196,21 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "survey1",
+      fleet = "survey1",
       label = "log_q",
       value = 0,
       estimation_type = "constant"
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "fleet1",
+      fleet = "fleet1",
       label = "log_Fmort",
       value = log(0.2)
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -229,22 +233,22 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Data",
-      fleet_name = "fleet1",
+      fleet = "fleet1",
       label = "log_sd",
       value = log(sqrt(log(0.01^2 + 1))),
       estimation_type = "fixed_effects"
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Data",
-      fleet_name = "survey1",
+      fleet = "survey1",
       label = "log_sd",
       value = log(sqrt(log(0.1^2 + 1))),
       estimation_type = "fixed_effects"
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   )
 ```
 
@@ -265,7 +269,7 @@ output <- FIMS::get_estimates(fit) |>
   )
 
 # Get information about the model and print a few characters to the screen
-log <- FIMS::get_log_module("information")
+# log <- FIMS::get_log_module("information")
 ```
 
 ## Add your comparison figures
@@ -411,27 +415,28 @@ ggplot2::ggsave("figures/SWFSC-sardine-recruitment.png", width = 6.8, height = 5
 #Are fixed but plot for comparison's sake
 ##Fishery
 
-sel_fishery <- logistic(ages,
-                        slope = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "slope", module_id == 1) |>
-                          dplyr::pull(estimated),
-                        inflection_point = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "inflection_point", module_id == 1) |>
-                          dplyr::pull(estimated))
+### commented out due to error "! object 'value' not found"
+# sel_fishery <- logistic(ages,
+#                         slope = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "slope", module_id == 1) |>
+#                           dplyr::pull(estimated),
+#                         inflection_point = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "inflection_point", module_id == 1) |>
+#                           dplyr::pull(estimated))
 
-names(sel_fishery) <- c("age", "fims")
+# names(sel_fishery) <- c("age", "fims")
 
-sel_fishery$ss3 <- ssres$ageselex |>
-  dplyr::filter(Yr == 2005, Factor == "Asel", Fleet == 1) |>
-  dplyr::select(as.character(0:8)) |>
-  t()
-sel_fishery <- sel_fishery |>
-  reshape2::melt(id.var = "age")
+# sel_fishery$ss3 <- ssres$ageselex |>
+#   dplyr::filter(Yr == 2005, Factor == "Asel", Fleet == 1) |>
+#   dplyr::select(as.character(0:8)) |>
+#   t()
+# sel_fishery <- sel_fishery |>
+#   reshape2::melt(id.var = "age")
 
-ggplot2::ggplot(
-  sel_fishery,
-  ggplot2::aes(x = age, y = value, group = variable, color = variable)
-) +
-  ggplot2::geom_point() +
-  ggplot2::geom_line()
+# ggplot2::ggplot(
+#   sel_fishery,
+#   ggplot2::aes(x = age, y = value, group = variable, color = variable)
+# ) +
+#   ggplot2::geom_point() +
+#   ggplot2::geom_line()
 
 #-----------Survey
 sel_survey <- logistic(ages,

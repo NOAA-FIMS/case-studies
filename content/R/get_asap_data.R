@@ -1,7 +1,7 @@
 # need to think about how to deal with multiple fleets, only using 1 right now
 get_asap_data <- function(asap_input) {
   res <- data.frame(type = character(),
-                name = character(),
+                fleet = character(),
                 age = integer(),
                 timing = double(),
                 value = double(),
@@ -10,7 +10,7 @@ get_asap_data <- function(asap_input) {
   years_in_model <- seq(asap_input$parms$styr, asap_input$parms$endyr)
   
   landings <- data.frame(type = "landings",
-                     name = "fishery",
+                     fleet = "fishery",
                      age = NA,
                      timing = years_in_model,
                      value = as.numeric(asap_input$catch.obs[1,]),
@@ -26,7 +26,7 @@ get_asap_data <- function(asap_input) {
   for (i in seq(asap_input$parms$nindices)) {
     index <- data.frame(
       type = "index",
-      name = paste0("survey", i),
+      fleet = paste0("survey", i),
       age = NA_integer_,
       timing = years_in_model[asap_input$index.year.counter[[i]]],
       value = as.numeric(asap_input$index.obs[[i]]),
@@ -46,7 +46,7 @@ get_asap_data <- function(asap_input) {
   
   catchage <- data.frame(
     type = "age_comp",
-    name = "fishery",
+    fleet = "fishery",
     age = rep(seq(1,asap_input$parms$nages), asap_input$parms$nyears),
     timing = rep(seq(asap_input$parms$styr, asap_input$parms$endyr), each = asap_input$parms$nages),
     value = as.numeric(t(asap_input$catch.comp.mats$catch.fleet1.ob)),
@@ -57,7 +57,7 @@ get_asap_data <- function(asap_input) {
   # loop over all indices
   for (i in 1:asap_input$parms$nindices){
     indexage <- data.frame(type = "age_comp",
-                           name = paste0("survey", i),
+                           fleet = paste0("survey", i),
                            age = rep(seq(1,asap_input$parms$nages), asap_input$parms$nyears),
                            timing = rep(seq(asap_input$parms$styr, asap_input$parms$endyr), each = asap_input$parms$nages),
                            value = as.numeric(t(asap_input$index.comp.mats[[i*2-1]])),
@@ -84,7 +84,7 @@ get_asap_data <- function(asap_input) {
   
   weight_at_age <- data.frame(
     type = "weight_at_age",
-    name = NA_character_,
+    fleet = NA_character_,
     age = rep(
       seq(asap_input[["parms"]][["nages"]]),
       length(seq(asap_input[["parms"]][["styr"]], asap_input[["parms"]][["endyr"]] + 1))

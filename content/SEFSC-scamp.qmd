@@ -114,7 +114,7 @@ survey_ac[!is.na(sca$t.series$acomp.CVT.n), ] <- sca$comp.mats$acomp.CVT.ob
 ## put data into fims friendly form
 fleet1_landings_df <- data.frame(
   type = "landings",
-  name = "fleet1",
+  fleet = "fleet1",
   age = NA,
   timing = seq(styr, endyr),
   value = as.numeric(fleet1_landings),
@@ -124,7 +124,7 @@ fleet1_landings_df <- data.frame(
 
 fleet2_landings_df <- data.frame(
   type = "landings",
-  name = "fleet2",
+  fleet = "fleet2",
   age = NA,
   timing = seq(styr, endyr),
   value = as.numeric(fleet2_landings),
@@ -134,7 +134,7 @@ fleet2_landings_df <- data.frame(
 
 survey_index_df <- data.frame(
   type = "index",
-  name = "survey1",
+  fleet = "survey1",
   age = NA,
   timing = seq(styr, endyr),
   value = as.numeric(survey_index),
@@ -144,7 +144,7 @@ survey_index_df <- data.frame(
 
 fleet1_ac_df <- data.frame(
   type = "age_comp",
-  name = "fleet1",
+  fleet = "fleet1",
   age = rep(seq(1, n_ages), n_years),
   timing = rep(seq(styr, endyr), each = n_ages),
   value = as.numeric(t(fleet1_ac)),
@@ -154,7 +154,7 @@ fleet1_ac_df <- data.frame(
 
 fleet2_ac_df <- data.frame(
   type = "age_comp",
-  name = "fleet2",
+  fleet = "fleet2",
   age = rep(seq(1, n_ages), n_years),
   timing = rep(seq(styr, endyr), each = n_ages),
   value = as.numeric(t(fleet2_ac)),
@@ -164,7 +164,7 @@ fleet2_ac_df <- data.frame(
 
 survey_ac_df <- data.frame(
   type = "age_comp",
-  name = "survey1",
+  fleet = "survey1",
   age = rep(seq(1, n_ages), n_years),
   timing = rep(seq(styr, endyr), each = n_ages),
   value = as.numeric(t(survey_ac)),
@@ -174,7 +174,7 @@ survey_ac_df <- data.frame(
 
 weight_at_age <- data.frame(
   type = "weight_at_age",
-  name = NA_character_,
+  fleet = NA_character_,
   age = seq(n_ages),
   timing = NA_integer_,
   value = sca$a.series$wgt.mt,
@@ -220,32 +220,32 @@ default_parameters <- FIMS::create_default_configurations(data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = "fleet1",
+      fleet = "fleet1",
       label = c("slope", "inflection_point"),
       value = c(sca$parm.cons$selpar_slope_COM2[8], sca$parm.cons$selpar_A50_COM2[8]),
       estimation_type = "fixed_effects"
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = "fleet2",
+      fleet = "fleet2",
       label = c("slope", "inflection_point"),
       value = c(sca$parm.cons$selpar_slope1_REC2[8], sca$parm.cons$selpar_A50_REC2[8]),
       estimation_type = "fixed_effects"
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet_name = "survey1",
+      fleet = "survey1",
       label = c("slope", "inflection_point"),
       value = c(sca$parm.cons$selpar_slope1_CVT[8], sca$parm.cons$selpar_A501_CVT[8]),
       estimation_type = "fixed_effects"
     ),
-    by = c("module_name", "fleet_name", "label")
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -295,34 +295,34 @@ default_parameters <- FIMS::create_default_configurations(data_4_model) |>
   # dplyr::rows_update(
   #   tibble::tibble(
   #     module_name = "Fleet",
-  #     fleet_name = "fleet1",
+  #     fleet = "fleet1",
   #     time = years,
   #     label = "log_Fmort",
   #     value = log(sca$t.series$F.COM)
   #   ),
-  #   by = c("module_name", "fleet_name", "label", "time")
+  #   by = c("module_name", "fleet", "label", "time")
   # ) |>
   # dplyr::rows_update(
   #   tibble::tibble(
   #     module_name = "Fleet",
-  #     fleet_name = "fleet2",
+  #     fleet = "fleet2",
   #     time = years,
   #     label = "log_Fmort",
   #     value = log(sca$t.series$F.REC)
   #   ),
-  #   by = c("module_name", "fleet_name", "label", "time")
+  #   by = c("module_name", "fleet", "label", "time")
   # ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet_name = "survey1",
+      fleet = "survey1",
       # time = years,
       time = seq(get_start_year(data_4_model), get_end_year(data_4_model)),
       label = "log_Fmort",
       # value = log(sca$parms$q.CVT)
       value = -200
     ),
-    by = c("module_name", "fleet_name", "label", "time")
+    by = c("module_name", "fleet", "label", "time")
   )
 
 ####################################################################################
@@ -383,7 +383,7 @@ index_results <- data.frame(
   observed = c(
     rep(NA, length(styr:get_start_year(data_4_model)) - 1),
     FIMS::get_data(data_4_model) |>
-      dplyr::filter(type == "index", name == "survey1") |>
+      dplyr::filter(type == "index", fleet == "survey1") |>
       dplyr::pull(value)
   ),
   fims.expected = c(rep(NA, length(styr:get_start_year(data_4_model)) - 1), report$index_expected[[3]]),
@@ -395,7 +395,7 @@ fleet1_landings_results <- data.frame(
   observed = c(
     rep(NA, length(styr:get_start_year(data_4_model)) - 1),
     FIMS::get_data(data_4_model) |>
-      dplyr::filter(type == "landings", name == "fleet1") |>
+      dplyr::filter(type == "landings", fleet == "fleet1") |>
       dplyr::pull(value)
   ),
   fims.expected = c(rep(NA, length(styr:get_start_year(data_4_model)) - 1), report$landings_expected[[1]]),
@@ -406,7 +406,7 @@ fleet2_landings_results <- data.frame(
   observed = c(
     rep(NA, length(styr:get_start_year(data_4_model)) - 1),
     FIMS::get_data(data_4_model) |>
-      dplyr::filter(type == "landings", name == "fleet2") |>
+      dplyr::filter(type == "landings", fleet == "fleet2") |>
       dplyr::pull(value)
   ),
   fims.expected = c(rep(NA, length(styr:get_start_year(data_4_model)) - 1), report$landings_expected[[2]]),

@@ -1,0 +1,204 @@
+name: Render Case Studies
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "content/**"
+      - ".github/workflows/render-case-studies.yml"
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "content/**"
+      - ".github/workflows/render-case-studies.yml"
+  workflow_dispatch:
+  schedule:
+    - cron: "30 0 * * 0"
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Build matrix from content directory
+        id: set-matrix
+        shell: Rscript {0}
+        run: |
+          excluded <- c("setup.qmd", "acknowledgements.qmd", "advanced-features.qmd")
+
+          files <- list.files("content", pattern = "\\.qmd$", full.names = FALSE)
+          files <- sort(files[!files %in% excluded])
+
+          include <- lapply(files, function(f) {
+            list(
+              qmd_path = file.path("content", f),
+              artifact_name = paste0(tools::file_path_sans_ext(f), "-site"),
+              case_id = tools::file_path_sans_ext(f)
+            )
+          })
+
+          json_escape <- function(x) {
+            x <- gsub("\\\\", "\\\\\\\\", x)
+            x <- gsub('"', '\\"', x)
+            x
+          }
+
+          entries <- vapply(include, function(x) {
+            sprintf(
+              '{"qmd_path":"%s","artifact_name":"%s","case_id":"%s"}',
+              json_escape(x$qmd_path),
+              json_escape(x$artifact_name),
+              json_escape(x$case_id)
+            )
+          }, character(1))
+
+          matrix_json <- paste0('{"include":[', paste(entries, collapse = ","), ']}')
+
+          cat("matrix=", matrix_json, "\n", sep = "", file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
+
+  render:
+    needs: discover
+    if: ${{ fromJson(needs.discover.outputs.matrix).include[0] != null }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.discover.outputs.matrix) }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            libxml2-dev \
+            libfontconfig1-dev \
+            libfreetype6-dev \
+            libharfbuzz-dev \
+            libfribidi-dev \
+            libpng-dev \
+            libtiff5-dev \
+            libjpeg-dev \
+            libcairo2-dev \
+            libgit2-dev \
+            libx11-dev \
+            pandoc
+
+      - name: Set up R package dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          pak-version: stable
+          cache: true
+          packages: |
+            cran::rmarkdown
+            cran::knitr
+            cran::jsonlite
+            cran::dplyr
+            cran::ggplot2
+            cran::tidyr
+            cran::TMB
+            cran::remotes
+            cran::reshape2
+            cran::Rcpp
+            cran::glue
+            cran::purrr
+            cran::ggridges
+            cran::yaml
+          extra-packages: |
+            github::nmfs-ost/stockplotr
+            github::stan-dev/cmdstanr
+            github::mjskay/tidybayes
+            github::stan-dev/shinystan
+            github::noaa-afsc/SparseNUTS
+            github::NOAA-FIMS/FIMS
+            github::r4ss/r4ss
+
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Render case study
+        id: render
+        shell: bash
+        run: |
+          set -e
+          quarto render "${{ matrix.qmd_path }}"
+
+      - name: Record status
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p statuses
+          if [ "${{ steps.render.outcome }}" = "success" ]; then
+            status="working"
+          else
+            status="failing"
+          fi
+
+          cat > "statuses/${{ matrix.case_id }}.json" <<EOF
+          {
+            "case_id": "${{ matrix.case_id }}",
+            "qmd_path": "${{ matrix.qmd_path }}",
+            "artifact_name": "${{ matrix.artifact_name }}",
+            "status": "${status}"
+          }
+          EOF
+
+      - name: Check whether this case study is published
+        id: publish_check
+        shell: Rscript {0}
+        run: |
+          quarto <- yaml::read_yaml("_quarto.yml")
+          render_list <- quarto$project$render
+
+          published_qmds <- render_list[grepl("^content/.*\\.qmd$", render_list)]
+          published_cases <- tools::file_path_sans_ext(basename(published_qmds))
+
+          is_published <- "${{ matrix.case_id }}" %in% published_cases
+
+          cat("published=", if (is_published) "true" else "false", "\n",
+              sep = "", file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
+
+      - name: Upload rendered artifact
+        if: steps.render.outcome == 'success' && steps.publish_check.outputs.published == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: _site
+          if-no-files-found: error
+
+      - name: Upload status artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: status-${{ matrix.case_id }}
+          path: statuses/${{ matrix.case_id }}.json
+
+  summarize:
+    needs: render
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summarize
+        run: |
+          echo "Case study render matrix completed."

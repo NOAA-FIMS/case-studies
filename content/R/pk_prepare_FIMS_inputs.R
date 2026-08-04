@@ -164,7 +164,7 @@ prepare_pollock_data <- function(
   ## put into fims friendly form
   res <- data.frame(
     type = character(),
-    name = character(),
+    fleet = character(),
     age = integer(),
     timing = double(),
     value = double(),
@@ -173,7 +173,7 @@ prepare_pollock_data <- function(
   )
   landings <- data.frame(
     type = "landings",
-    name = "fleet1",
+    fleet = "fleet1",
     age = NA,
     timing = seq(fimsdat$styr, fimsdat$endyr),
     value = as.numeric(fimsdat$cattot) * 1e3,
@@ -182,7 +182,7 @@ prepare_pollock_data <- function(
   )
   index2 <- data.frame(
     type = "index",
-    name = "survey2",
+    fleet = "survey2",
     age = NA,
     timing = seq(fimsdat$styr, fimsdat$endyr),
     value = ifelse(ind2 > 0, ind2 * 1e9, ind2),
@@ -191,7 +191,7 @@ prepare_pollock_data <- function(
   )
   index3 <- data.frame(
     type = "index",
-    name = "survey3",
+    fleet = "survey3",
     age = NA,
     timing = seq(fimsdat$styr, fimsdat$endyr),
     value = ifelse(ind3 > 0, ind3 * 1e9, ind3),
@@ -200,7 +200,7 @@ prepare_pollock_data <- function(
   )
   index6 <- data.frame(
     type = "index",
-    name = "survey6",
+    fleet = "survey6",
     age = NA,
     timing = seq(fimsdat$styr, fimsdat$endyr),
     value = ifelse(ind6 > 0, ind6 * 1e9, ind6),
@@ -210,7 +210,7 @@ prepare_pollock_data <- function(
   ## these have -999 for missing data years
   catchage <- data.frame(
     type = "age_comp",
-    name = "fleet1",
+    fleet = "fleet1",
     age = rep(seq(1, n_ages), n_years),
     timing = rep(
       seq(fimsdat$styr, fimsdat$endyr),
@@ -222,7 +222,7 @@ prepare_pollock_data <- function(
   )
   indexage2 <- data.frame(
     type = "age_comp",
-    name = "survey2",
+    fleet = "survey2",
     age = rep(seq(1, n_ages), n_years),
     timing = rep(
       seq(fimsdat$styr, fimsdat$endyr),
@@ -234,7 +234,7 @@ prepare_pollock_data <- function(
   )
   indexage3 <- data.frame(
     type = "age_comp",
-    name = "survey3",
+    fleet = "survey3",
     age = rep(seq(1, n_ages), n_years),
     timing = rep(
       seq(fimsdat$styr, fimsdat$endyr),
@@ -246,7 +246,7 @@ prepare_pollock_data <- function(
   )
   indexage6 <- data.frame(
     type = "age_comp",
-    name = "survey6",
+    fleet = "survey6",
     age = rep(seq(1, n_ages), n_years),
     timing = rep(
       seq(fimsdat$styr, fimsdat$endyr),
@@ -269,10 +269,11 @@ prepare_pollock_data <- function(
       each = n_ages
     )
   )
-  weightsfishery <- rbind(
-    pkinput$dat$wt_srv1,
-    pkinput$dat$wt_srv1[NROW(pkinput$dat$wt_srv1), ]
-  )
+  weightsfishery <- do.call(rbind, replicate(
+    length(years) + 1,
+    pkinput$dat$wt_srv1[1, ],
+    simplify = FALSE
+  ))
   colnames(weightsfishery) <- ages
   rownames(weightsfishery) <- c(years, max(years) + 1)
   weightatage_data <- tidyr::pivot_longer(
