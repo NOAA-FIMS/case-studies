@@ -1,10 +1,18 @@
-##################################################################
-# code below under if(FALSE) is for simplifying original
-# petrale sole production assessment model to better match
-# the options currently available in FIMS
-##################################################################
+#' Simplify the NWFSC petrale sole SS3 assessment inputs
+#'
+#' Simplifies the original petrale sole production assessment model to better
+#' match the options currently available in FIMS. This function is not intended
+#' to be run by FIMS users, rather to document the process of simplifying the 
+#' SS3 model for future reference. As the set of FIMS features expands, this 
+#' script could be revised to do fewer simplification steps.
+#'
+#' @param new_model_dir Directory to write the simplified SS3 input files to.
+#' @return Invisibly returns the modified SS3 input list after writing the
+#'   simplified files to `new_model_dir`.
 
-if (FALSE) {
+NWFSC_petrale_simplify_assessment <- function(
+  new_model_dir = "models/2023.a050.003_FIMS_case-study_wtatage"
+) {
   # read SS3 input files from petrale sole assessment on GitHub
   petrale_input <- r4ss::SS_read(
     "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a034.001/",
@@ -221,7 +229,7 @@ if (FALSE) {
   # reduce run display detail
   new_input$start$run_display_detail <- 0
 
-  new_input$dir <- "c:/ss/Petrale/Petrale2023/petrale/models/2023.a050.003_FIMS_case-study_wtatage"
+  new_input$dir <- new_model_dir
   # create directory if it doesn't exist
   if (!dir.exists(new_input$dir)) {
     dir.create(new_input$dir)
@@ -269,4 +277,6 @@ if (FALSE) {
       petrale_output1
     )))
   }
-} # end of if(FALSE) block for simplifying original SS3 model
+
+  invisible(new_input)
+}
