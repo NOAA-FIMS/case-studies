@@ -328,11 +328,14 @@ parameters <- default_parameters |>
     tibble::tibble(
       module_name = "Maturity",
       label = c("inflection_point", "slope"),
-      value = c(7, 0.5)
+      value = c(3.5, 3)
     ),
     by = c("module_name", "label")
   ) |>
   # update the growth parameters with initial values from SS3
+  # SS3 model uses reference age 2 = 999 which is a switch which makes the 
+  # parameter (fixed at 67.5) apply to L-infinity
+  # the 67.1182 value in the SS3 estimate of length at age 21
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Growth",
@@ -345,7 +348,7 @@ parameters <- default_parameters |>
         "length_weight_a", # added length-weight relationship parameters
         "length_weight_b"
       ),
-      value = c(6, 67.5, .242, 0, 21, 1.75e-05, 2.99),
+      value = c(6, 67.1182, .242, 0, 21, 1.75e-05, 2.99),
       estimation_type = "constant"
     ),
     by = c("module_name", "label")
@@ -470,40 +473,33 @@ parameters <- default_parameters |>
     by = c("module_name", "fleet", "label", "time")
   )
 
-
-# Run the model without optimization
-fit_init <- parameters |>
-  FIMS::initialize_fims(data = data_4_model) |>
-  # Model is too big to run on GitHub action if you estimate uncertainty
-  FIMS::fit_fims(optimize = FALSE, get_sd = FALSE)
-
 # Run the model with optimization
-fit_est <- parameters |>
+fit <- parameters |>
   FIMS::initialize_fims(data = data_4_model) |>
   # Model is too big to run on GitHub action if you estimate uncertainty
-  FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
+  FIMS::fit_fims(optimize = TRUE, get_sd = FALSE, number_of_loops = 0)
 ```
 
 ## Examining convergence and parameter estimates
 
 ```{r}
-obj_fit_est <- methods::slot(fit_est,"obj")
-opt_par_fit_est <- FIMS::get_opt(fit_est)$par
-grad_fit_est <- obj_fit_est$gr(opt_par_fit_est)
+obj_fit <- methods::slot(fit,"obj")
+opt_par_fit <- FIMS::get_opt(fit)$par
+grad_fit <- obj_fit$gr(opt_par_fit)
 
 # Create tibble of parameter estimates
-gradient_fit_est <- tibble::tibble(
-      parameter = names(obj_fit_est$par),
-      value = as.numeric(opt_par_fit_est),
-      gradient = as.numeric(grad_fit_est),
+gradient_fit <- tibble::tibble(
+      parameter = names(obj_fit$par),
+      value = as.numeric(opt_par_fit),
+      gradient = as.numeric(grad_fit),
       abs_gradient = abs(gradient)
     ) |>
       dplyr::arrange(parameter)
 
-gradient_fit_est |>
+gradient_fit |>
       dplyr::slice_head(n = 30) |>
       print(width = 200)
-gradient_fit_est |>
+gradient_fit |>
       dplyr::slice_tail(n = 30) |>
       print(width = 200)
 
@@ -513,9 +509,6 @@ gradient_fit_est |>
 ## Plotting Results
 
 ```{r}
-# # optionally plot the initial values without optimization
-# fit <- fit_init
-fit <- fit_est
 
 #
 output <- FIMS::get_estimates(fit) |>
@@ -783,6 +776,136 @@ lengthcomp |> ggplot2::ggplot(ggplot2::aes(length, estimated, color = platform))
   ggplot2::geom_point(ggplot2::aes(y = observed, color = "data")) +
   ggplot2::ggtitle("Fit to Length Composition Data") +
   ggplot2::theme_bw()
+```
+
+```{r}
+#| eval: true
+#| label: growth-curve-plots
+
+## Plot Growth Curve
+
+# Pull the report and estimates from the fitted model.
+report_fit <- FIMS::get_report(fit)
+est_fit <- FIMS::get_estimates(fit)
+
+# Pull model ages.
+ages_fit <- FIMS::get_ages(data_4_model)
+
+# Pull mean length-at-age from the report.
+growth_laa_values <- unlist(report_fit[["growth_mean_LAA"]])
+
+# Convert the report vector into an age-by-year matrix.
+n_ages_fit <- length(ages_fit)
+n_growth_years_fit <- length(growth_laa_values) / n_ages_fit
+
+growth_laa_matrix <- matrix(
+  growth_laa_values,
+  nrow = n_ages_fit,
+  ncol = n_growth_years_fit
+)
+
+# Put the Growth curve into a plotting table.
+growth_curve_fit <- tibble::tibble(
+  age = rep(ages_fit, times = n_growth_years_fit),
+  year_i = rep(seq_len(n_growth_years_fit), each = n_ages_fit),
+  mean_length = as.vector(growth_laa_matrix)
+) |>
+  dplyr::group_by(age) |>
+  dplyr::summarise(
+    mean_length = mean(mean_length, na.rm = TRUE),
+    min_length = min(mean_length, na.rm = TRUE),
+    max_length = max(mean_length, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::mutate(platform = "FIMS")
+
+# SS3 mean length at age for comparison
+growth_curve_ss3 <- rep$endgrowth |> 
+  dplyr::select(Age_Beg, Len_Beg, SD_Beg) |> # beginning of year values, could also use "Mid" instead of "Beg"
+  dplyr::rename(age = Age_Beg, mean_length = Len_Beg, sd_length = SD_Beg) |> 
+  dplyr::mutate(min_length = NA, max_length = NA, platform = "SS3")
+
+# combine FIMS and SS3 growth curves for plotting
+growth_curve_both <- dplyr::bind_rows(growth_curve_fit, growth_curve_ss3)
+
+# Plot mean length-at-age for both models.
+ggplot2::ggplot(
+  growth_curve_both,
+  ggplot2::aes(x = age, y = mean_length, color = platform, fill = platform, linetype = platform)
+) +
+  ggplot2::geom_line(linewidth = 1) +
+  ggplot2::geom_point(size = 2) +
+  ggplot2::labs(
+    title = "fit Growth curve",
+    subtitle = "Mean length-at-age from FIMS vs SS3",
+    x = "Age",
+    y = "Mean length-at-age"
+  ) +
+  ggplot2::theme_bw()
+```
+
+```{r}
+#| eval: false
+#| label: maturity-plots
+## Plot Maturity Curve
+
+# Pull proportion mature at age from the FIMS report.
+prop_maa_values <- unlist(report_fit[["proportion_mature_at_age"]])
+
+# SS3 maturity values
+# the SS3 model has length-based maturity so the derived
+# maturity-at-age is shown in the table of ending year growth
+# in the Len_Mat column. If it were age-based, we would 
+# use the Age_Mat column instead.
+maturity_curve_ss3 <- rep$endgrowth |> 
+  dplyr::select(Age_Beg, Len_Mat) |> 
+  dplyr::filter(Age_Beg <= max(ages_fit)) |> 
+  dplyr::rename(age = Age_Beg, mean_mature = Len_Mat) |> 
+  dplyr::mutate(platform = "SS3")
+
+# Convert the report vector into an age-by-year matrix.
+n_ages_fit <- length(ages_fit)
+n_mat_years_fit <- length(prop_maa_values) / n_ages_fit
+
+prop_maa_matrix <- matrix(
+  prop_maa_values,
+  nrow = n_ages_fit,
+  ncol = n_mat_years_fit
+)
+
+# Put the maturity curve into a plotting table.
+maturity_curve_fit <- tibble::tibble(
+  age = rep(ages_fit, times = n_mat_years_fit),
+  year_i = rep(seq_len(n_mat_years_fit), each = n_ages_fit),
+  mean_mature = as.vector(prop_maa_matrix)
+) |>
+  dplyr::group_by(age) |>
+  dplyr::summarise(
+    mean_mature = mean(mean_mature, na.rm = TRUE),
+    min_mature = min(mean_mature, na.rm = TRUE),
+    max_mature = max(mean_mature, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::mutate(platform = "FIMS")
+
+  # combine FIMS and SS3 growth curves for plotting
+maturity_curve_both <- dplyr::bind_rows(maturity_curve_fit, maturity_curve_ss3)
+
+# Plot mean maturity-at-age for both models.
+ggplot2::ggplot(
+  maturity_curve_both,
+  ggplot2::aes(x = age, y = mean_mature, color = platform, fill = platform, linetype = platform)
+) +
+  ggplot2::geom_line(linewidth = 1) +
+  ggplot2::geom_point(size = 2) +
+  ggplot2::labs(
+    title = "fit maturity curve",
+    subtitle = "Mean proportion mature-at-age from FIMS vs SS3",
+    x = "Age",
+    y = "Mean mature-at-age"
+  ) +
+  ggplot2::theme_bw()
+
 ```
 
 ```{r}
