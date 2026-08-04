@@ -64,9 +64,42 @@ jobs:
           shopt -s nullglob
           for artifact_dir in current-artifacts/*; do
             if [ -d "$artifact_dir" ] && [[ "$(basename "$artifact_dir")" != status-* ]]; then
-              cp -R "$artifact_dir"/. _site/
+              echo "Inspecting artifact: $artifact_dir"
+              find "$artifact_dir" -maxdepth 2 -type f | sort
+
+              if [ -f "$artifact_dir/index.html" ]; then
+                cp -R "$artifact_dir"/. _site/
+              elif [ -d "$artifact_dir/_site" ] && [ -f "$artifact_dir/_site/index.html" ]; then
+                cp -R "$artifact_dir/_site"/. _site/
+              else
+                echo "No usable site root found in $artifact_dir"
+                exit 1
+              fi
             fi
           done
+
+      - name: Verify site output looks real
+        if: env.SHOULD_DEPLOY == 'true'
+        shell: bash
+        run: |
+          if [ ! -f _site/index.html ]; then
+            echo "Expected _site/index.html was not found."
+            echo "Files in _site:"
+            find _site -maxdepth 3 -type f | sort
+            exit 1
+          fi
+
+          if ! grep -q '<meta name="generator" content="quarto-' _site/index.html; then
+            echo "index.html does not look like a Quarto-rendered page."
+            sed -n '1,60p' _site/index.html
+            exit 1
+          fi
+
+          if grep -q 'Redirect to index.html' _site/index.html; then
+            echo "index.html is just a redirect stub, not the rendered site."
+            sed -n '1,40p' _site/index.html
+            exit 1
+          fi
 
       - name: Copy status files for README update
         if: env.SHOULD_DEPLOY == 'true'
@@ -165,7 +198,7 @@ jobs:
           } else {
             stop("Could not find TABLE_START/TABLE_END markers in README.md")
           }
-          
+
       - name: Upload test artifacts
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
@@ -192,4 +225,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site
           keep_files: true
-          
