@@ -22,32 +22,30 @@ concurrency:
   
 jobs:
   deploy:
-    if: >
-      github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
-      (
-        github.event.workflow_run.event == 'push' &&
-        github.event.workflow_run.head_branch == 'main' &&
-        (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')
-      )
     runs-on: ubuntu-latest
+    env:
+      SHOULD_DEPLOY: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' && (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')) }}
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Download current run artifacts
+        if: env.SHOULD_DEPLOY == 'true'
         uses: actions/download-artifact@v4
         with:
           path: current-artifacts
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ inputs.run_id || github.event.workflow_run.id }}
+          run-id: ${{ github.event_name == 'workflow_dispatch' && inputs.run_id || github.event.workflow_run.id }}
 
       - name: Fetch existing gh-pages branch
+        if: env.SHOULD_DEPLOY == 'true'
         shell: bash
         run: |
           git fetch origin gh-pages:gh-pages || true
 
       - name: Prepare site from previous deployment
+        if: env.SHOULD_DEPLOY == 'true'
         shell: bash
         run: |
           rm -rf _site
@@ -60,6 +58,7 @@ jobs:
           fi
 
       - name: Overlay successful renders
+        if: env.SHOULD_DEPLOY == 'true'
         shell: bash
         run: |
           shopt -s nullglob
@@ -70,18 +69,22 @@ jobs:
           done
 
       - name: Copy status files for README update
+        if: env.SHOULD_DEPLOY == 'true'
         shell: bash
         run: |
           mkdir -p statuses
           find current-artifacts -name '*.json' -path '*/status-*' -exec cp {} statuses/ \;
 
       - name: Setup R
+        if: env.SHOULD_DEPLOY == 'true'
         uses: r-lib/actions/setup-r@v2
 
       - name: Install jsonlite
+        if: env.SHOULD_DEPLOY == 'true'
         run: Rscript -e 'install.packages("jsonlite", repos = "https://cloud.r-project.org")'
 
       - name: Update README table
+        if: env.SHOULD_DEPLOY == 'true'
         shell: Rscript {0}
         run: |
           readme_file <- "README.md"
@@ -173,7 +176,7 @@ jobs:
             README.md
 
       - name: Commit README update
-        if: github.event_name == 'workflow_run'
+        if: env.SHOULD_DEPLOY == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           commit-message: "chore: auto-update README case study table [skip ci]"
@@ -183,9 +186,10 @@ jobs:
           base: "main"
 
       - name: Deploy merged site to gh-pages
-        if: github.event_name == 'workflow_run'
+        if: env.SHOULD_DEPLOY == 'true'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site
           keep_files: true
+          
