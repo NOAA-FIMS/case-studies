@@ -691,7 +691,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stderr">
 <pre><code>✔ Starting optimization ...
 ℹ Restarting optimizer 3 times to improve gradient.
-ℹ Maximum gradient went from 0.00531 to 0.00048 after 3 steps.
+ℹ Maximum gradient went from 0.00062 to 0.00056 after 3 steps.
 ✔ Finished optimization
 ✔ Finished sdreport</code></pre>
 </div>
@@ -702,19 +702,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 ℹ Consider simplifying the model, improving data quality, or fixing poorly
   informed parameters.
 ℹ The 2 largest standard error values are for parameters:
-ℹ 1. "expected_recruitment.53": "8.701804e+09"
-ℹ 2. "numbers_at_age.530": "8.701804e+09"
+ℹ 1. "expected_recruitment.53": "8.701812e+09"
+ℹ 2. "numbers_at_age.530": "8.701812e+09"
 ℹ Standard errors and MLEs may be unreliable.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>ℹ FIMS model version: 0.9.4.9000
-ℹ Total run time was 34.17186 seconds
+ℹ Total run time was 14.10861 seconds
 ℹ Number of parameters: fixed_effects=66, random_effects=53, and total=119
-ℹ Maximum gradient= 0.00048
+ℹ Maximum gradient= 0.00056
 ℹ Negative log likelihood (NLL):
 • Marginal NLL= 3302.808
 • Total NLL= 3242.3832
-ℹ Terminal SB= 633843606.87812</code></pre>
+ℹ Terminal SB= 633843097.83205</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -723,7 +723,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>FIMS<span class="sc">::</span><span class="fu">get_max_gradient</span>(fit) <span class="co"># </span><span class="al">TODO</span><span class="co">: from Cole, can use TMBhelper::fit_tmb to get val to &lt;1e-10</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.0004766463</code></pre>
+<pre><code>[1] 0.0005622632</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
