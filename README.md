@@ -7,17 +7,15 @@ If you want to run a FIMS model and don't know where to start, you can submit yo
 ## Case studies included so far
 
 <!-- TABLE_START -->
-
 Stock | Previous Model | Status | Notable Features |
 -- | -- | -- | --
-NEFSC yellowtail flounder | ASAP | working |
-AFSC GOA pollock | Cole's TMB model | non-updated | Bayesian |
-SWFSC sardine | SS3 | not updated |
-NWFSC petrale | SS3 | not updated |
-PIFSC opakapaka | SS3 | not updated | Age-to-length conversion matrix |
-SEFSC scamp | BAM | working |
-NWFSC Pacific hake | SS3 | failing | Bayesian |
-
+AFSC GOA walleye pollock | AFSC custom ADMB model | ![Status](badges/AFSC-GOA-pollock.svg) | Bayesian
+NEFSC yellowtail Flounder | ASAP | ![Status](badges/NEFSC-yellowtail.svg) | 
+NWFSC petrale | SS3 | ![Status](badges/NWFSC-petrale.svg) | 
+pacific hake | SS3 | ![Status](badges/pacific-hake.svg) | Bayesian
+PIFSC opakapaka |  | ![Status](badges/PIFSC-opakapaka.svg) | 
+SEFSC scamp | BAM | ![Status](badges/SEFSC-scamp.svg) | 
+SWFSC sardine | SS3 | ![Status](badges/SWFSC-sardine.svg) | 
 <!-- TABLE_END -->
 
 ## How to add a case study
