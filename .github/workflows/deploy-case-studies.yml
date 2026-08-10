@@ -169,8 +169,6 @@ jobs:
             "-- | -- | -- | --"
           )
 
-          dir.create("badges", showWarnings = FALSE)
-
           for (i in seq_along(files)) {
             file <- files[i]
             case_id <- sub("\\.qmd$", "", basenames[i])
@@ -185,10 +183,7 @@ jobs:
               "https://img.shields.io/badge/Status-failing-red"
             }
 
-            badge_path <- file.path("badges", paste0(case_id, ".svg"))
-            download.file(badge_url, destfile = badge_path, mode = "wb", quiet = TRUE)
-
-            badge_md <- paste0("![Status](", badge_path, ")")
+            badge_md <- paste0("![Status](", badge_url, ")")
             table_lines <- c(table_lines, paste(stock, meta$previous_model, badge_md, meta$features, sep = " | "))
           }
 
@@ -225,6 +220,10 @@ jobs:
           body: "Automated update of the case study status table."
           branch: "auto-update-readme-table"
           base: "main"
+          ignore: |
+            statuses/
+            current-artifacts/
+            badges/
 
       - name: Deploy merged site to gh-pages
         if: env.SHOULD_DEPLOY == 'true'
