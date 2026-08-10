@@ -32,7 +32,7 @@ jobs:
 
       - name: Download current run artifacts
         if: env.SHOULD_DEPLOY == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: current-artifacts
           github-token: ${{ secrets.GITHUB_TOKEN }}
