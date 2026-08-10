@@ -220,10 +220,8 @@ jobs:
           body: "Automated update of the case study status table."
           branch: "auto-update-readme-table"
           base: "main"
-          ignore: |
-            statuses/
-            current-artifacts/
-            badges/
+          add-paths: |
+            README.md
 
       - name: Deploy merged site to gh-pages
         if: env.SHOULD_DEPLOY == 'true'

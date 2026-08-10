@@ -79,7 +79,7 @@ jobs:
             github::stan-dev/shinystan
             github::noaa-afsc/SparseNUTS
             github::NOAA-FIMS/FIMS
-            github::r4ss/r4ss@convert-data-to-fims
+            github::r4ss/r4ss
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
@@ -96,6 +96,11 @@ jobs:
           if [ -d /tmp/gh-pages/content ]; then
             mkdir -p _site/content
             cp -R /tmp/gh-pages/content/. _site/content/
+          fi
+
+          # Also merge the site_libs from gh-pages to include case study dependencies
+          if [ -d /tmp/gh-pages/site_libs ]; then
+            cp -rT /tmp/gh-pages/site_libs _site/site_libs
           fi
 
       - name: Upload pages artifact
