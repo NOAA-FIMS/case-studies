@@ -7,17 +7,15 @@ If you want to run a FIMS model and don't know where to start, you can submit yo
 ## Case studies included so far
 
 <!-- TABLE_START -->
-
 Stock | Previous Model | Status | Notable Features |
 -- | -- | -- | --
-NEFSC yellowtail flounder | ASAP | working |
-AFSC GOA pollock | Cole's TMB model | non-updated | Bayesian |
-SWFSC sardine | SS3 | not updated |
-NWFSC petrale | SS3 | not updated |
-PIFSC opakapaka | SS3 | not updated | Age-to-length conversion matrix |
-SEFSC scamp | BAM | working |
-NWFSC Pacific hake | SS3 | failing | Bayesian |
-
+AFSC GOA walleye pollock | AFSC custom ADMB model | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | Bayesian
+NEFSC yellowtail Flounder | ASAP | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
+NWFSC petrale | SS3 | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
+pacific hake | SS3 | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | Bayesian
+PIFSC opakapaka |  | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
+SEFSC scamp | BAM | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
+SWFSC sardine | SS3 | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
 <!-- TABLE_END -->
 
 ## How to add a case study

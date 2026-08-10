@@ -1,0 +1,112 @@
+[
+  {
+    "objectID": "content/AFSC-GOA-pollock.html",
+    "href": "content/AFSC-GOA-pollock.html",
+    "title": "AFSC Case Study Gulf of Alaska Walleye Pollock",
+    "section": "",
+    "text": "Code\ncommon_name &lt;- \"Gulf of Alaska walleye pollock\"\n\n# define the dimensions and global variables\nyears &lt;- 1970:2023\nn_years &lt;- length(years)\nages &lt;- 1:10\nn_ages &lt;- length(ages)\n\n\n\nR version: R version 4.6.1 (2026-06-24)\nTMB version: 1.9.23\nFIMS commit: 9d09806\nStock name: Gulf of Alaska walleye pollock\nRegion: AFSC\nAnalyst: Cole Monnahan",
+    "crumbs": [
+      "Content",
+      "AFSC Case Study Gulf of Alaska Walleye Pollock"
+    ]
+  },
+  {
+    "objectID": "content/AFSC-GOA-pollock.html#the-setup",
+    "href": "content/AFSC-GOA-pollock.html#the-setup",
+    "title": "AFSC Case Study Gulf of Alaska Walleye Pollock",
+    "section": "",
+    "text": "Code\ncommon_name &lt;- \"Gulf of Alaska walleye pollock\"\n\n# define the dimensions and global variables\nyears &lt;- 1970:2023\nn_years &lt;- length(years)\nages &lt;- 1:10\nn_ages &lt;- length(ages)\n\n\n\nR version: R version 4.6.1 (2026-06-24)\nTMB version: 1.9.23\nFIMS commit: 9d09806\nStock name: Gulf of Alaska walleye pollock\nRegion: AFSC\nAnalyst: Cole Monnahan",
+    "crumbs": [
+      "Content",
+      "AFSC Case Study Gulf of Alaska Walleye Pollock"
+    ]
+  },
+  {
+    "objectID": "content/AFSC-GOA-pollock.html#simplifications-to-the-original-assessment",
+    "href": "content/AFSC-GOA-pollock.html#simplifications-to-the-original-assessment",
+    "title": "AFSC Case Study Gulf of Alaska Walleye Pollock",
+    "section": "Simplifications to the original assessment",
+    "text": "Simplifications to the original assessment\nThe model presented in this case study was changed substantially from the operational version and should not be considered reflective of the Gulf of Alaska walleye pollock stock. These results are intended to be a demonstration and nothing more.\nTo get the operational model to more closely match a FIMS model the following changes were made:\n\nDropped surveys 1, 4, and 5\nRemoved ageing error\nRemoved length compositions\nRemoved bias correction in log-normal index likelihoods\nSimplified catchability of survey 3 to be constant in time (removed random walk)\nUpdated maturity to be parametric rather than empirical\nUsed constant weight at age for all sources: spawning, fishery, surveys, and biomass calculations. The same matrix was used throughout.\nChange timing to be Jan 1 for spawning and all surveys\nRemoved prior on catchability for survey 2\nRemoved time-varying fisheries selectivity (constant double logistic)\nTook off normalization of selectivity\nRemoved age accumulation for fishery age compositions",
+    "crumbs": [
+      "Content",
+      "AFSC Case Study Gulf of Alaska Walleye Pollock"
+    ]
+  },
+  {
+    "objectID": "content/AFSC-GOA-pollock.html#setting-up-the-data",
+    "href": "content/AFSC-GOA-pollock.html#setting-up-the-data",
+    "title": "AFSC Case Study Gulf of Alaska Walleye Pollock",
+    "section": "Setting up the data",
+    "text": "Setting up the data\n\n\nCode\n#\n## This will fit the models bridging to FIMS (simplifying)\n## source(\"fit_bridge_models.R\")\n## compare changes to model\npkfitfinal &lt;- readRDS(file.path(data_directory, \"pkfitfinal.RDS\"))\npkfit0 &lt;- readRDS(file.path(data_directory, \"pkfit0.RDS\"))\nrep0 &lt;- pkfitfinal$rep\nparfinal &lt;- pkfitfinal$obj$env$parList()\npkinput0 &lt;- readRDS(file.path(data_directory, \"pkinput0.RDS\"))\nfimsdat &lt;- pkdat0 &lt;- pkinput0$dat\npkinput &lt;- readRDS(file.path(data_directory, \"pkinput.RDS\"))\ndata_4_model &lt;- prepare_pollock_data(\n  pkfitfinal = pkfitfinal,\n  pkfit0 = pkfit0,\n  parfinal = parfinal,\n  fimsdat = fimsdat,\n  pkinput = pkinput,\n  years = years,\n  n_years = n_years,\n  ages = ages,\n  n_ages = n_ages\n)",
+    "crumbs": [
+      "Content",
+      "AFSC Case Study Gulf of Alaska Walleye Pollock"
+    ]
+  },
+  {
+    "objectID": "content/AFSC-GOA-pollock.html#run-fims-model",
+    "href": "content/AFSC-GOA-pollock.html#run-fims-model",
+    "title": "AFSC Case Study Gulf of Alaska Walleye Pollock",
+    "section": "Run FIMS model",
+    "text": "Run FIMS model\n\n\nCode\nFIMS::clear()\n\nestimate_fish_selex &lt;- TRUE\nestimate_survey_selex &lt;- TRUE\nestimate_q2 &lt;- TRUE\nestimate_q3 &lt;- TRUE\nestimate_q6 &lt;- TRUE\nestimate_F &lt;- TRUE\nestimate_recdevs &lt;- TRUE\n\n# Create parameters list and update default values for parameters\ndefault_parameters &lt;- FIMS::create_default_configurations(\n  data = data_4_model\n) |&gt;\n  tidyr::unnest(cols = data) |&gt;\n  dplyr::rows_update(\n    tibble::tibble(\n      module_name = \"Selectivity\",\n      fleet = c(\"fleet1\", \"survey2\", \"survey6\"), \n      module_type = \"DoubleLogistic\"\n    ),\n    by = c(\"module_name\", \"fleet\")\n  ) |&gt;\n  FIMS::create_default_parameters(\n    data = data_4_model\n  ) |&gt;\n  tidyr::unnest(cols = data) |&gt;\n  dplyr::rows_update(\n    tibble::tibble(\n      module_name = \"Selectivity\",\n      fleet = \"fleet1\", \n      label = c(\n        \"inflection_point_asc\", \"slope_asc\",\n        \"inflection_point_desc\", \"slope_desc\"\n      ),\n      value = c(\n        parfinal$inf1_fsh_mean,\n        exp(parfinal$log_slp1_fsh_mean),\n        parfinal$inf2_fsh_mean,\n        exp(parfinal$log_slp2_fsh_mean)\n      ),\n      estimation_type = \"fixed_effects\"\n    ),\n    by = c(\"module_name\", \"fleet\", \"label\") \n  ) |&gt;\n  dplyr::rows_update(\n    tibble::tibble(\n      module_name = \"Selectivity\",\n      fleet = \"survey2\", \n      label = c(\n        \"inflection_point_asc\", \"slope_asc\",\n        \"inflection_point_desc\", \"slope_desc\"\n      ),\n      value = c(\n        parfinal$inf1_srv2,\n        exp(parfinal$log_slp1_srv2),\n        parfinal$inf2_srv2,\n        exp(parfinal$log_slp2_srv2)\n      ),\n      estimation_type = rep(c(\"fixed_effects\", \"constant\"), each = 2)\n    ),\n    by = c(\"module_name\", \"fleet\", \"label\") \n  ) |&gt;\n  dplyr::rows_update(\n    tibble::tibble(\n      module_name = \"Selectivity\",\n      fleet = \"survey6\", \n      label = c(\n        \"inflection_point_asc\", \"slope_asc\",\n        \"inflection_point_desc\", \"slope_desc\"\n      ),\n      value = c(\n        parfinal$inf1_srv6,\n        exp(parfinal$log_slp1_srv6),\n        parfinal$inf2_srv6,\n        exp(parfinal$log_slp2_srv6)\n      ),\n      estimation_type = rep(c(\"constant\", \"fixed_effects\"), each = 2)\n    ),\n    by = c(\"module_name\", \"fleet\", \"label\") \n  ) |&gt;\n  dplyr::rows_update(\n    tibble::tibble(\n      module_name = \"Selectivity\",\n      fleet = \"survey3\", \n      label = c(\"inflection_point\", \"slope\"),\n      value = c(\n        parfinal$inf1_srv3,\n        exp(parfinal$log_slp1_srv3)\n      )\n    ),\n    by = c(\"module_name\", \"fleet\", \"label\") \n  ) |&gt;\n  dplyr::rows_update(\n    tibble::tibble(\n      module_name = \"Maturity\",\n      label = c(\"inflection_point\", \"slope\"),\n      value = c(4.5, 1.5)\n    ),\n    by = c(\"module_name\", \"label\")\n  ) |&gt;\n  dplyr::rows_update(\n    tibble::tibble(\n      module_name = \"Recruitment\",\n      label = c(\n        \"log_rzero\",\n        \"logit_steep\",\n        \"log_sd\"\n      ),\n      value = c(\n        parfinal$mean_log_recruit + log(1e9),\n        FIMS::logit(0.2, 1.0, 0.99999),\n        parfinal$sigmaR\n      )\n    ),\n    by = c(\"module_name\", \"label\")\n  ) |&gt;\n  dplyr::rows_update(\n    tibble::tibble(\n      module_name = \"Population\",\n      label = c(\"log_init_naa\"),\n      age = ages,\n      value = c(log(pkfitfinal$rep$recruit[1]), log(pkfitfinal$rep$initN)) + log(1e9),\n      estimation_type = \"constant\"\n    ),\n    by = c(\"module_name\", \"age\", \"label\")\n  ) |&gt;\n  dplyr::rows_update(\n    tibble::tibble(\n      module_name = \"Population\",\n      time = rep(years, each = FIMS::get_n_ages(data_4_model)),\n      age = rep(ages, FIMS::get_n_years(data_4_model)),\n      label = \"log_M\",\n      value = log(as.numeric(t(matrix(\n        rep(pkfitfinal$rep$M, each = FIMS::get_n_years(data_4_model)),\n        nrow = FIMS::get_n_years(data_4_model)\n      ))))\n    ),\n    by = c(\"module_name\", \"label\", \"time\", \"age\")\n  ) |&gt;\n  dplyr::rows_update(\n    tibble::tibble(\n      module_name = \"Recruitment\",\n      label = \"log_devs\",\n      time = years[-1],\n      # The last value of the initial numbers at age is the first\n      # recruitment deviation\n      value = parfinal$dev_log_recruit[-1],\n    ),\n    by = c(\"module_name\", \"label\", \"time\")\n  ) |&gt;\n  dplyr::rows_update(\n    tibble::tibble(\n      module_name = \"Fleet\",\n      fleet = \"fleet1\", \n      time = years,\n      label = \"log_Fmort\",\n      value = log(pkfitfinal$rep$F)\n    ),\n    by = c(\"module_name\", \"fleet\", \"label\", \"time\") \n  ) |&gt;\n  dplyr::rows_update(\n    tibble::tibble(\n      module_name = \"Fleet\",\n      fleet = c(\"survey2\", \"survey3\", \"survey6\"), \n      label = \"log_q\",\n      value = c(parfinal$log_q2_mean, parfinal$log_q3_mean, parfinal$log_q6),\n      estimation_type = \"constant\"\n    ),\n    by = c(\"module_name\", \"fleet\", \"label\") \n  )\n\n# Put it all together, creating the FIMS model and making the TMB fcn\n# Run the model without optimization to help ensure a viable model\ntest_fit &lt;- default_parameters  |&gt;\n  FIMS::initialize_fims(data = data_4_model) |&gt;\n  FIMS::fit_fims(optimize = FALSE)\nFIMS::get_obj(test_fit)$report()$nll_components |&gt; length()\n\n\n[1] 9\n\n\nCode\nFIMS::get_data(data_4_model) |&gt;\n  dplyr::filter(fleet == \"fleet1\", type == \"age_comp\") |&gt;\n  print(n = 10)\n\n\n# A tibble: 540 × 7\n   type     fleet    age timing value unit  uncertainty\n   &lt;chr&gt;    &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt;\n 1 age_comp fleet1     1   1970  -999 \"\"              1\n 2 age_comp fleet1     2   1970  -999 \"\"              1\n 3 age_comp fleet1     3   1970  -999 \"\"              1\n 4 age_comp fleet1     4   1970  -999 \"\"              1\n 5 age_comp fleet1     5   1970  -999 \"\"              1\n 6 age_comp fleet1     6   1970  -999 \"\"              1\n 7 age_comp fleet1     7   1970  -999 \"\"              1\n 8 age_comp fleet1     8   1970  -999 \"\"              1\n 9 age_comp fleet1     9   1970  -999 \"\"              1\n10 age_comp fleet1    10   1970  -999 \"\"              1\n# ℹ 530 more rows\n\n\nCode\n# Run the  model with optimization\nfit &lt;- default_parameters  |&gt;\n  FIMS::initialize_fims(data = data_4_model) |&gt;\n  FIMS::fit_fims(optimize = TRUE)\n\n\n✔ Starting optimization ...\nℹ Restarting optimizer 3 times to improve gradient.\nℹ Maximum gradient went from 0.00531 to 0.00048 after 3 steps.\n✔ Finished optimization\n✔ Finished sdreport\n\n\nWarning: ! Large condition number detected in Hessian; the matrix may be near singular.\nℹ Condition number of Hessian (\"1.518566e+05\") exceeds threshold of 1e+05.\nℹ This suggests the model is weakly identified and results may be unreliable.\nℹ Consider simplifying the model, improving data quality, or fixing poorly\n  informed parameters.\nℹ The 2 largest standard error values are for parameters:\nℹ 1. \"expected_recruitment.53\": \"8.701804e+09\"\nℹ 2. \"numbers_at_age.530\": \"8.701804e+09\"\nℹ Standard errors and MLEs may be unreliable.\n\n\nℹ FIMS model version: 0.9.4.9000\nℹ Total run time was 34.17186 seconds\nℹ Number of parameters: fixed_effects=66, random_effects=53, and total=119\nℹ Maximum gradient= 0.00048\nℹ Negative log likelihood (NLL):\n• Marginal NLL= 3302.808\n• Total NLL= 3242.3832\nℹ Terminal SB= 633843606.87812\n\n\nCode\n## report values for models\nrep1 &lt;- FIMS::get_report(test_fit) # FIMS initial values\nFIMS::get_max_gradient(fit) # TODO: from Cole, can use TMBhelper::fit_tmb to get val to &lt;1e-10\n\n\n[1] 0.0004766463\n\n\nCode\nrep2 &lt;- FIMS::get_report(fit)\noutput &lt;- get_estimates(fit)",
+    "crumbs": [
+      "Content",
+      "AFSC Case Study Gulf of Alaska Walleye Pollock"
+    ]
+  },
+  {
+    "objectID": "content/AFSC-GOA-pollock.html#plotting-results",
+    "href": "content/AFSC-GOA-pollock.html#plotting-results",
+    "title": "AFSC Case Study Gulf of Alaska Walleye Pollock",
+    "section": "Plotting results",
+    "text": "Plotting results\n\n\n\n\n\nComparisons of biomass, catch, fishing mortality (F), survey indices of abundance, recruitment, and spawning biomass between the Template Model Builder (TMB) model and the optimized FIMS model.\n\n\n\n\n\n\n\n\n\nRelative error in biomass, catch, fishing mortality (F), survey indices of abundance, recruitment, and spawning biomass between the Template Model Builder (TMB) model and the optimized FIMS model. Relative error is also shown for the pre-optimized FIMS models (FIMS init).\n\n\n\n\n\n\n\n\n\nProportion at age (paa) by year (panel) for the fishing fleet for the initialized FIMS model (FIMS init), the optimized FIMS model (FIMS opt), the Template Model Builder model (TMB), and observed data (obs).\n\n\n\n\n\n\n\n\n\nProportion at age (paa) by year (panel) for the first survey for the initialized FIMS model (FIMS init), the optimized FIMS model (FIMS opt), the Template Model Builder model (TMB), and observed data (obs).\n\n\n\n\n\n\n\n\n\nFits to the indices of abundance (million metric tons) by survey (panel) for the initialized FIMS model (FIMS init), the optimized FIMS model (FIMS opt), the Template Model Builder model (TMB). Observed data with uncertainty measurements are plotted using points.",
+    "crumbs": [
+      "Content",
+      "AFSC Case Study Gulf of Alaska Walleye Pollock"
+    ]
+  },
+  {
+    "objectID": "content/AFSC-GOA-pollock.html#comparison-table",
+    "href": "content/AFSC-GOA-pollock.html#comparison-table",
+    "title": "AFSC Case Study Gulf of Alaska Walleye Pollock",
+    "section": "Comparison table",
+    "text": "Comparison table\nThe likelihood components from the TMB model do not include constants and thus are not directly comparable. To be fixed later. Relative differences between the modified TMB model and FIMS implementation are given in the figure above.",
+    "crumbs": [
+      "Content",
+      "AFSC Case Study Gulf of Alaska Walleye Pollock"
+    ]
+  },
+  {
+    "objectID": "content/AFSC-GOA-pollock.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "href": "content/AFSC-GOA-pollock.html#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability",
+    "title": "AFSC Case Study Gulf of Alaska Walleye Pollock",
+    "section": "What was your experience using FIMS? What could we do to improve usability?",
+    "text": "What was your experience using FIMS? What could we do to improve usability?\nTo do",
+    "crumbs": [
+      "Content",
+      "AFSC Case Study Gulf of Alaska Walleye Pollock"
+    ]
+  },
+  {
+    "objectID": "content/AFSC-GOA-pollock.html#list-any-issues-that-you-ran-into-or-found",
+    "href": "content/AFSC-GOA-pollock.html#list-any-issues-that-you-ran-into-or-found",
+    "title": "AFSC Case Study Gulf of Alaska Walleye Pollock",
+    "section": "List any issues that you ran into or found",
+    "text": "List any issues that you ran into or found\n\nOutput more derived quantities like selectivity, maturity, etc.\nNLL components are not separated by fleet and need to be. So age comp NLL for fleets 1 and 2 need to be separate to make, e.g., the likelihood profile plot above.",
+    "crumbs": [
+      "Content",
+      "AFSC Case Study Gulf of Alaska Walleye Pollock"
+    ]
+  },
+  {
+    "objectID": "content/AFSC-GOA-pollock.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "href": "content/AFSC-GOA-pollock.html#what-features-are-most-important-to-add-based-on-this-case-study",
+    "title": "AFSC Case Study Gulf of Alaska Walleye Pollock",
+    "section": "What features are most important to add based on this case study?",
+    "text": "What features are most important to add based on this case study?\n\nMore sophisticated control over selectivity so that ages 1 and 2 can be zeroed out for a double-logistic form, overriding the selectivity curve.\n\n\n\nCode\nFIMS::clear()",
+    "crumbs": [
+      "Content",
+      "AFSC Case Study Gulf of Alaska Walleye Pollock"
+    ]
+  }
+]
