@@ -204,7 +204,7 @@ jobs:
 
       - name: Upload test artifacts
         if: github.event_name == 'workflow_dispatch'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-deploy-outputs
           path: |
