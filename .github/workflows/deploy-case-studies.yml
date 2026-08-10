@@ -67,13 +67,9 @@ jobs:
               echo "Inspecting artifact: $artifact_dir"
               find "$artifact_dir" -maxdepth 3 -type f | sort
 
-              if [ -d "$artifact_dir/_site" ]; then
-                # Merge the complete rendered site output, including theme/assets.
-                cp -R "$artifact_dir/_site/." "_site/"
-              else
-                echo "Expected _site directory not found in $artifact_dir"
-                exit 1
-              fi
+              # The downloaded artifact is already the rendered site root.
+              # Merge it directly into the deployment tree.
+              cp -R "$artifact_dir/." "_site/"
             fi
           done
 
