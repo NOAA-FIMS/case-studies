@@ -67,9 +67,28 @@ jobs:
               echo "Inspecting artifact: $artifact_dir"
               find "$artifact_dir" -maxdepth 3 -type f | sort
 
-              # The downloaded artifact is already the rendered site root.
-              # Merge it directly into the deployment tree.
-              cp -R "$artifact_dir/." "_site/"
+              # Preserve the main site root and only update the rendered case study
+              # pages plus their associated assets.
+              case_html=$(find "$artifact_dir/content" -maxdepth 1 -type f -name '*.html' | head -n 1)
+              if [ -n "$case_html" ]; then
+                case_name=$(basename "$case_html" .html)
+                mkdir -p "_site/content"
+                cp "$case_html" "_site/content/$case_name.html"
+
+                case_assets_dir="$artifact_dir/content/${case_name}_files"
+                if [ -d "$case_assets_dir" ]; then
+                  rm -rf "_site/content/${case_name}_files"
+                  cp -R "$case_assets_dir" "_site/content/"
+                fi
+                
+                # Merge shared Quarto site assets if they exist.
+                if [ -d "$artifact_dir/site_libs" ]; then
+                  cp -rT "$artifact_dir/site_libs" "_site/site_libs"
+                fi
+              else
+                echo "No content HTML found in $artifact_dir"
+                exit 1
+              fi
             fi
           done
 
