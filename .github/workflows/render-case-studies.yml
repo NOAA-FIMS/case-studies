@@ -181,7 +181,7 @@ jobs:
 
       - name: Upload rendered artifact
         if: steps.render.outcome == 'success' && steps.publish_check.outputs.published == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact_name }}
           path: _site
@@ -189,7 +189,7 @@ jobs:
 
       - name: Upload status artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: status-${{ matrix.case_id }}
           path: statuses/${{ matrix.case_id }}.json
