@@ -6,7 +6,12 @@ get_long_outputs <- function(fims, tmb, output) {
     data.frame(
       year = years,
       name = "catch",
-      FIMS = fims$landings_expected[[1]] / 1e3,
+      FIMS = dplyr::filter(
+        output,
+        label == "catch_expected",
+        estimated != 0
+      ) |>
+      dplyr::pull(estimated) / 1e3,
       TMB = tmb$Ecattot
     )
   ## spawnbio
@@ -30,7 +35,7 @@ get_long_outputs <- function(fims, tmb, output) {
       FIMS = dplyr::filter(
         output,
         label == "log_Fmort",
-        module_id == 1
+        estimation_type == "fixed_effects"
       ) |>
         dplyr::pull(estimated) |>
         exp(),
@@ -48,14 +53,14 @@ get_long_outputs <- function(fims, tmb, output) {
     data.frame(
       year = years,
       name = "Index2",
-      FIMS = fims$index_expected[[2]] / 1e9,
+      FIMS = fims$index_expected[[3]] / 1e9,
       TMB = tmb$Eindxsurv2
     )
   eind3 <-
     data.frame(
       year = years,
       name = "Index3",
-      FIMS = fims$index_expected[[3]] / 1e9,
+      FIMS = fims$index_expected[[1]] / 1e9,
       TMB = tmb$Eindxsurv3
     )
   eind6 <-
@@ -93,10 +98,17 @@ get_acomp_fits <- function(tmb, fims1, fims2, fleet, years) {
     stop("bad fleet")
   }
 
+  # TODO: fix the labels
+  fleet <- dplyr::case_when(
+    fleet == 1 ~ 2,
+    fleet == 2 ~ 3,
+    fleet == 3 ~ 1,
+    FALSE ~ fleet
+  )
   lab <- c("Fishery", "Survey 2", "Survey 3", "Survey 6")[fleet]
-  x1 <- matrix(fims1$landings_numbers_at_age[[fleet]], ncol = 10, byrow = TRUE)[ind, ]
+  x1 <- matrix(fims1$catch_numbers_at_age[[fleet]], ncol = 10, byrow = TRUE)[ind, ]
   x1 <- x1 / rowSums(x1)
-  x2 <- matrix(fims2$landings_numbers_at_age[[fleet]], ncol = 10, byrow = TRUE)[ind, ]
+  x2 <- matrix(fims2$catch_numbers_at_age[[fleet]], ncol = 10, byrow = TRUE)[ind, ]
   x2 <- x2 / rowSums(x2)
   dimnames(y) <-  dimnames(x1) <- dimnames(x2) <-
     list(year = years, age = 1:10)
@@ -167,45 +179,62 @@ prepare_pollock_data <- function(
     fleet = character(),
     age = integer(),
     timing = double(),
-    value = double(),
+    observed = double(),
     unit = character(),
-    uncertainty = double()
+    uncertainty = character()
   )
-  landings <- data.frame(
-    type = "landings",
+
+  catch <- data.frame(
+    type = "catch",
     fleet = "fleet1",
     age = NA,
     timing = seq(fimsdat$styr, fimsdat$endyr),
-    value = as.numeric(fimsdat$cattot) * 1e3,
+    observed = as.numeric(fimsdat$cattot) * 1e3,
     unit = "mt",
-    uncertainty = fimsdat$cattot_log_sd[1]
+    uncertainty = paste0(
+      "~dlnorm(meanlog = log_catch_expected, sdlog = ",
+      fimsdat$cattot_log_sd[1],
+      ")"
+    )
   )
   index2 <- data.frame(
     type = "index",
     fleet = "survey2",
     age = NA,
     timing = seq(fimsdat$styr, fimsdat$endyr),
-    value = ifelse(ind2 > 0, ind2 * 1e9, ind2),
+    observed = ifelse(ind2 > 0, ind2 * 1e9, ind2),
     unit = "",
-    uncertainty = CV2
+    uncertainty = paste0(
+      "~dlnorm(meanlog = log_index_expected, sdlog = ",
+      CV2,
+      ")"
+    )
   )
   index3 <- data.frame(
     type = "index",
     fleet = "survey3",
     age = NA,
     timing = seq(fimsdat$styr, fimsdat$endyr),
-    value = ifelse(ind3 > 0, ind3 * 1e9, ind3),
+    observed = ifelse(ind3 > 0, ind3 * 1e9, ind3),
     unit = "",
-    uncertainty = CV3
+    uncertainty = paste0(
+      "~dlnorm(meanlog = log_index_expected, sdlog = ",
+      CV3,
+      ")"
+    )
   )
   index6 <- data.frame(
     type = "index",
     fleet = "survey6",
     age = NA,
     timing = seq(fimsdat$styr, fimsdat$endyr),
-    value = ifelse(ind6 > 0, ind6 * 1e9, ind6),
+    observed = ifelse(ind6 > 0, ind6 * 1e9, ind6),
     unit = "",
-    uncertainty = CV6
+    uncertainty = paste0(
+      "~dlnorm(meanlog = log_index_expected, sdlog = ",
+      CV6,
+      ")"
+    )
   )
   ## these have -999 for missing data years
   catchage <- data.frame(
@@ -216,9 +245,13 @@ prepare_pollock_data <- function(
       seq(fimsdat$styr, fimsdat$endyr),
       each = n_ages
     ),
-    value = as.numeric(t(caa)),
+    observed = as.numeric(t(caa)),
     unit = "",
-    uncertainty = rep(Ncaa, each = n_ages)
+    uncertainty = paste0(
+      "~dmultinom(prob = agecomp_proportion, size = ",
+      rep(Ncaa, each = n_ages),
+      ")"
+    )
   )
   indexage2 <- data.frame(
     type = "age_comp",
@@ -228,9 +261,13 @@ prepare_pollock_data <- function(
       seq(fimsdat$styr, fimsdat$endyr),
       each = n_ages
     ),
-    value = as.numeric(t(paa2)),
+    observed = as.numeric(t(paa2)),
     unit = "",
-    uncertainty = rep(Npaa2, each = n_ages)
+    uncertainty = paste0(
+      "~dmultinom(prob = agecomp_proportion, size = ",
+      rep(Npaa2, each = n_ages),
+      ")"
+    )
   )
   indexage3 <- data.frame(
     type = "age_comp",
@@ -240,9 +277,13 @@ prepare_pollock_data <- function(
       seq(fimsdat$styr, fimsdat$endyr),
       each = n_ages
     ),
-    value = as.numeric(t(paa3)),
+    observed = as.numeric(t(paa3)),
     unit = "",
-    uncertainty = rep(Npaa3, each = n_ages)
+    uncertainty = paste0(
+      "~dmultinom(prob = agecomp_proportion, size = ",
+      rep(Npaa3, each = n_ages),
+      ")"
+    )
   )
   indexage6 <- data.frame(
     type = "age_comp",
@@ -252,16 +293,20 @@ prepare_pollock_data <- function(
       seq(fimsdat$styr, fimsdat$endyr),
       each = n_ages
     ),
-    value = as.numeric(t(paa6)),
+    observed = as.numeric(t(paa6)),
     unit = "",
-    uncertainty = rep(Npaa6, each = n_ages)
+    uncertainty = paste0(
+      "~dmultinom(prob = agecomp_proportion, size = ",
+      rep(Npaa6, each = n_ages),
+      ")"
+    )
   )
   indexage <- rbind(indexage2, indexage3, indexage6)
   index <- rbind(index2, index3, index6)
   ## indexage=indexage2
   ## index=index2
-  res <- rbind(res, landings, index, catchage, indexage)
-  ## rm(landings, index, catchage, indexage)
+  res <- rbind(res, catch, index, catchage, indexage)
+  ## rm(catch, index, catchage, indexage)
 
   timingfishery <- data.frame(
     timing = rep(
@@ -287,7 +332,8 @@ prepare_pollock_data <- function(
       unit = "mt",
       timing = as.numeric(timing),
       age = as.numeric(age)
-    )
+    ) |>
+    dplyr::rename(observed = value)
 
   res <- dplyr::bind_rows(res, weightatage_data)
 

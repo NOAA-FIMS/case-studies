@@ -4,22 +4,26 @@ get_asap_data <- function(asap_input) {
                 fleet = character(),
                 age = integer(),
                 timing = double(),
-                value = double(),
+                observed = double(),
                 unit = character(),
-                uncertainty = double())
+                uncertainty = character())
   years_in_model <- seq(asap_input$parms$styr, asap_input$parms$endyr)
   
-  landings <- data.frame(type = "landings",
+  catch <- data.frame(type = "catch",
                      fleet = "fishery",
                      age = NA,
                      timing = years_in_model,
-                     value = as.numeric(asap_input$catch.obs[1,]),
+                     observed = as.numeric(asap_input$catch.obs[1,]),
                      unit = "mt",
                      # This was
                      # asap_input$control.parms$catch.tot.cv[,1]
                      # but it was just reset to the following later in the parameters so using internal functionality to set it now
                      # uncertainty = rep(log(sqrt(log(as.numeric(mean(asap_input$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), asap_input[["parms"]][["nyears"]])
-                     uncertainty = rep(sqrt(log(as.numeric(mean(asap_input$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1)), asap_input[["parms"]][["nyears"]])
+                     uncertainty = paste0(
+                       "~dlnorm(meanlog = log_catch_expected, sdlog = ",
+                       rep(sqrt(log(as.numeric(mean(asap_input$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1)), asap_input[["parms"]][["nyears"]]),
+                       ")"
+                     )
   )
   
   # loop over all indices
@@ -29,12 +33,16 @@ get_asap_data <- function(asap_input) {
       fleet = paste0("survey", i),
       age = NA_integer_,
       timing = years_in_model[asap_input$index.year.counter[[i]]],
-      value = as.numeric(asap_input$index.obs[[i]]),
+      observed = as.numeric(asap_input$index.obs[[i]]),
       unit = "mt",
       # uncertainty = rep(log(sqrt(log(as.numeric(mean(asap_input$index.cv[[i]], na.rm=TRUE)^2 + 1)))), asap_input[["parms"]][["nyears"]]))
-      uncertainty = rep(
-        sqrt(log(as.numeric(mean(asap_input$index.cv[[i]], na.rm=TRUE)^2 + 1))),
-        length(asap_input$index.year.counter[[i]])
+      uncertainty = paste0(
+        "~dlnorm(meanlog = log_index_expected, sdlog = ",
+        rep(
+          sqrt(log(as.numeric(mean(asap_input$index.cv[[i]], na.rm=TRUE)^2 + 1))),
+          length(asap_input$index.year.counter[[i]])
+        ),
+        ")"
       )
     )
     if (i == 1){
@@ -49,20 +57,30 @@ get_asap_data <- function(asap_input) {
     fleet = "fishery",
     age = rep(seq(1,asap_input$parms$nages), asap_input$parms$nyears),
     timing = rep(seq(asap_input$parms$styr, asap_input$parms$endyr), each = asap_input$parms$nages),
-    value = as.numeric(t(asap_input$catch.comp.mats$catch.fleet1.ob)),
-    unit = "",
-    uncertainty = rep(asap_input$fleet.catch.Neff.init[1,], each = asap_input$parms$nages)
+    observed = as.numeric(t(asap_input$catch.comp.mats$catch.fleet1.ob)),
+    unit = "proportion",
+    uncertainty = paste0(
+      "~dmultinom(prob = agecomp_proportion, size =",
+      rep(asap_input$fleet.catch.Neff.init[1,], each = asap_input$parms$nages),
+      ")"
+    )
   )
   
   # loop over all indices
   for (i in 1:asap_input$parms$nindices){
-    indexage <- data.frame(type = "age_comp",
-                           fleet = paste0("survey", i),
-                           age = rep(seq(1,asap_input$parms$nages), asap_input$parms$nyears),
-                           timing = rep(seq(asap_input$parms$styr, asap_input$parms$endyr), each = asap_input$parms$nages),
-                           value = as.numeric(t(asap_input$index.comp.mats[[i*2-1]])),
-                           unit = "",
-                           uncertainty = rep(asap_input$index.Neff.init[i,], each = asap_input$parms$nages))
+    indexage <- data.frame(
+      type = "age_comp",
+      fleet = paste0("survey", i),
+      age = rep(seq(1,asap_input$parms$nages), asap_input$parms$nyears),
+      timing = rep(seq(asap_input$parms$styr, asap_input$parms$endyr), each = asap_input$parms$nages),
+      observed = as.numeric(t(asap_input$index.comp.mats[[i*2-1]])),
+      unit = "proportion",
+      uncertainty = paste0(
+        "~dmultinom(prob = agecomp_proportion, size = ",
+        rep(asap_input$index.Neff.init[i,], each = asap_input$parms$nages),
+        ")"
+      )
+    )
     if (i == 1){
       allindsage <- indexage
     }else{
@@ -93,11 +111,11 @@ get_asap_data <- function(asap_input) {
       seq(asap_input[["parms"]][["styr"]], asap_input[["parms"]][["endyr"]] + 1),
       each = asap_input[["parms"]][["nages"]]
     ),
-    value = c(t(weight_at_age_matrix)),
+    observed = c(t(weight_at_age_matrix)),
     unit = "mt",
-    uncertainty = NA
+    uncertainty = NA_character_
   )
 
-  res <- rbind(res, landings, allinds, catchage, allindsage, weight_at_age)
+  res <- rbind(res, catch, allinds, catchage, allindsage, weight_at_age)
   return(res)
 }

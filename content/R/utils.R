@@ -117,10 +117,10 @@ add_additional_year <- function(
     dplyr::group_by(!!!grouping_columns) |>
     dplyr::summarize(
       dplyr::across(
-        -c(value, timing),
+        -c(observed, timing),
         ~ if (dplyr::n_distinct(.x, na.rm = FALSE) == 1) dplyr::first(.x) else NA
       ),
-      value = mean(value),
+      observed = mean(observed),
       timing = terminal_year + 1
     ) |>
     dplyr::select(colnames(data))

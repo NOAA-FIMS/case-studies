@@ -81,9 +81,7 @@ years <- seq(get_start_year(data_4_model), get_end_year(data_4_model))
 # clear memory
 FIMS::clear()
 
-parameters <- create_default_configurations(data = data_4_model) |>
-  create_default_parameters(data = data_4_model) |>
-  tidyr::unnest(data) |>
+parameters <- setup_default_parameters(data = data_4_model) |>
   # ASAP assumes Fmult devs = 0
   dplyr::rows_update(
     tibble::tibble(
@@ -132,12 +130,12 @@ parameters <- create_default_configurations(data = data_4_model) |>
     tibble::tibble(
       module_name = "Population",
       label = rep("log_M", get_n_years(data_4_model) * get_n_ages(data_4_model)),
-      time = rep(years, each = get_n_ages(data_4_model)),
+      timing = rep(years, each = get_n_ages(data_4_model)),
       age = rep(get_ages(data_4_model), get_n_years(data_4_model)),
       # M is vector of age1 M X nyrs then age2 M X nyrs
       value = log(as.numeric(t(rdat$M.age)))
     ),
-    by = c("module_name", "label", "age", "time"),
+    by = c("module_name", "label", "age", "timing"),
     # TODO: fix this
     unmatched = "ignore"
   ) |>
@@ -177,7 +175,7 @@ convert_output_asap <- function(report, fleets) {
   catch <- data.frame(
     module_name = "Fleet",
     module_id = rep(seq(NROW(report$catch.pred)), each = length(years)),
-    label = "landings_expected",
+    label = "catch_expected",
     year_i = rep(seq(NCOL(report$catch.pred)), NROW(report$catch.pred)),
     estimate = c(report$catch.pred),
     estimation_type = "derived_quantity"
@@ -316,9 +314,9 @@ print(comp_index)
 
 catch_results <- data.frame(
   observed = get_data(data_4_model) |>
-    dplyr::filter(type == "landings", fleet == "fishery") |>
-    dplyr::pull(value),
-  FIMS = report$landings_expected[[1]],
+    dplyr::filter(type == "catch", fleet == "fishery") |>
+    dplyr::pull(observed),
+  FIMS = report$catch_expected[[1]],
   ASAP = as.numeric(rdat$catch.pred[1,])
 )
 #print(catch_results)

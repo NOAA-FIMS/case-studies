@@ -75,10 +75,15 @@ catch <- data.frame(year = 2005:2023, catch = c(29188.50, 53107.00, 69929.40,
 #   geom_line() + scale_y_continuous(label = comma)
 
 
-fimscatch <- tibble::tibble(type = "landings", fleet = "fleet1",
-                    age = NA, timing = catch$year, value = catch$catch,
-                    unit = "mt", uncertainty = 0.05)
-
+fimscatch <- tibble::tibble(type = "catch", fleet = "fleet1",
+                    age = NA, timing = catch$year, observed = catch$catch,
+                    unit = "mt",
+                    uncertainty = paste0(
+                      "~dlnorm(meanlog = log_catch_expected, sdlog = ",
+                      sqrt(log(0.01^2 + 1)), # Input was 0.05 but log(sqrt(log(0.01^2 + 1)))
+                                             # was used in parameter tibble
+                      ")"
+                    ))
 #-----CPUE
 cpue <- data.frame(year = 2005:2023, obs = c(649619.0, 899635.0, 956354.0, 863281.0, 652029.0,
                                              504970.0, 395783.0, 293980.0, 182417.0, 89260.1,
@@ -91,7 +96,14 @@ cpue <- data.frame(year = 2005:2023, obs = c(649619.0, 899635.0, 956354.0, 86328
 
 fimsindex <- tibble::tibble(type = "index", fleet = "survey1",
                     age = NA, timing = cpue$year,
-                    value = cpue$obs, unit = "mt", uncertainty = .3)
+                    observed = cpue$obs, unit = "mt",
+                    uncertainty = paste0(
+                      "~dlnorm(meanlog = log_catch_expected, sdlog = ",
+                      sqrt(log(0.01^2 + 1)), # Input was 0.3 but log(sqrt(log(0.01^2 + 1)))
+                                             # was used in parameter tibble
+                      ")"
+                    )
+)
 fimsindex$unit <- ""
 
 #-----Age compositions
@@ -104,7 +116,8 @@ acomps <- utils::read.csv(file.path(data_directory, "sardine_acomps.csv")) |>
 
 fimsage <- tibble::tibble(type = "age_comp", fleet = acomps$name,
                   age = acomps$age, timing = acomps$Yr,
-                  value = acomps$value_prop, unit = "proportion", uncertainty = acomps$Nsamp)
+                  observed = acomps$value_prop, unit = "proportion",
+                  uncertainty = paste0("~dmultinom(prob = agecomp_proportion, size = ", acomps$Nsamp, ")"))
 #fimsage$uncertainty <- 50 Leave as empirical values
 
 #-----Weight-at-age
@@ -125,15 +138,15 @@ fimswaa <- tibble::tibble(
   fleet = wtatage$fleet,
   age = wtatage$age,
   timing = wtatage$year,
-  value = wtatage$value,
+  observed = wtatage$value,
   unit = "mt",
-  uncertainty = NA
+  uncertainty = NA_character_
 )
 
 #Combine everything, format
 data_4_model <- rbind(fimscatch, fimsindex, fimsage, fimswaa)
 data_4_model$age <- as.integer(data_4_model$age)
-data_4_model$value <- as.numeric(data_4_model$value)
+data_4_model$observed <- as.numeric(data_4_model$observed)
 
 # Convert to FIMSFrame
 data_4_model <- FIMS::FIMSFrame(data_4_model)
@@ -148,9 +161,7 @@ init_naa <- exp(rzero) * exp(-(ages - 1) * M_value)
 init_naa[n_ages] <- init_naa[n_ages] / M_value # sum of infinite series
 
 # Create default recruitment, growth, and maturity parameters
-parameters <- FIMS::create_default_configurations(data = data_4_model) |>
-  FIMS::create_default_parameters(data = data_4_model) |>
-  tidyr::unnest(data) |>
+parameters <- FIMS::setup_default_parameters(data = data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
@@ -229,26 +240,6 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
       estimation_type = "fixed_effects"
     ),
     by = c("module_name", "age", "label")
-  ) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Data",
-      fleet = "fleet1",
-      label = "log_sd",
-      value = log(sqrt(log(0.01^2 + 1))),
-      estimation_type = "fixed_effects"
-    ),
-    by = c("module_name", "fleet", "label")
-  ) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Data",
-      fleet = "survey1",
-      label = "log_sd",
-      value = log(sqrt(log(0.1^2 + 1))),
-      estimation_type = "fixed_effects"
-    ),
-    by = c("module_name", "fleet", "label")
   )
 ```
 
