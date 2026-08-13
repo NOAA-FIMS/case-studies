@@ -95,26 +95,13 @@ estimate_F <- TRUE
 estimate_recdevs <- TRUE
 
 # Create parameters list and update default values for parameters
-default_parameters <- FIMS::create_default_configurations(
-  data = data_4_model
-) |>
-  tidyr::unnest(cols = data) |>
-  dplyr::rows_update(
+# TODO: change fleet1, survey2 and survey6 to be DoubleLogistic
+default_parameters <- FIMS::setup_default_parameters(data = data_4_model) |>
+  dplyr::bind_rows(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet = c("fleet1", "survey2", "survey6"), 
-      module_type = "DoubleLogistic"
-    ),
-    by = c("module_name", "fleet")
-  ) |>
-  FIMS::create_default_parameters(
-    data = data_4_model
-  ) |>
-  tidyr::unnest(cols = data) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Selectivity",
-      fleet = "fleet1", 
+      fleet = "fleet1",
+      module_type = "DoubleLogistic",
       label = c(
         "inflection_point_asc", "slope_asc",
         "inflection_point_desc", "slope_desc"
@@ -126,13 +113,13 @@ default_parameters <- FIMS::create_default_configurations(
         exp(parfinal$log_slp2_fsh_mean)
       ),
       estimation_type = "fixed_effects"
-    ),
-    by = c("module_name", "fleet", "label") 
+    )
   ) |>
-  dplyr::rows_update(
+  dplyr::bind_rows(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet = "survey2", 
+      fleet = "survey2",
+      module_type = "DoubleLogistic",
       label = c(
         "inflection_point_asc", "slope_asc",
         "inflection_point_desc", "slope_desc"
@@ -144,13 +131,13 @@ default_parameters <- FIMS::create_default_configurations(
         exp(parfinal$log_slp2_srv2)
       ),
       estimation_type = rep(c("fixed_effects", "constant"), each = 2)
-    ),
-    by = c("module_name", "fleet", "label") 
+    )
   ) |>
-  dplyr::rows_update(
+  dplyr::bind_rows(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet = "survey6", 
+      fleet = "survey6",
+      module_type = "DoubleLogistic",
       label = c(
         "inflection_point_asc", "slope_asc",
         "inflection_point_desc", "slope_desc"
@@ -162,20 +149,19 @@ default_parameters <- FIMS::create_default_configurations(
         exp(parfinal$log_slp2_srv6)
       ),
       estimation_type = rep(c("constant", "fixed_effects"), each = 2)
-    ),
-    by = c("module_name", "fleet", "label") 
+    )
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet = "survey3", 
+      fleet = "survey3",
       label = c("inflection_point", "slope"),
       value = c(
         parfinal$inf1_srv3,
         exp(parfinal$log_slp1_srv3)
       )
     ),
-    by = c("module_name", "fleet", "label") 
+    by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -214,7 +200,7 @@ default_parameters <- FIMS::create_default_configurations(
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Population",
-      time = rep(years, each = FIMS::get_n_ages(data_4_model)),
+      timing = rep(years, each = FIMS::get_n_ages(data_4_model)),
       age = rep(ages, FIMS::get_n_years(data_4_model)),
       label = "log_M",
       value = log(as.numeric(t(matrix(
@@ -222,38 +208,43 @@ default_parameters <- FIMS::create_default_configurations(
         nrow = FIMS::get_n_years(data_4_model)
       ))))
     ),
-    by = c("module_name", "label", "time", "age")
+    by = c("module_name", "label", "timing", "age")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Recruitment",
       label = "log_devs",
-      time = years[-1],
+      timing = years[-1],
       # The last value of the initial numbers at age is the first
       # recruitment deviation
       value = parfinal$dev_log_recruit[-1],
     ),
-    by = c("module_name", "label", "time")
+    by = c("module_name", "label", "timing")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet = "fleet1", 
-      time = years,
+      fleet = "fleet1",
+      timing = years,
       label = "log_Fmort",
       value = log(pkfitfinal$rep$F)
     ),
-    by = c("module_name", "fleet", "label", "time") 
+    by = c("module_name", "fleet", "label", "timing")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet = c("survey2", "survey3", "survey6"), 
+      fleet = c("survey2", "survey3", "survey6"),
       label = "log_q",
       value = c(parfinal$log_q2_mean, parfinal$log_q3_mean, parfinal$log_q6),
       estimation_type = "constant"
     ),
-    by = c("module_name", "fleet", "label") 
+    by = c("module_name", "fleet", "label")
+  ) |>
+  dplyr::filter_out(
+    module_name == "Selectivity",
+    module_type == "Logistic",
+    fleet %in% c("fleet1", "survey2", "survey6")
   )
 
 # Put it all together, creating the FIMS model and making the TMB fcn

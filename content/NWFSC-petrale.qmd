@@ -84,18 +84,12 @@ years <- (data_4_model |> FIMS::get_start_year()):(data_4_model |>
 ages <- data_4_model |> FIMS::get_ages()
 
 # Create default parameters
-default_parameters <- FIMS::create_default_configurations(
-    data = data_4_model
-) |>
-    FIMS::create_default_parameters(
-        data = data_4_model
-    ) |>
-    tidyr::unnest(cols = data)
+default_parameters <- FIMS::setup_default_parameters(data = data_4_model)
 # Note: the last value of the initial numbers at age is the first
 # recruitment deviation
 recdev_years <- default_parameters |>
     dplyr::filter(module_name == "Recruitment" & label == "log_devs") |>
-    dplyr::pull(time)
+    dplyr::pull(timing)
 recdevs <- rep$recruitpars |> # $recruitpars is a subset of $parameters with Yr as an additional column
     dplyr::filter(Yr %in% recdev_years) |>
     dplyr::pull(Value)
@@ -205,10 +199,10 @@ parameters <- default_parameters |>
         tibble::tibble(
             module_name = "Recruitment",
             label = "log_devs",
-            time = recdev_years,
+            timing = recdev_years,
             value = recdevs,
         ),
-        by = c("module_name", "label", "time")
+        by = c("module_name", "label", "timing")
     ) |>
     # set initial value for log_q based on SS3 output
     dplyr::rows_update(
