@@ -465,7 +465,7 @@ parameters <- default_parameters |>
 fit <- parameters |>
   FIMS::initialize_fims(data = data_4_model) |>
   # Model is too big to run on GitHub action if you estimate uncertainty
-  FIMS::fit_fims(optimize = TRUE, get_sd = FALSE, number_of_loops = 0)
+  FIMS::fit_fims(optimize = TRUE, get_sd = FALSE, number_of_loops = 1)
 ```
 
 ## Examining convergence and parameter estimates
@@ -604,9 +604,9 @@ stockplotr::plot_timeseries(
 landings_years <- FIMS::get_start_year(data_4_model):FIMS::get_end_year(data_4_model)
 
 observed_landings <- data_4_model@data |> 
-  dplyr::filter(type == "landings" & fleet != "BFISH") |> 
-  dplyr::select(fleet, timing, value) |> 
-  dplyr::rename(fleet = "fleet", year = "timing", observed = "value")
+  dplyr::filter(type == "catch" & fleet != "BFISH") |> 
+  dplyr::select(fleet, timing, observed) |> 
+  dplyr::rename(fleet = "fleet", year = "timing")
 
 expected_landings <- output |>
   dplyr::filter(label == "landings_expected") |>
