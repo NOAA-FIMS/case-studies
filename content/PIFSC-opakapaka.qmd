@@ -273,7 +273,7 @@ opaka_dat_fims <- opaka_dat_fims_raw |>
   dplyr::mutate(
     uncertainty = dplyr::if_else(
       type == "length_comp" & fleet == "BFISH",
-      1,
+      "~dmultinom(prob = lengthcomp_proportion, size = 1)",
       uncertainty
     )
   )
@@ -305,22 +305,10 @@ init_naa <- (exp(opaka_inputs_bootstrap$ctl$SR_parms["SR_LN(R0)", "INIT"])) * ex
 init_naa[n_ages] <- init_naa[n_ages] / 0.135
 
 # Create default parameters
-default_parameters <- FIMS::create_default_configurations(
-  data = data_4_model
-) |>
-  # add parametric growth to the configuration
-  tidyr::unnest(cols = data) |>
-  dplyr::mutate(
-    module_type = dplyr::if_else(
-      module_name == "Growth",
-      "VonBertalanffy",
-      module_type
-    )
-  ) |>
-  FIMS::create_default_parameters(
-    data = data_4_model
-  ) |>
-  tidyr::unnest(cols = data)
+default_parameters <- FIMS::setup_default_parameters(
+    data = data_4_model,
+    growth_module_type = "VonBertalanffy"
+  )
 
 # modify the default parameters
 parameters <- default_parameters |>
@@ -436,22 +424,22 @@ parameters <- default_parameters |>
     tibble::tibble(
       module_name = "Recruitment",
       label = "log_devs",
-      time = years[-1],
+      timing = years[-1],
       # The last value of the initial numbers at age is the first
       # recruitment deviation
       value = recdevs$Value
     ),
-    by = c("module_name", "label", "time")
+    by = c("module_name", "label", "timing")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
       fleet = "FRS",
-      time = years,
+      timing = years,
       label = "log_Fmort",
       value = log(rep$exploitation$FRS[-76]) # removing F value for forecast year
     ),
-    by = c("module_name", "fleet", "label", "time")
+    by = c("module_name", "fleet", "label", "timing")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -467,10 +455,10 @@ parameters <- default_parameters |>
       module_name = "Fleet",
       fleet = "Non_comm",
       label = "log_Fmort",
-      time = years,
+      timing = years,
       value = log(rep$exploitation$Non_comm[-76]) # removing F value for forecast year
     ),
-    by = c("module_name", "fleet", "label", "time")
+    by = c("module_name", "fleet", "label", "timing")
   )
 
 # Run the model with optimization
