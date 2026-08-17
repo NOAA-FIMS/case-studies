@@ -132,7 +132,7 @@ data_4_model
 
 # Summary of the data types available
 FIMS::get_data(data_4_model) |>
-  dplyr::filter(value != -999) |>
+  dplyr::filter(observed != -999) |>
   dplyr::group_by(type, fleet) |>
   dplyr::count()
 ```
