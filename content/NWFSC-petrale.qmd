@@ -84,7 +84,11 @@ years <- (data_4_model |> FIMS::get_start_year()):(data_4_model |>
 ages <- data_4_model |> FIMS::get_ages()
 
 # Create default parameters
-default_parameters <- FIMS::setup_default_parameters(data = data_4_model)
+default_parameters <- FIMS::setup_default_parameters(
+  data = data_4_model,
+  growth_module_type = "VonBertalanffy"
+)
+
 # Note: the last value of the initial numbers at age is the first
 # recruitment deviation
 recdev_years <- default_parameters |>
@@ -95,11 +99,10 @@ recdevs <- rep$recruitpars |> # $recruitpars is a subset of $parameters with Yr 
     dplyr::pull(Value)
 
 # initial numbers-at-age from SS3 output
-init_naa_ss3 <- 1000 *
-    rep$natage |>
+init_naa_ss3 <- rep$natage |>
         dplyr::filter(Time == min(years), Sex == 1) |> # numbers at age in FIMS start year, not SS3 model
         dplyr::select(paste(ages)) |>
-        as.numeric() # TODO: figure out if *1000 is needed
+        as.numeric() 
 
 # alternative initial numbers-at-age based on exponential decay using female M
 init_naa <- exp(
@@ -135,6 +138,42 @@ get_ss3_estimate <- function(string) {
 }
 
 parameters <- default_parameters |>
+  # update the growth parameters with initial values from SS3
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Growth",
+      label = c(
+        "length_at_ref_age_1",
+        "length_at_ref_age_2",
+        "growth_coefficient_K",
+        "reference_age_for_length_1",
+        "reference_age_for_length_2",
+        "length_weight_a", # added length-weight relationship parameters
+        "length_weight_b"
+      ),
+      value = c(8.87713, 47.4413, .197191, 1, 17, 2.035e-06, 3.478),
+      estimation_type = "constant"
+    ),
+    by = c("module_name", "label")
+  ) |>
+  # change first reference age for sd values from 0 to 1
+  dplyr::mutate(
+    age = dplyr::if_else(
+      module_name == "Growth" & label == "length_at_age_sd_at_ref_ages" & age == 0,
+      1,
+      age
+    )
+  ) |> 
+  dplyr::rows_update( #Note: this could probably be combined with Growth block above and put NAs for age for the other parameters
+    tibble::tibble(
+      module_name = "Growth",
+      label = "length_at_age_sd_at_ref_ages",
+      age = c(1, 17),
+      value = c(1.2682, 4.8766)
+    ),
+    by=c("module_name", "label", "age")
+  ) |>
+
     # dplyr::rows_update(
     #     tibble::tibble(
     #         module_name = "Maturity",
@@ -180,7 +219,7 @@ parameters <- default_parameters |>
             module_name = "Recruitment",
             label = c("log_rzero", "logit_steep", "log_sd"),
             value = c(
-                log(1000) + # adding log(1000) to account for R0 units in 1000s in SS3
+                #log(1000) + # adding log(1000) to account for R0 units in 1000s in SS3
                     get_ss3_estimate("SR_LN(R0)"),
                 FIMS::logit(
                     0.2,
@@ -277,12 +316,78 @@ test_fit <- parameters |>
 fit <- parameters |>
     FIMS::initialize_fims(data = data_4_model) |>
     FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
-fit_est <- fit # backup in case we want to set fit <- test_fit
+#fit_est <- fit # backup in case we want to set fit <- test_fit
 ```
 
 ## Plotting results
 
 TODO: Add plotting code for the FIMS model results
+
+```{r}
+#| eval: true
+#| label: growth-curve-plots
+
+## Plot Growth Curve
+
+# Pull the report and estimates from the fitted model.
+report_fit <- FIMS::get_report(fit)
+est_fit <- FIMS::get_estimates(fit)
+
+# Pull model ages.
+ages_fit <- FIMS::get_ages(data_4_model)
+
+# Pull mean length-at-age from the report.
+growth_laa_values <- unlist(report_fit[["growth_mean_LAA"]])
+
+# Convert the report vector into an age-by-year matrix.
+n_ages_fit <- length(ages_fit)
+n_growth_years_fit <- length(growth_laa_values) / n_ages_fit
+
+growth_laa_matrix <- matrix(
+  growth_laa_values,
+  nrow = n_ages_fit,
+  ncol = n_growth_years_fit
+)
+
+# Put the Growth curve into a plotting table.
+growth_curve_fit <- tibble::tibble(
+  age = rep(ages_fit, times = n_growth_years_fit),
+  year_i = rep(seq_len(n_growth_years_fit), each = n_ages_fit),
+  mean_length = as.vector(growth_laa_matrix)
+) |>
+  dplyr::group_by(age) |>
+  dplyr::summarise(
+    mean_length = mean(mean_length, na.rm = TRUE),
+    min_length = min(mean_length, na.rm = TRUE),
+    max_length = max(mean_length, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::mutate(platform = "FIMS")
+
+# SS3 mean length at age for comparison
+growth_curve_ss3 <- rep$endgrowth |> 
+  dplyr::select(Age_Beg, Len_Beg, SD_Beg) |> # beginning of year values, could also use "Mid" instead of "Beg"
+  dplyr::rename(age = Age_Beg, mean_length = Len_Beg, sd_length = SD_Beg) |> 
+  dplyr::mutate(min_length = NA, max_length = NA, platform = "SS3")
+
+# combine FIMS and SS3 growth curves for plotting
+growth_curve_both <- dplyr::bind_rows(growth_curve_fit, growth_curve_ss3)
+
+# Plot mean length-at-age for both models.
+ggplot2::ggplot(
+  growth_curve_both,
+  ggplot2::aes(x = age, y = mean_length, color = platform, fill = platform, linetype = platform)
+) +
+  ggplot2::geom_line(linewidth = 1) +
+  ggplot2::geom_point(size = 2) +
+  ggplot2::labs(
+    title = "fit Growth curve",
+    subtitle = "Mean length-at-age from FIMS vs SS3",
+    x = "Age",
+    y = "Mean length-at-age"
+  ) +
+  ggplot2::theme_bw()
+```
 
 ```{r}
 #| label: cleanup
