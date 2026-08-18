@@ -83,9 +83,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-bd6cbec3f8f1e47e65ea724175f0138c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-8aaea1cc776fd55558d06debd1d5c78a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-bd6cbec3f8f1e47e65ea724175f0138c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-3ab3233c9c3113396c7524351f110b95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-84839adb8e130ac3934da03dd79d7c75.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-3ab3233c9c3113396c7524351f110b95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -459,7 +459,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li>R version: R version 4.6.1 (2026-06-24)</li>
 <li>TMB version: 1.9.23</li>
-<li>FIMS commit: 9d09806</li>
+<li>FIMS commit: f0c5937</li>
 <li>Stock name: Pacific Hake</li>
 <li>Region: U.S. West Coast</li>
 <li>Analyst: Kelli F. Johnson</li>
@@ -495,7 +495,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>start_year <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(</span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  stock_synthesis_data,</span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  type <span class="sc">==</span> <span class="st">"age_comp"</span>,</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  value <span class="sc">!=</span> <span class="sc">-</span><span class="dv">999</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  observed <span class="sc">!=</span> <span class="sc">-</span><span class="dv">999</span></span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(timing) <span class="sc">|&gt;</span></span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">min</span>()</span>
@@ -523,7 +523,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>tbl_df of class 'FIMSFrame'</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>with the following 'types': age_comp, index, landings, weight_at_age</code></pre>
+<pre><code>with the following 'types': age_comp, index, catch, weight_at_age</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Found more than one class "tbl_df" in cache; using the first, from namespace 'FIMS'</code></pre>
@@ -539,14 +539,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 8
-  type     fleet             age length timing value unit       uncertainty
-  &lt;chr&gt;    &lt;chr&gt;           &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt;
-1 age_comp Acoustic_Survey     0     NA   1975  -999 proportion          NA
-2 age_comp Acoustic_Survey     1     NA   1975  -999 proportion          NA
-3 age_comp Acoustic_Survey     2     NA   1975  -999 proportion          NA
-4 age_comp Acoustic_Survey     3     NA   1975  -999 proportion          NA
-5 age_comp Acoustic_Survey     4     NA   1975  -999 proportion          NA
-6 age_comp Acoustic_Survey     5     NA   1975  -999 proportion          NA
+  type     fleet             age length timing observed unit       uncertainty
+  &lt;chr&gt;    &lt;chr&gt;           &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      
+1 age_comp Acoustic_Survey     0     NA   1975     -999 proportion &lt;NA&gt;       
+2 age_comp Acoustic_Survey     1     NA   1975     -999 proportion &lt;NA&gt;       
+3 age_comp Acoustic_Survey     2     NA   1975     -999 proportion &lt;NA&gt;       
+4 age_comp Acoustic_Survey     3     NA   1975     -999 proportion &lt;NA&gt;       
+5 age_comp Acoustic_Survey     4     NA   1975     -999 proportion &lt;NA&gt;       
+6 age_comp Acoustic_Survey     5     NA   1975     -999 proportion &lt;NA&gt;       
 additional slots include the following:fleets:
 [1] "Fishery"         "Acoustic_Survey"
 n_years:
@@ -568,7 +568,7 @@ end_year:
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of the data types available</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>FIMS<span class="sc">::</span><span class="fu">get_data</span>(data_4_model) <span class="sc">|&gt;</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(value <span class="sc">!=</span> <span class="sc">-</span><span class="dv">999</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(observed <span class="sc">!=</span> <span class="sc">-</span><span class="dv">999</span>) <span class="sc">|&gt;</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(type, fleet) <span class="sc">|&gt;</span></span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
@@ -579,8 +579,8 @@ end_year:
   &lt;chr&gt;         &lt;chr&gt;           &lt;int&gt;
 1 age_comp      Acoustic_Survey   240
 2 age_comp      Fishery           800
-3 index         Acoustic_Survey    15
-4 landings      Fishery            50
+3 catch         Fishery            50
+4 index         Acoustic_Survey    15
 5 weight_at_age Fishery           816</code></pre>
 </div>
 </div>
@@ -678,334 +678,325 @@ end_year:
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>time_varying_selectivity <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>selectivity_used <span class="ot">&lt;-</span> <span class="st">"Logistic"</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>FIMS<span class="sc">::</span><span class="fu">clear</span>()</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">create_default_configurations</span>(<span class="at">data =</span> data_4_model) <span class="sc">|&gt;</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unnest</span>(data) <span class="sc">|&gt;</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Selectivity"</span>,</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet =</span> <span class="fu">c</span>(<span class="st">"Fishery"</span>, <span class="st">"Acoustic_Survey"</span>),</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_type =</span> <span class="fu">c</span>(selectivity_used, <span class="st">"Logistic"</span>)</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"fleet"</span>)</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  FIMS<span class="sc">::</span><span class="fu">create_default_parameters</span>(<span class="at">data =</span> data_4_model) <span class="sc">|&gt;</span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unnest</span>(data) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">setup_default_parameters</span>(<span class="at">data =</span> data_4_model) <span class="sc">|&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="fu">c</span>(<span class="st">"Maturity"</span>, <span class="st">"Maturity"</span>),</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"inflection_point"</span>, <span class="st">"slope"</span>),</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">c</span>(</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        hake_maturity_inflection_point,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        hake_maturity_slope</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
 <span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="fu">c</span>(<span class="st">"Maturity"</span>, <span class="st">"Maturity"</span>),</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"inflection_point"</span>, <span class="st">"slope"</span>),</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">c</span>(</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>        hake_maturity_inflection_point,</span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>        hake_maturity_slope</span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="fu">c</span>(<span class="st">"Population"</span>),</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"log_M"</span>),</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>      <span class="co"># estimation_type = "fixed_effects",</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">log</span>(dplyr<span class="sc">::</span><span class="fu">pull</span>(natural_mortality_matrix, m)),</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">timing =</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(natural_mortality_matrix, year),</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">age =</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(natural_mortality_matrix, age)</span>
 <span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>)</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>, <span class="st">"timing"</span>, <span class="st">"age"</span>)</span>
 <span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
 <span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="fu">c</span>(<span class="st">"Population"</span>),</span>
-<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"log_M"</span>),</span>
-<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>      <span class="co"># estimation_type = "fixed_effects",</span></span>
-<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">log</span>(dplyr<span class="sc">::</span><span class="fu">pull</span>(natural_mortality_matrix, m)),</span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">time =</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(natural_mortality_matrix, year),</span>
-<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">age =</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(natural_mortality_matrix, age)</span>
-<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>, <span class="st">"time"</span>, <span class="st">"age"</span>)</span>
-<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
-<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Population"</span>,</span>
-<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="st">"log_init_naa"</span>,</span>
-<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>      <span class="at">age =</span> FIMS<span class="sc">::</span><span class="fu">get_ages</span>(data_4_model),</span>
-<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">log</span>(init_naa),</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Population"</span>,</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="st">"log_init_naa"</span>,</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">age =</span> FIMS<span class="sc">::</span><span class="fu">get_ages</span>(data_4_model),</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">log</span>(init_naa),</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">estimation_type =</span> <span class="st">"fixed_effects"</span></span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>, <span class="st">"age"</span>)</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Selectivity"</span>,</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"Fishery"</span>, <span class="st">"Acoustic_Survey"</span>), <span class="at">each =</span> <span class="dv">2</span>),</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"inflection_point"</span>, <span class="st">"slope"</span>), <span class="dv">2</span>),</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>      <span class="co"># </span><span class="al">TODO</span><span class="co">: play with these start values</span></span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">c</span>(<span class="fl">2.05</span>, <span class="fl">3.17</span>, <span class="fl">4.4</span>, <span class="fl">3.3</span>),</span>
 <span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">estimation_type =</span> <span class="st">"fixed_effects"</span></span>
 <span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>, <span class="st">"age"</span>)</span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"fleet"</span>, <span class="st">"label"</span>)</span>
 <span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
 <span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Selectivity"</span>,</span>
-<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"Fishery"</span>, <span class="st">"Acoustic_Survey"</span>), <span class="at">each =</span> <span class="dv">2</span>),</span>
-<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"inflection_point"</span>, <span class="st">"slope"</span>), <span class="dv">2</span>),</span>
-<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a>      <span class="co"># </span><span class="al">TODO</span><span class="co">: play with these start values</span></span>
-<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">c</span>(<span class="fl">2.05</span>, <span class="fl">3.17</span>, <span class="fl">4.4</span>, <span class="fl">3.3</span>),</span>
-<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a>      <span class="at">estimation_type =</span> <span class="st">"fixed_effects"</span></span>
-<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"fleet"</span>, <span class="st">"label"</span>)</span>
-<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
-<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Fleet"</span>,</span>
-<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet =</span> <span class="st">"Acoustic_Survey"</span>,</span>
-<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"log_q"</span>),</span>
-<span id="cb15-64"><a href="#cb15-64" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">log</span>(<span class="fl">0.832</span>),</span>
-<span id="cb15-65"><a href="#cb15-65" aria-hidden="true" tabindex="-1"></a>      <span class="at">estimation_type =</span> <span class="st">"fixed_effects"</span></span>
-<span id="cb15-66"><a href="#cb15-66" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb15-67"><a href="#cb15-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"fleet"</span>, <span class="st">"label"</span>)</span>
-<span id="cb15-68"><a href="#cb15-68" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb15-69"><a href="#cb15-69" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb15-70"><a href="#cb15-70" aria-hidden="true" tabindex="-1"></a>fleets <span class="ot">&lt;-</span> <span class="fu">get_fleets</span>(data_4_model)</span>
-<span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-72"><a href="#cb15-72" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize lists to store fleet-related objects</span></span>
-<span id="cb15-73"><a href="#cb15-73" aria-hidden="true" tabindex="-1"></a>fleet <span class="ot">&lt;-</span> fleet_selectivity <span class="ot">&lt;-</span></span>
-<span id="cb15-74"><a href="#cb15-74" aria-hidden="true" tabindex="-1"></a>  fleet_landings <span class="ot">&lt;-</span> fleet_landings_distribution <span class="ot">&lt;-</span></span>
-<span id="cb15-75"><a href="#cb15-75" aria-hidden="true" tabindex="-1"></a>  fleet_index <span class="ot">&lt;-</span> fleet_index_distribution <span class="ot">&lt;-</span></span>
-<span id="cb15-76"><a href="#cb15-76" aria-hidden="true" tabindex="-1"></a>  fleet_age_comp <span class="ot">&lt;-</span> fleet_agecomp_distribution <span class="ot">&lt;-</span></span>
-<span id="cb15-77"><a href="#cb15-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vector</span>(<span class="st">"list"</span>, <span class="fu">length</span>(fleets))</span>
-<span id="cb15-78"><a href="#cb15-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-79"><a href="#cb15-79" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(fleets)) {</span>
-<span id="cb15-80"><a href="#cb15-80" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Selectivity</span></span>
-<span id="cb15-81"><a href="#cb15-81" aria-hidden="true" tabindex="-1"></a>  fleet_selectivity[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_selectivity</span>(</span>
-<span id="cb15-82"><a href="#cb15-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">parameters =</span> parameters,</span>
-<span id="cb15-83"><a href="#cb15-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_4_model,</span>
-<span id="cb15-84"><a href="#cb15-84" aria-hidden="true" tabindex="-1"></a>    <span class="at">fleet =</span> fleets[i]</span>
-<span id="cb15-85"><a href="#cb15-85" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb15-86"><a href="#cb15-86" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Time-varying selectivity for the fishery</span></span>
-<span id="cb15-87"><a href="#cb15-87" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (i <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> time_varying_selectivity) {</span>
-<span id="cb15-88"><a href="#cb15-88" aria-hidden="true" tabindex="-1"></a>    selectivity_type <span class="ot">&lt;-</span> parameters <span class="sc">|&gt;</span></span>
-<span id="cb15-89"><a href="#cb15-89" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">filter</span>(module_name <span class="sc">==</span> <span class="st">"Selectivity"</span>, fleet <span class="sc">==</span> <span class="st">"Fishery"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-90"><a href="#cb15-90" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-91"><a href="#cb15-91" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">pull</span>(module_type)</span>
-<span id="cb15-92"><a href="#cb15-92" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (selectivity_type <span class="sc">==</span> <span class="st">"Logistic"</span>){</span>
-<span id="cb15-93"><a href="#cb15-93" aria-hidden="true" tabindex="-1"></a>      fleet_selectivity[[i]]<span class="sc">$</span>inflection_point<span class="sc">$</span><span class="fu">resize</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
-<span id="cb15-94"><a href="#cb15-94" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (ii <span class="cf">in</span> <span class="fu">seq</span>(<span class="fu">get_n_years</span>(data_4_model))) {</span>
-<span id="cb15-95"><a href="#cb15-95" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>inflection_point[ii]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb15-96"><a href="#cb15-96" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>inflection_point[ii]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
-<span id="cb15-97"><a href="#cb15-97" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb15-98"><a href="#cb15-98" aria-hidden="true" tabindex="-1"></a>      fleet_selectivity[[i]]<span class="sc">$</span>slope<span class="sc">$</span><span class="fu">resize</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
-<span id="cb15-99"><a href="#cb15-99" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (ii <span class="cf">in</span> <span class="fu">seq</span>(<span class="fu">get_n_years</span>(data_4_model))) {</span>
-<span id="cb15-100"><a href="#cb15-100" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>slope[ii]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb15-101"><a href="#cb15-101" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>slope[ii]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
-<span id="cb15-102"><a href="#cb15-102" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb15-103"><a href="#cb15-103" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb15-104"><a href="#cb15-104" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (selectivity_type <span class="sc">==</span> <span class="st">"DoubleLogistic"</span>) {</span>
-<span id="cb15-105"><a href="#cb15-105" aria-hidden="true" tabindex="-1"></a>      fleet_selectivity[[i]]<span class="sc">$</span>inflection_point_asc<span class="sc">$</span><span class="fu">resize</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
-<span id="cb15-106"><a href="#cb15-106" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (ii <span class="cf">in</span> <span class="fu">seq</span>(<span class="fu">get_n_years</span>(data_4_model))) {</span>
-<span id="cb15-107"><a href="#cb15-107" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>inflection_point_asc[ii]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb15-108"><a href="#cb15-108" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>inflection_point_asc[ii]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
-<span id="cb15-109"><a href="#cb15-109" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb15-110"><a href="#cb15-110" aria-hidden="true" tabindex="-1"></a>      <span class="co"># fleet_selectivity[[i]]$inflection_point_desc$resize(get_n_years(data_4_model))</span></span>
-<span id="cb15-111"><a href="#cb15-111" aria-hidden="true" tabindex="-1"></a>      <span class="co"># for (ii in seq(get_n_years(data_4_model))) {</span></span>
-<span id="cb15-112"><a href="#cb15-112" aria-hidden="true" tabindex="-1"></a>      <span class="co">#   fleet_selectivity[[i]]$inflection_point_desc[ii]$value &lt;- 1</span></span>
-<span id="cb15-113"><a href="#cb15-113" aria-hidden="true" tabindex="-1"></a>      <span class="co">#   fleet_selectivity[[i]]$inflection_point_desc[ii]$estimation_type$set("fixed_effects")</span></span>
-<span id="cb15-114"><a href="#cb15-114" aria-hidden="true" tabindex="-1"></a>      <span class="co"># }</span></span>
-<span id="cb15-115"><a href="#cb15-115" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb15-116"><a href="#cb15-116" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb15-117"><a href="#cb15-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-118"><a href="#cb15-118" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Setup the fleets</span></span>
-<span id="cb15-119"><a href="#cb15-119" aria-hidden="true" tabindex="-1"></a>  fleet_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb15-120"><a href="#cb15-120" aria-hidden="true" tabindex="-1"></a>    <span class="at">selectivity =</span> fleet_selectivity[[i]]<span class="sc">$</span><span class="fu">get_id</span>()</span>
-<span id="cb15-121"><a href="#cb15-121" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb15-122"><a href="#cb15-122" aria-hidden="true" tabindex="-1"></a>  fleet_types <span class="ot">&lt;-</span> <span class="fu">get_data</span>(data_4_model) <span class="sc">|&gt;</span></span>
-<span id="cb15-123"><a href="#cb15-123" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(fleet <span class="sc">==</span> fleets[i]) <span class="sc">|&gt;</span></span>
-<span id="cb15-124"><a href="#cb15-124" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(type) <span class="sc">|&gt;</span></span>
-<span id="cb15-125"><a href="#cb15-125" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unique</span>()</span>
-<span id="cb15-126"><a href="#cb15-126" aria-hidden="true" tabindex="-1"></a>  data_distribution_names_for_fleet_i <span class="ot">&lt;-</span> parameters <span class="sc">|&gt;</span></span>
-<span id="cb15-127"><a href="#cb15-127" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(fleet <span class="sc">==</span> fleets[i] <span class="sc">&amp;</span> distribution_type <span class="sc">==</span> <span class="st">"Data"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-128"><a href="#cb15-128" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(module_type)</span>
-<span id="cb15-129"><a href="#cb15-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-130"><a href="#cb15-130" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Landings</span></span>
-<span id="cb15-131"><a href="#cb15-131" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"landings"</span> <span class="sc">%in%</span> fleet_types <span class="sc">&amp;&amp;</span></span>
-<span id="cb15-132"><a href="#cb15-132" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Landings"</span> <span class="sc">%in%</span> data_distribution_names_for_fleet_i) {</span>
-<span id="cb15-133"><a href="#cb15-133" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize landings module for the current fleet</span></span>
-<span id="cb15-134"><a href="#cb15-134" aria-hidden="true" tabindex="-1"></a>    fleet_landings[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_landings</span>(</span>
-<span id="cb15-135"><a href="#cb15-135" aria-hidden="true" tabindex="-1"></a>      <span class="at">data =</span> data_4_model,</span>
-<span id="cb15-136"><a href="#cb15-136" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet =</span> fleets[i]</span>
-<span id="cb15-137"><a href="#cb15-137" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb15-138"><a href="#cb15-138" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add the module ID for the initialized landings to the list of fleet module IDs</span></span>
-<span id="cb15-139"><a href="#cb15-139" aria-hidden="true" tabindex="-1"></a>    fleet_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb15-140"><a href="#cb15-140" aria-hidden="true" tabindex="-1"></a>      fleet_module_ids,</span>
-<span id="cb15-141"><a href="#cb15-141" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(<span class="at">landings =</span> fleet_landings[[i]]<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb15-142"><a href="#cb15-142" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb15-143"><a href="#cb15-143" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb15-144"><a href="#cb15-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-145"><a href="#cb15-145" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Index</span></span>
-<span id="cb15-146"><a href="#cb15-146" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"index"</span> <span class="sc">%in%</span> fleet_types <span class="sc">&amp;&amp;</span></span>
-<span id="cb15-147"><a href="#cb15-147" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Index"</span> <span class="sc">%in%</span> data_distribution_names_for_fleet_i) {</span>
-<span id="cb15-148"><a href="#cb15-148" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize index module for the current fleet</span></span>
-<span id="cb15-149"><a href="#cb15-149" aria-hidden="true" tabindex="-1"></a>    fleet_index[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_index</span>(</span>
-<span id="cb15-150"><a href="#cb15-150" aria-hidden="true" tabindex="-1"></a>      <span class="at">data =</span> data_4_model,</span>
-<span id="cb15-151"><a href="#cb15-151" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet =</span> fleets[i]</span>
-<span id="cb15-152"><a href="#cb15-152" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb15-153"><a href="#cb15-153" aria-hidden="true" tabindex="-1"></a>    fleet_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb15-154"><a href="#cb15-154" aria-hidden="true" tabindex="-1"></a>      fleet_module_ids,</span>
-<span id="cb15-155"><a href="#cb15-155" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(<span class="at">index =</span> fleet_index[[i]]<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb15-156"><a href="#cb15-156" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb15-157"><a href="#cb15-157" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb15-158"><a href="#cb15-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-159"><a href="#cb15-159" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Age composition</span></span>
-<span id="cb15-160"><a href="#cb15-160" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"age_comp"</span> <span class="sc">%in%</span> fleet_types <span class="sc">&amp;&amp;</span></span>
-<span id="cb15-161"><a href="#cb15-161" aria-hidden="true" tabindex="-1"></a>    <span class="st">"AgeComp"</span> <span class="sc">%in%</span> data_distribution_names_for_fleet_i) {</span>
-<span id="cb15-162"><a href="#cb15-162" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize age composition module for the current fleet</span></span>
-<span id="cb15-163"><a href="#cb15-163" aria-hidden="true" tabindex="-1"></a>    fleet_age_comp[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_comp</span>(</span>
-<span id="cb15-164"><a href="#cb15-164" aria-hidden="true" tabindex="-1"></a>      <span class="at">data =</span> data_4_model,</span>
-<span id="cb15-165"><a href="#cb15-165" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet =</span> fleets[i],</span>
-<span id="cb15-166"><a href="#cb15-166" aria-hidden="true" tabindex="-1"></a>      <span class="at">type =</span> <span class="st">"AgeComp"</span></span>
-<span id="cb15-167"><a href="#cb15-167" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb15-168"><a href="#cb15-168" aria-hidden="true" tabindex="-1"></a>    fleet_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb15-169"><a href="#cb15-169" aria-hidden="true" tabindex="-1"></a>      fleet_module_ids,</span>
-<span id="cb15-170"><a href="#cb15-170" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(<span class="at">age_comp =</span> fleet_age_comp[[i]]<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb15-171"><a href="#cb15-171" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb15-172"><a href="#cb15-172" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb15-173"><a href="#cb15-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-174"><a href="#cb15-174" aria-hidden="true" tabindex="-1"></a>  fleet[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_fleet</span>(</span>
-<span id="cb15-175"><a href="#cb15-175" aria-hidden="true" tabindex="-1"></a>    <span class="at">parameters =</span> parameters,</span>
-<span id="cb15-176"><a href="#cb15-176" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_4_model,</span>
-<span id="cb15-177"><a href="#cb15-177" aria-hidden="true" tabindex="-1"></a>    <span class="at">fleet =</span> fleets[i],</span>
-<span id="cb15-178"><a href="#cb15-178" aria-hidden="true" tabindex="-1"></a>    <span class="at">linked_ids =</span> fleet_module_ids</span>
-<span id="cb15-179"><a href="#cb15-179" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb15-180"><a href="#cb15-180" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-181"><a href="#cb15-181" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Fleet uncertainty</span></span>
-<span id="cb15-182"><a href="#cb15-182" aria-hidden="true" tabindex="-1"></a>  fleet_sd_input <span class="ot">&lt;-</span> parameters <span class="sc">|&gt;</span></span>
-<span id="cb15-183"><a href="#cb15-183" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(fleet <span class="sc">==</span> fleets[i] <span class="sc">&amp;</span> label <span class="sc">==</span> <span class="st">"log_sd"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-184"><a href="#cb15-184" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb15-185"><a href="#cb15-185" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="st">"sd"</span>,</span>
-<span id="cb15-186"><a href="#cb15-186" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">exp</span>(value)</span>
-<span id="cb15-187"><a href="#cb15-187" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Fleet"</span>,</span>
+<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet =</span> <span class="st">"Acoustic_Survey"</span>,</span>
+<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"log_q"</span>),</span>
+<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">log</span>(<span class="fl">0.832</span>),</span>
+<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a>      <span class="at">estimation_type =</span> <span class="st">"fixed_effects"</span></span>
+<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"fleet"</span>, <span class="st">"label"</span>)</span>
+<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a>fleets <span class="ot">&lt;-</span> <span class="fu">get_fleets</span>(data_4_model)</span>
+<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize lists to store fleet-related objects</span></span>
+<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a>fleet <span class="ot">&lt;-</span> fleet_selectivity <span class="ot">&lt;-</span></span>
+<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a>  fleet_landings <span class="ot">&lt;-</span> fleet_landings_distribution <span class="ot">&lt;-</span></span>
+<span id="cb15-64"><a href="#cb15-64" aria-hidden="true" tabindex="-1"></a>  fleet_index <span class="ot">&lt;-</span> fleet_index_distribution <span class="ot">&lt;-</span></span>
+<span id="cb15-65"><a href="#cb15-65" aria-hidden="true" tabindex="-1"></a>  fleet_age_comp <span class="ot">&lt;-</span> fleet_agecomp_distribution <span class="ot">&lt;-</span></span>
+<span id="cb15-66"><a href="#cb15-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vector</span>(<span class="st">"list"</span>, <span class="fu">length</span>(fleets))</span>
+<span id="cb15-67"><a href="#cb15-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-68"><a href="#cb15-68" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(fleets)) {</span>
+<span id="cb15-69"><a href="#cb15-69" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Selectivity</span></span>
+<span id="cb15-70"><a href="#cb15-70" aria-hidden="true" tabindex="-1"></a>  fleet_selectivity[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_selectivity</span>(</span>
+<span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">parameters =</span> parameters,</span>
+<span id="cb15-72"><a href="#cb15-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_4_model,</span>
+<span id="cb15-73"><a href="#cb15-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">fleet =</span> fleets[i]</span>
+<span id="cb15-74"><a href="#cb15-74" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-75"><a href="#cb15-75" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Time-varying selectivity for the fishery</span></span>
+<span id="cb15-76"><a href="#cb15-76" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (i <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> time_varying_selectivity) {</span>
+<span id="cb15-77"><a href="#cb15-77" aria-hidden="true" tabindex="-1"></a>    selectivity_type <span class="ot">&lt;-</span> parameters <span class="sc">|&gt;</span></span>
+<span id="cb15-78"><a href="#cb15-78" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">filter</span>(module_name <span class="sc">==</span> <span class="st">"Selectivity"</span>, fleet <span class="sc">==</span> <span class="st">"Fishery"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-79"><a href="#cb15-79" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-80"><a href="#cb15-80" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">pull</span>(module_type)</span>
+<span id="cb15-81"><a href="#cb15-81" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (selectivity_type <span class="sc">==</span> <span class="st">"Logistic"</span>){</span>
+<span id="cb15-82"><a href="#cb15-82" aria-hidden="true" tabindex="-1"></a>      fleet_selectivity[[i]]<span class="sc">$</span>inflection_point<span class="sc">$</span><span class="fu">resize</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
+<span id="cb15-83"><a href="#cb15-83" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (ii <span class="cf">in</span> <span class="fu">seq</span>(<span class="fu">get_n_years</span>(data_4_model))) {</span>
+<span id="cb15-84"><a href="#cb15-84" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>inflection_point[ii]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb15-85"><a href="#cb15-85" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>inflection_point[ii]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
+<span id="cb15-86"><a href="#cb15-86" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb15-87"><a href="#cb15-87" aria-hidden="true" tabindex="-1"></a>      fleet_selectivity[[i]]<span class="sc">$</span>slope<span class="sc">$</span><span class="fu">resize</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
+<span id="cb15-88"><a href="#cb15-88" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (ii <span class="cf">in</span> <span class="fu">seq</span>(<span class="fu">get_n_years</span>(data_4_model))) {</span>
+<span id="cb15-89"><a href="#cb15-89" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>slope[ii]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb15-90"><a href="#cb15-90" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>slope[ii]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
+<span id="cb15-91"><a href="#cb15-91" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb15-92"><a href="#cb15-92" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb15-93"><a href="#cb15-93" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (selectivity_type <span class="sc">==</span> <span class="st">"DoubleLogistic"</span>) {</span>
+<span id="cb15-94"><a href="#cb15-94" aria-hidden="true" tabindex="-1"></a>      fleet_selectivity[[i]]<span class="sc">$</span>inflection_point_asc<span class="sc">$</span><span class="fu">resize</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
+<span id="cb15-95"><a href="#cb15-95" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (ii <span class="cf">in</span> <span class="fu">seq</span>(<span class="fu">get_n_years</span>(data_4_model))) {</span>
+<span id="cb15-96"><a href="#cb15-96" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>inflection_point_asc[ii]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb15-97"><a href="#cb15-97" aria-hidden="true" tabindex="-1"></a>        fleet_selectivity[[i]]<span class="sc">$</span>inflection_point_asc[ii]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
+<span id="cb15-98"><a href="#cb15-98" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb15-99"><a href="#cb15-99" aria-hidden="true" tabindex="-1"></a>      <span class="co"># fleet_selectivity[[i]]$inflection_point_desc$resize(get_n_years(data_4_model))</span></span>
+<span id="cb15-100"><a href="#cb15-100" aria-hidden="true" tabindex="-1"></a>      <span class="co"># for (ii in seq(get_n_years(data_4_model))) {</span></span>
+<span id="cb15-101"><a href="#cb15-101" aria-hidden="true" tabindex="-1"></a>      <span class="co">#   fleet_selectivity[[i]]$inflection_point_desc[ii]$value &lt;- 1</span></span>
+<span id="cb15-102"><a href="#cb15-102" aria-hidden="true" tabindex="-1"></a>      <span class="co">#   fleet_selectivity[[i]]$inflection_point_desc[ii]$estimation_type$set("fixed_effects")</span></span>
+<span id="cb15-103"><a href="#cb15-103" aria-hidden="true" tabindex="-1"></a>      <span class="co"># }</span></span>
+<span id="cb15-104"><a href="#cb15-104" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb15-105"><a href="#cb15-105" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb15-106"><a href="#cb15-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-107"><a href="#cb15-107" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Setup the fleets</span></span>
+<span id="cb15-108"><a href="#cb15-108" aria-hidden="true" tabindex="-1"></a>  fleet_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb15-109"><a href="#cb15-109" aria-hidden="true" tabindex="-1"></a>    <span class="at">selectivity =</span> fleet_selectivity[[i]]<span class="sc">$</span><span class="fu">get_id</span>()</span>
+<span id="cb15-110"><a href="#cb15-110" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-111"><a href="#cb15-111" aria-hidden="true" tabindex="-1"></a>  fleet_types <span class="ot">&lt;-</span> <span class="fu">get_data</span>(data_4_model) <span class="sc">|&gt;</span></span>
+<span id="cb15-112"><a href="#cb15-112" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(fleet <span class="sc">==</span> fleets[i]) <span class="sc">|&gt;</span></span>
+<span id="cb15-113"><a href="#cb15-113" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(type) <span class="sc">|&gt;</span></span>
+<span id="cb15-114"><a href="#cb15-114" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unique</span>()</span>
+<span id="cb15-115"><a href="#cb15-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-116"><a href="#cb15-116" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Landings</span></span>
+<span id="cb15-117"><a href="#cb15-117" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"catch"</span> <span class="sc">%in%</span> fleet_types) {</span>
+<span id="cb15-118"><a href="#cb15-118" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize landings module for the current fleet</span></span>
+<span id="cb15-119"><a href="#cb15-119" aria-hidden="true" tabindex="-1"></a>    fleet_landings[[i]] <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(</span>
+<span id="cb15-120"><a href="#cb15-120" aria-hidden="true" tabindex="-1"></a>      Catch,</span>
+<span id="cb15-121"><a href="#cb15-121" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_n_years</span>(data_4_model)</span>
+<span id="cb15-122"><a href="#cb15-122" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-123"><a href="#cb15-123" aria-hidden="true" tabindex="-1"></a>    fleet_landings[[i]]<span class="sc">$</span>catch_data[] <span class="ot">&lt;-</span> <span class="fu">model_catch</span>(</span>
+<span id="cb15-124"><a href="#cb15-124" aria-hidden="true" tabindex="-1"></a>      data_4_model,</span>
+<span id="cb15-125"><a href="#cb15-125" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet =</span> fleets[i]</span>
+<span id="cb15-126"><a href="#cb15-126" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-127"><a href="#cb15-127" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add the module ID for the initialized landings to the list of fleet module IDs</span></span>
+<span id="cb15-128"><a href="#cb15-128" aria-hidden="true" tabindex="-1"></a>    fleet_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb15-129"><a href="#cb15-129" aria-hidden="true" tabindex="-1"></a>      fleet_module_ids,</span>
+<span id="cb15-130"><a href="#cb15-130" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(<span class="at">catch =</span> fleet_landings[[i]]<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb15-131"><a href="#cb15-131" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-132"><a href="#cb15-132" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb15-133"><a href="#cb15-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-134"><a href="#cb15-134" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Index</span></span>
+<span id="cb15-135"><a href="#cb15-135" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"index"</span> <span class="sc">%in%</span> fleet_types) {</span>
+<span id="cb15-136"><a href="#cb15-136" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize index module for the current fleet</span></span>
+<span id="cb15-137"><a href="#cb15-137" aria-hidden="true" tabindex="-1"></a>    fleet_index[[i]] <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(</span>
+<span id="cb15-138"><a href="#cb15-138" aria-hidden="true" tabindex="-1"></a>      Index,</span>
+<span id="cb15-139"><a href="#cb15-139" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_n_years</span>(data_4_model)</span>
+<span id="cb15-140"><a href="#cb15-140" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-141"><a href="#cb15-141" aria-hidden="true" tabindex="-1"></a>    fleet_index[[i]]<span class="sc">$</span>index_data[] <span class="ot">&lt;-</span> <span class="fu">model_index</span>(</span>
+<span id="cb15-142"><a href="#cb15-142" aria-hidden="true" tabindex="-1"></a>      data_4_model,</span>
+<span id="cb15-143"><a href="#cb15-143" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet =</span> fleets[i]</span>
+<span id="cb15-144"><a href="#cb15-144" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-145"><a href="#cb15-145" aria-hidden="true" tabindex="-1"></a>    fleet_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb15-146"><a href="#cb15-146" aria-hidden="true" tabindex="-1"></a>      fleet_module_ids,</span>
+<span id="cb15-147"><a href="#cb15-147" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(<span class="at">index =</span> fleet_index[[i]]<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb15-148"><a href="#cb15-148" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-149"><a href="#cb15-149" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb15-150"><a href="#cb15-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-151"><a href="#cb15-151" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Age composition</span></span>
+<span id="cb15-152"><a href="#cb15-152" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"age_comp"</span> <span class="sc">%in%</span> fleet_types) {</span>
+<span id="cb15-153"><a href="#cb15-153" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize age composition module for the current fleet</span></span>
+<span id="cb15-154"><a href="#cb15-154" aria-hidden="true" tabindex="-1"></a>    fleet_age_comp[[i]] <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(</span>
+<span id="cb15-155"><a href="#cb15-155" aria-hidden="true" tabindex="-1"></a>      AgeComp,</span>
+<span id="cb15-156"><a href="#cb15-156" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_n_years</span>(data_4_model),</span>
+<span id="cb15-157"><a href="#cb15-157" aria-hidden="true" tabindex="-1"></a>      <span class="fu">get_n_ages</span>(data_4_model)</span>
+<span id="cb15-158"><a href="#cb15-158" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-159"><a href="#cb15-159" aria-hidden="true" tabindex="-1"></a>    fleet_age_comp[[i]]<span class="sc">$</span>age_comp_data[] <span class="ot">&lt;-</span> <span class="fu">model_age_comp</span>(</span>
+<span id="cb15-160"><a href="#cb15-160" aria-hidden="true" tabindex="-1"></a>      data_4_model,</span>
+<span id="cb15-161"><a href="#cb15-161" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet =</span> fleets[i]</span>
+<span id="cb15-162"><a href="#cb15-162" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-163"><a href="#cb15-163" aria-hidden="true" tabindex="-1"></a>    fleet_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb15-164"><a href="#cb15-164" aria-hidden="true" tabindex="-1"></a>      fleet_module_ids,</span>
+<span id="cb15-165"><a href="#cb15-165" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(<span class="at">age_comp =</span> fleet_age_comp[[i]]<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb15-166"><a href="#cb15-166" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-167"><a href="#cb15-167" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb15-168"><a href="#cb15-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-169"><a href="#cb15-169" aria-hidden="true" tabindex="-1"></a>  fleet[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_fleet</span>(</span>
+<span id="cb15-170"><a href="#cb15-170" aria-hidden="true" tabindex="-1"></a>    <span class="at">parameters =</span> parameters,</span>
+<span id="cb15-171"><a href="#cb15-171" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> data_4_model,</span>
+<span id="cb15-172"><a href="#cb15-172" aria-hidden="true" tabindex="-1"></a>    <span class="at">fleet =</span> fleets[i],</span>
+<span id="cb15-173"><a href="#cb15-173" aria-hidden="true" tabindex="-1"></a>    <span class="at">linked_ids =</span> fleet_module_ids</span>
+<span id="cb15-174"><a href="#cb15-174" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-175"><a href="#cb15-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-176"><a href="#cb15-176" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Fleet uncertainty</span></span>
+<span id="cb15-177"><a href="#cb15-177" aria-hidden="true" tabindex="-1"></a>  fleet_sd_input <span class="ot">&lt;-</span> </span>
+<span id="cb15-178"><a href="#cb15-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-179"><a href="#cb15-179" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"index"</span> <span class="sc">%in%</span> fleet_types) {</span>
+<span id="cb15-180"><a href="#cb15-180" aria-hidden="true" tabindex="-1"></a>    fleet_index_distribution[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_data_distribution</span>(</span>
+<span id="cb15-181"><a href="#cb15-181" aria-hidden="true" tabindex="-1"></a>      <span class="at">module =</span> fleet[[i]],</span>
+<span id="cb15-182"><a href="#cb15-182" aria-hidden="true" tabindex="-1"></a>      <span class="at">data_type =</span> <span class="st">"index"</span>,</span>
+<span id="cb15-183"><a href="#cb15-183" aria-hidden="true" tabindex="-1"></a>      <span class="at">uncertainty =</span> <span class="fu">get_data</span>(data_4_model) <span class="sc">|&gt;</span></span>
+<span id="cb15-184"><a href="#cb15-184" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(fleet <span class="sc">==</span> fleets[i] <span class="sc">&amp;</span> type <span class="sc">==</span> <span class="st">"index"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-185"><a href="#cb15-185" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">pull</span>(uncertainty)</span>
+<span id="cb15-186"><a href="#cb15-186" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-187"><a href="#cb15-187" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb15-188"><a href="#cb15-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-189"><a href="#cb15-189" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"index"</span> <span class="sc">%in%</span> fleet_types <span class="sc">&amp;&amp;</span></span>
-<span id="cb15-190"><a href="#cb15-190" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Index"</span> <span class="sc">%in%</span> data_distribution_names_for_fleet_i) {</span>
-<span id="cb15-191"><a href="#cb15-191" aria-hidden="true" tabindex="-1"></a>    fleet_index_distribution[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_data_distribution</span>(</span>
-<span id="cb15-192"><a href="#cb15-192" aria-hidden="true" tabindex="-1"></a>      <span class="at">module =</span> fleet[[i]],</span>
-<span id="cb15-193"><a href="#cb15-193" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="fu">lognormal</span>(<span class="at">link =</span> <span class="st">"log"</span>),</span>
-<span id="cb15-194"><a href="#cb15-194" aria-hidden="true" tabindex="-1"></a>      <span class="at">sd =</span> fleet_sd_input,</span>
-<span id="cb15-195"><a href="#cb15-195" aria-hidden="true" tabindex="-1"></a>      <span class="at">data_type =</span> <span class="st">"index"</span></span>
+<span id="cb15-189"><a href="#cb15-189" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"catch"</span> <span class="sc">%in%</span> fleet_types) {</span>
+<span id="cb15-190"><a href="#cb15-190" aria-hidden="true" tabindex="-1"></a>    fleet_landings_distribution[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_data_distribution</span>(</span>
+<span id="cb15-191"><a href="#cb15-191" aria-hidden="true" tabindex="-1"></a>      <span class="at">module =</span> fleet[[i]],</span>
+<span id="cb15-192"><a href="#cb15-192" aria-hidden="true" tabindex="-1"></a>      <span class="at">uncertainty =</span> <span class="fu">get_data</span>(data_4_model) <span class="sc">|&gt;</span></span>
+<span id="cb15-193"><a href="#cb15-193" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(fleet <span class="sc">==</span> fleets[i] <span class="sc">&amp;</span> type <span class="sc">==</span> <span class="st">"catch"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-194"><a href="#cb15-194" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">pull</span>(uncertainty),</span>
+<span id="cb15-195"><a href="#cb15-195" aria-hidden="true" tabindex="-1"></a>      <span class="at">data_type =</span> <span class="st">"catch"</span></span>
 <span id="cb15-196"><a href="#cb15-196" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb15-197"><a href="#cb15-197" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb15-198"><a href="#cb15-198" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-199"><a href="#cb15-199" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"landings"</span> <span class="sc">%in%</span> fleet_types <span class="sc">&amp;&amp;</span></span>
-<span id="cb15-200"><a href="#cb15-200" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Landings"</span> <span class="sc">%in%</span> data_distribution_names_for_fleet_i) {</span>
-<span id="cb15-201"><a href="#cb15-201" aria-hidden="true" tabindex="-1"></a>    fleet_landings_distribution[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_data_distribution</span>(</span>
-<span id="cb15-202"><a href="#cb15-202" aria-hidden="true" tabindex="-1"></a>      <span class="at">module =</span> fleet[[i]],</span>
-<span id="cb15-203"><a href="#cb15-203" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="fu">lognormal</span>(<span class="at">link =</span> <span class="st">"log"</span>),</span>
-<span id="cb15-204"><a href="#cb15-204" aria-hidden="true" tabindex="-1"></a>      <span class="at">sd =</span> fleet_sd_input,</span>
-<span id="cb15-205"><a href="#cb15-205" aria-hidden="true" tabindex="-1"></a>      <span class="at">data_type =</span> <span class="st">"landings"</span></span>
+<span id="cb15-199"><a href="#cb15-199" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"age_comp"</span> <span class="sc">%in%</span> fleet_types) {</span>
+<span id="cb15-200"><a href="#cb15-200" aria-hidden="true" tabindex="-1"></a>    fleet_agecomp_distribution[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_data_distribution</span>(</span>
+<span id="cb15-201"><a href="#cb15-201" aria-hidden="true" tabindex="-1"></a>      <span class="at">module =</span> fleet[[i]],</span>
+<span id="cb15-202"><a href="#cb15-202" aria-hidden="true" tabindex="-1"></a>      <span class="at">data_type =</span> <span class="st">"age_comp"</span>,</span>
+<span id="cb15-203"><a href="#cb15-203" aria-hidden="true" tabindex="-1"></a>      <span class="at">uncertainty =</span> <span class="fu">get_data</span>(data_4_model) <span class="sc">|&gt;</span></span>
+<span id="cb15-204"><a href="#cb15-204" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(fleet <span class="sc">==</span> fleets[i] <span class="sc">&amp;</span> type <span class="sc">==</span> <span class="st">"age_comp"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-205"><a href="#cb15-205" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">pull</span>(uncertainty)</span>
 <span id="cb15-206"><a href="#cb15-206" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb15-207"><a href="#cb15-207" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb15-208"><a href="#cb15-208" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-209"><a href="#cb15-209" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"age_comp"</span> <span class="sc">%in%</span> fleet_types <span class="sc">&amp;&amp;</span></span>
-<span id="cb15-210"><a href="#cb15-210" aria-hidden="true" tabindex="-1"></a>    <span class="st">"AgeComp"</span> <span class="sc">%in%</span> data_distribution_names_for_fleet_i) {</span>
-<span id="cb15-211"><a href="#cb15-211" aria-hidden="true" tabindex="-1"></a>    fleet_agecomp_distribution[[i]] <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_data_distribution</span>(</span>
-<span id="cb15-212"><a href="#cb15-212" aria-hidden="true" tabindex="-1"></a>      <span class="at">module =</span> fleet[[i]],</span>
-<span id="cb15-213"><a href="#cb15-213" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="fu">multinomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>),</span>
-<span id="cb15-214"><a href="#cb15-214" aria-hidden="true" tabindex="-1"></a>      <span class="at">data_type =</span> <span class="st">"agecomp"</span></span>
-<span id="cb15-215"><a href="#cb15-215" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb15-216"><a href="#cb15-216" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb15-217"><a href="#cb15-217" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb15-218"><a href="#cb15-218" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-219"><a href="#cb15-219" aria-hidden="true" tabindex="-1"></a><span class="co"># Recruitment</span></span>
-<span id="cb15-220"><a href="#cb15-220" aria-hidden="true" tabindex="-1"></a>recruitment <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(BevertonHoltRecruitment)</span>
-<span id="cb15-221"><a href="#cb15-221" aria-hidden="true" tabindex="-1"></a>recruitment_process <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(LogDevsRecruitmentProcess)</span>
-<span id="cb15-222"><a href="#cb15-222" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span><span class="fu">SetRecruitmentProcessID</span>(recruitment_process<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb15-223"><a href="#cb15-223" aria-hidden="true" tabindex="-1"></a><span class="co"># set up log_rzero (equilibrium recruitment)</span></span>
-<span id="cb15-224"><a href="#cb15-224" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_rzero[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> inputs[[<span class="st">"ctl"</span>]][[<span class="st">"SR_parms"</span>]][<span class="st">"SR_LN(R0)"</span>, <span class="st">"INIT"</span>]</span>
-<span id="cb15-225"><a href="#cb15-225" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_rzero[<span class="dv">1</span>]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
-<span id="cb15-226"><a href="#cb15-226" aria-hidden="true" tabindex="-1"></a><span class="co"># set up logit_steep</span></span>
-<span id="cb15-227"><a href="#cb15-227" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>logit_steep[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">logit</span>(<span class="fl">0.2</span>, <span class="fl">1.0</span>, steepness)</span>
-<span id="cb15-228"><a href="#cb15-228" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>logit_steep[<span class="dv">1</span>]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"constant"</span>)</span>
-<span id="cb15-229"><a href="#cb15-229" aria-hidden="true" tabindex="-1"></a><span class="co"># recruit deviations should enter the model in normal space.</span></span>
-<span id="cb15-230"><a href="#cb15-230" aria-hidden="true" tabindex="-1"></a><span class="co"># The log is taken in the likelihood calculations</span></span>
-<span id="cb15-231"><a href="#cb15-231" aria-hidden="true" tabindex="-1"></a><span class="co"># Added an element to the log_devs vector because we need recruitment in the</span></span>
-<span id="cb15-232"><a href="#cb15-232" aria-hidden="true" tabindex="-1"></a><span class="co"># terminal year + 1</span></span>
-<span id="cb15-233"><a href="#cb15-233" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">resize</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
-<span id="cb15-234"><a href="#cb15-234" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (y <span class="cf">in</span> <span class="fu">seq</span>(recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">size</span>())) {</span>
-<span id="cb15-235"><a href="#cb15-235" aria-hidden="true" tabindex="-1"></a>  recruitment<span class="sc">$</span>log_devs[y]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb15-236"><a href="#cb15-236" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb15-237"><a href="#cb15-237" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">set_estimation_types</span>(<span class="fu">c</span>(<span class="st">"constant"</span>))</span>
-<span id="cb15-238"><a href="#cb15-238" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>n_years<span class="sc">$</span><span class="fu">set</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
-<span id="cb15-239"><a href="#cb15-239" aria-hidden="true" tabindex="-1"></a>recruitment_distribution <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(DnormDistribution)</span>
-<span id="cb15-240"><a href="#cb15-240" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: check with Andrea about log space here</span></span>
-<span id="cb15-241"><a href="#cb15-241" aria-hidden="true" tabindex="-1"></a><span class="co"># logR_sd needs to enter the model logged b/c the exp() is</span></span>
-<span id="cb15-242"><a href="#cb15-242" aria-hidden="true" tabindex="-1"></a><span class="co"># taken before the likelihood calculation</span></span>
-<span id="cb15-243"><a href="#cb15-243" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span>log_sd[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> </span>
-<span id="cb15-244"><a href="#cb15-244" aria-hidden="true" tabindex="-1"></a>  inputs[[<span class="st">"ctl"</span>]][[<span class="st">"SR_parms"</span>]][<span class="st">"SR_sigmaR"</span>, <span class="st">"INIT"</span>]</span>
-<span id="cb15-245"><a href="#cb15-245" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-246"><a href="#cb15-246" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: check with Andrea about this not being in the parameter vector</span></span>
-<span id="cb15-247"><a href="#cb15-247" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span>log_sd[<span class="dv">1</span>]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
-<span id="cb15-248"><a href="#cb15-248" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span>observed_values<span class="sc">$</span><span class="fu">resize</span>(recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">size</span>())</span>
-<span id="cb15-249"><a href="#cb15-249" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span>expected_values<span class="sc">$</span><span class="fu">resize</span>(recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">size</span>())</span>
-<span id="cb15-250"><a href="#cb15-250" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq</span>(recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">size</span>())) {</span>
-<span id="cb15-251"><a href="#cb15-251" aria-hidden="true" tabindex="-1"></a>  recruitment_distribution<span class="sc">$</span>observed_values[i]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb15-252"><a href="#cb15-252" aria-hidden="true" tabindex="-1"></a>  recruitment_distribution<span class="sc">$</span>expected_values[i]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb15-253"><a href="#cb15-253" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb15-254"><a href="#cb15-254" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span><span class="fu">set_distribution_links</span>(</span>
-<span id="cb15-255"><a href="#cb15-255" aria-hidden="true" tabindex="-1"></a>  <span class="st">"random_effects"</span>,</span>
-<span id="cb15-256"><a href="#cb15-256" aria-hidden="true" tabindex="-1"></a>  recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">get_id</span>()</span>
-<span id="cb15-257"><a href="#cb15-257" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-258"><a href="#cb15-258" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">set_estimation_types</span>(<span class="fu">c</span>(<span class="st">"random_effects"</span>))</span>
-<span id="cb15-259"><a href="#cb15-259" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-260"><a href="#cb15-260" aria-hidden="true" tabindex="-1"></a><span class="co"># recruitment$log_devs[46]$estimation_type$set("constant")</span></span>
-<span id="cb15-261"><a href="#cb15-261" aria-hidden="true" tabindex="-1"></a><span class="co"># recruitment$log_devs[47]$estimation_type$set("constant")</span></span>
-<span id="cb15-262"><a href="#cb15-262" aria-hidden="true" tabindex="-1"></a><span class="co"># recruitment$log_devs[48]$estimation_type$set("constant")</span></span>
-<span id="cb15-263"><a href="#cb15-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-264"><a href="#cb15-264" aria-hidden="true" tabindex="-1"></a><span class="co"># Put a prior on log_rzero</span></span>
-<span id="cb15-265"><a href="#cb15-265" aria-hidden="true" tabindex="-1"></a>log_rzero_prior <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(DnormDistribution)</span>
-<span id="cb15-266"><a href="#cb15-266" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span>expected_values<span class="sc">$</span><span class="fu">resize</span>(<span class="dv">1</span>)</span>
-<span id="cb15-267"><a href="#cb15-267" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span>expected_values[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> log_rzero_prior_mean</span>
-<span id="cb15-268"><a href="#cb15-268" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span>log_sd<span class="sc">$</span><span class="fu">resize</span>(<span class="dv">1</span>)</span>
-<span id="cb15-269"><a href="#cb15-269" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span>log_sd[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="fu">log</span>(log_rzero_prior_sd)</span>
-<span id="cb15-270"><a href="#cb15-270" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span><span class="fu">set_distribution_links</span>(</span>
-<span id="cb15-271"><a href="#cb15-271" aria-hidden="true" tabindex="-1"></a>  <span class="st">"prior"</span>,</span>
-<span id="cb15-272"><a href="#cb15-272" aria-hidden="true" tabindex="-1"></a>  recruitment<span class="sc">$</span>log_rzero<span class="sc">$</span><span class="fu">get_id</span>()</span>
-<span id="cb15-273"><a href="#cb15-273" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-274"><a href="#cb15-274" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-275"><a href="#cb15-275" aria-hidden="true" tabindex="-1"></a><span class="co"># Growth</span></span>
-<span id="cb15-276"><a href="#cb15-276" aria-hidden="true" tabindex="-1"></a>growth <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_growth</span>(</span>
-<span id="cb15-277"><a href="#cb15-277" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> parameters,</span>
-<span id="cb15-278"><a href="#cb15-278" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_4_model</span>
-<span id="cb15-279"><a href="#cb15-279" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-280"><a href="#cb15-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-281"><a href="#cb15-281" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
-<span id="cb15-282"><a href="#cb15-282" aria-hidden="true" tabindex="-1"></a>maturity <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_maturity</span>(</span>
-<span id="cb15-283"><a href="#cb15-283" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> parameters,</span>
-<span id="cb15-284"><a href="#cb15-284" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_4_model</span>
-<span id="cb15-285"><a href="#cb15-285" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-286"><a href="#cb15-286" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-287"><a href="#cb15-287" aria-hidden="true" tabindex="-1"></a><span class="co"># Population</span></span>
-<span id="cb15-288"><a href="#cb15-288" aria-hidden="true" tabindex="-1"></a>population_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb15-289"><a href="#cb15-289" aria-hidden="true" tabindex="-1"></a>  <span class="at">recruitment =</span> recruitment<span class="sc">$</span><span class="fu">get_id</span>(),</span>
-<span id="cb15-290"><a href="#cb15-290" aria-hidden="true" tabindex="-1"></a>  <span class="at">growth =</span> growth<span class="sc">$</span><span class="fu">get_id</span>(),</span>
-<span id="cb15-291"><a href="#cb15-291" aria-hidden="true" tabindex="-1"></a>  <span class="at">maturity =</span> maturity<span class="sc">$</span><span class="fu">get_id</span>(),</span>
-<span id="cb15-292"><a href="#cb15-292" aria-hidden="true" tabindex="-1"></a>  <span class="at">fleets =</span> purrr<span class="sc">::</span><span class="fu">map</span>(fleet, \(x) x<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb15-293"><a href="#cb15-293" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-294"><a href="#cb15-294" aria-hidden="true" tabindex="-1"></a>population <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_population</span>(</span>
-<span id="cb15-295"><a href="#cb15-295" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> parameters,</span>
-<span id="cb15-296"><a href="#cb15-296" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_4_model,</span>
-<span id="cb15-297"><a href="#cb15-297" aria-hidden="true" tabindex="-1"></a>  <span class="co"># </span><span class="al">TODO</span><span class="co">: need to remove linked_ids from the function and add module_id to the</span></span>
-<span id="cb15-298"><a href="#cb15-298" aria-hidden="true" tabindex="-1"></a>  <span class="co"># parameters tibble</span></span>
-<span id="cb15-299"><a href="#cb15-299" aria-hidden="true" tabindex="-1"></a>  <span class="at">linked_ids =</span> population_module_ids</span>
-<span id="cb15-300"><a href="#cb15-300" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-301"><a href="#cb15-301" aria-hidden="true" tabindex="-1"></a><span class="co"># # Put a prior on natural mortality</span></span>
-<span id="cb15-302"><a href="#cb15-302" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior &lt;- methods::new(DlnormDistribution)</span></span>
-<span id="cb15-303"><a href="#cb15-303" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$expected_values$resize(1)</span></span>
-<span id="cb15-304"><a href="#cb15-304" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$expected_values[1]$value &lt;- inputs[["ctl"]][["MG_parms"]][</span></span>
-<span id="cb15-305"><a href="#cb15-305" aria-hidden="true" tabindex="-1"></a><span class="co">#   grep("NatM_", row.names(inputs[["ctl"]][["MG_parms"]])),</span></span>
-<span id="cb15-306"><a href="#cb15-306" aria-hidden="true" tabindex="-1"></a><span class="co">#   "PRIOR"</span></span>
-<span id="cb15-307"><a href="#cb15-307" aria-hidden="true" tabindex="-1"></a><span class="co"># ]</span></span>
-<span id="cb15-308"><a href="#cb15-308" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$log_sd$resize(1)</span></span>
-<span id="cb15-309"><a href="#cb15-309" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$log_sd[1]$value &lt;- inputs[["ctl"]][["MG_parms"]][</span></span>
-<span id="cb15-310"><a href="#cb15-310" aria-hidden="true" tabindex="-1"></a><span class="co">#   grep("NatM_", row.names(inputs[["ctl"]][["MG_parms"]])),</span></span>
-<span id="cb15-311"><a href="#cb15-311" aria-hidden="true" tabindex="-1"></a><span class="co">#   "PR_SD"</span></span>
-<span id="cb15-312"><a href="#cb15-312" aria-hidden="true" tabindex="-1"></a><span class="co"># ]</span></span>
-<span id="cb15-313"><a href="#cb15-313" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$set_distribution_links(</span></span>
-<span id="cb15-314"><a href="#cb15-314" aria-hidden="true" tabindex="-1"></a><span class="co">#   "prior",</span></span>
-<span id="cb15-315"><a href="#cb15-315" aria-hidden="true" tabindex="-1"></a><span class="co">#   population$log_M$get_id()</span></span>
-<span id="cb15-316"><a href="#cb15-316" aria-hidden="true" tabindex="-1"></a><span class="co"># )</span></span>
-<span id="cb15-317"><a href="#cb15-317" aria-hidden="true" tabindex="-1"></a><span class="co"># Put a prior on init_naa</span></span>
-<span id="cb15-318"><a href="#cb15-318" aria-hidden="true" tabindex="-1"></a>init_naa_prior <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(DnormDistribution)</span>
-<span id="cb15-319"><a href="#cb15-319" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span>expected_values<span class="sc">$</span><span class="fu">resize</span>(<span class="dv">1</span>)</span>
-<span id="cb15-320"><a href="#cb15-320" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span>expected_values[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> init_naa_prior_mean</span>
-<span id="cb15-321"><a href="#cb15-321" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span>log_sd<span class="sc">$</span><span class="fu">resize</span>(<span class="dv">1</span>)</span>
-<span id="cb15-322"><a href="#cb15-322" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span>log_sd[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> init_naa_prior_sd</span>
-<span id="cb15-323"><a href="#cb15-323" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span><span class="fu">set_distribution_links</span>(</span>
-<span id="cb15-324"><a href="#cb15-324" aria-hidden="true" tabindex="-1"></a>  <span class="st">"prior"</span>,</span>
-<span id="cb15-325"><a href="#cb15-325" aria-hidden="true" tabindex="-1"></a>  population<span class="sc">$</span>log_init_naa<span class="sc">$</span><span class="fu">get_id</span>()</span>
-<span id="cb15-326"><a href="#cb15-326" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-327"><a href="#cb15-327" aria-hidden="true" tabindex="-1"></a>fims_model <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(CatchAtAge)</span>
-<span id="cb15-328"><a href="#cb15-328" aria-hidden="true" tabindex="-1"></a>fims_model<span class="sc">$</span><span class="fu">AddPopulation</span>(population<span class="sc">$</span><span class="fu">get_id</span>())</span>
-<span id="cb15-329"><a href="#cb15-329" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-330"><a href="#cb15-330" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize the model</span></span>
-<span id="cb15-331"><a href="#cb15-331" aria-hidden="true" tabindex="-1"></a><span class="fu">CreateTMBModel</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb15-208"><a href="#cb15-208" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-209"><a href="#cb15-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-210"><a href="#cb15-210" aria-hidden="true" tabindex="-1"></a><span class="co"># Recruitment</span></span>
+<span id="cb15-211"><a href="#cb15-211" aria-hidden="true" tabindex="-1"></a>recruitment <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(BevertonHoltRecruitment)</span>
+<span id="cb15-212"><a href="#cb15-212" aria-hidden="true" tabindex="-1"></a>recruitment_process <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(LogDevsRecruitmentProcess)</span>
+<span id="cb15-213"><a href="#cb15-213" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span><span class="fu">SetRecruitmentProcessID</span>(recruitment_process<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb15-214"><a href="#cb15-214" aria-hidden="true" tabindex="-1"></a><span class="co"># set up log_rzero (equilibrium recruitment)</span></span>
+<span id="cb15-215"><a href="#cb15-215" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_rzero[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> inputs[[<span class="st">"ctl"</span>]][[<span class="st">"SR_parms"</span>]][<span class="st">"SR_LN(R0)"</span>, <span class="st">"INIT"</span>]</span>
+<span id="cb15-216"><a href="#cb15-216" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_rzero[<span class="dv">1</span>]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
+<span id="cb15-217"><a href="#cb15-217" aria-hidden="true" tabindex="-1"></a><span class="co"># set up logit_steep</span></span>
+<span id="cb15-218"><a href="#cb15-218" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>logit_steep[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">logit</span>(<span class="fl">0.2</span>, <span class="fl">1.0</span>, steepness)</span>
+<span id="cb15-219"><a href="#cb15-219" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>logit_steep[<span class="dv">1</span>]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"constant"</span>)</span>
+<span id="cb15-220"><a href="#cb15-220" aria-hidden="true" tabindex="-1"></a><span class="co"># recruit deviations should enter the model in normal space.</span></span>
+<span id="cb15-221"><a href="#cb15-221" aria-hidden="true" tabindex="-1"></a><span class="co"># The log is taken in the likelihood calculations</span></span>
+<span id="cb15-222"><a href="#cb15-222" aria-hidden="true" tabindex="-1"></a><span class="co"># Added an element to the log_devs vector because we need recruitment in the</span></span>
+<span id="cb15-223"><a href="#cb15-223" aria-hidden="true" tabindex="-1"></a><span class="co"># terminal year + 1</span></span>
+<span id="cb15-224"><a href="#cb15-224" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">resize</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
+<span id="cb15-225"><a href="#cb15-225" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (y <span class="cf">in</span> <span class="fu">seq</span>(recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">size</span>())) {</span>
+<span id="cb15-226"><a href="#cb15-226" aria-hidden="true" tabindex="-1"></a>  recruitment<span class="sc">$</span>log_devs[y]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb15-227"><a href="#cb15-227" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-228"><a href="#cb15-228" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">set_estimation_types</span>(<span class="fu">c</span>(<span class="st">"constant"</span>))</span>
+<span id="cb15-229"><a href="#cb15-229" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>n_years<span class="sc">$</span><span class="fu">set</span>(<span class="fu">get_n_years</span>(data_4_model))</span>
+<span id="cb15-230"><a href="#cb15-230" aria-hidden="true" tabindex="-1"></a>recruitment_distribution <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(DnormDistribution)</span>
+<span id="cb15-231"><a href="#cb15-231" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: check with Andrea about log space here</span></span>
+<span id="cb15-232"><a href="#cb15-232" aria-hidden="true" tabindex="-1"></a><span class="co"># logR_sd needs to enter the model logged b/c the exp() is</span></span>
+<span id="cb15-233"><a href="#cb15-233" aria-hidden="true" tabindex="-1"></a><span class="co"># taken before the likelihood calculation</span></span>
+<span id="cb15-234"><a href="#cb15-234" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span>log_sd[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> </span>
+<span id="cb15-235"><a href="#cb15-235" aria-hidden="true" tabindex="-1"></a>  inputs[[<span class="st">"ctl"</span>]][[<span class="st">"SR_parms"</span>]][<span class="st">"SR_sigmaR"</span>, <span class="st">"INIT"</span>]</span>
+<span id="cb15-236"><a href="#cb15-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-237"><a href="#cb15-237" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: check with Andrea about this not being in the parameter vector</span></span>
+<span id="cb15-238"><a href="#cb15-238" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span>log_sd[<span class="dv">1</span>]<span class="sc">$</span>estimation_type<span class="sc">$</span><span class="fu">set</span>(<span class="st">"fixed_effects"</span>)</span>
+<span id="cb15-239"><a href="#cb15-239" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span>observed_values<span class="sc">$</span><span class="fu">resize</span>(recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">size</span>())</span>
+<span id="cb15-240"><a href="#cb15-240" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span>expected_values<span class="sc">$</span><span class="fu">resize</span>(recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">size</span>())</span>
+<span id="cb15-241"><a href="#cb15-241" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq</span>(recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">size</span>())) {</span>
+<span id="cb15-242"><a href="#cb15-242" aria-hidden="true" tabindex="-1"></a>  recruitment_distribution<span class="sc">$</span>observed_values[i]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb15-243"><a href="#cb15-243" aria-hidden="true" tabindex="-1"></a>  recruitment_distribution<span class="sc">$</span>expected_values[i]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb15-244"><a href="#cb15-244" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-245"><a href="#cb15-245" aria-hidden="true" tabindex="-1"></a>recruitment_distribution<span class="sc">$</span><span class="fu">set_distribution_links</span>(</span>
+<span id="cb15-246"><a href="#cb15-246" aria-hidden="true" tabindex="-1"></a>  <span class="st">"random_effects"</span>,</span>
+<span id="cb15-247"><a href="#cb15-247" aria-hidden="true" tabindex="-1"></a>  recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">get_id</span>()</span>
+<span id="cb15-248"><a href="#cb15-248" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-249"><a href="#cb15-249" aria-hidden="true" tabindex="-1"></a>recruitment<span class="sc">$</span>log_devs<span class="sc">$</span><span class="fu">set_estimation_types</span>(<span class="fu">c</span>(<span class="st">"random_effects"</span>))</span>
+<span id="cb15-250"><a href="#cb15-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-251"><a href="#cb15-251" aria-hidden="true" tabindex="-1"></a><span class="co"># recruitment$log_devs[46]$estimation_type$set("constant")</span></span>
+<span id="cb15-252"><a href="#cb15-252" aria-hidden="true" tabindex="-1"></a><span class="co"># recruitment$log_devs[47]$estimation_type$set("constant")</span></span>
+<span id="cb15-253"><a href="#cb15-253" aria-hidden="true" tabindex="-1"></a><span class="co"># recruitment$log_devs[48]$estimation_type$set("constant")</span></span>
+<span id="cb15-254"><a href="#cb15-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-255"><a href="#cb15-255" aria-hidden="true" tabindex="-1"></a><span class="co"># Put a prior on log_rzero</span></span>
+<span id="cb15-256"><a href="#cb15-256" aria-hidden="true" tabindex="-1"></a>log_rzero_prior <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(DnormDistribution)</span>
+<span id="cb15-257"><a href="#cb15-257" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span>expected_values<span class="sc">$</span><span class="fu">resize</span>(<span class="dv">1</span>)</span>
+<span id="cb15-258"><a href="#cb15-258" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span>expected_values[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> log_rzero_prior_mean</span>
+<span id="cb15-259"><a href="#cb15-259" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span>log_sd<span class="sc">$</span><span class="fu">resize</span>(<span class="dv">1</span>)</span>
+<span id="cb15-260"><a href="#cb15-260" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span>log_sd[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="fu">log</span>(log_rzero_prior_sd)</span>
+<span id="cb15-261"><a href="#cb15-261" aria-hidden="true" tabindex="-1"></a>log_rzero_prior<span class="sc">$</span><span class="fu">set_distribution_links</span>(</span>
+<span id="cb15-262"><a href="#cb15-262" aria-hidden="true" tabindex="-1"></a>  <span class="st">"prior"</span>,</span>
+<span id="cb15-263"><a href="#cb15-263" aria-hidden="true" tabindex="-1"></a>  recruitment<span class="sc">$</span>log_rzero<span class="sc">$</span><span class="fu">get_id</span>()</span>
+<span id="cb15-264"><a href="#cb15-264" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-265"><a href="#cb15-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-266"><a href="#cb15-266" aria-hidden="true" tabindex="-1"></a><span class="co"># Growth</span></span>
+<span id="cb15-267"><a href="#cb15-267" aria-hidden="true" tabindex="-1"></a>growth <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_growth</span>(</span>
+<span id="cb15-268"><a href="#cb15-268" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> parameters,</span>
+<span id="cb15-269"><a href="#cb15-269" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_4_model</span>
+<span id="cb15-270"><a href="#cb15-270" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-271"><a href="#cb15-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-272"><a href="#cb15-272" aria-hidden="true" tabindex="-1"></a><span class="co"># Maturity</span></span>
+<span id="cb15-273"><a href="#cb15-273" aria-hidden="true" tabindex="-1"></a>maturity <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_maturity</span>(</span>
+<span id="cb15-274"><a href="#cb15-274" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> parameters,</span>
+<span id="cb15-275"><a href="#cb15-275" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_4_model</span>
+<span id="cb15-276"><a href="#cb15-276" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-277"><a href="#cb15-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-278"><a href="#cb15-278" aria-hidden="true" tabindex="-1"></a><span class="co"># Population</span></span>
+<span id="cb15-279"><a href="#cb15-279" aria-hidden="true" tabindex="-1"></a>population_module_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb15-280"><a href="#cb15-280" aria-hidden="true" tabindex="-1"></a>  <span class="at">recruitment =</span> recruitment<span class="sc">$</span><span class="fu">get_id</span>(),</span>
+<span id="cb15-281"><a href="#cb15-281" aria-hidden="true" tabindex="-1"></a>  <span class="at">growth =</span> growth<span class="sc">$</span><span class="fu">get_id</span>(),</span>
+<span id="cb15-282"><a href="#cb15-282" aria-hidden="true" tabindex="-1"></a>  <span class="at">maturity =</span> maturity<span class="sc">$</span><span class="fu">get_id</span>(),</span>
+<span id="cb15-283"><a href="#cb15-283" aria-hidden="true" tabindex="-1"></a>  <span class="at">fleets =</span> purrr<span class="sc">::</span><span class="fu">map</span>(fleet, \(x) x<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb15-284"><a href="#cb15-284" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-285"><a href="#cb15-285" aria-hidden="true" tabindex="-1"></a>population <span class="ot">&lt;-</span> FIMS<span class="sc">:::</span><span class="fu">initialize_population</span>(</span>
+<span id="cb15-286"><a href="#cb15-286" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> parameters,</span>
+<span id="cb15-287"><a href="#cb15-287" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_4_model,</span>
+<span id="cb15-288"><a href="#cb15-288" aria-hidden="true" tabindex="-1"></a>  <span class="co"># </span><span class="al">TODO</span><span class="co">: need to remove linked_ids from the function and add module_id to the</span></span>
+<span id="cb15-289"><a href="#cb15-289" aria-hidden="true" tabindex="-1"></a>  <span class="co"># parameters tibble</span></span>
+<span id="cb15-290"><a href="#cb15-290" aria-hidden="true" tabindex="-1"></a>  <span class="at">linked_ids =</span> population_module_ids</span>
+<span id="cb15-291"><a href="#cb15-291" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-292"><a href="#cb15-292" aria-hidden="true" tabindex="-1"></a><span class="co"># # Put a prior on natural mortality</span></span>
+<span id="cb15-293"><a href="#cb15-293" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior &lt;- methods::new(DlnormDistribution)</span></span>
+<span id="cb15-294"><a href="#cb15-294" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$expected_values$resize(1)</span></span>
+<span id="cb15-295"><a href="#cb15-295" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$expected_values[1]$value &lt;- inputs[["ctl"]][["MG_parms"]][</span></span>
+<span id="cb15-296"><a href="#cb15-296" aria-hidden="true" tabindex="-1"></a><span class="co">#   grep("NatM_", row.names(inputs[["ctl"]][["MG_parms"]])),</span></span>
+<span id="cb15-297"><a href="#cb15-297" aria-hidden="true" tabindex="-1"></a><span class="co">#   "PRIOR"</span></span>
+<span id="cb15-298"><a href="#cb15-298" aria-hidden="true" tabindex="-1"></a><span class="co"># ]</span></span>
+<span id="cb15-299"><a href="#cb15-299" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$log_sd$resize(1)</span></span>
+<span id="cb15-300"><a href="#cb15-300" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$log_sd[1]$value &lt;- inputs[["ctl"]][["MG_parms"]][</span></span>
+<span id="cb15-301"><a href="#cb15-301" aria-hidden="true" tabindex="-1"></a><span class="co">#   grep("NatM_", row.names(inputs[["ctl"]][["MG_parms"]])),</span></span>
+<span id="cb15-302"><a href="#cb15-302" aria-hidden="true" tabindex="-1"></a><span class="co">#   "PR_SD"</span></span>
+<span id="cb15-303"><a href="#cb15-303" aria-hidden="true" tabindex="-1"></a><span class="co"># ]</span></span>
+<span id="cb15-304"><a href="#cb15-304" aria-hidden="true" tabindex="-1"></a><span class="co"># M_prior$set_distribution_links(</span></span>
+<span id="cb15-305"><a href="#cb15-305" aria-hidden="true" tabindex="-1"></a><span class="co">#   "prior",</span></span>
+<span id="cb15-306"><a href="#cb15-306" aria-hidden="true" tabindex="-1"></a><span class="co">#   population$log_M$get_id()</span></span>
+<span id="cb15-307"><a href="#cb15-307" aria-hidden="true" tabindex="-1"></a><span class="co"># )</span></span>
+<span id="cb15-308"><a href="#cb15-308" aria-hidden="true" tabindex="-1"></a><span class="co"># Put a prior on init_naa</span></span>
+<span id="cb15-309"><a href="#cb15-309" aria-hidden="true" tabindex="-1"></a>init_naa_prior <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(DnormDistribution)</span>
+<span id="cb15-310"><a href="#cb15-310" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span>expected_values<span class="sc">$</span><span class="fu">resize</span>(<span class="dv">1</span>)</span>
+<span id="cb15-311"><a href="#cb15-311" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span>expected_values[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> init_naa_prior_mean</span>
+<span id="cb15-312"><a href="#cb15-312" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span>log_sd<span class="sc">$</span><span class="fu">resize</span>(<span class="dv">1</span>)</span>
+<span id="cb15-313"><a href="#cb15-313" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span>log_sd[<span class="dv">1</span>]<span class="sc">$</span>value <span class="ot">&lt;-</span> init_naa_prior_sd</span>
+<span id="cb15-314"><a href="#cb15-314" aria-hidden="true" tabindex="-1"></a>init_naa_prior<span class="sc">$</span><span class="fu">set_distribution_links</span>(</span>
+<span id="cb15-315"><a href="#cb15-315" aria-hidden="true" tabindex="-1"></a>  <span class="st">"prior"</span>,</span>
+<span id="cb15-316"><a href="#cb15-316" aria-hidden="true" tabindex="-1"></a>  population<span class="sc">$</span>log_init_naa<span class="sc">$</span><span class="fu">get_id</span>()</span>
+<span id="cb15-317"><a href="#cb15-317" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-318"><a href="#cb15-318" aria-hidden="true" tabindex="-1"></a>fims_model <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">new</span>(CatchAtAge)</span>
+<span id="cb15-319"><a href="#cb15-319" aria-hidden="true" tabindex="-1"></a>fims_model<span class="sc">$</span><span class="fu">AddPopulation</span>(population<span class="sc">$</span><span class="fu">get_id</span>())</span>
+<span id="cb15-320"><a href="#cb15-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-321"><a href="#cb15-321" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize the model</span></span>
+<span id="cb15-322"><a href="#cb15-322" aria-hidden="true" tabindex="-1"></a><span class="fu">CreateTMBModel</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
@@ -1188,7 +1179,7 @@ unreliable</code></pre>
 <pre><code>dense metric selected b/c faster than sparse and high correlation (max=1)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>log-posterior at inits=(-29371006959.9); at conditional mode=-3539.953</code></pre>
+<pre><code>log-posterior at inits=(-7913147527.48); at conditional mode=-3539.953</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Starting MCMC sampling...</code></pre>
@@ -1196,15 +1187,15 @@ unreliable</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 
-Gradient evaluation took 0.000408 seconds
-1000 transitions using 10 leapfrog steps per transition would take 4.08 seconds.
+Gradient evaluation took 0.000412 seconds
+1000 transitions using 10 leapfrog steps per transition would take 4.12 seconds.
 Adjust your expectations accordingly!
 
 
 
- Elapsed Time: 547.132 seconds (Warm-up)
-               4318.11 seconds (Sampling)
-               4865.24 seconds (Total)</code></pre>
+ Elapsed Time: 540.317 seconds (Warm-up)
+               4461.44 seconds (Sampling)
+               5001.76 seconds (Total)</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
