@@ -1,5 +1,8 @@
 ---
 title: PIFSC ʻŌpakapaka Case Study
+stock: "PIFSC Opakapaka"
+previous_model: "SS3"
+features: ""
 format:
   html:
     code-fold: true
