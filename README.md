@@ -71,7 +71,7 @@ Before opening a PR, make sure you have:
 - [ ] Added the new .qmd file to _quarto.yml
 - [ ] Added any needed source data files under content/data_files/
 - [ ] Updated the case study title, stock name, region, and analyst
-- [ ] Added a prepare-fims-data chunk that creates data_4_model
+- [ ] Added a prepare-fims-data chunk that creates `data_4_model`
 - [ ] Added a setup-model chunk that fits the FIMS model and saves the output to `fit`
 - [ ] Added comparison plots and/or tables
 - [ ] Added a cleanup chunk calling FIMS::clear()
