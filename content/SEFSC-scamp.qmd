@@ -40,7 +40,7 @@ The original stock assessment ([SEDAR-68OA](https://sedarweb.org/documents/sedar
 * Dropped the estimation of the variation in size at age, as this parameter is not estimable without length-composition data.
 * Converted spawning biomass to be female only. Because scamp are a protogynous hermaphrodite, the original assessment accounted for males implicitly by computing spawning biomass as the sum of total (male + female) mature biomass. One way to match that accounting would be to assume that the female maturity vector equals that of both sexes combined, and then further assume that the population is 100% female. However, current FIMS does not allow deviation from a 50:50 sex ratio. Thus, for this example, FIMS and BAM use the maturity vector of both sexes combined, but apply that vector only to females and assume a 50:50 sex ratio when computing spawning biomass.
 * Female maturity at age modeled as a logistic function, rather than empirical.
-* Dropped the fishery-dependent growth curve and set mean size at age of the landings equal to the population growth curve.
+* Dropped the fishery-dependent growth curve and set mean size at age of the catch equal to the population growth curve.
 * Replaced Dirichlet-multinomial with standard multinomial distribution for fitting age-composition data.
 * Extended age compositions to include ages 1--20+, as modeled in the population. The original assessment modeled ages 1--20+ in the population but fit ages 1--15+ in the age compositions because of many zeros in the 16--20 age range.
 
@@ -51,7 +51,7 @@ The following additional changes were made as well though they are not necessary
 * Converted index data and predictions to occur in weight rather than numbers.
 * Extended estimates of recruitment deviations forward in time to the terminal year. Based on likelihood profiling, values from the last two years were not estimable, and thus were fixed in the original assessment.
 * Extended estimates of recruitment deviations backward in time to the initial year, 1969. The original assessment started estimating recruitment deviations in 1980, when age-composition data become available.
-* Converted all observed and predicted landings to weight (mt). The original assessment used units native to the data collection: commercial in pounds and recreational in numbers.
+* Converted all observed and predicted catch to weight (mt). The original assessment used units native to the data collection: commercial in pounds and recreational in numbers.
 * Dropped fishery-dependent indices.
 
 ## Setting up the data
@@ -83,13 +83,13 @@ fleet1_ac <- fleet2_ac <- survey_ac <- matrix(-999, nrow = n_years, ncol = n_age
 
 # CV is arithmetic space and what is used to fit in BAM, which we convert to
 # standard deviation and create_default_DlnormDistribution takes the log of it
-# for you so we want sqrt(log(1.0 + fleet1_landings_cv^2))
-fleet1_landings <- sca$t.series$L.COM.ob
-fleet1_landings_cv <- sca$t.series$cv.L.COM
-fleet1_landings_sd <- sqrt(log(1.0 + fleet1_landings_cv^2))
-fleet2_landings <- sca$t.series$L.REC.ob
-fleet2_landings_cv <- sca$t.series$cv.L.REC
-fleet2_landings_sd <- sqrt(log(1.0 + fleet2_landings_cv^2))
+# for you so we want sqrt(log(1.0 + fleet1_catch_cv^2))
+fleet1_catch <- sca$t.series$L.COM.ob
+fleet1_catch_cv <- sca$t.series$cv.L.COM
+fleet1_catch_sd <- sqrt(log(1.0 + fleet1_catch_cv^2))
+fleet2_catch <- sca$t.series$L.REC.ob
+fleet2_catch_cv <- sca$t.series$cv.L.REC
+fleet2_catch_sd <- sqrt(log(1.0 + fleet2_catch_cv^2))
 
 survey_index <- sca$t.series$U.CVT.ob |>
   tidyr::replace_na(-999)
@@ -112,24 +112,32 @@ fleet2_ac[!is.na(sca$t.series$acomp.REC.n), ] <- sca$comp.mats$acomp.REC.ob
 survey_ac[!is.na(sca$t.series$acomp.CVT.n), ] <- sca$comp.mats$acomp.CVT.ob 
 
 ## put data into fims friendly form
-fleet1_landings_df <- data.frame(
-  type = "landings",
+fleet1_catch_df <- data.frame(
+  type = "catch",
   fleet = "fleet1",
   age = NA,
   timing = seq(styr, endyr),
-  value = as.numeric(fleet1_landings),
+  observed = as.numeric(fleet1_catch),
   unit = "mt",
-  uncertainty = fleet1_landings_sd
+  uncertainty = paste0(
+    "~dlnorm(meanlog = log_catch_expected, sdlog =",
+    fleet1_catch_sd,
+    ")"
+  )
 )
 
-fleet2_landings_df <- data.frame(
-  type = "landings",
+fleet2_catch_df <- data.frame(
+  type = "catch",
   fleet = "fleet2",
   age = NA,
   timing = seq(styr, endyr),
-  value = as.numeric(fleet2_landings),
+  observed = as.numeric(fleet2_catch),
   unit = "mt",
-  uncertainty = fleet2_landings_sd
+  uncertainty = paste0(
+    "~dlnorm(meanlog = log_catch_expected, sdlog =",
+    fleet2_catch_sd,
+    ")"
+  )
 )
 
 survey_index_df <- data.frame(
@@ -137,9 +145,13 @@ survey_index_df <- data.frame(
   fleet = "survey1",
   age = NA,
   timing = seq(styr, endyr),
-  value = as.numeric(survey_index),
+  observed = as.numeric(survey_index),
   unit = "",
-  uncertainty = survey_index_sd
+  uncertainty = paste0(
+    "~dlnorm(meanlog = log_catch_expected, sdlog =",
+    survey_index_sd,
+    ")"
+  )
 )
 
 fleet1_ac_df <- data.frame(
@@ -147,9 +159,13 @@ fleet1_ac_df <- data.frame(
   fleet = "fleet1",
   age = rep(seq(1, n_ages), n_years),
   timing = rep(seq(styr, endyr), each = n_ages),
-  value = as.numeric(t(fleet1_ac)),
-  unit = "",
-  uncertainty = rep(fleet1_ac_n, each = n_ages)
+  observed = as.numeric(t(fleet1_ac)),
+  unit = "proportion",
+  uncertainty = paste0(
+    "~dmultinom(prob = agecomp_proportion, size = ",
+    rep(fleet1_ac_n, each = n_ages),
+    ")"
+  )
 )
 
 fleet2_ac_df <- data.frame(
@@ -157,9 +173,13 @@ fleet2_ac_df <- data.frame(
   fleet = "fleet2",
   age = rep(seq(1, n_ages), n_years),
   timing = rep(seq(styr, endyr), each = n_ages),
-  value = as.numeric(t(fleet2_ac)),
-  unit = "",
-  uncertainty = rep(fleet2_ac_n, each = n_ages)
+  observed = as.numeric(t(fleet2_ac)),
+  unit = "proportion",
+  uncertainty = paste0(
+    "~dmultinom(prob = agecomp_proportion, size = ",
+    rep(fleet2_ac_n, each = n_ages),
+    ")"
+  )
 )
 
 survey_ac_df <- data.frame(
@@ -167,9 +187,13 @@ survey_ac_df <- data.frame(
   fleet = "survey1",
   age = rep(seq(1, n_ages), n_years),
   timing = rep(seq(styr, endyr), each = n_ages),
-  value = as.numeric(t(survey_ac)),
-  unit = "",
-  uncertainty = rep(survey_ac_n, each = n_ages)
+  observed = as.numeric(t(survey_ac)),
+  unit = "proportion",
+  uncertainty = paste0(
+    "~dmultinom(prob = agecomp_proportion, size = ",
+    rep(survey_ac_n, each = n_ages),
+    ")"
+  )
 )
 
 weight_at_age <- data.frame(
@@ -177,17 +201,17 @@ weight_at_age <- data.frame(
   fleet = NA_character_,
   age = seq(n_ages),
   timing = NA_integer_,
-  value = sca$a.series$wgt.mt,
+  observed = sca$a.series$wgt.mt,
   unit = "mt",
-  uncertainty = NA
+  uncertainty = NA_character_
 )
 
-landings <- rbind(fleet1_landings_df, fleet2_landings_df)
+catch <- rbind(fleet1_catch_df, fleet2_catch_df)
 index <- survey_index_df
 agecomps <- rbind(fleet1_ac_df, fleet2_ac_df, survey_ac_df)
 
 data_4_model <- FIMS::FIMSFrame(
-  rbind(landings, index, agecomps, weight_at_age)
+  rbind(catch, index, agecomps, weight_at_age)
   #  |>
   # dplyr::filter(timing >= 1980 | is.na(timing))
 )
@@ -201,9 +225,7 @@ data_4_model <- FIMS::FIMSFrame(
 # clear memory
 FIMS::clear()
 
-default_parameters <- FIMS::create_default_configurations(data_4_model) |>
-  FIMS::create_default_parameters(data_4_model) |>
-  tidyr::unnest(cols = data) |> 
+default_parameters <- FIMS::setup_default_parameters(data_4_model) |>
   # Maturity
   # NOTE, to match FIMS for a protogynous stock, these maturity values were
   # obtained by fitting a logistic function to the age vector,
@@ -251,7 +273,7 @@ default_parameters <- FIMS::create_default_configurations(data_4_model) |>
     tibble::tibble(
       module_name = "Population",
       label = c("log_M"),
-      time = rep(seq(get_start_year(data_4_model), get_end_year(data_4_model)), each = n_ages),
+      timing = rep(seq(get_start_year(data_4_model), get_end_year(data_4_model)), each = n_ages),
       age = rep(ages, get_n_years(data_4_model)),
       # M is vector of age1 M X nyrs then age2 M X nyrs
       value = log(as.numeric(matrix(
@@ -259,7 +281,7 @@ default_parameters <- FIMS::create_default_configurations(data_4_model) |>
         nrow = get_n_years(data_4_model)
       )))
     ),
-    by = c("module_name", "label", "time", "age")
+    by = c("module_name", "label", "timing", "age")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -285,44 +307,44 @@ default_parameters <- FIMS::create_default_configurations(data_4_model) |>
   #   tibble::tibble(
   #     module_name = "Recruitment",
   #     label = "log_devs",
-  #     time = years[-1],
+  #     timing = years[-1],
   #     # The last value of the initial numbers at age is the first
   #     # recruitment deviation
   #     value = sca$t.series$logR.dev[-1],
   #   ),
-  #   by = c("module_name", "label", "time")
+  #   by = c("module_name", "label", "timing")
   # ) |>
   # dplyr::rows_update(
   #   tibble::tibble(
   #     module_name = "Fleet",
   #     fleet = "fleet1",
-  #     time = years,
+  #     timing = years,
   #     label = "log_Fmort",
   #     value = log(sca$t.series$F.COM)
   #   ),
-  #   by = c("module_name", "fleet", "label", "time")
+  #   by = c("module_name", "fleet", "label", "timing")
   # ) |>
   # dplyr::rows_update(
   #   tibble::tibble(
   #     module_name = "Fleet",
   #     fleet = "fleet2",
-  #     time = years,
+  #     timing = years,
   #     label = "log_Fmort",
   #     value = log(sca$t.series$F.REC)
   #   ),
-  #   by = c("module_name", "fleet", "label", "time")
+  #   by = c("module_name", "fleet", "label", "timing")
   # ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
       fleet = "survey1",
-      # time = years,
-      time = seq(get_start_year(data_4_model), get_end_year(data_4_model)),
+      # timing = years,
+      timing = seq(get_start_year(data_4_model), get_end_year(data_4_model)),
       label = "log_Fmort",
       # value = log(sca$parms$q.CVT)
       value = -200
     ),
-    by = c("module_name", "fleet", "label", "time")
+    by = c("module_name", "fleet", "label", "timing")
   )
 
 ####################################################################################
@@ -384,32 +406,32 @@ index_results <- data.frame(
     rep(NA, length(styr:get_start_year(data_4_model)) - 1),
     FIMS::get_data(data_4_model) |>
       dplyr::filter(type == "index", fleet == "survey1") |>
-      dplyr::pull(value)
+      dplyr::pull(observed)
   ),
   fims.expected = c(rep(NA, length(styr:get_start_year(data_4_model)) - 1), report$index_expected[[3]]),
   bam.expected = sca$t.series$U.CVT.pr
 ) |>
   dplyr::filter(observed != -999.00)
-fleet1_landings_results <- data.frame(
+fleet1_catch_results <- data.frame(
   yr = styr:endyr,
   observed = c(
     rep(NA, length(styr:get_start_year(data_4_model)) - 1),
     FIMS::get_data(data_4_model) |>
-      dplyr::filter(type == "landings", fleet == "fleet1") |>
-      dplyr::pull(value)
+      dplyr::filter(type == "catch", fleet == "fleet1") |>
+      dplyr::pull(observed)
   ),
-  fims.expected = c(rep(NA, length(styr:get_start_year(data_4_model)) - 1), report$landings_expected[[1]]),
+  fims.expected = c(rep(NA, length(styr:get_start_year(data_4_model)) - 1), report$catch_expected[[1]]),
   bam.expected = sca$t.series$L.COM.pr
 )
-fleet2_landings_results <- data.frame(
+fleet2_catch_results <- data.frame(
   yr = styr:endyr,
   observed = c(
     rep(NA, length(styr:get_start_year(data_4_model)) - 1),
     FIMS::get_data(data_4_model) |>
-      dplyr::filter(type == "landings", fleet == "fleet2") |>
-      dplyr::pull(value)
+      dplyr::filter(type == "catch", fleet == "fleet2") |>
+      dplyr::pull(observed)
   ),
-  fims.expected = c(rep(NA, length(styr:get_start_year(data_4_model)) - 1), report$landings_expected[[2]]),
+  fims.expected = c(rep(NA, length(styr:get_start_year(data_4_model)) - 1), report$catch_expected[[2]]),
   bam.expected = sca$t.series$L.REC.pr
 )
 
@@ -461,7 +483,7 @@ yr.ind <- 1:n_years
 
 yr.fleet1.ind <- yr.ind[fleet1_ac_n >= 0]
 yr.fleet1.ac <- years[yr.fleet1.ind]
-fims.fleet1.ncaa <- matrix(report$landings_numbers_at_age[[1]], ncol = n_ages, byrow = TRUE)
+fims.fleet1.ncaa <- matrix(report$catch_numbers_at_age[[1]], ncol = n_ages, byrow = TRUE)
 fims.fleet1.ncaa <- fims.fleet1.ncaa[yr.fleet1.ind, ]
 fims.fleet1.caa <- fims.fleet1.ncaa / rowSums(fims.fleet1.ncaa)
 bam.fleet1.caa <- sca$comp.mats$acomp.COM.pr
@@ -469,7 +491,7 @@ obs.fleet1.caa <- sca$comp.mats$acomp.COM.ob
 
 yr.fleet2.ind <- yr.ind[fleet2_ac_n >= 0]
 yr.fleet2.ac <- years[yr.fleet2.ind]
-fims.fleet2.ncaa <- matrix(report$landings_numbers_at_age[[2]], ncol = n_ages, byrow = TRUE)
+fims.fleet2.ncaa <- matrix(report$catch_numbers_at_age[[2]], ncol = n_ages, byrow = TRUE)
 fims.fleet2.ncaa <- fims.fleet2.ncaa[yr.fleet2.ind, ]
 fims.fleet2.caa <- fims.fleet2.ncaa / rowSums(fims.fleet2.ncaa)
 bam.fleet2.caa <- sca$comp.mats$acomp.REC.pr
@@ -477,7 +499,7 @@ obs.fleet2.caa <- sca$comp.mats$acomp.REC.ob
 
 yr.survey.ind <- yr.ind[survey_ac_n >= 0]
 yr.survey.ac <- years[yr.survey.ind]
-fims.survey.ncaa <- matrix(report$landings_numbers_at_age[[3]], ncol = n_ages, byrow = TRUE)
+fims.survey.ncaa <- matrix(report$catch_numbers_at_age[[3]], ncol = n_ages, byrow = TRUE)
 fims.survey.ncaa <- fims.survey.ncaa[yr.survey.ind, ]
 fims.survey.caa <- fims.survey.ncaa / rowSums(fims.survey.ncaa)
 bam.survey.caa <- sca$comp.mats$acomp.CVT.pr
@@ -499,19 +521,19 @@ legend("topright",
   pch = c(16, -1, -1), lwd = c(-1, 3, 3), col = c(cols[1], cols[2], cols[4])
 )
 
-plot(fleet1_landings_results$yr, fleet1_landings_results$observed,
-  ylim = c(0, max(fleet1_landings_results[, -1], na.rm = TRUE)),
-  pch = 16, col = cols[1], ylab = "Fleet1 landings (mt)", xlab = ""
+plot(fleet1_catch_results$yr, fleet1_catch_results$observed,
+  ylim = c(0, max(fleet1_catch_results[, -1], na.rm = TRUE)),
+  pch = 16, col = cols[1], ylab = "Fleet1 catch (mt)", xlab = ""
 )
-lines(fleet1_landings_results$yr, fleet1_landings_results$bam.expected, lwd = 3, col = cols[2])
-lines(fleet1_landings_results$yr, fleet1_landings_results$fims.expected, lwd = 3, col = cols[4])
+lines(fleet1_catch_results$yr, fleet1_catch_results$bam.expected, lwd = 3, col = cols[2])
+lines(fleet1_catch_results$yr, fleet1_catch_results$fims.expected, lwd = 3, col = cols[4])
 
-plot(fleet2_landings_results$yr, fleet2_landings_results$observed,
-  ylim = c(0, max(fleet2_landings_results[, -1], na.rm = TRUE)),
-  pch = 16, col = cols[1], ylab = "Fleet2 landings (mt)", xlab = ""
+plot(fleet2_catch_results$yr, fleet2_catch_results$observed,
+  ylim = c(0, max(fleet2_catch_results[, -1], na.rm = TRUE)),
+  pch = 16, col = cols[1], ylab = "Fleet2 catch (mt)", xlab = ""
 )
-lines(fleet2_landings_results$yr, fleet2_landings_results$bam.expected, lwd = 3, col = cols[2])
-lines(fleet2_landings_results$yr, fleet2_landings_results$fims.expected, lwd = 3, col = cols[4])
+lines(fleet2_catch_results$yr, fleet2_catch_results$bam.expected, lwd = 3, col = cols[2])
+lines(fleet2_catch_results$yr, fleet2_catch_results$fims.expected, lwd = 3, col = cols[4])
 
 dev.off()
 

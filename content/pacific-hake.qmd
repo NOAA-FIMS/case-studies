@@ -92,7 +92,7 @@ stock_synthesis_data <- r4ss::ss3_data_to_fims(
 start_year <- dplyr::filter(
   stock_synthesis_data,
   type == "age_comp",
-  value != -999
+  observed != -999
 ) |>
   dplyr::pull(timing) |>
   min()
@@ -132,7 +132,7 @@ data_4_model
 
 # Summary of the data types available
 FIMS::get_data(data_4_model) |>
-  dplyr::filter(value != -999) |>
+  dplyr::filter(observed != -999) |>
   dplyr::group_by(type, fleet) |>
   dplyr::count()
 ```
@@ -278,18 +278,7 @@ FIMS models are configured with a data frame or R objects rather than an input f
 time_varying_selectivity <- TRUE
 selectivity_used <- "Logistic"
 FIMS::clear()
-parameters <- FIMS::create_default_configurations(data = data_4_model) |>
-  tidyr::unnest(data) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Selectivity",
-      fleet = c("Fishery", "Acoustic_Survey"),
-      module_type = c(selectivity_used, "Logistic")
-    ),
-    by = c("module_name", "fleet")
-  ) |>
-  FIMS::create_default_parameters(data = data_4_model) |>
-  tidyr::unnest(data) |>
+parameters <- FIMS::setup_default_parameters(data = data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = c("Maturity", "Maturity"),
@@ -307,10 +296,10 @@ parameters <- FIMS::create_default_configurations(data = data_4_model) |>
       label = c("log_M"),
       # estimation_type = "fixed_effects",
       value = log(dplyr::pull(natural_mortality_matrix, m)),
-      time = dplyr::pull(natural_mortality_matrix, year),
+      timing = dplyr::pull(natural_mortality_matrix, year),
       age = dplyr::pull(natural_mortality_matrix, age)
     ),
-    by = c("module_name", "label", "time", "age")
+    by = c("module_name", "label", "timing", "age")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -400,31 +389,34 @@ for (i in seq_along(fleets)) {
     dplyr::filter(fleet == fleets[i]) |>
     dplyr::pull(type) |>
     unique()
-  data_distribution_names_for_fleet_i <- parameters |>
-    dplyr::filter(fleet == fleets[i] & distribution_type == "Data") |>
-    dplyr::pull(module_type)
 
   # Landings
-  if ("landings" %in% fleet_types &&
-    "Landings" %in% data_distribution_names_for_fleet_i) {
+  if ("catch" %in% fleet_types) {
     # Initialize landings module for the current fleet
-    fleet_landings[[i]] <- FIMS:::initialize_landings(
-      data = data_4_model,
+    fleet_landings[[i]] <- methods::new(
+      Catch,
+      get_n_years(data_4_model)
+    )
+    fleet_landings[[i]]$catch_data[] <- model_catch(
+      data_4_model,
       fleet = fleets[i]
     )
     # Add the module ID for the initialized landings to the list of fleet module IDs
     fleet_module_ids <- c(
       fleet_module_ids,
-      c(landings = fleet_landings[[i]]$get_id())
+      c(catch = fleet_landings[[i]]$get_id())
     )
   }
 
   # Index
-  if ("index" %in% fleet_types &&
-    "Index" %in% data_distribution_names_for_fleet_i) {
+  if ("index" %in% fleet_types) {
     # Initialize index module for the current fleet
-    fleet_index[[i]] <- FIMS:::initialize_index(
-      data = data_4_model,
+    fleet_index[[i]] <- methods::new(
+      Index,
+      get_n_years(data_4_model)
+    )
+    fleet_index[[i]]$index_data[] <- model_index(
+      data_4_model,
       fleet = fleets[i]
     )
     fleet_module_ids <- c(
@@ -434,13 +426,16 @@ for (i in seq_along(fleets)) {
   }
 
   # Age composition
-  if ("age_comp" %in% fleet_types &&
-    "AgeComp" %in% data_distribution_names_for_fleet_i) {
+  if ("age_comp" %in% fleet_types) {
     # Initialize age composition module for the current fleet
-    fleet_age_comp[[i]] <- FIMS:::initialize_comp(
-      data = data_4_model,
-      fleet = fleets[i],
-      type = "AgeComp"
+    fleet_age_comp[[i]] <- methods::new(
+      AgeComp,
+      get_n_years(data_4_model),
+      get_n_ages(data_4_model)
+    )
+    fleet_age_comp[[i]]$age_comp_data[] <- model_age_comp(
+      data_4_model,
+      fleet = fleets[i]
     )
     fleet_module_ids <- c(
       fleet_module_ids,
@@ -456,39 +451,35 @@ for (i in seq_along(fleets)) {
   )
 
   # Fleet uncertainty
-  fleet_sd_input <- parameters |>
-    dplyr::filter(fleet == fleets[i] & label == "log_sd") |>
-    dplyr::mutate(
-      label = "sd",
-      value = exp(value)
-    )
+  fleet_sd_input <- 
 
-  if ("index" %in% fleet_types &&
-    "Index" %in% data_distribution_names_for_fleet_i) {
+  if ("index" %in% fleet_types) {
     fleet_index_distribution[[i]] <- FIMS:::initialize_data_distribution(
       module = fleet[[i]],
-      family = lognormal(link = "log"),
-      sd = fleet_sd_input,
-      data_type = "index"
+      data_type = "index",
+      uncertainty = get_data(data_4_model) |>
+        dplyr::filter(fleet == fleets[i] & type == "index") |>
+        dplyr::pull(uncertainty)
     )
   }
 
-  if ("landings" %in% fleet_types &&
-    "Landings" %in% data_distribution_names_for_fleet_i) {
+  if ("catch" %in% fleet_types) {
     fleet_landings_distribution[[i]] <- FIMS:::initialize_data_distribution(
       module = fleet[[i]],
-      family = lognormal(link = "log"),
-      sd = fleet_sd_input,
-      data_type = "landings"
+      uncertainty = get_data(data_4_model) |>
+        dplyr::filter(fleet == fleets[i] & type == "catch") |>
+        dplyr::pull(uncertainty),
+      data_type = "catch"
     )
   }
 
-  if ("age_comp" %in% fleet_types &&
-    "AgeComp" %in% data_distribution_names_for_fleet_i) {
+  if ("age_comp" %in% fleet_types) {
     fleet_agecomp_distribution[[i]] <- FIMS:::initialize_data_distribution(
       module = fleet[[i]],
-      family = multinomial(link = "logit"),
-      data_type = "agecomp"
+      data_type = "age_comp",
+      uncertainty = get_data(data_4_model) |>
+        dplyr::filter(fleet == fleets[i] & type == "age_comp") |>
+        dplyr::pull(uncertainty)
     )
   }
 }
