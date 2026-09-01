@@ -198,3 +198,160 @@ make_hake_rds_smaller <- function(full_rds_file, out_rds_file) {
   )
   saveRDS(out, out_rds_file)
 }
+
+#' @param rdat An R object that was read in using [dget()] on a file saved from
+#'   ADMB2R.
+#' @details
+#' Inside the function, the object `param catch_weight_conversion` is created
+#' based on the value in `rdat[[info]][[units.landings]]` to convert your
+#' catch time series to metric tons. Check that the conversion was done right.
+bam_data_to_fims <- function(rdat) {
+  # CV is arithmetic space and what is used to fit in BAM, which we convert to
+  # standard deviation and create_default_DlnormDistribution takes the log of it
+  # for you so we want sqrt(log(1.0 + fleet1_catch_cv^2))
+
+  catch_weight_conversion <- dplyr::case_when(
+    rdat[["info"]][["units.landings"]] == "1000 lb whole" ~ 0.453592,
+    rdat[["info"]][["units.landings"]] == "mt" ~ 1.0
+  )
+
+  catch <- dplyr::select(
+    rdat$t.series,
+    year,
+    dplyr::matches("^L.*\\.ob|cv\\.L.*", ignore.case = FALSE)
+  ) |> 
+    dplyr::rename_with(.f = \(x) gsub("\\.ob", "", x)) |>
+    tidyr::pivot_longer(
+      cols = -year,
+      names_to = c(".value", "fleet"),
+      names_pattern = "^(cv\\.L|L)\\.(.*)"
+    ) |>
+    dplyr::filter(!is.na(L)) |>
+    dplyr::mutate(
+      sd = sqrt(log(1.0 + cv.L^2)),
+      uncertainty = glue::glue(
+        "~dlnorm(meanlog = log_catch_expected, sdlog = {sd})"
+      ),
+      type = "catch",
+      L = L * catch_weight_conversion,
+      unit = "mt" # Original units were "1000 lbs" for cobia
+    ) |>
+    dplyr::select(-cv.L, -sd) |>
+    dplyr::rename(observed = L, timing = year)
+
+  index <- dplyr::select(
+    rdat$t.series,
+    year,
+    dplyr::matches("^U.*\\.ob|cv\\.U.*", ignore.case = FALSE)
+  ) |> 
+    dplyr::rename_with(.f = \(x) gsub("\\.ob", "", x)) |>
+    tidyr::pivot_longer(
+      cols = -year,
+      names_to = c(".value", "fleet"),
+      names_pattern = "^(cv\\.U|U)\\.(.*)"
+    ) |>
+    dplyr::filter(!is.na(U)) |>
+    dplyr::mutate(
+      sd = sqrt(log(1.0 + cv.U^2)),
+      uncertainty = glue::glue(
+        "~dlnorm(meanlog = log_catch_expected, sdlog = {sd})"
+      ),
+      type = "index"
+    ) |>
+    dplyr::select(-cv.U, -sd) |>
+    dplyr::rename(observed = U, timing = year)
+
+  age_comp <- purrr::imap_dfr(
+    rdat$comp.mats[grep("acomp.*ob", names(rdat$comp.mats))], ~ {
+    .x |> 
+      as.data.frame() |>
+      tibble::rownames_to_column(var = "timing") |> 
+      dplyr::mutate(fleet = gsub("acomp.|.ob", "", .y))
+  }) |>
+    tidyr::pivot_longer(
+      cols = -c(timing, fleet),
+      names_to = "age",
+      values_to = "observed"
+    ) |>
+    dplyr::mutate(timing = as.numeric(timing)) |>
+    dplyr::left_join(
+      rdat$t.series |>
+        dplyr::select(year, dplyr::matches("acomp.*n$")) |>
+        dplyr::rename_with(
+          .fn = \(x) gsub(pattern = "acomp\\.|\\.n$", "", x = x)
+        ) |>
+        tidyr::pivot_longer(
+          cols = -c(year),
+          names_to = "fleet",
+          values_to = "n"
+        ),
+      by = c("timing" = "year", "fleet")
+    ) |>
+    dplyr::mutate(
+      age = as.numeric(age),
+      unit = "proportion",
+      uncertainty = dplyr::case_when(
+        n == -99999 ~ NA_character_,
+        is.na(n) ~ NA_character_,
+        n > 0 ~ glue::glue("~dmultinom(prob = agecomp_proportion, size = {n})")
+      )
+    ) |>
+    dplyr::select(-n)
+
+  if (length(grep("lcomp.*ob", names(rdat$comp.mats))) > 0) {
+    length_comp <- purrr::imap_dfr(
+      rdat$comp.mats[grep("lcomp.*ob", names(rdat$comp.mats))], ~ {
+      .x |> 
+        as.data.frame() |>
+        tibble::rownames_to_column(var = "timing") |> 
+        dplyr::mutate(fleet = gsub("lcomp.|.ob", "", .y))
+    }) |>
+      tidyr::pivot_longer(
+        cols = -c(timing, fleet),
+        names_to = "length",
+        values_to = "observed"
+      ) |>
+      dplyr::mutate(timing = as.numeric(timing)) |>
+      dplyr::left_join(
+        rdat$t.series |>
+          dplyr::select(year, dplyr::matches("lcomp.*n$")) |>
+          dplyr::rename_with(
+            .fn = \(x) gsub(pattern = "lcomp\\.|\\.n$", "", x = x)
+          ) |>
+          tidyr::pivot_longer(
+            cols = -c(year),
+            names_to = "fleet",
+            values_to = "n"
+          ),
+        by = c("timing" = "year", "fleet")
+      ) |>
+      dplyr::mutate(
+        length = as.numeric(length),
+        unit = "proportion",
+        uncertainty = dplyr::case_when(
+          n == -99999 ~ NA_character_,
+          is.na(n) ~ NA_character_,
+          n > 0 ~ glue::glue(
+            "~dmultinom(prob = lengthcomp_proportion, size = {n})"
+          )
+        )
+      ) |>
+      dplyr::select(-n)
+  } else {
+    length_comp <- data.frame()
+  }
+
+  weight_at_age <- data.frame(
+    type = "weight_at_age",
+    fleet = NA_character_,
+    age = seq(rdat$a.series$age),
+    timing = NA_integer_,
+    observed = rdat$a.series$wgt.mt,
+    unit = "mt",
+    uncertainty = NA_character_
+  )
+
+  data_4_model <- FIMS::FIMSFrame(
+    dplyr::bind_rows(catch, index, age_comp, length_comp, weight_at_age)
+  )
+}
