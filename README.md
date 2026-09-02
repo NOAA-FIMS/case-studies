@@ -48,7 +48,7 @@ If needed for use, `reshape2` will need to be install on the R terminal using `i
 ```r
 install.packages(c("pak", "yaml"))
 workflow <- yaml::read_yaml(".github/workflows/render.yml")
-steps <- workflow$jobs[["build-deploy"]]$steps
+steps <- workflow$jobs[["render"]]$steps
 dep_step <- steps[[which(vapply(
   steps,
   function(step) identical(step$uses, "r-lib/actions/setup-r-dependencies@v2"),
