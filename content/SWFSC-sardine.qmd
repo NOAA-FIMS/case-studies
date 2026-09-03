@@ -79,8 +79,8 @@ fimscatch <- tibble::tibble(type = "catch", fleet = "fleet1",
                     age = NA, timing = catch$year, observed = catch$catch,
                     unit = "mt",
                     uncertainty = paste0(
-                      "~dlnorm(meanlog = log_catch_expected, sdlog = ",
-                      sqrt(log(0.01^2 + 1)), # Input was 0.05 but log(sqrt(log(0.01^2 + 1)))
+                      "~dlnorm(meanlog = log_catch_expected, sdlog = 0.00001",
+                      # sqrt(log(0.01^2 + 1)), # Input was 0.05 but log(sqrt(log(0.01^2 + 1)))
                                              # was used in parameter tibble
                       ")"
                     ))
@@ -128,7 +128,7 @@ fimsage <- tibble::tibble(type = "age_comp", fleet = acomps$name,
     # WAA input values are supplied to SS3 in kg and FIMS in mt
     # Model now correctly processes inputs and provides comparable NAA, WAA, and biomass outputs to SS3
 wtatage <- r4ss::SS_readwtatage(file.path(data_directory, "sardine_wtatage.ss_new")) |>
-  dplyr::filter(fleet %in% c(1, 2)) |>
+  dplyr::filter(fleet %in% c(1)) |>
   dplyr::mutate(fleet = ifelse(fleet == 1, "fleet1", "survey1")) |>
   tidyr::pivot_longer(cols = `0`:`10`, names_to = "age", values_to = "value") |>
   dplyr::filter(!(age %in% c("9", "10"))) |> # Trim ages 9 and 10 to match age-comps
@@ -155,7 +155,7 @@ n_years <- FIMS::get_n_years(data_4_model)
 years <- FIMS::get_start_year(data_4_model):FIMS::get_end_year(data_4_model)
 n_ages <- FIMS::get_n_ages(data_4_model)
 ages <- FIMS::get_ages(data_4_model)
-rzero <- 17 #14.2 is log(R0) in sardine simplified model
+rzero <- 14.2 + log(1000) #14.2 is log(R0) in sardine simplified model
 M_value <- 0.8 #.8 worked pretty well
 init_naa <- exp(rzero) * exp(-(ages - 1) * M_value)
 init_naa[n_ages] <- init_naa[n_ages] / M_value # sum of infinite series
@@ -176,7 +176,8 @@ parameters <- FIMS::setup_default_parameters(data = data_4_model) |>
     tibble::tibble(
       module_name = "Recruitment",
       label = "logit_steep",
-      value = FIMS::logit(0.2, 1.0, 0.6)
+      value = FIMS::logit(0.2, 1.0, 0.6),
+      estimation_type = "constant"
     ),
     by = c("module_name", "label")
   ) |>
@@ -185,14 +186,7 @@ parameters <- FIMS::setup_default_parameters(data = data_4_model) |>
       module_name = "Recruitment",
       label = c("log_rzero", "log_sd"),
       value = c(rzero, log(1.2)),
-    ),
-    by = c("module_name", "label")
-  ) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Recruitment",
-      label = "log_devs",
-      value = log(1),
+      estimation_type = "constant"
     ),
     by = c("module_name", "label")
   ) |>
@@ -200,7 +194,7 @@ parameters <- FIMS::setup_default_parameters(data = data_4_model) |>
     tibble::tibble(
       module_name = "Maturity",
       label = c("inflection_point", "slope"),
-      value = c(1.2, 1.5) # 1.5 is arbitrary guess
+      value = c(1.2, 2.5) # 1.5 is arbitrary guess
     ),
     by = c("module_name", "label")
   ) |>
@@ -210,18 +204,25 @@ parameters <- FIMS::setup_default_parameters(data = data_4_model) |>
       fleet = "survey1",
       label = "log_q",
       value = 0,
-      estimation_type = "constant"
+      estimation_type = "fixed_effects"
     ),
     by = c("module_name", "fleet", "label")
   ) |>
   dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Fleet",
-      fleet = "fleet1",
-      label = "log_Fmort",
-      value = log(0.2)
-    ),
-    by = c("module_name", "fleet", "label")
+    ssres[["timeseries"]] |>
+        dplyr::select(timing = Yr, value = "F:_1") |>
+        dplyr::filter(
+          timing >= get_start_year(data_4_model),
+          timing <= get_end_year(data_4_model)
+        ) |>
+        dplyr::mutate(
+          module_name = "Fleet",
+          fleet = "fleet1",
+          label = "log_Fmort",
+          estimation_type = "constant",
+          value = log(value)
+        ),
+    by = c("module_name", "fleet", "label", "timing")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
@@ -237,7 +238,7 @@ parameters <- FIMS::setup_default_parameters(data = data_4_model) |>
       label = c("log_init_naa"),
       age = ages,
       value = log(init_naa),
-      estimation_type = "fixed_effects"
+      estimation_type = "constant"
     ),
     by = c("module_name", "age", "label")
   )
@@ -255,10 +256,13 @@ fit <- parameters |>
 output <- FIMS::get_estimates(fit) |>
   dplyr::mutate(
     uncertainty_label = "se",
-    year = year_i,
+    year = year_i + get_start_year(data_4_model) - 1,
     estimate = estimated
   )
-
+dplyr::filter(output, label == "log_q") |> as.data.frame()
+dplyr::filter(output, label == "spawning_biomass") |> as.data.frame()
+dplyr::filter(output, label == "index_expected") |> as.data.frame()
+get_data(data_4_model)|>dplyr::filter(type == "catch")
 # Get information about the model and print a few characters to the screen
 # log <- FIMS::get_log_module("information")
 ```
@@ -275,7 +279,11 @@ load(file.path(data_directory, "sardine_simplified_res.Rdata"))
   # If so, it might explain the discrepancy between ss3 (1 gender model) and fims (2 genders)
 ssbs <- ssres$timeseries |>
   dplyr::select(Yr, ss3 = SpawnBio) |>
-  dplyr::mutate(fims = c(0, 0, FIMS::get_report(fit)[["spawning_biomass"]][[1]]))
+  dplyr::full_join(
+    dplyr::filter(output, label == "spawning_biomass") |>
+      dplyr::select(year, fims = estimate),
+    by = c("Yr" = "year")
+  )
 
 ssbs |>
   dplyr::filter(Yr >= 2005, Yr < 2024) |>
@@ -294,11 +302,29 @@ ggplot2::ggsave(
   height = 4.8
 )
 
+# Fishing mortality
+ssres$timeseries |>
+  dplyr::select(Yr, ss3 = "F:_1") |>
+  dplyr::full_join(
+    dplyr::filter(output, label == "log_Fmort", module_id == 1) |>
+      dplyr::mutate(estimate = exp(estimate)) |>
+      dplyr::select(year, fims = estimate),
+    by = c("Yr" = "year")
+  ) |>
+  dplyr::filter(Yr >= 2005, Yr < 2024) |>
+  tidyr::pivot_longer(names_to = "variable", cols = dplyr::matches("ss3|fims")) |>
+  ggplot2::ggplot(ggplot2::aes(x = Yr, y = value, group = variable, color = variable)) +
+  ggplot2::geom_point() +
+  ggplot2::geom_line() +
+  ggplot2::ylab("Fishing mortality") +
+  ggplot2::theme_bw() +
+  ggplot2::xlab("year") +
+  ggplot2::theme(legend.position.inside = c(.9, .9))
+
 #------------------------------------------------------------------------
 #------Index fits
 index <- ssres$cpue |>
-  dplyr::select(Yr, Obs, Exp)
-names(index) <- c("year", "obs", "ss3")
+  dplyr::select(year = Yr, obs = Obs, ss3 = Exp)
 index$fims <- FIMS::get_report(fit)[["index_expected"]][[2]]
 index |>
   tidyr::pivot_longer(names_to = "variable", cols = dplyr::matches("ss3|fims")) |>
@@ -385,9 +411,8 @@ ggplot2::ggsave(
 #------Recruitment
 # Divide FIMS recruits by 1000 to match reporting in SS3
 recs <- ssres$timeseries |>
-  dplyr::select(Yr, Recruit_0) |>
+  dplyr::select(Yr, ss3 = Recruit_0) |>
   dplyr::mutate(fims = c(0, 0, get_report(fit)[["expected_recruitment"]][[1]]) / 1000)
-names(recs)[2] <- "ss3"
 
 recs |>
   dplyr::filter(Yr >= 2005, Yr < 2024) |>
