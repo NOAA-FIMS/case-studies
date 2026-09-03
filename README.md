@@ -13,7 +13,7 @@ AFSC GOA walleye pollock | AFSC custom ADMB model | ![Status](https://img.shield
 NEFSC yellowtail Flounder | ASAP | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
 NWFSC petrale | SS3 | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
 pacific hake | SS3 | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | Bayesian
-PIFSC opakapaka |  | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
+PIFSC Opakapaka | SS3 | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
 SEFSC scamp | BAM | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
 SWFSC sardine | SS3 | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
 <!-- TABLE_END -->
