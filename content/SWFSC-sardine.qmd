@@ -51,6 +51,8 @@ To get the operational model to more closely match a FIMS model the following ch
 #| warning: false
 #| label: prepare-fims-data
 #| output: false
+load(file.path(data_directory, "sardine_simplified_res.Rdata"))
+
 FIMS::clear()
 
 #--------------------------------------------------------
@@ -271,7 +273,7 @@ get_data(data_4_model)|>dplyr::filter(type == "catch")
 
 ```{r}
 #| label: comparison-plots
-load(file.path(data_directory, "sardine_simplified_res.Rdata"))
+
 
 #------------------------------------------------------------------------
 #------SSB
