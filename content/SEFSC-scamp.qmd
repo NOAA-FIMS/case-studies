@@ -120,8 +120,8 @@ fleet1_catch_df <- data.frame(
   observed = as.numeric(fleet1_catch),
   unit = "mt",
   uncertainty = paste0(
-    "~dlnorm(meanlog = log_catch_expected, sdlog =",
-    fleet1_catch_sd,
+    "~dlnorm(meanlog = log_catch_expected, sdlog =0.0001",
+    # fleet1_catch_sd,
     ")"
   )
 )
@@ -134,8 +134,8 @@ fleet2_catch_df <- data.frame(
   observed = as.numeric(fleet2_catch),
   unit = "mt",
   uncertainty = paste0(
-    "~dlnorm(meanlog = log_catch_expected, sdlog =",
-    fleet2_catch_sd,
+    "~dlnorm(meanlog = log_catch_expected, sdlog =0.0001",
+    # fleet2_catch_sd,
     ")"
   )
 )
@@ -148,8 +148,8 @@ survey_index_df <- data.frame(
   observed = as.numeric(survey_index),
   unit = "",
   uncertainty = paste0(
-    "~dlnorm(meanlog = log_catch_expected, sdlog =",
-    survey_index_sd,
+    "~dlnorm(meanlog = log_catch_expected, sdlog =0.01",
+    # survey_index_sd,
     ")"
   )
 )
@@ -160,7 +160,7 @@ fleet1_ac_df <- data.frame(
   age = rep(seq(1, n_ages), n_years),
   timing = rep(seq(styr, endyr), each = n_ages),
   observed = as.numeric(t(fleet1_ac)),
-  unit = "proportion",
+  unit = "number",
   uncertainty = paste0(
     "~dmultinom(prob = agecomp_proportion, size = ",
     rep(fleet1_ac_n, each = n_ages),
@@ -174,7 +174,7 @@ fleet2_ac_df <- data.frame(
   age = rep(seq(1, n_ages), n_years),
   timing = rep(seq(styr, endyr), each = n_ages),
   observed = as.numeric(t(fleet2_ac)),
-  unit = "proportion",
+  unit = "number",
   uncertainty = paste0(
     "~dmultinom(prob = agecomp_proportion, size = ",
     rep(fleet2_ac_n, each = n_ages),
@@ -188,7 +188,7 @@ survey_ac_df <- data.frame(
   age = rep(seq(1, n_ages), n_years),
   timing = rep(seq(styr, endyr), each = n_ages),
   observed = as.numeric(t(survey_ac)),
-  unit = "proportion",
+  unit = "number",
   uncertainty = paste0(
     "~dmultinom(prob = agecomp_proportion, size = ",
     rep(survey_ac_n, each = n_ages),
@@ -212,8 +212,6 @@ agecomps <- rbind(fleet1_ac_df, fleet2_ac_df, survey_ac_df)
 
 data_4_model <- FIMS::FIMSFrame(
   rbind(catch, index, agecomps, weight_at_age)
-  #  |>
-  # dplyr::filter(timing >= 1980 | is.na(timing))
 )
 ```
 
@@ -242,30 +240,17 @@ default_parameters <- FIMS::setup_default_parameters(data_4_model) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Selectivity",
-      fleet = "fleet1",
-      label = c("slope", "inflection_point"),
-      value = c(sca$parm.cons$selpar_slope_COM2[8], sca$parm.cons$selpar_A50_COM2[8]),
-      estimation_type = "fixed_effects"
-    ),
-    by = c("module_name", "fleet", "label")
-  ) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Selectivity",
-      fleet = "fleet2",
-      label = c("slope", "inflection_point"),
-      value = c(sca$parm.cons$selpar_slope1_REC2[8], sca$parm.cons$selpar_A50_REC2[8]),
-      estimation_type = "fixed_effects"
-    ),
-    by = c("module_name", "fleet", "label")
-  ) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Selectivity",
-      fleet = "survey1",
-      label = c("slope", "inflection_point"),
-      value = c(sca$parm.cons$selpar_slope1_CVT[8], sca$parm.cons$selpar_A501_CVT[8]),
-      estimation_type = "fixed_effects"
+      fleet = rep(c("fleet1", "fleet2", "survey1"), each = 2),
+      label = rep(c("slope", "inflection_point"), 3),
+      value = c(
+        sca$parm.cons$selpar_slope_COM2[8],
+        sca$parm.cons$selpar_A50_COM2[8],
+        sca$parm.cons$selpar_slope1_REC2[8],
+        sca$parm.cons$selpar_A50_REC2[8],
+        sca$parm.cons$selpar_slope1_CVT[8],
+        sca$parm.cons$selpar_A501_CVT[8]
+      ),
+      estimation_type = "constant"
     ),
     by = c("module_name", "fleet", "label")
   ) |>
@@ -275,11 +260,11 @@ default_parameters <- FIMS::setup_default_parameters(data_4_model) |>
       label = c("log_M"),
       timing = rep(seq(get_start_year(data_4_model), get_end_year(data_4_model)), each = n_ages),
       age = rep(ages, get_n_years(data_4_model)),
-      # M is vector of age1 M X nyrs then age2 M X nyrs
-      value = log(as.numeric(matrix(
+      value = log(as.numeric(t(matrix(
         rep(sca$a.series$M, each = get_n_years(data_4_model)),
         nrow = get_n_years(data_4_model)
-      )))
+      )))),
+      estimation_type = "constant"
     ),
     by = c("module_name", "label", "timing", "age")
   ) |>
@@ -289,60 +274,67 @@ default_parameters <- FIMS::setup_default_parameters(data_4_model) |>
       label = "log_init_naa",
       age = ages,
       value = log(sca$N.age[1, ]),
-      estimation_type = "fixed_effects"
+      estimation_type = "constant"
     ),
     by = c("module_name", "label", "age")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Recruitment",
-      # Transformed 0.999 to logit where a previous version just used 0.999
       # Should we use 0.75 as noted previously for scamp as the null model?
       label = c("log_rzero", "logit_steep", "log_sd"),
-      value = c(sca$parm.cons$log_R0[8], -log(1.0 - 0.99) + log(0.99 - 0.2), sca$parm.cons$rec_sigma[8])
+      value = c(
+        sca$parm.cons$log_R0[8],
+        FIMS::logit(0.2, 1.0, 0.99),
+        log(sca$parm.cons$rec_sigma[8])
+      ),
+      estimation_type = "constant"
     ),
     by = c("module_name", "label")
   ) |>
-  # dplyr::rows_update(
-  #   tibble::tibble(
-  #     module_name = "Recruitment",
-  #     label = "log_devs",
-  #     timing = years[-1],
-  #     # The last value of the initial numbers at age is the first
-  #     # recruitment deviation
-  #     value = sca$t.series$logR.dev[-1],
-  #   ),
-  #   by = c("module_name", "label", "timing")
-  # ) |>
-  # dplyr::rows_update(
-  #   tibble::tibble(
-  #     module_name = "Fleet",
-  #     fleet = "fleet1",
-  #     timing = years,
-  #     label = "log_Fmort",
-  #     value = log(sca$t.series$F.COM)
-  #   ),
-  #   by = c("module_name", "fleet", "label", "timing")
-  # ) |>
-  # dplyr::rows_update(
-  #   tibble::tibble(
-  #     module_name = "Fleet",
-  #     fleet = "fleet2",
-  #     timing = years,
-  #     label = "log_Fmort",
-  #     value = log(sca$t.series$F.REC)
-  #   ),
-  #   by = c("module_name", "fleet", "label", "timing")
-  # ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      label = "log_q",
+      fleet = "survey1",
+      value = -7.3,
+      estimation_type = "constant"
+    ),
+    by = c("fleet", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      label = "log_devs",
+      estimation_type = "fixed_effects"
+    ),
+    by = "label"
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      label = "log_sd",
+      estimation_type = "constant",
+      value = 0.01
+    ),
+    by = "label"
+  ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
-      fleet = "survey1",
-      # timing = years,
-      timing = seq(get_start_year(data_4_model), get_end_year(data_4_model)),
+      fleet = "fleet1",
+      timing = years,
       label = "log_Fmort",
-      # value = log(sca$parms$q.CVT)
-      value = -200
+      value = log(sca$t.series$F.COM),
+      estimation_type = "constant"
+    ),
+    by = c("module_name", "fleet", "label", "timing")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Fleet",
+      fleet = "fleet2",
+      timing = years,
+      label = "log_Fmort",
+      value = log(sca$t.series$F.REC),
+      estimation_type = "constant"
     ),
     by = c("module_name", "fleet", "label", "timing")
   )
@@ -439,17 +431,21 @@ fleet1_F_results <- data.frame(
   yr = styr:endyr,
   fims.F.fleet1 = c(
     rep(NA, length(styr:get_start_year(data_4_model)) - 1), 
-    dplyr::filter(FIMS::get_estimates(fit), label == "log_Fmort", module_id == 1) |> dplyr::pull(estimated)
+    dplyr::filter(FIMS::get_estimates(fit), label == "log_Fmort", module_id == 1) |>
+      dplyr::pull(estimated) |>
+      exp()
   ),
-  bam.F.fleet1 = sca$t.series$F.COM
+  bam.F.fleet1 = log(sca$t.series$F.COM)
 )
 fleet2_F_results <- data.frame(
   yr = styr:endyr,
   fims.F.fleet2 = c(
     rep(NA, length(styr:get_start_year(data_4_model)) - 1),
-    dplyr::filter(FIMS::get_estimates(fit), label == "log_Fmort", module_id == 2) |> dplyr::pull(estimated)
+    dplyr::filter(FIMS::get_estimates(fit), label == "log_Fmort", module_id == 2) |>
+      dplyr::pull(estimated) |>
+      exp()
   ),
-  bam.F.fleet2 = sca$t.series$F.REC
+  bam.F.fleet2 = log(sca$t.series$F.REC)
 )
 
 # Dropping the last (extra) year from FIMS output, assuming it is a projection yr (not an initialization yr)
