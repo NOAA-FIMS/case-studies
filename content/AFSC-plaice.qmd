@@ -1,14 +1,36 @@
 ---
-title: AFSC Case Study for Bering Sea and Aleutian Islands Alaska Plaice
+title: "AFSC Case Study: Converting a Bering Sea Alaska Plaice SS3 Model to FIMS"
 stock: "AFSC Alaska Plaice"
 previous_model: "SS3"
 features: ""
 format:
   html:
     code-fold: true
+    toc: true
+    number-sections: true
 ---
 
-## The setup
+## Introduction
+
+This document serves as a case study and guide for converting a stock assessment model from SS3 to FIMS framework. We use the Bering Sea and Aleutian Islands (BSAI) Alaska Plaice assessment in this example.
+
+The goal is to demonstrate a reproducible workflow, highlight common challenges, and provide solutions for simplifying a complex SS3 model to a structure compatible with FIMS. This process often involves making simplifying assumptions, and we will walk through these decisions.
+
+We will cover two main pathways for conversion, based on how the model handles growth:
+
+1.  **Using Growth Parameters**: The model estimates growth using a von Bertalanffy growth function, and weight is derived from a length-weight relationship.
+2.  **Using Empirical Weight-at-Age (EWAA)**: The model uses observed mean weight-at-age data directly, bypassing the estimation of growth parameters.
+
+For each pathway, we will follow these general steps:
+1.  Simplify the original SS3 data and control files.
+2.  Run the simplified SS3 model to generate necessary output files.
+3.  Convert the simplified SS3 output into a FIMS data object.
+4.  Set up and run the corresponding FIMS model.
+5.  Compare the results between the original SS3 model, the simplified SS3 model, and the FIMS model.
+
+## The Setup
+
+This section loads necessary libraries and defines some common variables that will be used throughout the analysis.
 
 {{< include setup.qmd >}}
 
@@ -24,349 +46,241 @@ common_name <- "Alaska plaice"
 * Region: NWFSC
 * Analyst: Ian G. Taylor
 
-## Simplifications to the original assessment
+**A Note on This Demonstration:** The models presented in this case study are changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration of the FIMS conversion process and nothing more.
 
-The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration and nothing more.
+## Part 1: Preparing a Simplified SS3 Model for FIMS Conversion
 
-To get the operational model to more closely match a FIMS model a simpler SS3 model was developed using code in https://github.com/NOAA-FIMS/case-studies/blob/test-plaice/content/R/AFSC-plaice_simplify_assessment.R
+FIMS is a powerful but newer framework and does not yet have all the features of SS3 (e.g., two-sex models, certain selectivity patterns). Therefore, a critical first step is often to simplify the existing SS3 model to a "FIMS-compatible" structure. This also helps in making a more direct, "apples-to-apples" comparison between the two modeling platforms.
 
-These changes included: 
-* Remove data
-  * Remove male lengths and ages
-  * Change to not use EWAA
-* 
+The original Alaska plaice model is a two-sex model. As FIMS currently only supports single-sex (or combined-sex) models, our primary simplification will be to convert the model to a female-only model.
 
-## Simplify data (Try without re-running model and no EWAA)
-COMMENT: I really could use some more info on what other types of ss3 parameters and options would need to change before converting to FIMS ... I'm so confused on what exactly needs to change
-```{r}
-plaice_input <- r4ss::SS_read(
-    "https://raw.githubusercontent.com/afsc-assessments/BSAI_Alaska_plaice/main/2024/Models/Base-3/")
-
-# The alaska plaice model is strange in a way that only a few AFSC seem to be. It uses both empirical weight-at-age data for most calculations AND growth # parameters to fit to the length data, which can be internally inconsistent approaches. For illustrating FIMS, I think it would be better to focus on one # option or the other. If you choose the weight-at-age approach, you should remove the length comp data. If you choose the parametric growth option, you 
-# should remove the weight_at_age and length_to_age_conversion elements from the FIMSFrame (or wait for fixed r4ss converter).
-
-# You could also switch gears to a Nanaimo-based model. I'm familiar with this dogfish model https://github.com/pbs-assess/dogfish-assess/tree/main/ss3/A1 although it has stock-recruit options that aren't available in FIMS but I could help translate the parameters.
-
-##################################################################
-## SIMPLIFY SS3 DATA FILE
-# All of the changes to the data file are what is needed to be able to convert SS3 -> FIMS
-dat <- plaice_input$dat
-
-# change dimensions
-dat$Nsexes <- 1 # previously 2, but FIMS is only single sex
-
-# FIMS can only do single sex right now, so remove male age comp data
-dat$agecomp <-
-    dat$agecomp |>
-    # exclude male compositions (columns matching pattern "m" followed
-    # by numeric value for length bin, but doesn't match "month")
-    dplyr::select(!dplyr::matches("^m\\d+$")) |>
-    # assign observations to sex (Gender in 2024_BSAI_AKP.dat) 1 instead of 3
-    dplyr::mutate(sex = -1)
-
-# simplify length comps
-dat$lencomp <-
-    dat$lencomp |>
-    # exclude male compositions (columns matching pattern "m" followed
-    # by numeric value for length bin, but doesn't match "month")
-    dplyr::select(!dplyr::matches("^m\\d+$")) |>
-    dplyr::mutate(sex = -1)
-
-##################################################################
-## SIMPLIFY SS3 CONTROL FILE
-## All the changes to the control file are what is needed to be able to better compare a FIMS and SS3 file
-ctl <- plaice_input$ctl
-ctl$EmpiricalWAA <- 0
-
-ctl$Nsexes <- dat$Nsexes # previously 2
-
-new_input <- plaice_input
-new_input$dat <- dat
-new_input$ctl <- ctl
-
-new_input$dir <- "plaice_model_FIMS"
-if (!dir.exists(new_input$dir)) {dir.create(new_input$dir)}
-
-r4ss::SS_write(new_input, dir = new_input$dir, overwrite = TRUE)
-
-# This is still requiring a report file which doesn't make sense if you shouldn't HAVE to run the model prior to doing anything
-data_4_model <- r4ss::ss3_data_to_fims(
-  ss3_dir = new_input$dir,
-  ss_new = FALSE,
-)
-```
-
-
-
-## Re-run but no EWAA
+To keep our code organized and reduce repetition, we'll create a helper function to perform these simplifications below.
 
 ```{r}
-plaice_input <- r4ss::SS_read(
-    "https://raw.githubusercontent.com/afsc-assessments/BSAI_Alaska_plaice/main/2024/Models/Base-3/")
+#| label: simplification-function
 
-##################################################################
-## SIMPLIFY SS3 DATA FILE
-# All of the changes to the data file are what is needed to be able to convert SS3 -> FIMS
-dat <- plaice_input$dat
+#' Simplify SS3 data and control files for FIMS conversion
+#'
+#' This function takes an SS3 input list (from r4ss::SS_read) and applies
+#' a series of simplifications to make it more compatible with FIMS and allow
+#' for a cleaner comparison.
+#'
+#' @param input_list An SS3 input list from r4ss::SS_read.
+#' @param use_ewaa A logical flag. If TRUE, the model will be configured to use
+#'   Empirical Weight-at-Age and length comps will be turned off.
+#' @param output_dir The directory to write the new model files to.
+#'
+#' @return The modified input_list.
 
-# change dimensions
-dat$Nsexes <- 1 # previously 2, but FIMS is only single sex
-
-# FIMS can only do single sex right now, so remove male age comp data
-dat$agecomp <-
-    dat$agecomp |>
-    # exclude male compositions (columns matching pattern "m" followed
-    # by numeric value for length bin, but doesn't match "month")
+simplify_ss3_for_fims <- function(input_list, use_ewaa, output_dir) {
+  
+  dat <- input_list$dat
+  ctl <- input_list$ctl
+  fore <- input_list$fore
+  
+  # --- DATA FILE SIMPLIFICATIONS ---
+  # Convert to a single-sex model (female-only)
+  dat$Nsexes <- -1
+  
+  # Remove male age compositions
+  dat$agecomp <- dat$agecomp |>
     dplyr::select(!dplyr::matches("^m\\d+$")) |>
-    # assign observations to sex (Gender in 2024_BSAI_AKP.dat) 1 instead of 3
     dplyr::mutate(sex = -1)
-
-# simplify length comps
-dat$lencomp <-
-    dat$lencomp |>
-    # exclude male compositions (columns matching pattern "m" followed
-    # by numeric value for length bin, but doesn't match "month")
-    dplyr::select(!dplyr::matches("^m\\d+$")) |>
-    dplyr::mutate(sex = -1)
-
-##################################################################
-## SIMPLIFY SS3 CONTROL FILE
-## All the changes to the control file are what is needed to be able to better compare a FIMS and SS3 file
-ctl <- plaice_input$ctl
-ctl$EmpiricalWAA <- 0
-
-ctl$Nsexes <- dat$Nsexes # previously 2
-
-# remove all male mortality and growth parameters
-ctl$MG_parms <- ctl$MG_parms |>
+  
+  if (use_ewaa) {
+    # If using EWAA, we don't use length data
+    dat$use_lencomp <- 0
+    ctl$EmpiricalWAA <- 1
+  } else {
+    # If not using EWAA, remove male length compositions
+    dat$lencomp <- dat$lencomp |>
+      dplyr::select(!dplyr::matches("^m\\d+$")) |>
+      dplyr::mutate(sex = -1)
+    ctl$EmpiricalWAA <- 0
+  }
+  
+  # --- CONTROL FILE SIMPLIFICATIONS ---
+  ctl$Nsexes <- dat$Nsexes
+  
+  # Remove all male-specific mortality and growth parameters
+  ctl$MG_parms <- ctl$MG_parms |>
     dplyr::filter(!grepl("_Mal_", rownames(ctl$MG_parms)))
-
-# Change selectivity to be logistic instead of double normal since FIMS doesn't have that option and the selectivity curves looked logistic
-# Also change Male to 0 because we will only have 1 sex and so we don't need any male offset
-ctl$age_selex_types <- ctl$age_selex_types |>
+  
+  # Change selectivity to logistic (FIMS option) instead of double-normal.
+  # Set Male to 0 as we no longer have a male-specific curve.
+  ctl$age_selex_types <- ctl$age_selex_types |>
     dplyr::mutate(
-      Pattern = c(12, 12),
-      Male = c(0, 0)
+      Pattern = 12, # 12 = logistic
+      Male = 0
     )
-
-ctl$age_selex_parms <- ctl$age_selex_parms |>
-    dplyr::filter(!grepl("_PMalOff_", rownames(ctl$age_selex_parms)))
-
-# remove blocks
-ctl$N_Block_Designs <- 0
-ctl$blocks_per_pattern <- NULL
-ctl$Block_Design <- NULL
-
-# remove variance adjustment
-ctl$Variance_adjustment_list <- NULL
-ctl$DoVar_adjust <- 0
-ctl$sd_offset <- 0
-
-ctl$MainRdevYrFirst <- dat$styr 
-ctl$MainRdevYrLast <- dat$endyr
-# Need to subtract Nages because of something to do with initial numbers at age
-ctl$recdev_early_start <- dat$styr - dat$Nages
-
-# Turn off forecast file
-fore <- plaice_input$fore
-fore$Forecast <- 0 # turn off forecast
-
-# write modified data and control files
-new_input <- plaice_input
-new_input$dat <- dat
-new_input$ctl <- ctl
-new_input$fore <- fore
-
-new_input$dir <- "plaice_model_noEWAA_FIMS"
-if (!dir.exists(new_input$dir)) {dir.create(new_input$dir)}
-
-r4ss::SS_write(new_input, dir = new_input$dir, overwrite = TRUE)
-
-# For the converter to work, if are using empirical weight-at-age and length comps are present or age-to-length conversion then you need output files and thus would need to run an ss3 model once any changes have been made before you can proceed
-
-data_4_model <- r4ss::ss3_data_to_fims(
-  ss3_dir = new_input$dir,
-  ss_new = FALSE
-)
-
-# If you need to get the version of ss3 that the model originally was run with, you can do that
-# For simplicity's sake, I'm not doing that here.
-r4ss::get_ss3_exe(dir = new_input$dir)
-
-# run model and compare output
-r4ss::run(
-    new_input$dir,
-    exe = "ss3",
-    show_in_console = TRUE,
-    skipfinished = FALSE
-)
+  
+  # Replace double-normal selectivity parameters with logistic parameters.
+  # Remove male offset parameters.
+  ctl$age_selex_parms <- cbind(
+    data.frame(
+      LO = 1, 
+      HI = 15, 
+      INIT = c(10, 2, 7, 2), 
+      PRIOR = 0,
+      PR_SD = 99, 
+      PR_type = 0, 
+      PHASE = 2
+    ),
+    matrix(0, nrow = 4, ncol = 7) # Fills remaining columns with 0
+  )
+  names(ctl$age_selex_parms) <- names(ctl$MG_parms)
+  rownames(ctl$age_selex_parms) <- paste0(
+    "AgeSel_", 
+    c("P_1_", "P_2_"), 
+    c("Fishery", "Fishery", "Survey", "Survey")
+  )
+  
+  # Remove blocks and variance adjustments for simplicity
+  ctl$N_Block_Designs <- 0
+  ctl$blocks_per_pattern <- NULL
+  ctl$Block_Design <- NULL
+  ctl$Variance_adjustment_list <- NULL
+  ctl$DoVar_adjust <- 0
+  ctl$sd_offset <- 0
+  
+  # Adjust recruitment deviation years
+  ctl$MainRdevYrFirst <- dat$styr
+  ctl$MainRdevYrLast <- dat$endyr
+  ctl$recdev_early_start <- dat$styr - dat$Nages
+  
+  # --- FORECAST FILE ---
+  # Turn off forecasting for this comparison
+  fore$Forecast <- 0
+  
+  # --- WRITE MODIFIED FILES ---
+  new_input <- input_list
+  new_input$dat <- dat
+  new_input$ctl <- ctl
+  new_input$fore <- fore
+  if (use_ewaa) {
+    new_input$wtatage <- input_list$wtatage
+  }
+  
+  new_input$dir <- output_dir
+  if (!dir.exists(new_input$dir)) {
+    dir.create(new_input$dir)
+  }
+  
+  r4ss::SS_write(new_input, dir = new_input$dir, overwrite = TRUE)
+  
+  return(new_input)
+}
 ```
 
+Now we can use this function to create our two simplified SS3 models.
 
-## Using EWAA
+### Scenario 1: Simplified Model using Growth Parameters (No EWAA)
+
+Here, we simplify the SS3 model and configure it to estimate growth internally rather than using empirical weight-at-age.
+
 ```{r}
-plaice_input <- r4ss::SS_read(
+#| label: prep-no-ewaa-model
+# Read the original assessment model from GitHub
+plaice_input_base <- r4ss::SS_read(
     "https://raw.githubusercontent.com/afsc-assessments/BSAI_Alaska_plaice/main/2024/Models/Base-3/",
-    read_wtatage = TRUE)
-
-##################################################################
-## SIMPLIFY SS3 DATA FILE
-# All of the changes to the data file are what is needed to be able to convert SS3 -> FIMS
-dat <- plaice_input$dat
-
-# change dimensions
-dat$Nsexes <- 1 # previously 2, but FIMS is only single sex
-
-# FIMS can only do single sex right now, so remove male age comp data
-dat$agecomp <-
-    dat$agecomp |>
-    # exclude male compositions (columns matching pattern "m" followed
-    # by numeric value for length bin, but doesn't match "month")
-    dplyr::select(!dplyr::matches("^m\\d+$")) |>
-    # assign observations to sex (Gender in 2024_BSAI_AKP.dat) 1 instead of 3
-    dplyr::mutate(sex = -1)
-
-# simplify length comps
-dat$use_lencomp <- 0
-
-##################################################################
-## SIMPLIFY SS3 CONTROL FILE
-## All the changes to the control file are what is needed to be able to better compare a FIMS and SS3 file
-ctl <- plaice_input$ctl
-
-ctl$Nsexes <- dat$Nsexes # previously 2
-
-# remove all male mortality and growth parameters
-ctl$MG_parms <- ctl$MG_parms |>
-    dplyr::filter(!grepl("_Mal_", rownames(ctl$MG_parms)))
-
-# Change selectivity to be logistic instead of double normal since FIMS doesn't have that option and the selectivity curves looked logistic
-# Also change Male to 0 because we will only have 1 sex and so we don't need any male offset
-ctl$age_selex_types <- ctl$age_selex_types |>
-    dplyr::mutate(
-      Pattern = c(12, 12),
-      Male = c(0, 0)
-    )
-
-ctl$age_selex_parms <- ctl$age_selex_parms |>
-    dplyr::filter(!grepl("_PMalOff_", rownames(ctl$age_selex_parms)))
-
-# remove blocks
-ctl$N_Block_Designs <- 0
-ctl$blocks_per_pattern <- NULL
-ctl$Block_Design <- NULL
-
-# remove variance adjustment
-ctl$Variance_adjustment_list <- NULL
-ctl$DoVar_adjust <- 0
-ctl$sd_offset <- 0
-
-ctl$MainRdevYrFirst <- dat$styr 
-ctl$MainRdevYrLast <- dat$endyr
-# Need to subtract Nages because of something to do with initial numbers at age
-ctl$recdev_early_start <- dat$styr - dat$Nages
-
-wtatage <- plaice_input$wtatage
-# wtatage for fleets -1:0 (population), and fleets 1:4 (real fleets)
-wtatage_pop <- wtatage |>
-    dplyr::select(1:6, paste(0:dat$Nages)) |>
-    dplyr::filter(year == 1876 & sex == 1 & fleet == -1) |>
-    dplyr::mutate(year = -year)
-# original model had a fecundity relationship
-# so recalculate the maturity * fecundity based on the population weight-at-age
-# and an age-based maturity curve (logistic with 50% maturity at age 6 and slope of 1.5)
-# this is a rough approximation to the length-based maturity converted to age
-# within the original model, but should be sufficient for testing the simplified model
-maturity <- 1 / (1 + exp(-1.5 * (0:dat$Nages - 6)))
-matfec <- maturity * as.numeric(dplyr::select(wtatage_pop, paste0(0:dat$Nages)))
-wtatage_matfec <- wtatage_pop
-wtatage_matfec[, paste(0:dat$Nages)] <- matfec
-
-
-wtatage_simple <- rbind(
-    wtatage_matfec, # fleet = -2
-    wtatage_pop, # fleet = -1
-    wtatage_pop, # fleet = 0
-    wtatage_pop, # fleet = 1
-    wtatage_pop, # fleet = 2
-    wtatage_pop, # fleet = 3
-    wtatage_pop # fleet = 4
-  ) |>
-    dplyr::mutate(fleet = -2:4)
-
-# Turn off forecast file
-fore <- plaice_input$fore
-fore$Forecast <- 0 # turn off forecast
-
-# write modified data and control files
-new_input <- plaice_input
-new_input$dat <- dat
-new_input$ctl <- ctl
-new_input$fore <- fore
-
-new_input$dir <- "plaice_model_EWAA_FIMS"
-if (!dir.exists(new_input$dir)) {dir.create(new_input$dir)}
-
-r4ss::SS_write(new_input, dir = new_input$dir, overwrite = TRUE)
-
-# For the converter to work, if are using empirical weight-at-age and length comps are present or age-to-length conversion then you need output files and thus would need to run an ss3 model once any changes have been made before you can proceed
-
-data_4_model <- r4ss::ss3_data_to_fims(
-  ss3_dir = new_input$dir,
-  ss_new = FALSE
+    read_wtatage = TRUE, # Read wtatage file even if not used
+    ss_new = TRUE
 )
 
-# If you need to get the version of ss3 that the model originally was run with, you can do that
-# For simplicity's sake, I'm not doing that here.
-r4ss::get_ss3_exe(dir = new_input$dir)
+# Create and write the simplified model files
+simplified_no_ewaa <- simplify_ss3_for_fims(
+  input_list = plaice_input_base,
+  use_ewaa = FALSE,
+  output_dir = "plaice_model_noEWAA_FIMS"
+)
 
-# run model and compare output
+# Run the simplified SS3 model
+# For the converter to work robustly, especially when length comps are present,
+# it's best to run the model to generate output files like Report.sso.
+r4ss::get_ss3_exe(dir = simplified_no_ewaa$dir)
 r4ss::run(
-    new_input$dir,
+    dir = simplified_no_ewaa$dir,
     exe = "ss3",
     show_in_console = TRUE,
     skipfinished = FALSE
 )
 ```
 
-## Setting up the data
-QUESTION: How am I even supposed to know what I need here, or what the options are for everything?
-QUESTION: If you aren't converting your model from ss3, trying to load in data, really probably long lists of parameter values, seems like a nightmare and I would just give up and cry
-COMMENT: I know it's not "cool" to use real data in examples, but we need 1) a vignette with a step-by-step narration on what decisions were made and what things to take into account when converting a model to FIMS 2) we need a vignette with step-by-step narration for creating a new model in FIMS using real data for a real species. All this FAKE DATA makes zero sense to me
+### Scenario 2: Simplified Model using Empirical Weight-at-Age (EWAA)
+
+In this scenario, we simplify the model but configure it to use the empirical weight-at-age data directly. This means we will turn off the length composition data.
+
 ```{r}
-#| label: prepare-fims-data
+#| label: prep-ewaa-model
+
+# We can re-use the plaice_input_base object we read in the previous chunk.
+# Create and write the simplified model files for the EWAA case.
+simplified_ewaa <- simplify_ss3_for_fims(
+  input_list = plaice_input_base,
+  use_ewaa = TRUE,
+  output_dir = "plaice_model_EWAA_FIMS"
+)
+
+# Run the simplified SS3 model
+# When using EWAA, the ss3_data_to_fims converter requires the Report.sso file
+# to correctly process the weight-at-age information.
+r4ss::get_ss3_exe(dir = simplified_ewaa$dir)
+r4ss::run(
+    dir = simplified_ewaa$dir,
+    exe = "ss3",
+    show_in_console = TRUE,
+    skipfinished = FALSE
+)
+```
+
+## Part 2: Converting the Simplified SS3 Model to FIMS
+
+With our simplified and successfully run SS3 models in hand, we can now use `r4ss::ss3_data_to_fims` to convert them into FIMS data objects.
+
+For the remainder of this walkthrough, we will proceed with the **"No EWAA"** model to demonstrate the FIMS setup process. The process for the EWAA model would be similar, with the main difference being that growth parameters would not need to be specified in the FIMS model.
+
+```{r}
+#| label: convert-to-fims
 #| output: false
 #| warning: false
 
-# convert SS3 data into FIMS format using function in r4ss and convert to FIMSFrame object
-data_4_model <- r4ss::ss3_data_to_fims(
-    ss3_dir = "plaice_model_FIMS",
+# Convert the simplified "No EWAA" SS3 model output into the FIMS format
+# and then create a FIMSFrame object.
+data_4_fims <- r4ss::ss3_data_to_fims(
+    ss3_dir = simplified_no_ewaa$dir,
     ss_new = TRUE
 ) |>
     FIMS::FIMSFrame()
 
-# read SS3 output files from plaice assessment
-rep <- r4ss::SS_output(
-    "plaice_model_FIMS",
+# To proceed, we also need to read the output of our simplified SS3 run
+# to get parameter estimates for starting values in FIMS.
+rep_simple_ss3 <- r4ss::SS_output(
+    simplified_no_ewaa$dir,
     printstats = FALSE,
     verbose = FALSE,
     covar = FALSE
 )
 ```
 
+## Part 3: Building and Running the FIMS Model
 
-## Run FIMS Model
+Now we have the data for FIMS in the `data_4_fims` object. The next step is to define the model structure and provide initial parameter values.
 
-### Setup default parameters first
-```{r, max.height='100px', attr.output='.numberLines'}
-#| label: setup-model
+### Setting Up Parameters
+
+We start by creating a data frame of default parameters based on our data. We then modify this data frame with better starting values, often derived from the model we are converting from (our simplified SS3 model).
+
+```{r}
+#| label: setup-fims-params
+#| max.height: '100px'
+#| attr.output: '.numberLines'
 
 # Create default parameters
 default_parameters <- FIMS::setup_default_parameters(
-  data = data_4_model
+  data = data_4_fims
 )
 
-# View fixed params that we NEED to make sure are right about for our species
+# View fixed params (constants) that we NEED to make sure are right for our species
 default_parameters |>
   dplyr::filter(estimation_type == "constant") |>
   dplyr::count(module_name, fleet, label, value)
@@ -377,54 +291,20 @@ default_parameters |>
   dplyr::count(module_name, fleet, label, value)
 
 # Get number of years and ages from the data to make sense out of parameter counts
-n_years <- FIMS::get_n_years(data_4_model)
-n_years
-
-n_ages <- FIMS::get_ages(data_4_model)
-n_ages
+n_years <- FIMS::get_n_years(data_4_fims)
+n_ages <- FIMS::get_ages(data_4_fims)
 ```
 
+### Populating Parameters from the Simplified SS3 Model
 
+This is a critical step. Good starting values are essential for model convergence. We will (hopefully) eventually create a helper function to make it easier to pull values from the SS3 report object that is already in the `{r4ss}` package but for now we will create a helper function to help us get these values.
 
 ```{r}
-nat_M <- rep$parameters |>
-                dplyr::filter(grepl("NatM.*Fem", Label)) |>
-                dplyr::pull(Value)
-# This gives you a table similar to what is given for setup default parameters and you will filter those out and rbind these in
-init_naa <- FIMS:::setup_default_log_init_naa(n_ages = FIMS::get_n_ages(data_4_model),
-                            log_M = nat_M,
-                            # Might need to add 1000 the ss3 R0, might not, no one knows
-                            log_rzero = rep$parameters |> dplyr::filter(grepl("R0", Label)) |> dplyr::pull(Value)
-                        )
+#| label: get-ss3-param-helper
 
-init_naa <- FIMS:::setup_default_log_init_naa(n_ages = FIMS::get_n_ages(data_4_model),
-                            log_M = 0.2,
-                            log_rzero = 12
-                        )
-
-# Update the NAA with what we calculated
-default_parameters <- default_parameters |> 
-    dplyr::rows_update(
-        tibble::tibble(
-            module_name = "Population",
-            label = "log_init_naa",
-            age = FIMS::get_ages(data_4_model),
-            value = init_naa,
-        ),
-        by = c("module_name", "label", "age")
-    )
-
-
-
-# NAA doesn't exist in SS3, FIMS estimates initial NAA as parameters (one param for each age) and you can start this whenever you want,
-# This is similar to what WHAM does
-# You can calculate what you think your initial numbers at age should be based on your R0 parameter and natural mortality
-# Bai 
-
-
-# function to get estimated parameter value from SS3 model
-get_ss3_estimate <- function(string) {
-    rep$parameters |>
+# Helper function to get an estimated parameter value from the SS3 report object
+get_ss3_estimate <- function(string, report = rep_simple_ss3) {
+    report$parameters |>
         dplyr::filter(grepl(
             pattern = string,
             Label,
@@ -432,263 +312,215 @@ get_ss3_estimate <- function(string) {
         )) |>
         dplyr::pull(Value)
 }
+```
 
+
+In FIMS, initial numbers-at-age (NAA) are estimated parameters. In SS3, they are derived from R0 and M. We can calculate initial values for FIMS based on the SS3 equilibrium assumption using `setup_default_log_init_naa()`.
+
+```{r}
+#| label: naa
+log_m_init <- log(get_ss3_estimate("NatM_uniform_Fem_GP_1"))
+log_rzero_init <- get_ss3_estimate("SR_LN(R0)")
+init_naa <- FIMS:::setup_default_log_init_naa(
+    n_ages = FIMS::get_ages(data_4_fims),
+    log_M = log_m_init,
+    log_rzero = log_rzero_init
+)
+```
+
+
+Now, let's create our final parameter set for FIMS by updating the defaults.
+
+```{r}
+#| label: populate-fims-params.
 parameters <- default_parameters |>
-    # COMMENT: All of this stuff for growth is chaotic and I don't like it
+    # Update Growth parameters. These are treated as fixed constants in this example,
+    # using the estimates from the SS3 model. If using EWAA, this block would be removed.
     dplyr::rows_update(
         tibble::tibble(
         module_name = "Growth",
         label = c(
-            "mean_length_young",
-            "mean_length_old",
-            "von_bertalanffy_coefficient_K",
-            "reference_age_for_length_1",
-            "reference_age_for_length_2",
-            "length_weight_a", # added length-weight relationship parameters
-            "length_weight_b"
+            "mean_length_young", "mean_length_old", "von_bertalanffy_coefficient_K",
+            "reference_age_for_length_1", "reference_age_for_length_2",
+            "length_weight_a", "length_weight_b"
         ),
-        # values below are SS3 estimates, code won't work for 2-sex model
-        # or model with time-varying growth parameters
         value = c(
-            rep$Growth_Parameters$L_a_A1,
-            rep$Growth_Parameters$L_a_A2,
-            rep$Growth_Parameters$K,
-            rep$Growth_Parameters$A1,
-            rep$Growth_Parameters$A2,
-            rep$Growth_Parameters$WtLen1,
-            rep$Growth_Parameters$WtLen2
+            rep_simple_ss3$Growth_Parameters$L_a_A1, rep_simple_ss3$Growth_Parameters$L_a_A2,
+            rep_simple_ss3$Growth_Parameters$K, rep_simple_ss3$Growth_Parameters$A1,
+            rep_simple_ss3$Growth_Parameters$A2, rep_simple_ss3$Growth_Parameters$WtLen1,
+            rep_simple_ss3$Growth_Parameters$WtLen2
         ),
         estimation_type = "constant"
         ),
         by = c("module_name", "label")
     ) |>
-    # change first reference age for sd values from 0 to 1
-    dplyr::mutate(
-        age = dplyr::if_else(
-        module_name == "Growth" &
-            label == "length_at_age_sd_at_ref_ages" &
-            age == 0,
-        1,
-        age
-        )
-    ) |>
+    # Update SD of length-at-age
     dplyr::rows_update(
-        # Note: this could probably be combined with Growth block above and put NAs for age for the other parameters
         tibble::tibble(
         module_name = "Growth",
         label = "length_at_age_sd_at_ref_ages",
-        # Go back and extract these from rep$ rather than hard coding them
-        age = c(1, 25),
-        value = c(rep$Growth_Parameters$CVmin, rep$Growth_Parameters$CVmax)
+        age = c(rep_simple_ss3$Growth_Parameters$A1, rep_simple_ss3$Growth_Parameters$A2),
+        value = c(rep_simple_ss3$Growth_Parameters$CVmin, rep_simple_ss3$Growth_Parameters$CVmax)
         ),
         by = c("module_name", "label", "age")
     ) |>
+    # Update Maturity parameters.
     # QUESTION: Where are the inflection_point & slope values coming from?
+    # ANSWER: These were derived from the original length-based maturity in the SS3
+    # model and converted to an age-based approximation. The slope was an arbitrary guess.
+    # In a real assessment, these would be carefully chosen based on biological data.
     dplyr::rows_update(
         tibble::tibble(
             module_name = "Maturity",
             label = c("inflection_point", "slope"),
-            value = c(7.0, 1.0), # maturity based on the derived age-based pattern from original length-based SS3 model, arbitrary guess of slope
+            value = c(7.0, 1.0),
         ),
         by = c("module_name", "label")
     ) |>
+    # Update Recruitment (Stock-Recruit Relationship) parameters
     dplyr::rows_update(
         tibble::tibble(
             module_name = "Recruitment",
             label = c("log_rzero", "logit_steep", "log_sd"),
             value = c(
-                get_ss3_estimate("SR_LN(R0)"),
-                # QUESTION: Why is logit used here, how are you supposed to know you need to do this?
-                # QUESTION: Why were these logit numbers chosen? Also, if it has to be a part of the conversion for everyone, shouldn't it just be integrated into the get_ss3_estimate() function?
-                # For steepness we are always trying to the transformation between 0.2 and 1
+                log_rzero_init,
+                # QUESTION: Why is logit used here?
+                # ANSWER: Steepness (h) is a parameter bounded between 0.2 and 1.0.
+                # Optimization algorithms work best on an unconstrained scale (-Inf to Inf).
+                # The logit transform maps the value from its bounded range to an
+                # unconstrained one. FIMS provides a helper for this common transformation.
                 FIMS::logit(0.2, 1.0, get_ss3_estimate("SR_BH_steep")),
                 log(get_ss3_estimate("SR_sigmaR"))
             )
         ),
         by = c("module_name", "label")
     ) |>
-    # set initial value for log_q based on SS3 output
+    # Update survey catchability (log_q)
     dplyr::rows_update(
         tibble::tibble(
             fleet = "Survey",
             label = "log_q",
             value = get_ss3_estimate("LnQ_base_Survey(2)")
-            # QUESTION: Why is there no estimation_type for this?
         ),
         by = c("fleet", "label")
     ) |>
-    # set initial numbers at age based on SS3 output calculated above
-    # TODO:will replace this with what I did up top
+    # Update initial numbers-at-age (NAA)
     dplyr::rows_update(
         tibble::tibble(
             module_name = "Population",
             label = "log_init_naa",
-            age = FIMS::get_ages(data_4_model),
-            value = log(init_naa),
+            age = n_ages,
+            value = init_naa,
             estimation_type = "fixed_effects"
         ),
         by = c("module_name", "label", "age")
     ) |>
-    # set initial M based on SS3 output
+    # Update Natural Mortality (M)
     dplyr::rows_update(
         tibble::tibble(
             module_name = "Population",
             label = "log_M",
-            value = log(get_ss3_estimate("NatM_uniform_Fem_GP_1")),
+            value = log_m_init,
             estimation_type = "constant"
         ),
         by = c("module_name", "label")
     )
 ```
 
-## Checks
-QUESTION: If these are all useful checks and such, should there be a function in FIMS that is like data_check() to do all of this?
+### Sanity Checks
+
+Before running the model, it's good practice to check how our final parameter set (`parameters`) differs from the defaults. This helps catch mistakes.
+
 ```{r}
-# confirm that all columns except "value" and "estimation_type" are identical between parameters and default_parameters
+#| label: fims-param-checks
+# This is a great practice to ensure your parameter setup is what you expect.
+# Should this be a built-in FIMS function? Maybe! For now, this custom
+# check is very helpful for debugging.
+
+# Confirm that all identifying columns are identical
 if (!identical(
-    parameters |>
-        dplyr::select(-value, -estimation_type),
-    default_parameters |>
-        dplyr::select(-value, -estimation_type)
+    parameters |> dplyr::select(-value, -estimation_type),
+    default_parameters |> dplyr::select(-value, -estimation_type)
 )) {
-    cli::cli_alert_danger("Columns other than 'value' and 'estimation_type' are not identical between parameters and default_parameters")
-}
-# figure out if any rows have different estimate_type
-cli::cli_alert_info("Rows with different estimation_type between default_parameters parameters:")
-diff_estimation_type <- parameters |>
-    dplyr::filter(estimation_type != default_parameters$estimation_type) |>
-    dplyr::select(module_name, fleet, label, estimation_type)
-
-if (nrow(diff_estimation_type) == 0) {
-    cli::cli_alert_success("No rows with different estimation_type.")
-} else {
-    print(diff_estimation_type, n = Inf, width = Inf)
+    cli::cli_alert_danger("Parameter data frames are not structurally identical!")
 }
 
-# parameters which have been updated from defaults
-cli::cli_alert_info("Rows with updated initial values from default_parameters to parameters:")
+# Show which parameters have been updated from their default values
+cli::cli_alert_info("Rows with updated initial values from defaults:")
 updated_parameter_counts <- parameters |>
     dplyr::filter(value != default_parameters$value) |>
     dplyr::select(module_name, fleet, label, value) |>
     dplyr::count(module_name, label)
-
-if (nrow(updated_parameter_counts) == 0) {
-    cli::cli_alert_success("No rows with updated initial values.")
-} else {
-    print(updated_parameter_counts, n = Inf, width = Inf)
-}
+print(updated_parameter_counts, n = Inf, width = Inf)
 ```
 
-## Actually run the model
+### Running the FIMS Model
+
+Finally, we can run the model. It's often a good idea to first run without optimizing to check for any immediate errors in the model setup (`test_fit`). Then, run with optimization to get the final fit.
+
 ```{r}
-# Run the model without optimization to help ensure a viable model
+#| label: run-fims-model
+# Run the model without optimization to check for errors
 test_fit <- parameters |>
-    FIMS::initialize_fims(data = data_4_model) |>
+    FIMS::initialize_fims(data = data_4_fims) |>
     FIMS::fit_fims(optimize = FALSE)
 
 # Run the model with optimization
 fit <- parameters |>
-    FIMS::initialize_fims(data = data_4_model) |>
+    FIMS::initialize_fims(data = data_4_fims) |>
     FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
-fit_est <- fit # backup in case we want to set fit <- test_fit
 ```
 
-## Additional model comparison work
+## Part 4: Comparing Model Outputs
 
-FIMS doesn't have all of the bells and whistles that SS3 has yet, so if we want to make a more accurate comparison to FIMS, we will need to make a SS3 model that is more simplified. We already simplified the data file to only have one sex at the top of this file, now we will simplify the control and turn off the forecast file, and re-run the model
+A crucial final step is to compare the results. Here, we'll use `r4ss::SSplotComparisons` to visually compare the output of our original, complex SS3 model with our simplified SS3 model. This helps us understand the impact of the simplifications we made. A full comparison would also include plotting the FIMS results against the SS3 models.
+
 ```{r}
-##################################################################
-## SIMPLIFY SS3 CONTROL FILE
-## All the changes to the control file are what is needed to be able to better compare a FIMS and SS3 file
-ctl <- plaice_input$ctl
-ctl$Nsexes <- dat$Nsexes # previously 2
-
-# remove all male mortality and growth parameters
-ctl$MG_parms <- ctl$MG_parms |>
-    dplyr::filter(!grepl("_Mal_", rownames(ctl$MG_parms)))
-
-# Change selectivity to be logistic instead of double normal since FIMS doesn't have that option and the selectivity curves looked logistic
-# Also change Male to 0 because we will only have 1 sex and so we don't need any male offset
-ctl$age_selex_types <- ctl$age_selex_types |>
-    dplyr::mutate(
-      Pattern = c(12, 12),
-      Male = c(0, 0)
-    )
-
-ctl$age_selex_parms <- ctl$age_selex_parms |>
-    dplyr::filter(!grepl("_PMalOff_", rownames(ctl$age_selex_parms)))
-
-# remove blocks
-ctl$N_Block_Designs <- 0
-ctl$blocks_per_pattern <- NULL
-ctl$Block_Design <- NULL
-
-# remove variance adjustment
-ctl$Variance_adjustment_list <- NULL
-ctl$DoVar_adjust <- 0
-ctl$sd_offset <- 0
-
-
-ctl$MainRdevYrFirst <- dat$styr 
-ctl$MainRdevYrLast <- dat$endyr
-# Need to subtract Nages because of something to do with initial numbers at age
-ctl$recdev_early_start <- dat$styr - dat$Nages
-
-
-# Turn off forecast file
-fore <- plaice_input$fore
-fore$Forecast <- 0 # turn off forecast
-
-# write modified data and control files
-new_input <- plaice_input
-new_input$dat <- dat
-new_input$ctl <- ctl
-new_input$fore <- fore
-
-new_input$dir <- "plaice_model_FIMS"
-  if (!dir.exists(new_input$dir)) {
-    dir.create(new_input$dir)
-  }
-
-r4ss::SS_write(new_input, dir = new_input$dir, overwrite = TRUE)
-
-# run model and compare output
-r4ss::run(
-    new_input$dir,
-    show_in_console = TRUE,
-    skipfinished = FALSE
-)
-
-# QUESTION: Will I need this?
-# r4ss::run(
-#     new_input$dir,
-#     show_in_console = TRUE,
-#     skipfinished = FALSE,
-#     extras = "-hess_step" # was exceeding default maxfn 100 in early phases
-# )
-
-# read output from model that was just run
-plaice_simple_output <- r4ss::SS_output(
-    new_input$dir,
-    printstats = FALSE,
-    verbose = FALSE,
-    covar = FALSE
-)
-
-r4ss::SS_plots(plaice_simple_output)
-
-# read SS3 output files from plaice assessment on GitHub
-plaice_output1 <- r4ss::SS_output(
+#| label: compare-models
+# Read output from the original SS3 model on GitHub for comparison
+plaice_output_original <- r4ss::SS_output(
     "https://raw.githubusercontent.com/afsc-assessments/BSAI_Alaska_plaice/main/2024/Models/Base-3/",
     printstats = FALSE,
     verbose = FALSE,
     covar = FALSE
 )
 
-# compare outputs from simplified and original SS3 models
-# (fairly large changes in spawning output, perhaps due to removal of the older age classes)
-SSplotComparisons(SSsummarize(list(
-    plaice_simple_output,
-    plaice_output1
-    )))
+# Read output from our simplified SS3 model (already in rep_simple_ss3)
+
+# Create a summary object for comparison plotting
+summary_list <- r4ss::SSsummarize(list(
+    "Original SS3" = plaice_output_original,
+    "Simplified SS3" = rep_simple_ss3
+))
+
+# Plot the comparisons
+r4ss::SSplotComparisons(summary_list)
+```
+
+The comparison plots show that removing the male data and changing the selectivity and growth options had a noticeable effect on the estimated spawning output, highlighting the importance of understanding the impact of such simplifying assumptions.
+
+## Appendix: Notes on Steepness
+
+The user had a note about steepness from a spiny dogfish assessment. This is a good example of borrowing information from other assessments or literature, which is common practice.
+
+For Beverton-Holt steepness, the value is often difficult to estimate within the model and is frequently fixed based on a meta-analysis or prior knowledge. The example code shows how you would insert a fixed value for steepness (e.g., `h = 0.283`) into the FIMS parameter setup.
+
+```{r}
+#| label: steepness-example
+#| eval: false
+#| echo: true
+# Example of setting a fixed steepness value
+h_fixed <- 0.283
+parameters |>
+    dplyr::rows_update(
+        tibble::tibble(
+            module_name = "Recruitment",
+            label = "logit_steep",
+            # Use the logit transform on the fixed value
+            value = FIMS::logit(0.2, 1.0, h_fixed),
+            # Set as a constant so it is not estimated
+            estimation_type = "constant"
+        ),
+        by = c("module_name", "label")
+    )
 ```
