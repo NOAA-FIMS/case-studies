@@ -35,7 +35,7 @@ These changes included:
   * Remove male lengths and ages
 * 
 
-## Simplify data (Try without re-running model and not using EWAA)
+## Simplify data (Try without re-running model and no EWAA)
 COMMENT: I really could use some more info on what other types of ss3 parameters and options would need to change before converting to FIMS ... I'm so confused on what exactly needs to change
 ```{r}
 plaice_input <- r4ss::SS_read(
@@ -77,7 +77,6 @@ dat$lencomp <-
 ## All the changes to the control file are what is needed to be able to better compare a FIMS and SS3 file
 ctl <- plaice_input$ctl
 ctl$EmpiricalWAA <- 0
-ctl$N_tag_groups <- 0
 
 ctl$Nsexes <- dat$Nsexes # previously 2
 
@@ -104,10 +103,6 @@ data_4_model <- r4ss::ss3_data_to_fims(
 ```{r}
 plaice_input <- r4ss::SS_read(
     "https://raw.githubusercontent.com/afsc-assessments/BSAI_Alaska_plaice/main/2024/Models/Base-3/")
-
-# The alaska plaice model is strange in a way that only a few AFSC seem to be. It uses both empirical weight-at-age data for most calculations AND growth parameters to fit to the length data, which can be internally inconsistent approaches. For illustrating FIMS, I think it would be better to focus on one option or the other. If you choose the weight-at-age approach, you should remove the length comp data. If you choose the parametric growth option, you should remove the weight_at_age and length_to_age_conversion elements from the FIMSFrame (or wait for fixed r4ss converter).
-
-# You could also switch gears to a Nanaimo-based model. I'm familiar with this dogfish model https://github.com/pbs-assess/dogfish-assess/tree/main/ss3/A1 although it has stock-recruit options that aren't available in FIMS but I could help translate the parameters.
 
 ##################################################################
 ## SIMPLIFY SS3 DATA FILE
@@ -182,7 +177,7 @@ new_input$dat <- dat
 new_input$ctl <- ctl
 new_input$fore <- fore
 
-new_input$dir <- "plaice_model_FIMS"
+new_input$dir <- "plaice_model_noEWAA_FIMS"
 if (!dir.exists(new_input$dir)) {dir.create(new_input$dir)}
 
 r4ss::SS_write(new_input, dir = new_input$dir, overwrite = TRUE)
@@ -213,11 +208,6 @@ r4ss::run(
 plaice_input <- r4ss::SS_read(
     "https://raw.githubusercontent.com/afsc-assessments/BSAI_Alaska_plaice/main/2024/Models/Base-3/",
     read_wtatage = TRUE)
-
-# The alaska plaice model is strange in a way that only a few AFSC seem to be. It uses both empirical weight-at-age data for most calculations AND growth # parameters to fit to the length data, which can be internally inconsistent approaches. For illustrating FIMS, I think it would be better to focus on one # option or the other. If you choose the weight-at-age approach, you should remove the length comp data. If you choose the parametric growth option, you 
-# should remove the weight_at_age and length_to_age_conversion elements from the FIMSFrame (or wait for fixed r4ss converter).
-
-# You could also switch gears to a Nanaimo-based model. I'm familiar with this dogfish model https://github.com/pbs-assess/dogfish-assess/tree/main/ss3/A1 although it has stock-recruit options that aren't available in FIMS but I could help translate the parameters.
 
 ##################################################################
 ## SIMPLIFY SS3 DATA FILE
@@ -292,11 +282,7 @@ matfec <- maturity * as.numeric(dplyr::select(wtatage_pop, paste0(0:dat$Nages)))
 wtatage_matfec <- wtatage_pop
 wtatage_matfec[, paste(0:dat$Nages)] <- matfec
 
-# # old code to use SS3 output for maturity * fecundity
-# wtatage_matfec <- wtatage |>
-#   dplyr::select(1:6, paste(0:dat$Nages)) |>
-#   dplyr::filter(year == 1876 & sex == 1 & fleet == -2) |>
-#   dplyr::mutate(year = -year)
+
 wtatage_simple <- rbind(
     wtatage_matfec, # fleet = -2
     wtatage_pop, # fleet = -1
@@ -354,14 +340,12 @@ COMMENT: I know it's not "cool" to use real data in examples, but we need 1) a v
 
 # convert SS3 data into FIMS format using function in r4ss and convert to FIMSFrame object
 data_4_model <- r4ss::ss3_data_to_fims(
-    # ss3_dir = "plaice_model_FIMS",
-    ss3_inputs = plaice_input,
+    ss3_dir = "plaice_model_FIMS",
     ss_new = TRUE
 ) |>
     FIMS::FIMSFrame()
 
 # read SS3 output files from plaice assessment
-# QUESTION: Why is this named rep? When it's used later it doesn't super make sense
 rep <- r4ss::SS_output(
     "plaice_model_FIMS",
     printstats = FALSE,
