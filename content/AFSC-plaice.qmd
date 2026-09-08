@@ -33,6 +33,7 @@ To get the operational model to more closely match a FIMS model a simpler SS3 mo
 These changes included: 
 * Remove data
   * Remove male lengths and ages
+  * Change to not use EWAA
 * 
 
 ## Simplify data (Try without re-running model and no EWAA)
@@ -53,7 +54,6 @@ dat <- plaice_input$dat
 
 # change dimensions
 dat$Nsexes <- 1 # previously 2, but FIMS is only single sex
-dat$N_tag_groups <- 0
 
 # FIMS can only do single sex right now, so remove male age comp data
 dat$agecomp <-
