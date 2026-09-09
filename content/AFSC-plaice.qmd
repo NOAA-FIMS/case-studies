@@ -238,11 +238,10 @@ r4ss::run(
 
 With our simplified and successfully run SS3 models in hand, we can now use `r4ss::ss3_data_to_fims` to convert them into FIMS data objects.
 
-For the remainder of this walkthrough, we will proceed with the **"No EWAA"** model to demonstrate the FIMS setup process. The process for the EWAA model would be similar, with the main difference being that growth parameters would not need to be specified in the FIMS model.
+For the remainder of this walkthrough, we will proceed with the **"No EWAA"** and **"EWAA"** models to demonstrate the FIMS setup process. The process for the EWAA model has the main difference being that growth parameters don't need to be specified in the FIMS model.
 
 ```{r}
-#| label: convert-to-fims
-#| output: false
+#| label: convert-to-fims-no-ewaa
 #| warning: false
 
 # Convert the simplified "No EWAA" SS3 model output into the FIMS format
@@ -265,6 +264,8 @@ rep_simple_ss3 <- r4ss::SS_output(
 
 
 ```{r}
+#| label: convert-to-fims-ewaa
+#| warning: false
 data_4_fims <- r4ss::ss3_data_to_fims(
     ss3_dir = simplified_ewaa$dir,
     ss_new = TRUE
