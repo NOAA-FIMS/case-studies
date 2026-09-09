@@ -90,7 +90,6 @@ simplify_ss3_for_fims <- function(input_list, use_ewaa, output_dir) {
   if (use_ewaa) {
     # If using EWAA, we don't use length data
     dat$use_lencomp <- 0
-    ctl$EmpiricalWAA <- 1
   } else {
     # If not using EWAA, remove male length compositions
     dat$lencomp <- dat$lencomp |>
@@ -161,11 +160,13 @@ simplify_ss3_for_fims <- function(input_list, use_ewaa, output_dir) {
     new_input$wtatage <- input_list$wtatage
   }
   
+  # Name and create output directory
   new_input$dir <- output_dir
   if (!dir.exists(new_input$dir)) {
     dir.create(new_input$dir)
   }
   
+  # Write to output directory
   r4ss::SS_write(new_input, dir = new_input$dir, overwrite = TRUE)
   
   return(new_input)
@@ -256,6 +257,25 @@ data_4_fims <- r4ss::ss3_data_to_fims(
 # to get parameter estimates for starting values in FIMS.
 rep_simple_ss3 <- r4ss::SS_output(
     simplified_no_ewaa$dir,
+    printstats = FALSE,
+    verbose = FALSE,
+    covar = FALSE
+)
+```
+
+
+```{r}
+data_4_fims <- r4ss::ss3_data_to_fims(
+    ss3_dir = simplified_ewaa$dir,
+    ss_new = TRUE
+) 
+|>
+    FIMS::FIMSFrame()
+
+# To proceed, we also need to read the output of our simplified SS3 run
+# to get parameter estimates for starting values in FIMS.
+rep_ewaa_ss3 <- r4ss::SS_output(
+    simplified_ewaa$dir,
     printstats = FALSE,
     verbose = FALSE,
     covar = FALSE
