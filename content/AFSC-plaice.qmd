@@ -249,8 +249,7 @@ For the remainder of this walkthrough, we will proceed with the **"No EWAA"** an
 data_4_fims <- r4ss::ss3_data_to_fims(
     ss3_dir = simplified_no_ewaa$dir,
     ss_new = TRUE
-) |>
-    FIMS::FIMSFrame()
+) |> FIMS::FIMSFrame()
 
 # To proceed, we also need to read the output of our simplified SS3 run
 # to get parameter estimates for starting values in FIMS.
@@ -269,8 +268,7 @@ rep_simple_ss3 <- r4ss::SS_output(
 data_4_fims <- r4ss::ss3_data_to_fims(
     ss3_dir = simplified_ewaa$dir,
     ss_new = TRUE
-) 
-|>
+) |>
     FIMS::FIMSFrame()
 
 # To proceed, we also need to read the output of our simplified SS3 run
@@ -343,7 +341,7 @@ In FIMS, initial numbers-at-age (NAA) are estimated parameters. In SS3, they are
 log_m_init <- log(get_ss3_estimate("NatM_uniform_Fem_GP_1"))
 log_rzero_init <- get_ss3_estimate("SR_LN(R0)")
 init_naa <- FIMS:::setup_default_log_init_naa(
-    n_ages = FIMS::get_ages(data_4_fims),
+    n_ages = length(FIMS::get_ages(data_4_fims)),
     log_M = log_m_init,
     log_rzero = log_rzero_init
 )
@@ -357,12 +355,14 @@ Now, let's create our final parameter set for FIMS by updating the defaults.
 parameters <- default_parameters |>
     # Update Growth parameters. These are treated as fixed constants in this example,
     # using the estimates from the SS3 model. If using EWAA, this block would be removed.
+    # If you want to look up what these parameters are, you can do the following:
+    # default_parameters |> dplyr::filter(module_name == "Growth") |> dplyr::pull(label) |> unique()
     dplyr::rows_update(
         tibble::tibble(
         module_name = "Growth",
         label = c(
-            "mean_length_young", "mean_length_old", "von_bertalanffy_coefficient_K",
-            "reference_age_for_length_1", "reference_age_for_length_2",
+            "mean_length_young", "mean_length_old", "growth_coefficient",
+            "reference_age_for_length_young", "reference_age_for_length_old",
             "length_weight_a", "length_weight_b"
         ),
         value = c(
@@ -375,19 +375,29 @@ parameters <- default_parameters |>
         ),
         by = c("module_name", "label")
     ) |>
+    # change first reference age for sd values from 0 to 1
+    dplyr::mutate(
+    age = dplyr::if_else(
+      module_name == "Growth" &
+        label == "length_at_age_sd_at_reference_ages" &
+        age == 0,
+      1,
+      age
+    )) |>
     # Update SD of length-at-age
+    # If you want to look at what these parameters are, and how many there are, you can do the following:
+    # default_parameters |> dplyr::filter(module_name == "Growth") |> dplyr::filter(label == "length_at_age_sd_at_reference_ages")
     dplyr::rows_update(
         tibble::tibble(
         module_name = "Growth",
-        label = "length_at_age_sd_at_ref_ages",
-        age = c(rep_simple_ss3$Growth_Parameters$A1, rep_simple_ss3$Growth_Parameters$A2),
+        label = "length_at_age_sd_at_reference_ages",
+        age = c(1, 25),
         value = c(rep_simple_ss3$Growth_Parameters$CVmin, rep_simple_ss3$Growth_Parameters$CVmax)
         ),
         by = c("module_name", "label", "age")
     ) |>
     # Update Maturity parameters.
-    # QUESTION: Where are the inflection_point & slope values coming from?
-    # ANSWER: These were derived from the original length-based maturity in the SS3
+    # These were derived from the original length-based maturity in the SS3
     # model and converted to an age-based approximation. The slope was an arbitrary guess.
     # In a real assessment, these would be carefully chosen based on biological data.
     dplyr::rows_update(
@@ -405,8 +415,7 @@ parameters <- default_parameters |>
             label = c("log_rzero", "logit_steep", "log_sd"),
             value = c(
                 log_rzero_init,
-                # QUESTION: Why is logit used here?
-                # ANSWER: Steepness (h) is a parameter bounded between 0.2 and 1.0.
+                # Steepness (h) is a parameter bounded between 0.2 and 1.0.
                 # Optimization algorithms work best on an unconstrained scale (-Inf to Inf).
                 # The logit transform maps the value from its bounded range to an
                 # unconstrained one. FIMS provides a helper for this common transformation.
@@ -460,8 +469,8 @@ Before running the model, it's good practice to check how our final parameter se
 
 # Confirm that all identifying columns are identical
 if (!identical(
-    parameters |> dplyr::select(-value, -estimation_type),
-    default_parameters |> dplyr::select(-value, -estimation_type)
+    parameters |> dplyr::select(-age, -value, -estimation_type),
+    default_parameters |> dplyr::select(-age, -value, -estimation_type)
 )) {
     cli::cli_alert_danger("Parameter data frames are not structurally identical!")
 }
@@ -522,7 +531,7 @@ The comparison plots show that removing the male data and changing the selectivi
 
 ## Appendix: Notes on Steepness
 
-The user had a note about steepness from a spiny dogfish assessment. This is a good example of borrowing information from other assessments or literature, which is common practice.
+The user had a note about steepness from the Nanaimo spiny dogfish assessment (https://github.com/pbs-assess/dogfish-assess/tree/main/ss3/A1). This is a good example of borrowing information from other assessments or literature, which is common practice. There is also this assessment that Ian recommended: https://github.com/pbs-software/pbs-synth/tree/master/PBSsynth/inst/input/2024/YTR/BC/Base/B1.R02v2/02.01`
 
 For Beverton-Holt steepness, the value is often difficult to estimate within the model and is frequently fixed based on a meta-analysis or prior knowledge. The example code shows how you would insert a fixed value for steepness (e.g., `h = 0.283`) into the FIMS parameter setup.
 

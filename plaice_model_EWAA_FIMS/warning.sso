@@ -1,0 +1,6 @@
+Warning 1 : Forecast=0 or -1, so rest of forecast file will not be read and can be omitted;
+Warning 2 : A one year forecast using recent F will be done automatically
+Warning 3 : There is timevary biology and the legacy approach to benchmark calculations is being used; user should be aware of possible impacts to benchmark results
+Warning 4 : There is timevary biology, so the flag for timevary_bio_4SRR must be set to 0 (old default) or 1 (new improved) in starter.ss
+Note 1 Information: A revised protocol for the Fcast_yr specification is available and recommended.
+ 4 warnings  and 1 note 
