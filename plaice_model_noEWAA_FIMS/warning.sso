@@ -1,0 +1,4 @@
+Warning 1 : Forecast=0 or -1, so rest of forecast file will not be read and can be omitted;
+Warning 2 : A one year forecast using recent F will be done automatically
+Note 1 Information: A revised protocol for the Fcast_yr specification is available and recommended.
+ 2 warnings  and 1 note 
