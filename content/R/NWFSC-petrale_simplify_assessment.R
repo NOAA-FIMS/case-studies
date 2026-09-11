@@ -31,7 +31,7 @@ NWFSC_petrale_simplify_assessment <- function(
 
     # change dimensions
     dat$Nsexes <- -1 # previously 2 # -1 indicates single sex model with fraction female = 0.5 applied to spawning output
-    dat$Nages <- 17 # previously 40
+    dat$Nages <- 17 # previously 40 # TODO: undo this as it's not needed
 
     # filter indices (just include WCGBTS)
     dat$CPUE <- dat$CPUE |>
@@ -215,6 +215,7 @@ NWFSC_petrale_simplify_assessment <- function(
       skipfinished = FALSE,
       extras = "-maxfn 3000" # was exceeding default maxfn 100 in early phases
     )
+    # additional run with hess_step option to improve convergence (may not be necessary any more)
     r4ss::run(
       new_model_dir,
       show_in_console = TRUE,

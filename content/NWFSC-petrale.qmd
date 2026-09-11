@@ -50,10 +50,8 @@ These changes included
 # convert SS3 data into FIMS format using function in r4ss and convert to FIMSFrame object
 data_4_model <- r4ss::ss3_data_to_fims(
   ss3_dir = "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a050.005_FIMS_case-study_1sex_with_growth_no_fecundity/",
-  ss_new = TRUE,
-  fleets = c(-4, 1, 2, 4)
+  ss_new = TRUE
 ) |>
-  dplyr::filter(!type %in% c("age_to_length_conversion", "weight_at_age")) |>
   FIMS::FIMSFrame()
 
 
@@ -70,6 +68,7 @@ output_petrale <- stockplotr::convert_output(
   "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a050.005_FIMS_case-study_1sex_with_growth_no_fecundity/Report.sso",
   model = "ss3"
 )
+
 output_petrale_modified <- output_petrale |>
   dplyr::mutate(
     module_name = ifelse(
@@ -168,9 +167,9 @@ parameters <- default_parameters |>
       label = c(
         "mean_length_young",
         "mean_length_old",
-        "von_bertalanffy_coefficient_K",
-        "reference_age_for_length_1",
-        "reference_age_for_length_2",
+        "growth_coefficient",
+        "reference_age_for_length_young",
+        "reference_age_for_length_old",
         "length_weight_a", # added length-weight relationship parameters
         "length_weight_b"
       ),
@@ -193,7 +192,7 @@ parameters <- default_parameters |>
   dplyr::mutate(
     age = dplyr::if_else(
       module_name == "Growth" &
-        label == "length_at_age_sd_at_ref_ages" &
+        label == "length_at_age_sd_at_reference_ages" &
         age == 0,
       1,
       age
@@ -203,7 +202,7 @@ parameters <- default_parameters |>
     # Note: this could probably be combined with Growth block above and put NAs for age for the other parameters
     tibble::tibble(
       module_name = "Growth",
-      label = "length_at_age_sd_at_ref_ages",
+      label = "length_at_age_sd_at_reference_ages",
       age = c(1, 17),
       value = c(rep$Growth_Parameters$CVmin, rep$Growth_Parameters$CVmax)
     ),
@@ -356,18 +355,18 @@ parameters <- default_parameters |>
 if (
   !identical(
     parameters |>
-      dplyr::select(-value, -estimation_type),
+      dplyr::select(-value, -age, -estimation_type),
     default_parameters |>
-      dplyr::select(-value, -estimation_type)
+      dplyr::select(-value, -age, -estimation_type)
   )
 ) {
   cli::cli_alert_danger(
-    "Columns other than 'value' and 'estimation_type' are not identical between parameters and default_parameters"
+    "Columns other than 'value', 'age', and 'estimation_type' are not identical between parameters and default_parameters"
   )
 }
 # figure out if any rows have different estimate_type
 cli::cli_alert_info(
-  "Rows with different estimation_type between default_parameters parameters:"
+  "Rows with different estimation_type between default_parameters and parameters:"
 )
 diff_estimation_type <- parameters |>
   dplyr::filter(estimation_type != default_parameters$estimation_type) |>
@@ -400,7 +399,7 @@ if (nrow(updated_parameter_counts) == 0) {
 
 input <- parameters |>
   FIMS::initialize_fims(data = data_4_model)
-input$model$ReportGrowthDerivedALKTensor(TRUE)
+#input$model$ReportGrowthDerivedALKTensor(TRUE)
 
 # Run the model without optimization to help ensure a viable model
 test_fit <- input |>
@@ -418,6 +417,7 @@ fit_est <- fit
 ## Plotting inputs
 
 ```{r plotting-inputs}
+library(ggplot2) # already called in setup
 data_4_model@data |>
   dplyr::filter(type == "age_comp" & observed != -999) |>
   ggplot2::ggplot(
@@ -579,12 +579,12 @@ observed_catch <- data_4_model@data |>
   dplyr::filter(type == "catch") |>
   dplyr::select(fleet, year = timing, observed)
 
-expected_catch <- output |>
+estimated_catch <- output |>
   dplyr::filter(label == "catch_expected") |>
-  dplyr::select(fleet, year, expected)
+  dplyr::select(fleet, year, estimated) # expected column is log?
 
 catch_results <- observed_catch |>
-  dplyr::left_join(expected_catch, by = c("fleet", "year")) |>
+  dplyr::left_join(estimated_catch, by = c("fleet", "year")) |>
   dplyr::filter(observed > -999)
 
 # print(catch_results)
@@ -593,7 +593,7 @@ ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::geom_point(ggplot2::aes(color = fleet)) +
   ggplot2::xlab("Year") +
   ggplot2::ylab("Catch (mt)") +
-  ggplot2::geom_line(ggplot2::aes(x = year, y = expected, color = fleet)) +
+  ggplot2::geom_line(ggplot2::aes(x = year, y = estimated, color = fleet)) +
   ggplot2::theme_bw()
 ```
 
