@@ -373,9 +373,6 @@ default_parameters |> dplyr::filter(module_name == "Growth")
 # present in both the tibble being updated and the tibble 
 # being used to update. The name of this column or 
 # combination of columns is passed to the `by` argument.
-# I updated the code below so that the new Growth rows are
-# being inserted instead of updated and the EWAA row is 
-# being filtered out
 ```
 
 ```{r}
