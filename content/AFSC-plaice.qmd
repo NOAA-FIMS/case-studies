@@ -180,6 +180,7 @@ Now we can use this function to create our two simplified SS3 models.
 Here, we simplify the SS3 model and configure it to estimate growth internally rather than using empirical weight-at-age.
 
 ```{r}
+library(FIMS)
 #| label: prep-no-ewaa-model
 # Read the original assessment model from GitHub
 plaice_input_base <- r4ss::SS_read(
@@ -351,6 +352,33 @@ init_naa <- FIMS:::setup_default_log_init_naa(
 Now, let's create our final parameter set for FIMS by updating the defaults.
 
 ```{r}
+# The default parameter tibble sets up EWAA growth, which does not require any parameters
+default_parameters |> dplyr::filter(module_name == "Growth")
+
+# To fit growth parameters, you first need to replace the 
+# EWAA row with parameters for a default growth model:
+default_parameters <- default_parameters |>
+      dplyr::filter(module_name != "Growth") |>
+      dplyr::bind_rows(
+        FIMS::setup_default_Growth(
+          data = data_4_fims,
+          module_type = "VonBertalanffySchnute"
+        )
+      )
+
+# Now the EWAA row is replace with a set of 
+# VonBertalanffySchnute row
+default_parameters |> dplyr::filter(module_name == "Growth")
+# `dplyr::rows_update()` requires a key column that is
+# present in both the tibble being updated and the tibble 
+# being used to update. The name of this column or 
+# combination of columns is passed to the `by` argument.
+# I updated the code below so that the new Growth rows are
+# being inserted instead of updated and the EWAA row is 
+# being filtered out
+```
+
+```{r}
 #| label: populate-fims-params.
 parameters <- default_parameters |>
     # Update Growth parameters. These are treated as fixed constants in this example,
@@ -419,7 +447,7 @@ parameters <- default_parameters |>
                 # Optimization algorithms work best on an unconstrained scale (-Inf to Inf).
                 # The logit transform maps the value from its bounded range to an
                 # unconstrained one. FIMS provides a helper for this common transformation.
-                FIMS::logit(0.2, 1.0, get_ss3_estimate("SR_BH_steep")),
+                FIMS::logit(0.2, 1.0, 0.999),#get_ss3_estimate("SR_BH_steep")),
                 log(get_ss3_estimate("SR_sigmaR"))
             )
         ),
