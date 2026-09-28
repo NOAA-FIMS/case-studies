@@ -253,6 +253,7 @@ fit@sdreport$pdHess
 output |> dplyr::filter(module_name == "Selectivity", module_type == "AgeSpecific") |> print()
 dplyr::filter(output, label == "log_q") |> as.data.frame() |> print()
 dplyr::filter(output, label == "log_rzero") |> as.data.frame() |> print()
+dplyr::filter(output, label == "spawning_biomass") |> as.data.frame()
 
 dplyr::filter(output, label == "spawning_biomass") |> as.data.frame()
 dplyr::filter(output, label == "index_expected") |> as.data.frame()
@@ -423,63 +424,132 @@ ggplot2::ggsave("figures/SWFSC-mackerel-recruitment.png", width = 6.8, height = 
 
 
 #------------------------------------------------------------------------
-#------Fixed selectivities
-#Are fixed but plot for comparison's sake
-##Fishery
-
-### commented out due to error "! object 'value' not found"
-# sel_fishery <- logistic(ages,
-#                         slope = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "slope", module_id == 1) |>
-#                           dplyr::pull(estimated),
-#                         inflection_point = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "inflection_point", module_id == 1) |>
-#                           dplyr::pull(estimated))
-
-# names(sel_fishery) <- c("age", "fims")
-
-# sel_fishery$ss3 <- ssres$ageselex |>
-#   dplyr::filter(Yr == 2005, Factor == "Asel", Fleet == 1) |>
-#   dplyr::select(as.character(0:8)) |>
-#   t()
-# sel_fishery <- sel_fishery |>
-#   reshape2::melt(id.var = "age")
-
-# ggplot2::ggplot(
-#   sel_fishery,
-#   ggplot2::aes(x = age, y = value, group = variable, color = variable)
-# ) +
-#   ggplot2::geom_point() +
-#   ggplot2::geom_line()
-
-#-----------Survey selectivity
-
-#-----------Fishery selectivity
-sel_survey <- logistic(ages,
-                       slope = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "slope", module_id == 2) |>
-                          dplyr::pull(estimated),
-                       inflection_point = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "inflection_point", module_id == 2) |>
-                          dplyr::pull(estimated))
-
-names(sel_survey) <- c("age", 'fims')
-
-sel_survey$ss3 <- ssres$ageselex |>
-  dplyr::filter(Yr == 2005, Factor == "Asel", Fleet == 2) |>
-  dplyr::select(as.character(0:8)) |>
-  t()
-sel_survey <- sel_survey |>
-  reshape2::melt(id.var = "age")
-
+#------Numbers-at-age
+naa <- output |> # FIMS-estimated numbers at age for years 2008-2022
+  dplyr::filter(label == "numbers_at_age") |>
+  dplyr::select(year, age = age_i, fims = estimated) |>
+  dplyr::mutate(age = age-1)
+naa <- output |> # append FIMS-estimated init_naa for year 2007
+  dplyr::filter(label == "log_init_naa") |>
+  dplyr::mutate(age_i = age_i-1, 
+                fims = exp(estimated),
+                year = 2007) |>
+  dplyr::select(year, age = age_i, fims) |>
+  rbind(naa)
+naa <- modfit$natage |> # append SS3-estimated naa for years 2007-2022
+  dplyr::filter(Yr >= 2007, Yr <= 2022, `Beg/Mid` == "B") |>
+  tidyr::pivot_longer(cols = `0`:`8`, names_to = "age", values_to = "ss3") |>
+  dplyr::select(year = Yr, age, ss3) |>
+  dplyr::mutate(ss3 = ss3 * 1000,
+                age = as.numeric(age)) |>
+  dplyr::left_join(naa) |>
+  tidyr::pivot_longer(cols = fims:ss3, names_to = "type", values_to = "NAA")
 ggplot2::ggplot(
-  sel_survey,
-  ggplot2::aes(x = age, y = value, group = variable, color = variable)
+  naa,
+  ggplot2::aes(x = as.numeric(age), y = NAA, color = type, group = interaction(type))
 ) +
   ggplot2::geom_point() +
-  ggplot2::geom_line()
+  ggplot2::geom_line() +
+  ggplot2::scale_linewidth_manual(values=c(1,0.25))+
+  ggplot2::scale_linetype_manual(values=c(1,2))+
+  ggplot2::facet_wrap(~year, scales = "free_y")
+
+#------------------------------------------------------------------------
+#------Fishery selectivity
+sel_fishery <- output |> 
+  dplyr::filter(module_name == "Selectivity", module_type == "AgeSpecific", module_id == 2) |> 
+  dplyr::mutate(age = age_i - 1,
+                fims = boot::inv.logit(estimated)) |>
+  dplyr::select(age, fims)
+sel_fishery <- modfit$ageselex |>
+  dplyr::filter(Yr >= 2008, Yr <= 2021, Fleet == 1, Factor == "Asel") |>
+  # dplyr::select(Yr, `0`:`8`) |>
+  tidyr::pivot_longer(cols = `0`:`8`, names_to = "age", values_to = "ss3") |>
+  dplyr::mutate(age = as.numeric(age)) |>
+  dplyr::select(Yr, age, ss3) |>
+  dplyr::left_join(sel_fishery) |>
+  tidyr::pivot_longer(cols = fims:ss3, names_to = "type", values_to = "Selectivity")
+ggplot2::ggplot(
+  sel_fishery,
+  ggplot2::aes(x = as.numeric(age), y = Selectivity, color = type, group = interaction(type, Yr))
+) +
+  ggplot2::geom_point() +
+  ggplot2::geom_line() +
+  ggplot2::scale_linewidth_manual(values=c(1,0.25))+
+  ggplot2::scale_linetype_manual(values=c(1,2))
+
+#------------------------------------------------------------------------
+#-----------Survey selectivity
+sel_survey <- output |> 
+  dplyr::filter(module_name == "Selectivity", module_type == "AgeSpecific", module_id == 1) |> 
+  dplyr::mutate(age = age_i - 1,
+                fims = boot::inv.logit(estimated)) |>
+  dplyr::select(age, fims)
+sel_survey <- modfit$ageselex |>
+  dplyr::filter(Yr >= 2008, Yr <= 2021, Fleet == 2, Factor == "Asel") |>
+  # dplyr::select(Yr, `0`:`8`) |>
+  tidyr::pivot_longer(cols = `0`:`8`, names_to = "age", values_to = "ss3") |>
+  dplyr::mutate(age = as.numeric(age)) |>
+  dplyr::select(Yr, age, ss3) |>
+  dplyr::left_join(sel_fishery) |>
+  tidyr::pivot_longer(cols = fims:ss3, names_to = "type", values_to = "Selectivity")
+ggplot2::ggplot(
+  sel_survey,
+  ggplot2::aes(x = as.numeric(age), y = Selectivity, color = type, group = interaction(type, Yr))
+) +
+  ggplot2::geom_point() +
+  ggplot2::geom_line() +
+  ggplot2::scale_linewidth_manual(values=c(1,0.25))+
+  ggplot2::scale_linetype_manual(values=c(1,2))
+
+#------------------------------------------------------------------------
+#-----------Survey catchability
+
 
 ```
 
 ## Add comparison tables
 
+```{r}
+#| label: comparison-plots
+
+
+#------------------------------------------------------------------------
+#------Summary table of comparable parameter estimates, recent summary biomass
+
+# Need to run all plots first, and particularly that for age-1+ summary biomass
+
+#ss3
+parm_ss3 <- data.frame(Type = "Parameters", # ss3 parameters
+                         Component = c("NatM_Lorenzen_averageFem_GP_1", "SR_LN(R0)", "SR_BH_steep", "SR_sigmaR"),
+                         ss3=round(modfit$parameters$Value[which(rownames(modfit$parameters) %in% c("NatM_Lorenzen_averageFem_GP_1", "SR_LN(R0)", "SR_BH_steep", "SR_sigmaR"))], 3))
+parm_ss3$ss3[parm_ss3$Component == "SR_LN(R0)"] <- parm_ss3$ss3[parm_ss3$Component == "SR_LN(R0)"] + log(1000) # adjust equil. recr. to match fims units
+bio_ss3 <- data.frame(Type = "Summary biomass",
+                      Component = substr(modfit$derived_quants$Label[which(modfit$derived_quants$Label %in% c("SmryBio_2020", "SmryBio_2021", "SmryBio_2022"))], 9 , 12),
+                      ss3=round(modfit$derived_quants$Value[which(modfit$derived_quants$Label %in% c("SmryBio_2020", "SmryBio_2021", "SmryBio_2022"))]))
+ss3_smry <- rbind(parm_ss3, bio_ss3)
+
+#fims
+fims_M <- output |> dplyr::filter(label == "log_M", age_i == 1, year_i == 1) |> dplyr::pull(estimate) |> exp() |> round(3)
+fims_lnR0 <- output |> dplyr::filter(label == "log_rzero") |> dplyr::pull(estimate) |> round(3)
+fims_steep <- output |> dplyr::filter(label == "logit_steep") |> dplyr::pull(estimate) |> boot::inv.logit() |> round(3)
+fims_sigmaR <- update_parameters |> dplyr::filter(label == "log_sd") |> dplyr::pull(value) |> exp() |> round(3)
+parm_fims <- data.frame(Type = "Parameters",
+                        Component = c("M", "ln(R0)", "Steepness", "SigmaR"),
+                        fims = c(fims_M, fims_lnR0, fims_steep, fims_sigmaR))
+bio_fims <- data.frame(Type = "Summary biomas",
+                        Component = c("2020, 2021, 2022"),
+                        fims = age1plus |> dplyr::filter(year %in% c(2020, 2021, 2022)) |> dplyr::pull(summbio))
+fims_smry <- rbind(parm_fims, bio_fims)
+
+smry <- cbind(fims_smry, ss3_smry |> dplyr::select(ss3))
+
+```
+
 ## What was your experience using FIMS? What could we do to improve usability?
+
+Documentation:
+* Units for NAA and recruitment would be useful to know. 
 
 Tools to check:
 * 
