@@ -52,6 +52,8 @@ data_4_model <- r4ss::ss3_data_to_fims(
   ss3_dir = "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a050.005_FIMS_case-study_1sex_with_growth_no_fecundity/",
   ss_new = TRUE
 ) |>
+  # # remove early length comps which were causing NaN likelihoods
+  # dplyr::filter_out(type == "length_comp", timing < 2017) |>
   FIMS::FIMSFrame()
 
 
@@ -269,7 +271,7 @@ parameters <- default_parameters |>
           1.0,
           get_ss3_estimate("SR_BH_steep")
         ),
-        get_ss3_estimate("SR_sigmaR")
+        log(get_ss3_estimate("SR_sigmaR"))
       )
     ),
     by = c("module_name", "label")
@@ -305,8 +307,7 @@ parameters <- default_parameters |>
       module_name = "Recruitment",
       label = "log_devs",
       timing = recdev_years,
-      value = recdevs,
-      # estimation_type = "fixed_effects"
+      value = recdevs
     ),
     by = c("module_name", "label", "timing")
   ) |>
@@ -350,48 +351,6 @@ parameters <- default_parameters |>
     ),
     by = c("module_name", "label")
   )
-
-# confirm that all columns except "value" and "estimation_type" are identical between parameters and default_parameters
-if (
-  !identical(
-    parameters |>
-      dplyr::select(-value, -age, -estimation_type),
-    default_parameters |>
-      dplyr::select(-value, -age, -estimation_type)
-  )
-) {
-  cli::cli_alert_danger(
-    "Columns other than 'value', 'age', and 'estimation_type' are not identical between parameters and default_parameters"
-  )
-}
-# figure out if any rows have different estimate_type
-cli::cli_alert_info(
-  "Rows with different estimation_type between default_parameters and parameters:"
-)
-diff_estimation_type <- parameters |>
-  dplyr::filter(estimation_type != default_parameters$estimation_type) |>
-  dplyr::select(module_name, fleet, label, estimation_type)
-
-if (nrow(diff_estimation_type) == 0) {
-  cli::cli_alert_success("No rows with different estimation_type.")
-} else {
-  print(diff_estimation_type, n = Inf, width = Inf)
-}
-
-# parameters which have been updated from defaults
-cli::cli_alert_info(
-  "Rows with updated initial values from default_parameters to parameters:"
-)
-updated_parameter_counts <- parameters |>
-  dplyr::filter(value != default_parameters$value) |>
-  dplyr::select(module_name, fleet, label, value) |>
-  dplyr::count(module_name, label)
-
-if (nrow(updated_parameter_counts) == 0) {
-  cli::cli_alert_success("No rows with updated initial values.")
-} else {
-  print(updated_parameter_counts, n = Inf, width = Inf)
-}
 ```
 
 ```{r}
@@ -399,21 +358,22 @@ if (nrow(updated_parameter_counts) == 0) {
 
 input <- parameters |>
   FIMS::initialize_fims(data = data_4_model)
-#input$model$ReportGrowthDerivedALKTensor(TRUE)
+# make sure output includes age to length conversion
+input$model$ReportAgeToLengthConversionDerivedTensor(TRUE)
 
 # Run the model without optimization to help ensure a viable model
 test_fit <- input |>
   FIMS::fit_fims(optimize = FALSE)
 
-fit <- test_fit
+test_fit@report$nll_components
 
-# Run the  model with optimization
-fit <- parameters |>
-  FIMS::initialize_fims(data = data_4_model) |>
+# fit <- test_fit
+
+# run with estimation
+fit <- input |>
   FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
-
-fit_est <- fit
 ```
+
 ## Plotting inputs
 
 ```{r plotting-inputs}
@@ -431,7 +391,7 @@ data_4_model@data |>
 
 
 data_4_model@data |>
-  dplyr::filter(type == "length_comp" & observed != -999) |>
+  dplyr::filter(type == "length_comp" & fleet == "South" & observed != -999) |>
   ggplot2::ggplot(
     ggplot2::aes(x = length, y = observed, col = fleet, fill = fleet)
   ) +
@@ -441,6 +401,7 @@ data_4_model@data |>
   ggplot2::facet_wrap(~timing) +
   ggtitle("Length compositions by fleet and time step")
 ```
+
 ## Plotting results
 
 TODO: Add plotting code for the FIMS model results
@@ -504,7 +465,9 @@ fims_biomass <- tibble::tibble(
 
 biomass <- dplyr::bind_rows(ss3_biomass, fims_biomass)
 
-ggplot2::ggplot(biomass, ggplot2::aes(x = year, y = value)) +
+biomass |> 
+  # dplyr::filter(year > 1970) |> 
+  ggplot2::ggplot(ggplot2::aes(x = year, y = value)) +
   ggplot2::geom_line(ggplot2::aes(color = Model)) +
   ggplot2::xlab("Year") +
   ggplot2::ylab("") +
@@ -677,12 +640,12 @@ ggsave(
   dpi = 300
 )
 
-realized_age_to_length_conversion_dataframe <- get_realized_age_to_length_conversion_dataframe(
+age_to_length_conversion_dataframe <- get_age_to_length_conversion_dataframe(
   fit = fit,
   data = data_4_model
 )
 
-plot_age_to_length_conversion(realized_age_to_length_conversion_dataframe)
+plot_age_to_length_conversion(age_to_length_conversion_dataframe)
 ggsave(
   filename = "age_to_length_conversion_plot.png",
   width = 6,
