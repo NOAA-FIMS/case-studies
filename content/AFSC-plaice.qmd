@@ -335,17 +335,44 @@ get_ss3_estimate <- function(string, report = rep_simple_ss3) {
 ```
 
 
-In FIMS, initial numbers-at-age (NAA) are estimated parameters. In SS3, they are derived from R0 and M. We can calculate initial values for FIMS based on the SS3 equilibrium assumption using `setup_default_log_init_naa()`.
+In FIMS, initial numbers-at-age (NAA) are a free parameter for every age. In SS3, they are derived from R0, M and the early recruitment deviations. Estimating all 26 of them freely does not work for plaice. The fish that are 17 and older in 1975 have died out before most of the composition data begin, so nothing in the data informs them. They run off toward zero, the Hessian becomes singular, and every standard error is `NaN`. For this bridging exercise we instead fix the initial NAA at the start-year numbers from the simplified SS3 run. FIMS does not yet have an equilibrium-based option for the initial age structure.
 
 ```{r}
 #| label: naa
 log_m_init <- log(get_ss3_estimate("NatM_uniform_Fem_GP_1"))
 log_rzero_init <- get_ss3_estimate("SR_LN(R0)")
-init_naa <- FIMS:::setup_default_log_init_naa(
-    n_ages = length(FIMS::get_ages(data_4_fims)),
-    log_M = log_m_init,
-    log_rzero = log_rzero_init
+# Beginning-of-year numbers-at-age (1000s) in the first model year
+start_year_naa <- rep_simple_ss3$natage |>
+    dplyr::filter(Yr == min(Yr[Era == "TIME"]), `Beg/Mid` == "B") |>
+    dplyr::select(dplyr::all_of(as.character(FIMS::get_ages(data_4_fims))))
+init_naa <- log(unlist(start_year_naa))
+```
+
+SS3 reports growth in two ways. The parameters (`L_a_A1`, `L_a_A2`, `CVmin`, `CVmax`) are not what FIMS expects:
+
+- `A2` is 999, SS3's flag meaning `L_a_A2` is Linf rather than a length at a modeled age.
+- `CVmin` and `CVmax` are coefficients of variation. FIMS wants the standard deviation of length-at-age in cm.
+
+So we take beginning-of-year mean length and SD at ages 1 and 25 from `rep_simple_ss3$endgrowth`. SS3 interpolates the CV linearly in length, while FIMS interpolates the SD linearly in mean length, so SDs at intermediate ages differ somewhat. We use beginning-of-year values because FIMS uses one growth curve for both weight-at-age and the age-length key. That keeps spawning biomass comparable to SS3, whose length compositions are sampled at month 7.
+
+```{r}
+#| label: ss3-growth-at-reference-ages
+growth_reference_ages <- c(1, 25)
+growth_at_reference_ages <- rep_simple_ss3$endgrowth |>
+    dplyr::filter(Age_Beg %in% growth_reference_ages)
+length_at_reference_ages <- growth_at_reference_ages$Len_Beg
+length_sd_at_reference_ages <- growth_at_reference_ages$SD_Beg
+
+# SS3 reads maturity-at-age directly (maturity option 3). FIMS uses a
+# logistic curve in age, so fit one to the SS3 vector.
+ss3_maturity <- rep_simple_ss3$endgrowth |>
+    dplyr::select(age = Age_Beg, maturity = Age_Mat)
+maturity_fit <- stats::nls(
+    maturity ~ 1 / (1 + exp(-slope * (age - inflection_point))),
+    data = ss3_maturity,
+    start = list(inflection_point = 9, slope = 1)
 )
+stats::coef(maturity_fit)
 ```
 
 
@@ -391,9 +418,10 @@ parameters <- default_parameters |>
             "length_weight_a", "length_weight_b"
         ),
         value = c(
-            rep_simple_ss3$Growth_Parameters$L_a_A1, rep_simple_ss3$Growth_Parameters$L_a_A2,
-            rep_simple_ss3$Growth_Parameters$K, rep_simple_ss3$Growth_Parameters$A1,
-            rep_simple_ss3$Growth_Parameters$A2, rep_simple_ss3$Growth_Parameters$WtLen1,
+            length_at_reference_ages,
+            rep_simple_ss3$Growth_Parameters$K,
+            growth_reference_ages,
+            rep_simple_ss3$Growth_Parameters$WtLen1,
             rep_simple_ss3$Growth_Parameters$WtLen2
         ),
         estimation_type = "constant"
@@ -409,27 +437,24 @@ parameters <- default_parameters |>
       1,
       age
     )) |>
-    # Update SD of length-at-age
+    # Update SD of length-at-age (cm, not a CV) at the growth reference ages
     # If you want to look at what these parameters are, and how many there are, you can do the following:
     # default_parameters |> dplyr::filter(module_name == "Growth") |> dplyr::filter(label == "length_at_age_sd_at_reference_ages")
     dplyr::rows_update(
         tibble::tibble(
         module_name = "Growth",
         label = "length_at_age_sd_at_reference_ages",
-        age = c(1, 25),
-        value = c(rep_simple_ss3$Growth_Parameters$CVmin, rep_simple_ss3$Growth_Parameters$CVmax)
+        age = growth_reference_ages,
+        value = length_sd_at_reference_ages
         ),
         by = c("module_name", "label", "age")
     ) |>
-    # Update Maturity parameters.
-    # These were derived from the original length-based maturity in the SS3
-    # model and converted to an age-based approximation. The slope was an arbitrary guess.
-    # In a real assessment, these would be carefully chosen based on biological data.
+    # Update Maturity parameters from the logistic fit to the SS3 maturity-at-age
     dplyr::rows_update(
         tibble::tibble(
             module_name = "Maturity",
             label = c("inflection_point", "slope"),
-            value = c(7.0, 1.0),
+            value = unname(stats::coef(maturity_fit)[c("inflection_point", "slope")])
         ),
         by = c("module_name", "label")
     ) |>
@@ -459,14 +484,14 @@ parameters <- default_parameters |>
         ),
         by = c("fleet", "label")
     ) |>
-    # Update initial numbers-at-age (NAA)
+    # Fix initial numbers-at-age (NAA) at the SS3 start-year values
     dplyr::rows_update(
         tibble::tibble(
             module_name = "Population",
             label = "log_init_naa",
             age = n_ages,
             value = init_naa,
-            estimation_type = "fixed_effects"
+            estimation_type = "constant"
         ),
         by = c("module_name", "label", "age")
     ) |>
@@ -528,7 +553,88 @@ fit <- parameters |>
     FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
 
 get_report(fit)$nll_components
-get_report(fit)$
+```
+
+The length compositions need a FIMS version that includes NOAA-FIMS/FIMS#1751. Earlier versions build expected length compositions from the age compositions after rescaling them to the observed age sample size. Most plaice years have length compositions but no age compositions, so the expected length compositions in those years were 0/0 = `NaN`, and `nlminb()` stopped with "NA/NaN function evaluation".
+
+Setting `get_sd = TRUE` needs NOAA-FIMS/FIMS#1775. Without it, `TMB::sdreport()` builds a dense covariance matrix of all 46,384 derived quantities (about 17 GB), which exhausts memory.
+
+### Running the EWAA FIMS Model
+
+The EWAA model uses the same setup without growth parameters. One unit detail matters here:
+
+- `ss3_data_to_fims()` divides SS3 weight-at-age by 1000, assuming kg to mt, so weights are per fish rather than per thousand fish.
+- SS3 numbers are in thousands, so we multiply SS3's R0 and start-year numbers-at-age by 1000 to match, as in the petrale case study.
+- Plaice weights in SS3 happen to be in grams, but only the product of numbers and weight has to match SS3's catch units. That product is unchanged.
+
+The no-EWAA model avoids this by taking the SS3 length-weight parameters directly.
+
+```{r}
+#| label: run-fims-ewaa-model
+get_ss3_ewaa_estimate <- function(string) {
+    get_ss3_estimate(string, report = rep_ewaa_ss3)
+}
+ages_ewaa <- FIMS::get_ages(data_4_fims_ewaa)
+start_year_naa_ewaa <- rep_ewaa_ss3$natage |>
+    dplyr::filter(Yr == min(Yr[Era == "TIME"]), `Beg/Mid` == "B") |>
+    dplyr::select(dplyr::all_of(as.character(ages_ewaa)))
+
+parameters_ewaa <- FIMS::setup_default_parameters(data = data_4_fims_ewaa) |>
+    dplyr::rows_update(
+        tibble::tibble(
+            module_name = "Maturity",
+            label = c("inflection_point", "slope"),
+            value = unname(stats::coef(maturity_fit)[c("inflection_point", "slope")])
+        ),
+        by = c("module_name", "label")
+    ) |>
+    dplyr::rows_update(
+        tibble::tibble(
+            module_name = "Recruitment",
+            label = c("log_rzero", "logit_steep", "log_sd"),
+            value = c(
+                # SS3 recruitment is in thousands of fish
+                log(1000) + get_ss3_ewaa_estimate("SR_LN(R0)"),
+                FIMS::logit(0.2, 1.0, 0.99),
+                log(get_ss3_ewaa_estimate("SR_sigmaR"))
+            )
+        ),
+        by = c("module_name", "label")
+    ) |>
+    dplyr::rows_update(
+        tibble::tibble(
+            fleet = "Survey",
+            label = "log_q",
+            value = get_ss3_ewaa_estimate("LnQ_base_Survey(2)")
+        ),
+        by = c("fleet", "label")
+    ) |>
+    dplyr::rows_update(
+        tibble::tibble(
+            module_name = "Population",
+            label = "log_init_naa",
+            age = ages_ewaa,
+            # SS3 numbers are in thousands of fish
+            value = log(1000 * unlist(start_year_naa_ewaa)),
+            estimation_type = "constant"
+        ),
+        by = c("module_name", "label", "age")
+    ) |>
+    dplyr::rows_update(
+        tibble::tibble(
+            module_name = "Population",
+            label = "log_M",
+            value = log(get_ss3_ewaa_estimate("NatM_uniform_Fem_GP_1")),
+            estimation_type = "constant"
+        ),
+        by = c("module_name", "label")
+    )
+
+fit_ewaa <- parameters_ewaa |>
+    FIMS::initialize_fims(data = data_4_fims_ewaa) |>
+    FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
+
+get_report(fit_ewaa)$nll_components
 ```
 
 ## Part 4: Comparing Model Outputs
@@ -558,6 +664,59 @@ r4ss::SSplotComparisons(summary_list)
 ```
 
 The comparison plots show that removing the male data and changing the selectivity and growth options had a noticeable effect on the estimated spawning output, highlighting the importance of understanding the impact of such simplifying assumptions.
+
+Next we compare each FIMS model with the simplified SS3 model it was converted from. Spawning biomass from both FIMS models is on the same scale as SS3 (see the unit note in the EWAA section). EWAA recruitment is in fish, so we divide it by 1000 to match SS3.
+
+```{r}
+#| label: compare-fims-ss3
+years <- rep_simple_ss3$timeseries |>
+    dplyr::filter(Era == "TIME") |>
+    dplyr::pull(Yr)
+n_years_plot <- length(years)
+
+get_ss3_timeseries <- function(report, model) {
+    report$timeseries |>
+        dplyr::filter(Era == "TIME") |>
+        dplyr::transmute(
+            year = Yr,
+            spawning_biomass = SpawnBio,
+            recruitment = Recruit_0,
+            model = model
+        )
+}
+get_fims_timeseries <- function(fit, model, recruitment_scale = 1) {
+    report <- get_report(fit)
+    tibble::tibble(
+        year = years,
+        spawning_biomass = report$spawning_biomass[[1]][seq_len(n_years_plot)],
+        recruitment = report$expected_recruitment[[1]][seq_len(n_years_plot)] /
+            recruitment_scale,
+        model = model
+    )
+}
+
+comparison <- dplyr::bind_rows(
+    get_ss3_timeseries(rep_simple_ss3, "SS3 no EWAA"),
+    get_fims_timeseries(fit, "FIMS no EWAA"),
+    get_ss3_timeseries(rep_ewaa_ss3, "SS3 EWAA"),
+    get_fims_timeseries(fit_ewaa, "FIMS EWAA", recruitment_scale = 1000)
+) |>
+    tidyr::separate_wider_delim(model, delim = " ", names = c("platform", "scenario"), too_many = "merge") |>
+    tidyr::pivot_longer(c(spawning_biomass, recruitment), names_to = "quantity")
+
+ggplot2::ggplot(comparison, ggplot2::aes(year, value, color = platform)) +
+    ggplot2::geom_line() +
+    ggplot2::facet_grid(quantity ~ scenario, scales = "free_y") +
+    ggplot2::labs(x = "Year", y = NULL, color = NULL)
+
+# Ratio of FIMS to SS3 spawning biomass by scenario
+comparison |>
+    dplyr::filter(quantity == "spawning_biomass") |>
+    tidyr::pivot_wider(names_from = platform, values_from = value) |>
+    dplyr::mutate(ratio = FIMS / SS3) |>
+    dplyr::group_by(scenario) |>
+    dplyr::summarise(min_ratio = min(ratio), max_ratio = max(ratio))
+```
 
 ## Appendix: Notes on Steepness
 
