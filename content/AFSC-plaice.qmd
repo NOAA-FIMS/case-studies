@@ -266,7 +266,7 @@ rep_simple_ss3 <- r4ss::SS_output(
 ```{r}
 #| label: convert-to-fims-ewaa
 #| warning: false
-data_4_fims <- r4ss::ss3_data_to_fims(
+data_4_fims_ewaa <- r4ss::ss3_data_to_fims(
     ss3_dir = simplified_ewaa$dir,
     ss_new = TRUE
 ) |>
@@ -355,7 +355,7 @@ Now, let's create our final parameter set for FIMS by updating the defaults.
 # The default parameter tibble sets up EWAA growth, which does not require any parameters
 default_parameters |> dplyr::filter(module_name == "Growth")
 
-# To fit growth parameters, you first need to replace the 
+# This adds all the growth parameters that we will add later, you first need to replace the 
 # EWAA row with parameters for a default growth model:
 default_parameters <- default_parameters |>
       dplyr::filter(module_name != "Growth") |>
@@ -376,7 +376,7 @@ default_parameters |> dplyr::filter(module_name == "Growth")
 ```
 
 ```{r}
-#| label: populate-fims-params.
+#| label: populate-fims-params
 parameters <- default_parameters |>
     # Update Growth parameters. These are treated as fixed constants in this example,
     # using the estimates from the SS3 model. If using EWAA, this block would be removed.
@@ -444,7 +444,7 @@ parameters <- default_parameters |>
                 # Optimization algorithms work best on an unconstrained scale (-Inf to Inf).
                 # The logit transform maps the value from its bounded range to an
                 # unconstrained one. FIMS provides a helper for this common transformation.
-                FIMS::logit(0.2, 1.0, 0.999),#get_ss3_estimate("SR_BH_steep")),
+                FIMS::logit(0.2, 1.0, 0.99),
                 log(get_ss3_estimate("SR_sigmaR"))
             )
         ),
@@ -520,10 +520,15 @@ test_fit <- parameters |>
     FIMS::initialize_fims(data = data_4_fims) |>
     FIMS::fit_fims(optimize = FALSE)
 
+# need to fix error message to say "fit" or whatever instead of FIMSFit
+
 # Run the model with optimization
 fit <- parameters |>
     FIMS::initialize_fims(data = data_4_fims) |>
     FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
+
+get_report(fit)$nll_components
+get_report(fit)$
 ```
 
 ## Part 4: Comparing Model Outputs
@@ -556,7 +561,7 @@ The comparison plots show that removing the male data and changing the selectivi
 
 ## Appendix: Notes on Steepness
 
-The user had a note about steepness from the Nanaimo spiny dogfish assessment (https://github.com/pbs-assess/dogfish-assess/tree/main/ss3/A1). This is a good example of borrowing information from other assessments or literature, which is common practice. There is also this assessment that Ian recommended: https://github.com/pbs-software/pbs-synth/tree/master/PBSsynth/inst/input/2024/YTR/BC/Base/B1.R02v2/02.01`
+For Nanaimo-specific models, there is the spiny dogfish assessment (https://github.com/pbs-assess/dogfish-assess/tree/main/ss3/A1) and this other assessment that Ian recommended: https://github.com/pbs-software/pbs-synth/tree/master/PBSsynth/inst/input/2024/YTR/BC/Base/B1.R02v2/02.01`
 
 For Beverton-Holt steepness, the value is often difficult to estimate within the model and is frequently fixed based on a meta-analysis or prior knowledge. The example code shows how you would insert a fixed value for steepness (e.g., `h = 0.283`) into the FIMS parameter setup.
 
