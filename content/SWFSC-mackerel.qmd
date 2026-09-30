@@ -93,12 +93,12 @@ logQ <- modfit$parameters |>
   dplyr::summarize(meanQ = mean(Q)) |>
   dplyr::mutate(logmeanQ = log(meanQ)) |>
   dplyr::pull(logmeanQ)
-sel_survey <- modfit$ageselex |>
+sel_survey_init <- modfit$ageselex |>
   dplyr::filter(Label == "2008_2Asel") |>
   tidyr::pivot_longer(cols = `0`:`8`, names_to = "age", values_to = "sel") |>
   dplyr::pull(sel)
-sel_survey <- ifelse(sel_survey == 1, 0.9999, sel_survey); print(sel_survey)
-sel_fish <- modfit$ageselex |>
+sel_survey_init <- ifelse(sel_survey_init == 1, 0.9999, sel_survey_init); print(sel_survey_init)
+sel_fish_init <- modfit$ageselex |>
   dplyr::filter(Factor == "Asel", Fleet == 1, Yr %in% years) |>
   tidyr::pivot_longer(cols = `0`:`8`, names_to = "age", values_to = "sel") |>
   dplyr::group_by(age) |>
@@ -106,7 +106,7 @@ sel_fish <- modfit$ageselex |>
   dplyr::pull(avg_sel); print(sel_fish) 
   # values for ages 1-3 are high similar and greater than 1 (~1.1)
   # not sure why some year-, age-specific selectivity values > 1
-sel_fish <- ifelse(sel_fish > 1, 0.9999, sel_fish); print(sel_fish)
+sel_fish_init <- ifelse(sel_fish_init > 1, 0.9999, sel_fish_init); print(sel_fish_init)
 
 # Create default recruitment, growth, and maturity parameters
 parameters <- FIMS::setup_default_parameters(data = data_4_model) 
@@ -148,12 +148,20 @@ update_parameters <- update_parameters |>
     ),
     by = c("module_name", "label")
   ) |>
+  dplyr::rows_update( # change log_devs estimation_type 
+    tibble::tibble(
+      module_name = "Recruitment",
+      label = c("log_devs"),
+      estimation_type = c("random_effects") # estimate log_rzero, fix log_sd
+    ),
+    by = c("module_name", "label")
+  ) |>
   dplyr::rows_update( # fix sigmaR to benchmark-specified value; provided benchmark-estimated initial value for R0
     tibble::tibble(
       module_name = "Recruitment",
       label = c("log_rzero", "log_sd"),
       value = c(rzero, log(sigmaR)),
-      estimation_type = c("fixed_effects", "constant") # estimate log_rzero, fix log_sd
+      estimation_type = c("fixed_effects", "fixed_effects") # estimate log_rzero, log_sd (for REs)
     ),
     by = c("module_name", "label")
   ) |>
@@ -180,7 +188,7 @@ update_parameters <- update_parameters |>
       fleet = "survey1",
       label = "logit_sel_at_age",
       age = ages,
-      value = boot::logit(sel_survey),
+      value = boot::logit(sel_survey_init),
       estimation_type = c("fixed_effects", rep("constant", 8))
     ),
     by = c("fleet", "label", "age")
@@ -190,7 +198,7 @@ update_parameters <- update_parameters |>
       fleet = "fleet1",
       label = "logit_sel_at_age",
       age = ages, 
-      value = boot::logit(sel_fish),
+      value = boot::logit(sel_fish_init),
       estimation_type = c("fixed_effects", rep("constant", 8))
        # benchmark estimates 4 parameters for ages 0-3
        # for age-specific selectivity, need to fix some age-specific selectivity=1
@@ -218,11 +226,12 @@ update_parameters <- update_parameters |>
     tibble::tibble(
       module_name = "Population",
       label = c("log_M"),
-      value = log(M_value)
+      value = log(M_value),
+      estimation_type = "fixed_effects"
     ),
     by = c("module_name", "label")
   ) |>
-  dplyr::rows_update( # fix initial naa to values calculated from benchmark R0, M
+  dplyr::rows_update( # set initial naa (estimated via 'fixed_effects') to values calculated from benchmark R0, M
     tibble::tibble(
       module_name = "Population",
       label = c("log_init_naa"),
@@ -240,6 +249,7 @@ update_parameters <- update_parameters |>
 #| label: setup-model
 
 # Fit the model
+clear()
 fit <- update_parameters |>
   FIMS::initialize_fims(data = data_4_model) |>
   FIMS::fit_fims(optimize = TRUE)
@@ -252,6 +262,7 @@ output <- FIMS::get_estimates(fit) |>
 fit@sdreport$pdHess
 output |> dplyr::filter(module_name == "Selectivity", module_type == "AgeSpecific") |> print()
 dplyr::filter(output, label == "log_q") |> as.data.frame() |> print()
+dplyr::filter(output, label == "log_sd") |> as.data.frame() |> print() # why is log_sd not included in model output?
 dplyr::filter(output, label == "log_rzero") |> as.data.frame() |> print()
 dplyr::filter(output, label == "spawning_biomass") |> as.data.frame()
 
@@ -296,44 +307,6 @@ ggplot2::ggsave(
   width = 7.35,
   height = 4.8
 )
-
-#------------------------------------------------------------------------
-# --------Fishing mortality
-modfit$timeseries |>
-  dplyr::select(Yr, ss3 = "F:_1") |>
-  dplyr::full_join(
-    dplyr::filter(output, label == "log_Fmort", module_id == 2) |>
-      dplyr::mutate(estimate = exp(estimate)) |>
-      dplyr::select(year, fims = estimate),
-    by = c("Yr" = "year")
-  ) |>
-  dplyr::filter(Yr >= 2008, Yr <= 2021) |>
-  tidyr::pivot_longer(names_to = "variable", cols = dplyr::matches("ss3|fims")) |>
-  ggplot2::ggplot(ggplot2::aes(x = Yr, y = value, group = variable, color = variable)) +
-  ggplot2::geom_point() +
-  ggplot2::geom_line() +
-  ggplot2::ylab("Fishing mortality") +
-  ggplot2::theme_bw() +
-  ggplot2::xlab("year") +
-  ggplot2::theme(legend.position.inside = c(.9, .9))
-
-#------------------------------------------------------------------------
-#------Index fits
-all_yrs <- expand.grid(year = c(2008:2021))
-index <- modfit$cpue |>
-  dplyr::select(year = Yr, obs = Obs, ss3 = Exp)
-index <- dplyr::left_join(all_yrs, index)
-index$fims <- FIMS::get_report(fit)[["index_expected"]][[1]] # AJ: what's the difference between 1 and 2?
-index |>
-  tidyr::pivot_longer(names_to = "variable", cols = dplyr::matches("ss3|fims")) |>
-  ggplot2::ggplot(ggplot2::aes(x = year)) +
-  ggplot2::geom_point(ggplot2::aes(y = obs)) +
-  ggplot2::geom_line(ggplot2::aes(y = value, color = variable, group = variable)) +
-  ggplot2::theme_bw() +
-  ggplot2::theme(legend.position.inside = c(.9, .9)) +
-  ggplot2::xlab("Year") +
-  ggplot2::ylab("Survey biomass value (mt)")
-ggplot2::ggsave("figures/SWFSC-mackerel-surveyfit.png", width = 6.8, height = 5.25)
 
 #------------------------------------------------------------------------
 #-----Calculate age-1+ biomass
@@ -384,7 +357,7 @@ age1plus |>
   ggplot2::theme_bw() +
   ggplot2::theme(legend.position.inside = c(.9, .9))
 
-ggplot2::ggsave("figures/SWFSC-sardine-age1plusbio.png", width = 6.8, height = 5.25)
+ggplot2::ggsave("figures/SWFSC-mackerel-age1plusbio.png", width = 6.8, height = 5.25)
 
 #Zoomed in time series of age-1+
 age1plus |>
@@ -397,11 +370,10 @@ age1plus |>
   ggplot2::ylab("Age-1+ biomass (mt)") +
   ggplot2::theme(legend.position.inside = c(.9, .9))
 ggplot2::ggsave(
-  "figures/SWFSC-sardine-age1plusbio_zoomedin.png",
+  "figures/SWFSC-mackerel-age1plusbio_zoomedin.png",
   width = 6.8,
   height = 5.25
 )
-
 
 #------------------------------------------------------------------------
 #------Recruitment
@@ -421,6 +393,9 @@ recs |>
   ggplot2::theme(legend.position.inside = c(.9, .9)) +
   ggplot2::ylab("Recruits (x1000)")
 ggplot2::ggsave("figures/SWFSC-mackerel-recruitment.png", width = 6.8, height = 5.25)
+
+#------------------------------------------------------------------------
+#------Recruitment deviations (TBD)
 
 
 #------------------------------------------------------------------------
@@ -453,6 +428,49 @@ ggplot2::ggplot(
   ggplot2::scale_linewidth_manual(values=c(1,0.25))+
   ggplot2::scale_linetype_manual(values=c(1,2))+
   ggplot2::facet_wrap(~year, scales = "free_y")
+ggplot2::ggsave("figures/SWFSC-mackerel-naa.png", width = 6.8, height = 5.25)
+
+#------------------------------------------------------------------------
+#---------Age composition residuals (observed vs expected; TBD)
+
+#------------------------------------------------------------------------
+# --------Fishing mortality
+modfit$timeseries |>
+  dplyr::select(Yr, ss3 = "F:_1") |>
+  dplyr::full_join(
+    dplyr::filter(output, label == "log_Fmort", module_id == 2) |>
+      dplyr::mutate(estimate = exp(estimate)) |>
+      dplyr::select(year, fims = estimate),
+    by = c("Yr" = "year")
+  ) |>
+  dplyr::filter(Yr >= 2008, Yr <= 2021) |>
+  tidyr::pivot_longer(names_to = "variable", cols = dplyr::matches("ss3|fims")) |>
+  ggplot2::ggplot(ggplot2::aes(x = Yr, y = value, group = variable, color = variable)) +
+  ggplot2::geom_point() +
+  ggplot2::geom_line() +
+  ggplot2::ylab("Fishing mortality") +
+  ggplot2::theme_bw() +
+  ggplot2::xlab("year") +
+  ggplot2::theme(legend.position.inside = c(.9, .9))
+ggplot2::ggsave("figures/SWFSC-mackerel-Fmort.png", width = 6.8, height = 5.25)
+
+#------------------------------------------------------------------------
+#------Index fits
+all_yrs <- expand.grid(year = c(2008:2021))
+index <- modfit$cpue |>
+  dplyr::select(year = Yr, obs = Obs, ss3 = Exp)
+index <- dplyr::left_join(all_yrs, index)
+index$fims <- FIMS::get_report(fit)[["index_expected"]][[1]] # AJ: what's the difference between 1 and 2?
+index |>
+  tidyr::pivot_longer(names_to = "variable", cols = dplyr::matches("ss3|fims")) |>
+  ggplot2::ggplot(ggplot2::aes(x = year)) +
+  ggplot2::geom_point(ggplot2::aes(y = obs)) +
+  ggplot2::geom_line(ggplot2::aes(y = value, color = variable, group = variable)) +
+  ggplot2::theme_bw() +
+  ggplot2::theme(legend.position.inside = c(.9, .9)) +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("Survey biomass value (mt)")
+ggplot2::ggsave("figures/SWFSC-mackerel-surveyfit.png", width = 6.8, height = 5.25)
 
 #------------------------------------------------------------------------
 #------Fishery selectivity
@@ -477,6 +495,7 @@ ggplot2::ggplot(
   ggplot2::geom_line() +
   ggplot2::scale_linewidth_manual(values=c(1,0.25))+
   ggplot2::scale_linetype_manual(values=c(1,2))
+ggplot2::ggsave("figures/SWFSC-mackerel-fishselectivity.png", width = 6.8, height = 5.25)
 
 #------------------------------------------------------------------------
 #-----------Survey selectivity
@@ -491,7 +510,7 @@ sel_survey <- modfit$ageselex |>
   tidyr::pivot_longer(cols = `0`:`8`, names_to = "age", values_to = "ss3") |>
   dplyr::mutate(age = as.numeric(age)) |>
   dplyr::select(Yr, age, ss3) |>
-  dplyr::left_join(sel_fishery) |>
+  dplyr::left_join(sel_survey) |>
   tidyr::pivot_longer(cols = fims:ss3, names_to = "type", values_to = "Selectivity")
 ggplot2::ggplot(
   sel_survey,
@@ -501,11 +520,27 @@ ggplot2::ggplot(
   ggplot2::geom_line() +
   ggplot2::scale_linewidth_manual(values=c(1,0.25))+
   ggplot2::scale_linetype_manual(values=c(1,2))
+ggplot2::ggsave("figures/SWFSC-mackerel-survselectivity.png", width = 6.8, height = 5.25)
 
 #------------------------------------------------------------------------
 #-----------Survey catchability
+surv_q <- output |> 
+  dplyr::filter(label == "log_q", module_id == 1) |>
+  dplyr::mutate(fims = exp(estimate)) |>
+  dplyr::select(fims)
+surv_q <- modfit$cpue |>
+  dplyr::select(Year = Yr, ss3 = Calc_Q) |>
+  cbind(surv_q) |>
+  tidyr::pivot_longer(cols = ss3:fims, values_to = "Catchability", names_to = "type")
 
-
+surv_q |>
+  dplyr::filter(Year >= 2008, Year <= 2022) |>
+  ggplot2::ggplot(ggplot2::aes(x = Year, y = Catchability, group = type, color = type)) +
+  ggplot2::theme_bw() +
+  ggplot2::geom_point() +
+  ggplot2::geom_line() +
+  ggplot2::theme(legend.position.inside = c(.9, .9))
+ggplot2::ggsave("figures/SWFSC-mackerel-survcatchability.png", width = 6.8, height = 5.25)
 ```
 
 ## Add comparison tables
@@ -525,8 +560,8 @@ parm_ss3 <- data.frame(Type = "Parameters", # ss3 parameters
                          ss3=round(modfit$parameters$Value[which(rownames(modfit$parameters) %in% c("NatM_Lorenzen_averageFem_GP_1", "SR_LN(R0)", "SR_BH_steep", "SR_sigmaR"))], 3))
 parm_ss3$ss3[parm_ss3$Component == "SR_LN(R0)"] <- parm_ss3$ss3[parm_ss3$Component == "SR_LN(R0)"] + log(1000) # adjust equil. recr. to match fims units
 bio_ss3 <- data.frame(Type = "Summary biomass",
-                      Component = substr(modfit$derived_quants$Label[which(modfit$derived_quants$Label %in% c("SmryBio_2020", "SmryBio_2021", "SmryBio_2022"))], 9 , 12),
-                      ss3=round(modfit$derived_quants$Value[which(modfit$derived_quants$Label %in% c("SmryBio_2020", "SmryBio_2021", "SmryBio_2022"))]))
+                      Component = c("2020", "2021", "2022"),
+                      ss3 = age1plus |> dplyr::filter(year %in% c(2020, 2021, 2022)) |> dplyr::pull(ss3))
 ss3_smry <- rbind(parm_ss3, bio_ss3)
 
 #fims
@@ -537,12 +572,14 @@ fims_sigmaR <- update_parameters |> dplyr::filter(label == "log_sd") |> dplyr::p
 parm_fims <- data.frame(Type = "Parameters",
                         Component = c("M", "ln(R0)", "Steepness", "SigmaR"),
                         fims = c(fims_M, fims_lnR0, fims_steep, fims_sigmaR))
-bio_fims <- data.frame(Type = "Summary biomas",
-                        Component = c("2020, 2021, 2022"),
-                        fims = age1plus |> dplyr::filter(year %in% c(2020, 2021, 2022)) |> dplyr::pull(summbio))
+bio_fims <- data.frame(Type = "Summary biomass",
+                        Component = c("2020", "2021", "2022"),
+                        fims = age1plus |> dplyr::filter(year %in% c(2020, 2021, 2022)) |> dplyr::pull(fims))
 fims_smry <- rbind(parm_fims, bio_fims)
 
 smry <- cbind(fims_smry, ss3_smry |> dplyr::select(ss3))
+
+knitr::kable(smry)
 
 ```
 
@@ -558,11 +595,35 @@ Model:
 * 
 
 Output:
-* 
+* Include estimated SRR log_sd (when log_devs are estimated using random_effects)
+
+## Model fitting takeaways
+
+* Model fitting benefits greatly with estimation of log_init_naa
+  * This is closest analogue to estimating early ss3 rec_devs for non-equilibrium start
+* Difficulty in model convergence when estimating multiple paramters that affect scaling
+  * E.g., log_rzero, log_init_naa, and log_q
+  * E.g., log_M, log_rzero, and log_q
+  * E.g., log_M, log_init_naa, and log_q
+
+## What other model configurations were explored that may not have worked well?
+
+* Estimating log_devs using 'fixed_effects' with a constant log_sd did not converge well
+* Model failed to converge when both 'log_init_naa' and 'log_rzero' were estimated with 'fixed_effects'
+* Compared alternative methods of scaling 'fims' biomass: 
+  * 1. Estimate log_rzero, fix log_init_naa
+  * 2. Fix log_rzero, estimate log_init_naa
+  * 2 has the following relative 1:
+    * Improved fit to smrybio, recruitment, NAA, index, fishery selectivity 
+    * Worsened fit to SSB
+    * Similar-enough estimates of survey Q, selectivity
+  * Both models overestimated biomass early and late in the time series due to time-invariant Q
 
 ## What features are most important to add based on this case study?
 
-* 
+* Time-varying age-based selectivity (for fleet1)
+* Time-varying catchability (for survey1)
+* Prior specification (e.g., informed estimation of catchability, M)
 
 ```{r}
 #| label: clear
