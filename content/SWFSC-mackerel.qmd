@@ -68,6 +68,7 @@ data_4_model <- FIMS::FIMSFrame(fims_data)
 
 n_years <- FIMS::get_n_years(data_4_model)
 years <- FIMS::get_start_year(data_4_model):FIMS::get_end_year(data_4_model)
+survey_years <- fims_data |> dplyr::filter(type == "index", fleet == "survey1") |> dplyr::pull(timing)
 n_ages <- FIMS::get_n_ages(data_4_model)
 ages <- FIMS::get_ages(data_4_model)
 
@@ -103,7 +104,7 @@ sel_fish_init <- modfit$ageselex |>
   tidyr::pivot_longer(cols = `0`:`8`, names_to = "age", values_to = "sel") |>
   dplyr::group_by(age) |>
   dplyr::summarize(avg_sel = mean(sel)) |>
-  dplyr::pull(avg_sel); print(sel_fish) 
+  dplyr::pull(avg_sel); print(sel_fish_init) 
   # values for ages 1-3 are high similar and greater than 1 (~1.1)
   # not sure why some year-, age-specific selectivity values > 1
 sel_fish_init <- ifelse(sel_fish_init > 1, 0.9999, sel_fish_init); print(sel_fish_init)
@@ -227,7 +228,7 @@ update_parameters <- update_parameters |>
       module_name = "Population",
       label = c("log_M"),
       value = log(M_value),
-      estimation_type = "fixed_effects"
+      estimation_type = "constant"
     ),
     by = c("module_name", "label")
   ) |>
@@ -240,7 +241,29 @@ update_parameters <- update_parameters |>
       estimation_type = "constant"
     ),
     by = c("module_name", "age", "label")
-  )
+  ) 
+
+# Update catchability to be time-varying (or attempt to)
+new_q <- update_parameters |>
+  dplyr::filter(module_name == "Fleet", fleet == "survey1", label == "log_q") |>
+  dplyr::slice(rep(1, each = length(years))) |>
+  dplyr::mutate(timing = years)
+update_parameters <- update_parameters |>
+  dplyr::filter(!(module_name == "Fleet" & fleet == "survey1" & label == "log_q")) |>
+  rbind(new_q) |>
+  dplyr::rows_update( # set initial naa (estimated via 'fixed_effects') to values calculated from benchmark R0, M
+    tibble::tibble(
+      module_name = "Fleet",
+      fleet = "survey1",
+      label = "log_q",
+      value = logQ, 
+      timing = years,
+      # estimation_type = "fixed_effects"
+      estimation_type = c("fixed_effects", rep("constant", n_years-1))
+    ),
+    by = c("module_name", "fleet", "timing", "label")
+) 
+
 ```
 
 ## Run FIMS model
@@ -261,10 +284,11 @@ output <- FIMS::get_estimates(fit) |>
   )
 fit@sdreport$pdHess
 output |> dplyr::filter(module_name == "Selectivity", module_type == "AgeSpecific") |> print()
-dplyr::filter(output, label == "log_q") |> as.data.frame() |> print()
+dplyr::filter(output, label == "log_q") |> as.data.frame() |> print() # why is nothing printed for year_i, year?
+dplyr::filter(output, label == "log_M") |> as.data.frame() |> print()
 dplyr::filter(output, label == "log_sd") |> as.data.frame() |> print() # why is log_sd not included in model output?
 dplyr::filter(output, label == "log_rzero") |> as.data.frame() |> print()
-dplyr::filter(output, label == "spawning_biomass") |> as.data.frame()
+dplyr::filter(output, label == "spawning_biomass") |> as.data.frame() |> print()
 
 dplyr::filter(output, label == "spawning_biomass") |> as.data.frame()
 dplyr::filter(output, label == "index_expected") |> as.data.frame()
