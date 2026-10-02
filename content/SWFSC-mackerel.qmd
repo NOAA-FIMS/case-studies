@@ -244,6 +244,11 @@ update_parameters <- update_parameters |>
   ) 
 
 # Update catchability to be time-varying (or attempt to)
+  # Questions:
+    # How do I set-up distinct time-blocks for q?
+    # Do I need to supply Q for all years, even years without survey data?
+      # Seems like model won't run without it
+    # Why doesn't the output correctly population year/year_i for log_q estimates?
 new_q <- update_parameters |>
   dplyr::filter(module_name == "Fleet", fleet == "survey1", label == "log_q") |>
   dplyr::slice(rep(1, each = length(years))) |>
@@ -251,7 +256,7 @@ new_q <- update_parameters |>
 update_parameters <- update_parameters |>
   dplyr::filter(!(module_name == "Fleet" & fleet == "survey1" & label == "log_q")) |>
   rbind(new_q) |>
-  dplyr::rows_update( # set initial naa (estimated via 'fixed_effects') to values calculated from benchmark R0, M
+  dplyr::rows_update( # fix most estimated Q
     tibble::tibble(
       module_name = "Fleet",
       fleet = "survey1",
@@ -634,7 +639,7 @@ Output:
 
 * Estimating log_devs using 'fixed_effects' with a constant log_sd did not converge well
 * Model failed to converge when both 'log_init_naa' and 'log_rzero' were estimated with 'fixed_effects'
-* Compared alternative methods of scaling 'fims' biomass: 
+* Compared alternative methods of scaling 'fims' biomass (both had fixed log_M, single estimated log_q): 
   * 1. Estimate log_rzero, fix log_init_naa
   * 2. Fix log_rzero, estimate log_init_naa
   * 2 has the following relative 1:
