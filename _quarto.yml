@@ -8,6 +8,7 @@ project:
     - content/NWFSC-petrale.qmd
     - content/SWFSC-sardine.qmd
     - content/SEFSC-scamp.qmd
+    - content/PIFSC-opakapaka.qmd
     - content/acknowledgements.qmd
 
 website:
