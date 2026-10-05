@@ -5,6 +5,9 @@ project:
     - content/AFSC-GOA-pollock.qmd
     - content/NEFSC-yellowtail.qmd
     - content/pacific-hake.qmd
+    - content/NWFSC-petrale.qmd
+    - content/SWFSC-sardine.qmd
+    - content/SEFSC-scamp.qmd
     - content/acknowledgements.qmd
 
 website:
