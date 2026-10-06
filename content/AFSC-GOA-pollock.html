@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -79,9 +79,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-3245a9efd2d27e2c6a1ec784bf206a0c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
@@ -711,7 +711,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stderr">
 <pre><code>✔ Starting optimization ...
 ℹ Restarting optimizer 3 times to improve gradient.
-ℹ Maximum gradient went from 0.00163 to 0.00044 after 3 steps.
+ℹ Maximum gradient went from 0.00164 to 0.00046 after 3 steps.
 ✔ Finished optimization
 ✔ Finished sdreport</code></pre>
 </div>
@@ -722,19 +722,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 ℹ Consider simplifying the model, improving data quality, or fixing poorly
   informed parameters.
 ℹ The 2 largest standard error values are for parameters:
-ℹ 1. "expected_recruitment.53": "8.7018e+09"
-ℹ 2. "numbers_at_age.530": "8.7018e+09"
+ℹ 1. "expected_recruitment.53": "8.701796e+09"
+ℹ 2. "numbers_at_age.530": "8.701796e+09"
 ℹ Standard errors and MLEs may be unreliable.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>ℹ FIMS model version: 0.11.0.9000
-ℹ Total run time was 36.6944 seconds
+ℹ Total run time was 12.15292 seconds
 ℹ Number of parameters: fixed_effects=66, random_effects=53, and total=119
-ℹ Maximum gradient= 0.00044
+ℹ Maximum gradient= 0.00046
 ℹ Negative log likelihood (NLL):
 • Marginal NLL= 3302.808
 • Total NLL= 3242.3832
-ℹ Terminal SB= 633844352.27342</code></pre>
+ℹ Terminal SB= 633844121.63957</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -743,7 +743,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>FIMS<span class="sc">::</span><span class="fu">get_max_gradient</span>(fit) <span class="co"># </span><span class="al">TODO</span><span class="co">: from Cole, can use TMBhelper::fit_tmb to get val to &lt;1e-10</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.0004444186</code></pre>
+<pre><code>[1] 0.0004638334</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
