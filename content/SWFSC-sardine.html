@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>SWFSC Case Study Pacific Sardine – NOAA FIMS case studies</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../content/SEFSC-scamp.html" rel="prev">
+<link href="../images/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-3245a9efd2d27e2c6a1ec784bf206a0c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-d949c74a40ea39fb0bf3b5edfd17d417.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-3245a9efd2d27e2c6a1ec784bf206a0c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../content/acknowledgements.html">Content</a></li><li class="breadcrumb-item"><a href="../content/SWFSC-sardine.html">SWFSC Case Study Pacific Sardine</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-center sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="https://raw.githubusercontent.com/nmfs-opensci/assets/main/logo/nmfs-opensci-logo3.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="https://raw.githubusercontent.com/nmfs-opensci/assets/main/logo/nmfs-opensci-logo3.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      <div class="sidebar-tools-main tools-wide">
+    <a href="https://nmfs-opensci.github.io" title="NMFS Open Science" class="quarto-navigation-tool px-1" aria-label="NMFS Open Science"><i class="bi bi-globe"></i></a>
+    <a href="https://github.com/NOAA-FIMS/case-studies" title="NOAA FIMS case studies" class="quarto-navigation-tool px-1" aria-label="NOAA FIMS case studies"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Content</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/acknowledgements.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Acknowledgments</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/AFSC-GOA-pollock.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">AFSC Case Study Gulf of Alaska Walleye Pollock</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/NEFSC-yellowtail.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Southern New England-Mid Atlantic Yellowtail Flounder</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/NWFSC-petrale.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NWFSC Case Study Petrale Sole</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/pacific-hake.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">U.S. West Coast Case Study of Pacific Hake</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/PIFSC-opakapaka.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PIFSC ʻŌpakapaka Case Study</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/SEFSC-scamp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">South Atlantic Scamp</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/SWFSC-sardine.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">SWFSC Case Study Pacific Sardine</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-setup" id="toc-the-setup" class="nav-link active" data-scroll-target="#the-setup">The setup</a></li>
+  <li><a href="#simplifications-to-the-original-assessment" id="toc-simplifications-to-the-original-assessment" class="nav-link" data-scroll-target="#simplifications-to-the-original-assessment">Simplifications to the original assessment</a></li>
+  <li><a href="#setting-up-the-data" id="toc-setting-up-the-data" class="nav-link" data-scroll-target="#setting-up-the-data">Setting up the data</a></li>
+  <li><a href="#run-fims-model" id="toc-run-fims-model" class="nav-link" data-scroll-target="#run-fims-model">Run FIMS model</a></li>
+  <li><a href="#add-your-comparison-figures" id="toc-add-your-comparison-figures" class="nav-link" data-scroll-target="#add-your-comparison-figures">Add your comparison figures</a></li>
+  <li><a href="#add-comparison-tables" id="toc-add-comparison-tables" class="nav-link" data-scroll-target="#add-comparison-tables">Add comparison tables</a></li>
+  <li><a href="#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability" id="toc-what-was-your-experience-using-fims-what-could-we-do-to-improve-usability" class="nav-link" data-scroll-target="#what-was-your-experience-using-fims-what-could-we-do-to-improve-usability">What was your experience using FIMS? What could we do to improve usability?</a></li>
+  <li><a href="#what-features-are-most-important-to-add-based-on-this-case-study" id="toc-what-features-are-most-important-to-add-based-on-this-case-study" class="nav-link" data-scroll-target="#what-features-are-most-important-to-add-based-on-this-case-study">What features are most important to add based on this case study?</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/NOAA-FIMS/case-studies/edit/main/content/SWFSC-sardine.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/NOAA-FIMS/case-studies/blob/main/content/SWFSC-sardine.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/NOAA-FIMS/case-studies/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../content/acknowledgements.html">Content</a></li><li class="breadcrumb-item"><a href="../content/SWFSC-sardine.html">SWFSC Case Study Pacific Sardine</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">SWFSC Case Study Pacific Sardine</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="the-setup" class="level2">
+<h2 class="anchored" data-anchor-id="the-setup">The setup</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>common_name <span class="ot">&lt;-</span> <span class="st">"Northern subpopulation of Pacific sardine"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<ul>
+<li>R version: R version 4.6.1 (2026-06-24)</li>
+<li>TMB version: 1.9.25</li>
+<li>FIMS commit: c32d707</li>
+<li>Stock name: Northern subpopulation of Pacific sardine</li>
+<li>Region: SWFSC</li>
+<li>Analyst: Peter Kuriyama</li>
+</ul>
+</section>
+<section id="simplifications-to-the-original-assessment" class="level2">
+<h2 class="anchored" data-anchor-id="simplifications-to-the-original-assessment">Simplifications to the original assessment</h2>
+<p>The model presented in this case study was changed substantially from the operational version and should not be considered reflective of the Northern subpopulation of Pacific sardine stock. These results are intended to be a demonstration and nothing more.</p>
+<p>To get the operational model to more closely match a FIMS model the following changes were made:</p>
+<ul>
+<li>Convert two-semester time step to annual</li>
+<li>Sum the catch values for MexCal S1 and S2</li>
+<li>Sum the age comps for MexCal S1 and S2</li>
+<li>Drop PNW fishing fleet data (catch and age comp data)</li>
+<li>Drop spring AT survey index values</li>
+<li>Use expected summary biomass values as AT survey CPUE</li>
+<li>Fix Q=1 for AT survey, rather than have fixed, year-specific values</li>
+<li>No SR_regime parameter estimated (population assumed to start a equilibrium)</li>
+<li>Fixed M at 0.8</li>
+<li>Assume time-invariant logistic selectivity AT survey fleets (time-varying age-0 in benchmark assessment)</li>
+<li>Assume time-invariant logistic selectivity MexCal fleet (time-varying in benchmark assessment)</li>
+<li>Lorenzen age M -&gt; one M value</li>
+<li>No ageing error in FIMS?</li>
+<li>Assume time-invariant weight at age for the fishery and survey</li>
+</ul>
+</section>
+<section id="setting-up-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="setting-up-the-data">Setting up the data</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">file.path</span>(data_directory, <span class="st">"sardine_simplified_res.Rdata"</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>FIMS<span class="sc">::</span><span class="fu">clear</span>()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#--------------------------------------------------------</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Logistic function for later use</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>logistic <span class="ot">&lt;-</span> <span class="cf">function</span>(x, slope, inflection_point){</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="dv">1</span> <span class="sc">*</span> slope <span class="sc">*</span> (x <span class="sc">-</span> inflection_point)))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">value =</span> out)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(out)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#--------------------------------------------------------</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#Manually enter data</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># setwd("C://Users//peter.kuriyama//SynologyDrive/Research//noaa//FIMS")</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#-----Catch</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>catch <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">year =</span> <span class="dv">2005</span><span class="sc">:</span><span class="dv">2023</span>, <span class="at">catch =</span> <span class="fu">c</span>(<span class="fl">29188.50</span>, <span class="fl">53107.00</span>, <span class="fl">69929.40</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                                                <span class="fl">56317.80</span>, <span class="fl">33546.40</span>, <span class="fl">17466.40</span>, <span class="fl">39383.10</span>, <span class="fl">2585.38</span>, <span class="fl">5705.77</span>, <span class="fl">2558.63</span>, <span class="fl">7.18</span>, <span class="fl">428.26</span>,</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>                                                <span class="fl">347.11</span>, <span class="fl">514.20</span>, <span class="fl">619.04</span>, <span class="fl">653.15</span>, <span class="fl">285.89</span>, <span class="fl">508.02</span>, <span class="fl">152.31</span>))</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(catch, aes(x = year, y = catch)) + geom_point() +</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_line() + scale_y_continuous(label = comma)</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>fimscatch <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">type =</span> <span class="st">"catch"</span>, <span class="at">fleet =</span> <span class="st">"fleet1"</span>,</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>                    <span class="at">age =</span> <span class="cn">NA</span>, <span class="at">timing =</span> catch<span class="sc">$</span>year, <span class="at">observed =</span> catch<span class="sc">$</span>catch,</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>                    <span class="at">unit =</span> <span class="st">"mt"</span>,</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>                    <span class="at">uncertainty =</span> <span class="fu">paste0</span>(</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"~dlnorm(meanlog = log_catch_expected, sdlog = 0.00001"</span>,</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>                      <span class="co"># sqrt(log(0.01^2 + 1)), # Input was 0.05 but log(sqrt(log(0.01^2 + 1)))</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>                                             <span class="co"># was used in parameter tibble</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>                      <span class="st">")"</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>                    ))</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co">#-----CPUE</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>cpue <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">year =</span> <span class="dv">2005</span><span class="sc">:</span><span class="dv">2023</span>, <span class="at">obs =</span> <span class="fu">c</span>(<span class="fl">649619.0</span>, <span class="fl">899635.0</span>, <span class="fl">956354.0</span>, <span class="fl">863281.0</span>, <span class="fl">652029.0</span>,</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>                                             <span class="fl">504970.0</span>, <span class="fl">395783.0</span>, <span class="fl">293980.0</span>, <span class="fl">182417.0</span>, <span class="fl">89260.1</span>,</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>                                             <span class="fl">46403.0</span>, <span class="fl">40704.0</span>, <span class="fl">44592.1</span>, <span class="fl">48789.1</span>, <span class="fl">53551.8</span>,</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>                                             <span class="fl">59765.8</span>, <span class="fl">68451.7</span>, <span class="fl">71612.5</span>, <span class="fl">68957.9</span>))</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(cpue, aes(x = year, y = obs)) + geom_point() + geom_line() +</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="co">#   scale_y_continuous(label = comma)</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>fimsindex <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">type =</span> <span class="st">"index"</span>, <span class="at">fleet =</span> <span class="st">"survey1"</span>,</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>                    <span class="at">age =</span> <span class="cn">NA</span>, <span class="at">timing =</span> cpue<span class="sc">$</span>year,</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>                    <span class="at">observed =</span> cpue<span class="sc">$</span>obs, <span class="at">unit =</span> <span class="st">"mt"</span>,</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>                    <span class="at">uncertainty =</span> <span class="fu">paste0</span>(</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"~dlnorm(meanlog = log_catch_expected, sdlog = "</span>,</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">sqrt</span>(<span class="fu">log</span>(<span class="fl">0.01</span><span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span>)), <span class="co"># Input was 0.3 but log(sqrt(log(0.01^2 + 1)))</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>                                             <span class="co"># was used in parameter tibble</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>                      <span class="st">")"</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>                    )</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>fimsindex<span class="sc">$</span>unit <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="co">#-----Age compositions</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>acomps <span class="ot">&lt;-</span> utils<span class="sc">::</span><span class="fu">read.csv</span>(<span class="fu">file.path</span>(data_directory, <span class="st">"sardine_acomps.csv"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(name, Yr) <span class="sc">|&gt;</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>  <span class="co"># convert value column to proportions, to match fims-demo.Rmd</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">value_prop =</span> value <span class="sc">/</span> <span class="fu">sum</span>(value)) <span class="sc">|&gt;</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">ungroup</span>()</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>fimsage <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">type =</span> <span class="st">"age_comp"</span>, <span class="at">fleet =</span> acomps<span class="sc">$</span>name,</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>                  <span class="at">age =</span> acomps<span class="sc">$</span>age, <span class="at">timing =</span> acomps<span class="sc">$</span>Yr,</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>                  <span class="at">observed =</span> acomps<span class="sc">$</span>value_prop, <span class="at">unit =</span> <span class="st">"proportion"</span>,</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>                  <span class="at">uncertainty =</span> <span class="fu">paste0</span>(<span class="st">"~dmultinom(prob = agecomp_proportion, size = "</span>, acomps<span class="sc">$</span>Nsamp, <span class="st">")"</span>))</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a><span class="co">#fimsage$uncertainty &lt;- 50 Leave as empirical values</span></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a><span class="co">#-----Weight-at-age</span></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Q: What are the differences in how SS3 and FIMS process wtatage inputs/units?</span></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>  <span class="co"># A: SS3 assumes WAA is expressed in kg, and then converts to mt for biomass calculations</span></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>      <span class="co"># SS3 also expresses natage in terms of 1000s/fish</span></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>    <span class="co"># FIMS assumes WAA is expressed in mt, but expresses natage in fish</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>    <span class="co"># WAA input values are supplied to SS3 in kg and FIMS in mt</span></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Model now correctly processes inputs and provides comparable NAA, WAA, and biomass outputs to SS3</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>wtatage <span class="ot">&lt;-</span> r4ss<span class="sc">::</span><span class="fu">SS_readwtatage</span>(<span class="fu">file.path</span>(data_directory, <span class="st">"sardine_wtatage.ss_new"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(fleet <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">fleet =</span> <span class="fu">ifelse</span>(fleet <span class="sc">==</span> <span class="dv">1</span>, <span class="st">"fleet1"</span>, <span class="st">"survey1"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="st">`</span><span class="at">0</span><span class="st">`</span><span class="sc">:</span><span class="st">`</span><span class="at">10</span><span class="st">`</span>, <span class="at">names_to =</span> <span class="st">"age"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>(age <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"9"</span>, <span class="st">"10"</span>))) <span class="sc">|&gt;</span> <span class="co"># Trim ages 9 and 10 to match age-comps</span></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">value =</span> value <span class="sc">/</span> <span class="dv">1000</span>) <span class="co"># WAA converted from kg to mt</span></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>fimswaa <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"weight_at_age"</span>,</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>  <span class="at">fleet =</span> wtatage<span class="sc">$</span>fleet,</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> wtatage<span class="sc">$</span>age,</span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>  <span class="at">timing =</span> wtatage<span class="sc">$</span>year,</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>  <span class="at">observed =</span> wtatage<span class="sc">$</span>value,</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>  <span class="at">unit =</span> <span class="st">"mt"</span>,</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>  <span class="at">uncertainty =</span> <span class="cn">NA_character_</span></span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a><span class="co">#Combine everything, format</span></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>data_4_model <span class="ot">&lt;-</span> <span class="fu">rbind</span>(fimscatch, fimsindex, fimsage, fimswaa)</span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>data_4_model<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(data_4_model<span class="sc">$</span>age)</span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>data_4_model<span class="sc">$</span>observed <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data_4_model<span class="sc">$</span>observed)</span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to FIMSFrame</span></span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>data_4_model <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">FIMSFrame</span>(data_4_model)</span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>n_years <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">get_n_years</span>(data_4_model)</span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">get_start_year</span>(data_4_model)<span class="sc">:</span>FIMS<span class="sc">::</span><span class="fu">get_end_year</span>(data_4_model)</span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>n_ages <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">get_n_ages</span>(data_4_model)</span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>ages <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">get_ages</span>(data_4_model)</span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>rzero <span class="ot">&lt;-</span> <span class="fl">14.2</span> <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1000</span>) <span class="co">#14.2 is log(R0) in sardine simplified model</span></span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>M_value <span class="ot">&lt;-</span> <span class="fl">0.8</span> <span class="co">#.8 worked pretty well</span></span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>init_naa <span class="ot">&lt;-</span> <span class="fu">exp</span>(rzero) <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>(ages <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> M_value)</span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>init_naa[n_ages] <span class="ot">&lt;-</span> init_naa[n_ages] <span class="sc">/</span> M_value <span class="co"># sum of infinite series</span></span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a><span class="co"># Create default recruitment, growth, and maturity parameters</span></span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">setup_default_parameters</span>(<span class="at">data =</span> data_4_model) <span class="sc">|&gt;</span></span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Selectivity"</span>,</span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"inflection_point"</span>, <span class="st">"slope"</span>), <span class="dv">2</span>),</span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="fl">1.2</span>, <span class="dv">2</span>),</span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>      <span class="at">estimation_type =</span> <span class="st">"constant"</span>,</span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"fleet1"</span>, <span class="st">"survey1"</span>), <span class="at">each =</span> <span class="dv">2</span>)</span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>, <span class="st">"fleet"</span>)</span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Recruitment"</span>,</span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="st">"logit_steep"</span>,</span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> FIMS<span class="sc">::</span><span class="fu">logit</span>(<span class="fl">0.2</span>, <span class="fl">1.0</span>, <span class="fl">0.6</span>),</span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>      <span class="at">estimation_type =</span> <span class="st">"constant"</span></span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>)</span>
+<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Recruitment"</span>,</span>
+<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"log_rzero"</span>, <span class="st">"log_sd"</span>),</span>
+<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">c</span>(rzero, <span class="fu">log</span>(<span class="fl">1.2</span>)),</span>
+<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a>      <span class="at">estimation_type =</span> <span class="st">"constant"</span></span>
+<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb2-140"><a href="#cb2-140" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>)</span>
+<span id="cb2-141"><a href="#cb2-141" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-142"><a href="#cb2-142" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb2-143"><a href="#cb2-143" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb2-144"><a href="#cb2-144" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Maturity"</span>,</span>
+<span id="cb2-145"><a href="#cb2-145" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"inflection_point"</span>, <span class="st">"slope"</span>),</span>
+<span id="cb2-146"><a href="#cb2-146" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">c</span>(<span class="fl">1.2</span>, <span class="fl">2.5</span>) <span class="co"># 1.5 is arbitrary guess</span></span>
+<span id="cb2-147"><a href="#cb2-147" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb2-148"><a href="#cb2-148" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>)</span>
+<span id="cb2-149"><a href="#cb2-149" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-150"><a href="#cb2-150" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb2-151"><a href="#cb2-151" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb2-152"><a href="#cb2-152" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Fleet"</span>,</span>
+<span id="cb2-153"><a href="#cb2-153" aria-hidden="true" tabindex="-1"></a>      <span class="at">fleet =</span> <span class="st">"survey1"</span>,</span>
+<span id="cb2-154"><a href="#cb2-154" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="st">"log_q"</span>,</span>
+<span id="cb2-155"><a href="#cb2-155" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="dv">0</span>,</span>
+<span id="cb2-156"><a href="#cb2-156" aria-hidden="true" tabindex="-1"></a>      <span class="at">estimation_type =</span> <span class="st">"fixed_effects"</span></span>
+<span id="cb2-157"><a href="#cb2-157" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb2-158"><a href="#cb2-158" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"fleet"</span>, <span class="st">"label"</span>)</span>
+<span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a>    ssres[[<span class="st">"timeseries"</span>]] <span class="sc">|&gt;</span></span>
+<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="at">timing =</span> Yr, <span class="at">value =</span> <span class="st">"F:_1"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-163"><a href="#cb2-163" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(</span>
+<span id="cb2-164"><a href="#cb2-164" aria-hidden="true" tabindex="-1"></a>          timing <span class="sc">&gt;=</span> <span class="fu">get_start_year</span>(data_4_model),</span>
+<span id="cb2-165"><a href="#cb2-165" aria-hidden="true" tabindex="-1"></a>          timing <span class="sc">&lt;=</span> <span class="fu">get_end_year</span>(data_4_model)</span>
+<span id="cb2-166"><a href="#cb2-166" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">|&gt;</span></span>
+<span id="cb2-167"><a href="#cb2-167" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb2-168"><a href="#cb2-168" aria-hidden="true" tabindex="-1"></a>          <span class="at">module_name =</span> <span class="st">"Fleet"</span>,</span>
+<span id="cb2-169"><a href="#cb2-169" aria-hidden="true" tabindex="-1"></a>          <span class="at">fleet =</span> <span class="st">"fleet1"</span>,</span>
+<span id="cb2-170"><a href="#cb2-170" aria-hidden="true" tabindex="-1"></a>          <span class="at">label =</span> <span class="st">"log_Fmort"</span>,</span>
+<span id="cb2-171"><a href="#cb2-171" aria-hidden="true" tabindex="-1"></a>          <span class="at">estimation_type =</span> <span class="st">"constant"</span>,</span>
+<span id="cb2-172"><a href="#cb2-172" aria-hidden="true" tabindex="-1"></a>          <span class="at">value =</span> <span class="fu">log</span>(value)</span>
+<span id="cb2-173"><a href="#cb2-173" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb2-174"><a href="#cb2-174" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"fleet"</span>, <span class="st">"label"</span>, <span class="st">"timing"</span>)</span>
+<span id="cb2-175"><a href="#cb2-175" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-176"><a href="#cb2-176" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb2-177"><a href="#cb2-177" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb2-178"><a href="#cb2-178" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Population"</span>,</span>
+<span id="cb2-179"><a href="#cb2-179" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"log_M"</span>),</span>
+<span id="cb2-180"><a href="#cb2-180" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">log</span>(M_value)</span>
+<span id="cb2-181"><a href="#cb2-181" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb2-182"><a href="#cb2-182" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"label"</span>)</span>
+<span id="cb2-183"><a href="#cb2-183" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-184"><a href="#cb2-184" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rows_update</span>(</span>
+<span id="cb2-185"><a href="#cb2-185" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb2-186"><a href="#cb2-186" aria-hidden="true" tabindex="-1"></a>      <span class="at">module_name =</span> <span class="st">"Population"</span>,</span>
+<span id="cb2-187"><a href="#cb2-187" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"log_init_naa"</span>),</span>
+<span id="cb2-188"><a href="#cb2-188" aria-hidden="true" tabindex="-1"></a>      <span class="at">age =</span> ages,</span>
+<span id="cb2-189"><a href="#cb2-189" aria-hidden="true" tabindex="-1"></a>      <span class="at">value =</span> <span class="fu">log</span>(init_naa),</span>
+<span id="cb2-190"><a href="#cb2-190" aria-hidden="true" tabindex="-1"></a>      <span class="at">estimation_type =</span> <span class="st">"constant"</span></span>
+<span id="cb2-191"><a href="#cb2-191" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb2-192"><a href="#cb2-192" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"module_name"</span>, <span class="st">"age"</span>, <span class="st">"label"</span>)</span>
+<span id="cb2-193"><a href="#cb2-193" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="run-fims-model" class="level2">
+<h2 class="anchored" data-anchor-id="run-fims-model">Run FIMS model</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the model</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> parameters <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  FIMS<span class="sc">::</span><span class="fu">initialize_fims</span>(<span class="at">data =</span> data_4_model) <span class="sc">|&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  FIMS<span class="sc">::</span><span class="fu">fit_fims</span>(<span class="at">optimize =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Starting optimization ...
+ℹ Restarting optimizer 3 times to improve gradient.
+ℹ Maximum gradient went from 0 to 0 after 3 steps.
+✔ Finished optimization
+✔ Finished sdreport
+ℹ FIMS model version: 0.11.0.9000
+ℹ Total run time was 1.48395 seconds
+ℹ Number of parameters: fixed_effects=1, random_effects=18, and total=19
+ℹ Maximum gradient= 0
+ℹ Negative log likelihood (NLL):
+• Marginal NLL= 32796661437.3464
+• Total NLL= 32796661305.4976
+ℹ Terminal SB= 1197366.29186</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">get_estimates</span>(fit) <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">uncertainty_label =</span> <span class="st">"se"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> year_i <span class="sc">+</span> <span class="fu">get_start_year</span>(data_4_model) <span class="sc">-</span> <span class="dv">1</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">estimate =</span> estimated</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">filter</span>(output, label <span class="sc">==</span> <span class="st">"log_q"</span>) <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  module_name module_id module_type label   type type_id parameter_id   fleet
+1       Fleet         1        &lt;NA&gt; log_q vector       3            3  fleet1
+2       Fleet         2        &lt;NA&gt; log_q vector      31           67 survey1
+  year_i age_i length_i input estimated expected observed estimation_type
+1     NA    NA       NA     0         0       NA       NA        constant
+2     NA    NA       NA     0         0       NA       NA   fixed_effects
+  uncertainty distribution input_type lpdf likelihood log_sd log_like_cv
+1          NA         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA          NA
+2    391292.5         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA          NA
+      gradient uncertainty_label year estimate
+1           NA                se   NA        0
+2 6.310586e-15                se   NA        0</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">filter</span>(output, label <span class="sc">==</span> <span class="st">"spawning_biomass"</span>) <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>   module_name module_id module_type            label type type_id parameter_id
+1   Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+2   Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+3   Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+4   Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+5   Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+6   Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+7   Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+8   Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+9   Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+10  Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+11  Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+12  Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+13  Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+14  Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+15  Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+16  Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+17  Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+18  Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+19  Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+20  Population        NA        &lt;NA&gt; spawning_biomass &lt;NA&gt;      NA           NA
+   fleet year_i age_i length_i input  estimated expected observed
+1   &lt;NA&gt;      1    NA       NA    NA   94248.02       NA       NA
+2   &lt;NA&gt;      2    NA       NA    NA  113551.40       NA       NA
+3   &lt;NA&gt;      3    NA       NA    NA  397493.41       NA       NA
+4   &lt;NA&gt;      4    NA       NA    NA  500525.17       NA       NA
+5   &lt;NA&gt;      5    NA       NA    NA  346074.40       NA       NA
+6   &lt;NA&gt;      6    NA       NA    NA  318535.33       NA       NA
+7   &lt;NA&gt;      7    NA       NA    NA  279482.58       NA       NA
+8   &lt;NA&gt;      8    NA       NA    NA  171350.01       NA       NA
+9   &lt;NA&gt;      9    NA       NA    NA   99820.89       NA       NA
+10  &lt;NA&gt;     10    NA       NA    NA   57155.12       NA       NA
+11  &lt;NA&gt;     11    NA       NA    NA   43614.70       NA       NA
+12  &lt;NA&gt;     12    NA       NA    NA   44670.92       NA       NA
+13  &lt;NA&gt;     13    NA       NA    NA   37211.66       NA       NA
+14  &lt;NA&gt;     14    NA       NA    NA   36483.44       NA       NA
+15  &lt;NA&gt;     15    NA       NA    NA   43285.37       NA       NA
+16  &lt;NA&gt;     16    NA       NA    NA   41383.21       NA       NA
+17  &lt;NA&gt;     17    NA       NA    NA   53768.07       NA       NA
+18  &lt;NA&gt;     18    NA       NA    NA   53646.53       NA       NA
+19  &lt;NA&gt;     19    NA       NA    NA  114048.28       NA       NA
+20  &lt;NA&gt;     20    NA       NA    NA 1197366.29       NA       NA
+    estimation_type uncertainty distribution input_type lpdf likelihood log_sd
+1  derived_quantity   0.0000000         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+2  derived_quantity   0.1851328         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+3  derived_quantity   2.6410355         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+4  derived_quantity   3.5890660         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+5  derived_quantity   2.5519869         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+6  derived_quantity   2.5484885         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+7  derived_quantity   2.2104883         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+8  derived_quantity   1.4074509         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+9  derived_quantity   0.8528555         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+10 derived_quantity   0.5039215         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+11 derived_quantity   0.3835467         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+12 derived_quantity   0.3777963         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+13 derived_quantity   0.2982199         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+14 derived_quantity   0.2912226         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+15 derived_quantity   0.3423816         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+16 derived_quantity   0.3216318         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+17 derived_quantity   0.3698868         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+18 derived_quantity   0.4344616         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+19 derived_quantity   3.5136432         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+20 derived_quantity  52.1356627         &lt;NA&gt;       &lt;NA&gt;   NA         NA     NA
+   log_like_cv gradient uncertainty_label year   estimate
+1           NA       NA                se 2005   94248.02
+2           NA       NA                se 2006  113551.40
+3           NA       NA                se 2007  397493.41
+4           NA       NA                se 2008  500525.17
+5           NA       NA                se 2009  346074.40
+6           NA       NA                se 2010  318535.33
+7           NA       NA                se 2011  279482.58
+8           NA       NA                se 2012  171350.01
+9           NA       NA                se 2013   99820.89
+10          NA       NA                se 2014   57155.12
+11          NA       NA                se 2015   43614.70
+12          NA       NA                se 2016   44670.92
+13          NA       NA                se 2017   37211.66
+14          NA       NA                se 2018   36483.44
+15          NA       NA                se 2019   43285.37
+16          NA       NA                se 2020   41383.21
+17          NA       NA                se 2021   53768.07
+18          NA       NA                se 2022   53646.53
+19          NA       NA                se 2023  114048.28
+20          NA       NA                se 2024 1197366.29</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">filter</span>(output, label <span class="sc">==</span> <span class="st">"index_expected"</span>) <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>   module_name module_id module_type          label type type_id parameter_id
+1        Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+2        Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+3        Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+4        Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+5        Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+6        Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+7        Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+8        Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+9        Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+10       Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+11       Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+12       Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+13       Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+14       Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+15       Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+16       Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+17       Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+18       Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+19       Fleet         1        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+20       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+21       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+22       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+23       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+24       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+25       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+26       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+27       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+28       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+29       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+30       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+31       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+32       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+33       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+34       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+35       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+36       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+37       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+38       Fleet         2        &lt;NA&gt; index_expected &lt;NA&gt;      NA           NA
+     fleet year_i age_i length_i input  estimated  expected observed
+1   fleet1      1    NA       NA    NA  208425.85        NA       NA
+2   fleet1      2    NA       NA    NA  209627.22        NA       NA
+3   fleet1      3    NA       NA    NA 1017628.50        NA       NA
+4   fleet1      4    NA       NA    NA 1112279.66        NA       NA
+5   fleet1      5    NA       NA    NA  725558.74        NA       NA
+6   fleet1      6    NA       NA    NA  718326.53        NA       NA
+7   fleet1      7    NA       NA    NA  609486.78        NA       NA
+8   fleet1      8    NA       NA    NA  357965.94        NA       NA
+9   fleet1      9    NA       NA    NA  203481.16        NA       NA
+10  fleet1     10    NA       NA    NA  117414.13        NA       NA
+11  fleet1     11    NA       NA    NA   94585.16        NA       NA
+12  fleet1     12    NA       NA    NA  101578.42        NA       NA
+13  fleet1     13    NA       NA    NA   77493.01        NA       NA
+14  fleet1     14    NA       NA    NA   82147.12        NA       NA
+15  fleet1     15    NA       NA    NA   98095.77        NA       NA
+16  fleet1     16    NA       NA    NA   87542.32        NA       NA
+17  fleet1     17    NA       NA    NA  127162.37        NA       NA
+18  fleet1     18    NA       NA    NA  117318.59        NA       NA
+19  fleet1     19    NA       NA    NA   86532.80        NA       NA
+20 survey1      1    NA       NA    NA  189302.47 -188.2394 649619.0
+21 survey1      2    NA       NA    NA  260661.44 -187.9173 899635.0
+22 survey1      3    NA       NA    NA  832567.32 -186.7651 956354.0
+23 survey1      4    NA       NA    NA  955623.10 -186.6396 863281.0
+24 survey1      5    NA       NA    NA  701478.35 -186.9386 652029.0
+25 survey1      6    NA       NA    NA  641400.88 -187.0149 504970.0
+26 survey1      7    NA       NA    NA  545844.43 -187.2034 395783.0
+27 survey1      8    NA       NA    NA  337684.56 -187.6480 293980.0
+28 survey1      9    NA       NA    NA  198221.08 -188.1941 182417.0
+29 survey1     10    NA       NA    NA  115594.09 -188.7284  89260.1
+30 survey1     11    NA       NA    NA   88914.72 -188.9781  46403.0
+31 survey1     12    NA       NA    NA   89075.82 -188.9785  40704.0
+32 survey1     13    NA       NA    NA   73705.28 -189.1683  44592.1
+33 survey1     14    NA       NA    NA   75587.88 -189.1434  48789.1
+34 survey1     15    NA       NA    NA   85904.67 -189.0158  53551.8
+35 survey1     16    NA       NA    NA   84276.78 -189.0357  59765.8
+36 survey1     17    NA       NA    NA  109560.06 -188.7702  68451.7
+37 survey1     18    NA       NA    NA  102800.82 -188.8358  71612.5
+38 survey1     19    NA       NA    NA  352028.10 -187.6022  68957.9
+    estimation_type  uncertainty distribution input_type        lpdf likelihood
+1  derived_quantity 0.000000e+00         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+2  derived_quantity 5.225274e-02         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+3  derived_quantity 6.995367e+00         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+4  derived_quantity 8.301228e+00         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+5  derived_quantity 7.064794e+00         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+6  derived_quantity 6.848060e+00         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+7  derived_quantity 5.611579e+00         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+8  derived_quantity 3.337074e+00         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+9  derived_quantity 1.939993e+00         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+10 derived_quantity 1.130203e+00         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+11 derived_quantity 8.950123e-01         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+12 derived_quantity 8.752183e-01         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+13 derived_quantity 7.367111e-01         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+14 derived_quantity 8.162609e-01         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+15 derived_quantity 9.383388e-01         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+16 derived_quantity 8.293039e-01         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+17 derived_quantity 8.804983e-01         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+18 derived_quantity 1.005079e+00         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+19 derived_quantity 8.640905e-01         &lt;NA&gt;       &lt;NA&gt;          NA         NA
+20 derived_quantity 7.407263e+10   log_normal       data -3806360000 -203270467
+21 derived_quantity 1.019949e+11   log_normal       data -3806360000 -203277466
+22 derived_quantity 3.257773e+11   log_normal       data -3806360000 -201083529
+23 derived_quantity 3.739281e+11   log_normal       data -3806360000 -200626739
+24 derived_quantity 2.744832e+11   log_normal       data -3806360000 -200663483
+25 derived_quantity 2.509753e+11   log_normal       data -3806360000 -200304375
+26 derived_quantity 2.135848e+11   log_normal       data -3806360000 -200194172
+27 derived_quantity 1.321334e+11   log_normal       data -3806360000 -200488899
+28 derived_quantity 7.756241e+10   log_normal       data -3806360000 -200626773
+29 derived_quantity 4.523109e+10   log_normal       data -3806360000 -200265579
+30 derived_quantity 3.479166e+10   log_normal       data -3806360000 -199456764
+31 derived_quantity 3.485470e+10   log_normal       data -3806360000 -199195897
+32 derived_quantity 2.884032e+10   log_normal       data -3806360000 -199757347
+33 derived_quantity 2.957697e+10   log_normal       data -3806360000 -199887376
+34 derived_quantity 3.361385e+10   log_normal       data -3806360000 -199818524
+35 derived_quantity 3.297687e+10   log_normal       data -3806360000 -200077792
+36 derived_quantity 4.287002e+10   log_normal       data -3806360000 -199818303
+37 derived_quantity 4.022519e+10   log_normal       data -3806360000 -200039570
+38 derived_quantity 1.377459e+11   log_normal       data -3806360000 -197504698
+      log_sd log_like_cv gradient uncertainty_label year   estimate
+1         NA          NA       NA                se 2005  208425.85
+2         NA          NA       NA                se 2006  209627.22
+3         NA          NA       NA                se 2007 1017628.50
+4         NA          NA       NA                se 2008 1112279.66
+5         NA          NA       NA                se 2009  725558.74
+6         NA          NA       NA                se 2010  718326.53
+7         NA          NA       NA                se 2011  609486.78
+8         NA          NA       NA                se 2012  357965.94
+9         NA          NA       NA                se 2013  203481.16
+10        NA          NA       NA                se 2014  117414.13
+11        NA          NA       NA                se 2015   94585.16
+12        NA          NA       NA                se 2016  101578.42
+13        NA          NA       NA                se 2017   77493.01
+14        NA          NA       NA                se 2018   82147.12
+15        NA          NA       NA                se 2019   98095.77
+16        NA          NA       NA                se 2020   87542.32
+17        NA          NA       NA                se 2021  127162.37
+18        NA          NA       NA                se 2022  117318.59
+19        NA          NA       NA                se 2023   86532.80
+20 -4.605195          NA       NA                se 2005  189302.47
+21 -4.605195          NA       NA                se 2006  260661.44
+22 -4.605195          NA       NA                se 2007  832567.32
+23 -4.605195          NA       NA                se 2008  955623.10
+24 -4.605195          NA       NA                se 2009  701478.35
+25 -4.605195          NA       NA                se 2010  641400.88
+26 -4.605195          NA       NA                se 2011  545844.43
+27 -4.605195          NA       NA                se 2012  337684.56
+28 -4.605195          NA       NA                se 2013  198221.08
+29 -4.605195          NA       NA                se 2014  115594.09
+30 -4.605195          NA       NA                se 2015   88914.72
+31 -4.605195          NA       NA                se 2016   89075.82
+32 -4.605195          NA       NA                se 2017   73705.28
+33 -4.605195          NA       NA                se 2018   75587.88
+34 -4.605195          NA       NA                se 2019   85904.67
+35 -4.605195          NA       NA                se 2020   84276.78
+36 -4.605195          NA       NA                se 2021  109560.06
+37 -4.605195          NA       NA                se 2022  102800.82
+38 -4.605195          NA       NA                se 2023  352028.10</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_data</span>(data_4_model)<span class="sc">|&gt;</span>dplyr<span class="sc">::</span><span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"catch"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 19 × 7
+   type  fleet    age timing observed unit  uncertainty                         
+   &lt;chr&gt; &lt;chr&gt;  &lt;int&gt;  &lt;int&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                               
+ 1 catch fleet1    NA   2005 29188.   mt    ~dlnorm(meanlog = log_catch_expecte…
+ 2 catch fleet1    NA   2006 53107    mt    ~dlnorm(meanlog = log_catch_expecte…
+ 3 catch fleet1    NA   2007 69929.   mt    ~dlnorm(meanlog = log_catch_expecte…
+ 4 catch fleet1    NA   2008 56318.   mt    ~dlnorm(meanlog = log_catch_expecte…
+ 5 catch fleet1    NA   2009 33546.   mt    ~dlnorm(meanlog = log_catch_expecte…
+ 6 catch fleet1    NA   2010 17466.   mt    ~dlnorm(meanlog = log_catch_expecte…
+ 7 catch fleet1    NA   2011 39383.   mt    ~dlnorm(meanlog = log_catch_expecte…
+ 8 catch fleet1    NA   2012  2585.   mt    ~dlnorm(meanlog = log_catch_expecte…
+ 9 catch fleet1    NA   2013  5706.   mt    ~dlnorm(meanlog = log_catch_expecte…
+10 catch fleet1    NA   2014  2559.   mt    ~dlnorm(meanlog = log_catch_expecte…
+11 catch fleet1    NA   2015     7.18 mt    ~dlnorm(meanlog = log_catch_expecte…
+12 catch fleet1    NA   2016   428.   mt    ~dlnorm(meanlog = log_catch_expecte…
+13 catch fleet1    NA   2017   347.   mt    ~dlnorm(meanlog = log_catch_expecte…
+14 catch fleet1    NA   2018   514.   mt    ~dlnorm(meanlog = log_catch_expecte…
+15 catch fleet1    NA   2019   619.   mt    ~dlnorm(meanlog = log_catch_expecte…
+16 catch fleet1    NA   2020   653.   mt    ~dlnorm(meanlog = log_catch_expecte…
+17 catch fleet1    NA   2021   286.   mt    ~dlnorm(meanlog = log_catch_expecte…
+18 catch fleet1    NA   2022   508.   mt    ~dlnorm(meanlog = log_catch_expecte…
+19 catch fleet1    NA   2023   152.   mt    ~dlnorm(meanlog = log_catch_expecte…</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get information about the model and print a few characters to the screen</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># log &lt;- FIMS::get_log_module("information")</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="add-your-comparison-figures" class="level2">
+<h2 class="anchored" data-anchor-id="add-your-comparison-figures">Add your comparison figures</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#------------------------------------------------------------------------</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#------SSB</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Q: Is 'ssb' from  get_report(fit) calculated assuming 2 genders and a 50:50 ratio?</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># If so, it might explain the discrepancy between ss3 (1 gender model) and fims (2 genders)</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>ssbs <span class="ot">&lt;-</span> ssres<span class="sc">$</span>timeseries <span class="sc">|&gt;</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Yr, <span class="at">ss3 =</span> SpawnBio) <span class="sc">|&gt;</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">full_join</span>(</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(output, label <span class="sc">==</span> <span class="st">"spawning_biomass"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">select</span>(year, <span class="at">fims =</span> estimate),</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Yr"</span> <span class="ot">=</span> <span class="st">"year"</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>ssbs <span class="sc">|&gt;</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Yr <span class="sc">&gt;=</span> <span class="dv">2005</span>, Yr <span class="sc">&lt;</span> <span class="dv">2024</span>) <span class="sc">|&gt;</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">names_to =</span> <span class="st">"variable"</span>, <span class="at">cols =</span> dplyr<span class="sc">::</span><span class="fu">matches</span>(<span class="st">"ss3|fims"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Yr, <span class="at">y =</span> value, <span class="at">group =</span> variable, <span class="at">color =</span> variable)) <span class="sc">+</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ylab</span>(<span class="st">"Spawning biomass (mt)"</span>) <span class="sc">+</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">xlab</span>(<span class="st">"year"</span>) <span class="sc">+</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position.inside =</span> <span class="fu">c</span>(.<span class="dv">9</span>, .<span class="dv">9</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SWFSC-sardine_files/figure-html/comparison-plots-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggsave</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"figures/SWFSC-sardine-sb.png"</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="fl">7.35</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="fl">4.8</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Fishing mortality</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>ssres<span class="sc">$</span>timeseries <span class="sc">|&gt;</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Yr, <span class="at">ss3 =</span> <span class="st">"F:_1"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">full_join</span>(</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(output, label <span class="sc">==</span> <span class="st">"log_Fmort"</span>, module_id <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">estimate =</span> <span class="fu">exp</span>(estimate)) <span class="sc">|&gt;</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">select</span>(year, <span class="at">fims =</span> estimate),</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Yr"</span> <span class="ot">=</span> <span class="st">"year"</span>)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Yr <span class="sc">&gt;=</span> <span class="dv">2005</span>, Yr <span class="sc">&lt;</span> <span class="dv">2024</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">names_to =</span> <span class="st">"variable"</span>, <span class="at">cols =</span> dplyr<span class="sc">::</span><span class="fu">matches</span>(<span class="st">"ss3|fims"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Yr, <span class="at">y =</span> value, <span class="at">group =</span> variable, <span class="at">color =</span> variable)) <span class="sc">+</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ylab</span>(<span class="st">"Fishing mortality"</span>) <span class="sc">+</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">xlab</span>(<span class="st">"year"</span>) <span class="sc">+</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position.inside =</span> <span class="fu">c</span>(.<span class="dv">9</span>, .<span class="dv">9</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SWFSC-sardine_files/figure-html/comparison-plots-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#------------------------------------------------------------------------</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#------Index fits</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>index <span class="ot">&lt;-</span> ssres<span class="sc">$</span>cpue <span class="sc">|&gt;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="at">year =</span> Yr, <span class="at">obs =</span> Obs, <span class="at">ss3 =</span> Exp)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>index<span class="sc">$</span>fims <span class="ot">&lt;-</span> FIMS<span class="sc">::</span><span class="fu">get_report</span>(fit)[[<span class="st">"index_expected"</span>]][[<span class="dv">2</span>]]</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>index <span class="sc">|&gt;</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">names_to =</span> <span class="st">"variable"</span>, <span class="at">cols =</span> dplyr<span class="sc">::</span><span class="fu">matches</span>(<span class="st">"ss3|fims"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> year)) <span class="sc">+</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">y =</span> obs)) <span class="sc">+</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">y =</span> value, <span class="at">color =</span> variable, <span class="at">group =</span> variable)) <span class="sc">+</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position.inside =</span> <span class="fu">c</span>(.<span class="dv">9</span>, .<span class="dv">9</span>)) <span class="sc">+</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">xlab</span>(<span class="st">"Year"</span>) <span class="sc">+</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ylab</span>(<span class="st">"Survey biomass value (mt)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SWFSC-sardine_files/figure-html/comparison-plots-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggsave</span>(<span class="st">"figures/SWFSC-sardine-surveyfit.png"</span>, <span class="at">width =</span> <span class="fl">6.8</span>, <span class="at">height =</span> <span class="fl">5.25</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">#------------------------------------------------------------------------</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">#-----Calculate age-1+ biomass</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Multiply numbers at age by weight at age and sum</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>naa <span class="ot">&lt;-</span> <span class="fu">get_report</span>(fit)[[<span class="st">"numbers_at_age"</span>]][[<span class="dv">1</span>]]</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>naa1 <span class="ot">&lt;-</span> tidyr<span class="sc">::</span><span class="fu">crossing</span>(<span class="fu">c</span>(years, <span class="dv">2024</span>), ages) <span class="sc">|&gt;</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">naa =</span> naa) <span class="sc">|&gt;</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(naa1) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"age"</span>, <span class="st">"value"</span>)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>naa1<span class="sc">$</span>cohort <span class="ot">&lt;-</span> naa1<span class="sc">$</span>year <span class="sc">-</span> naa1<span class="sc">$</span>age</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co">#Format Weight at age (identical WAA for each year and fleet)</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>waa <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> wtatage<span class="sc">$</span>age[(wtatage<span class="sc">$</span>year <span class="sc">==</span> <span class="dv">2005</span> <span class="sc">&amp;</span> wtatage<span class="sc">$</span>fleet <span class="sc">==</span> <span class="st">"fleet1"</span>)],</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">waa =</span> wtatage<span class="sc">$</span>value[(wtatage<span class="sc">$</span>year <span class="sc">==</span> <span class="dv">2005</span> <span class="sc">&amp;</span> wtatage<span class="sc">$</span>fleet <span class="sc">==</span> <span class="st">"fleet1"</span>)]</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">age =</span> <span class="fu">as.integer</span>(age))</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>naa1 <span class="ot">&lt;-</span> naa1 <span class="sc">|&gt;</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(waa, <span class="at">by =</span> <span class="st">"age"</span>)</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>naa1 <span class="ot">&lt;-</span> naa1 <span class="sc">|&gt;</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">weight =</span> value <span class="sc">*</span> waa)</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>age1plus <span class="ot">&lt;-</span> naa1 <span class="sc">|&gt;</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(age <span class="sc">!=</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(year) <span class="sc">|&gt;</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">summbio =</span> <span class="fu">sum</span>(weight))</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>bio1 <span class="ot">&lt;-</span> ssres<span class="sc">$</span>timeseries <span class="sc">|&gt;</span></span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Seas <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Yr, Bio_smry) <span class="sc">|&gt;</span></span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">year =</span> Yr, <span class="at">ss3bio =</span> Bio_smry) <span class="sc">|&gt;</span></span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>Yr, <span class="sc">-</span>Bio_smry)</span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a>age1plus <span class="ot">&lt;-</span> age1plus <span class="sc">|&gt;</span></span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(bio1, <span class="at">by =</span> <span class="st">"year"</span>)</span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(age1plus) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"fims"</span>, <span class="st">"ss3"</span>)</span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a><span class="co">#Full time series of age-1+ biomass</span></span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>age1plus <span class="sc">|&gt;</span></span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a>  reshape2<span class="sc">::</span><span class="fu">melt</span>(<span class="at">id.var =</span> <span class="st">"year"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> value, <span class="at">group =</span> variable, <span class="at">color =</span> variable)) <span class="sc">+</span></span>
+<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb17-50"><a href="#cb17-50" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ylab</span>(<span class="st">"Age-1+ biomass (mt)"</span>) <span class="sc">+</span></span>
+<span id="cb17-51"><a href="#cb17-51" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb17-52"><a href="#cb17-52" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position.inside =</span> <span class="fu">c</span>(.<span class="dv">9</span>, .<span class="dv">9</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SWFSC-sardine_files/figure-html/comparison-plots-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggsave</span>(<span class="st">"figures/SWFSC-sardine-age1plusbio.png"</span>, <span class="at">width =</span> <span class="fl">6.8</span>, <span class="at">height =</span> <span class="fl">5.25</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Zoomed in time series of age-1+</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>age1plus <span class="sc">|&gt;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  reshape2<span class="sc">::</span><span class="fu">melt</span>(<span class="at">id.var =</span> <span class="st">"year"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2010</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> value, <span class="at">group =</span> variable, <span class="at">color =</span> variable)) <span class="sc">+</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ylab</span>(<span class="st">"Age-1+ biomass (mt)"</span>) <span class="sc">+</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position.inside =</span> <span class="fu">c</span>(.<span class="dv">9</span>, .<span class="dv">9</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SWFSC-sardine_files/figure-html/comparison-plots-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggsave</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"figures/SWFSC-sardine-age1plusbio_zoomedin.png"</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="fl">6.8</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="fl">5.25</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">#------------------------------------------------------------------------</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">#------Recruitment</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Divide FIMS recruits by 1000 to match reporting in SS3</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>recs <span class="ot">&lt;-</span> ssres<span class="sc">$</span>timeseries <span class="sc">|&gt;</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Yr, <span class="at">ss3 =</span> Recruit_0) <span class="sc">|&gt;</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">fims =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="fu">get_report</span>(fit)[[<span class="st">"expected_recruitment"</span>]][[<span class="dv">1</span>]]) <span class="sc">/</span> <span class="dv">1000</span>)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>recs <span class="sc">|&gt;</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Yr <span class="sc">&gt;=</span> <span class="dv">2005</span>, Yr <span class="sc">&lt;</span> <span class="dv">2024</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  reshape2<span class="sc">::</span><span class="fu">melt</span>(<span class="at">id.var =</span> <span class="st">"Yr"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Yr, <span class="at">y =</span> value, <span class="at">group =</span> variable, <span class="at">color =</span> variable)) <span class="sc">+</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position.inside =</span> <span class="fu">c</span>(.<span class="dv">9</span>, .<span class="dv">9</span>)) <span class="sc">+</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ylab</span>(<span class="st">"Recruits (x1000)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SWFSC-sardine_files/figure-html/comparison-plots-6.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggsave</span>(<span class="st">"figures/SWFSC-sardine-recruitment.png"</span>, <span class="at">width =</span> <span class="fl">6.8</span>, <span class="at">height =</span> <span class="fl">5.25</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">#------------------------------------------------------------------------</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co">#------Fixed selectivities</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Are fixed but plot for comparison's sake</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="do">##Fishery</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="do">### commented out due to error "! object 'value' not found"</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co"># sel_fishery &lt;- logistic(ages,</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co">#                         slope = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "slope", module_id == 1) |&gt;</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="co">#                           dplyr::pull(estimated),</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="co">#                         inflection_point = dplyr::filter(FIMS::get_estimates(fit), module_name == "Selectivity", label == "inflection_point", module_id == 1) |&gt;</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="co">#                           dplyr::pull(estimated))</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="co"># names(sel_fishery) &lt;- c("age", "fims")</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="co"># sel_fishery$ss3 &lt;- ssres$ageselex |&gt;</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a><span class="co">#   dplyr::filter(Yr == 2005, Factor == "Asel", Fleet == 1) |&gt;</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="co">#   dplyr::select(as.character(0:8)) |&gt;</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a><span class="co">#   t()</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="co"># sel_fishery &lt;- sel_fishery |&gt;</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a><span class="co">#   reshape2::melt(id.var = "age")</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot2::ggplot(</span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a><span class="co">#   sel_fishery,</span></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a><span class="co">#   ggplot2::aes(x = age, y = value, group = variable, color = variable)</span></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a><span class="co"># ) +</span></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a><span class="co">#   ggplot2::geom_point() +</span></span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a><span class="co">#   ggplot2::geom_line()</span></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a><span class="co">#-----------Survey</span></span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>sel_survey <span class="ot">&lt;-</span> <span class="fu">logistic</span>(ages,</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>                       <span class="at">slope =</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(FIMS<span class="sc">::</span><span class="fu">get_estimates</span>(fit), module_name <span class="sc">==</span> <span class="st">"Selectivity"</span>, label <span class="sc">==</span> <span class="st">"slope"</span>, module_id <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>                          dplyr<span class="sc">::</span><span class="fu">pull</span>(estimated),</span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>                       <span class="at">inflection_point =</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(FIMS<span class="sc">::</span><span class="fu">get_estimates</span>(fit), module_name <span class="sc">==</span> <span class="st">"Selectivity"</span>, label <span class="sc">==</span> <span class="st">"inflection_point"</span>, module_id <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a>                          dplyr<span class="sc">::</span><span class="fu">pull</span>(estimated))</span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(sel_survey) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">'fims'</span>)</span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>sel_survey<span class="sc">$</span>ss3 <span class="ot">&lt;-</span> ssres<span class="sc">$</span>ageselex <span class="sc">|&gt;</span></span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Yr <span class="sc">==</span> <span class="dv">2005</span>, Factor <span class="sc">==</span> <span class="st">"Asel"</span>, Fleet <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">as.character</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">8</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">t</span>()</span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a>sel_survey <span class="ot">&lt;-</span> sel_survey <span class="sc">|&gt;</span></span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a>  reshape2<span class="sc">::</span><span class="fu">melt</span>(<span class="at">id.var =</span> <span class="st">"age"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: attributes are not identical across measure variables; they will be
+dropped</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  sel_survey,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> value, <span class="at">group =</span> variable, <span class="at">color =</span> variable)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SWFSC-sardine_files/figure-html/comparison-plots-7.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="add-comparison-tables" class="level2">
+<h2 class="anchored" data-anchor-id="add-comparison-tables">Add comparison tables</h2>
+</section>
+<section id="what-was-your-experience-using-fims-what-could-we-do-to-improve-usability" class="level2">
+<h2 class="anchored" data-anchor-id="what-was-your-experience-using-fims-what-could-we-do-to-improve-usability">What was your experience using FIMS? What could we do to improve usability?</h2>
+<p>Tools to check: * data were inputted correctly (dimension checks) * starting values and settings are reasonable * I had issues installing FIMS with install_github that seemed to be related to R settings</p>
+<p>Model: * streamline configuration of fleets and maybe make it easier to add additional fleets (perhaps clone existing ones then change specific settings) * Think about ways to modify single model settings based on say different starting values</p>
+<p>Output: * include all parameter values and names (fixed and estimated, also show starting values) * Code to generate a default set of figures and tables for use in assessment documents/presentations</p>
+</section>
+<section id="what-features-are-most-important-to-add-based-on-this-case-study" class="level2">
+<h2 class="anchored" data-anchor-id="what-features-are-most-important-to-add-based-on-this-case-study">What features are most important to add based on this case study?</h2>
+<ul>
+<li>The ability to start the model at non-equilibrium conditions (In SS3 there is a SR_regime parameter and Initial F to match equilbirium age comps to first year of data age comps) *Does the model year start in the first year of the data input?</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>FIMS<span class="sc">::</span><span class="fu">clear</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/noaa-fims\.github\.io\/case-studies");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../content/SEFSC-scamp.html" class="pagination-link" aria-label="South Atlantic Scamp">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">South Atlantic Scamp</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© CC-1.0</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/NOAA-FIMS/case-studies/edit/main/content/SWFSC-sardine.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/NOAA-FIMS/case-studies/blob/main/content/SWFSC-sardine.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/NOAA-FIMS/case-studies/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>This page is built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

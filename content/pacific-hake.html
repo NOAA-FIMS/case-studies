@@ -70,7 +70,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../content/NEFSC-yellowtail.html" rel="prev">
+<link href="../content/PIFSC-opakapaka.html" rel="next">
+<link href="../content/NWFSC-petrale.html" rel="prev">
 <link href="../images/favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -83,9 +84,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-d3afe8230f4e8efc5f9e520bcaeb6a52.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-4200c13e256f42cc5e203c5f516c2120.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-d3afe8230f4e8efc5f9e520bcaeb6a52.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-3245a9efd2d27e2c6a1ec784bf206a0c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-d949c74a40ea39fb0bf3b5edfd17d417.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-3245a9efd2d27e2c6a1ec784bf206a0c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -348,8 +349,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../content/NWFSC-petrale.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NWFSC Case Study Petrale Sole</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../content/pacific-hake.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">U.S. West Coast Case Study of Pacific Hake</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/PIFSC-opakapaka.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PIFSC ʻŌpakapaka Case Study</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/SEFSC-scamp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">South Atlantic Scamp</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/SWFSC-sardine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SWFSC Case Study Pacific Sardine</span></a>
   </div>
 </li>
       </ul>
@@ -459,7 +484,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li>R version: R version 4.6.1 (2026-06-24)</li>
 <li>TMB version: 1.9.25</li>
-<li>FIMS commit: 8bdd020</li>
+<li>FIMS commit: c32d707</li>
 <li>Stock name: Pacific Hake</li>
 <li>Region: U.S. West Coast</li>
 <li>Analyst: Kelli F. Johnson</li>
@@ -540,13 +565,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 8
   type     fleet             age length timing observed unit       uncertainty
-  &lt;chr&gt;    &lt;chr&gt;           &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      
-1 age_comp Acoustic_Survey     0     NA   1975     -999 proportion &lt;NA&gt;       
-2 age_comp Acoustic_Survey     1     NA   1975     -999 proportion &lt;NA&gt;       
-3 age_comp Acoustic_Survey     2     NA   1975     -999 proportion &lt;NA&gt;       
-4 age_comp Acoustic_Survey     3     NA   1975     -999 proportion &lt;NA&gt;       
-5 age_comp Acoustic_Survey     4     NA   1975     -999 proportion &lt;NA&gt;       
-6 age_comp Acoustic_Survey     5     NA   1975     -999 proportion &lt;NA&gt;       
+  &lt;chr&gt;    &lt;chr&gt;           &lt;dbl&gt; &lt;lgl&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      
+1 age_comp Acoustic_Survey     0 NA       1975     -999 proportion &lt;NA&gt;       
+2 age_comp Acoustic_Survey     1 NA       1975     -999 proportion &lt;NA&gt;       
+3 age_comp Acoustic_Survey     2 NA       1975     -999 proportion &lt;NA&gt;       
+4 age_comp Acoustic_Survey     3 NA       1975     -999 proportion &lt;NA&gt;       
+5 age_comp Acoustic_Survey     4 NA       1975     -999 proportion &lt;NA&gt;       
+6 age_comp Acoustic_Survey     5 NA       1975     -999 proportion &lt;NA&gt;       
 additional slots include the following:fleets:
 [1] "Fishery"         "Acoustic_Survey"
 n_years:
@@ -1170,7 +1195,7 @@ unreliable</code></pre>
 <pre><code>Getting Q and its stats...</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Q is 1.38% sparse | Ratio of marginal SDs=52996.4 | Max abs cor &gt;=1</code></pre>
+<pre><code>Q is 1.37% sparse | Ratio of marginal SDs=52825.5 | Max abs cor &gt;=1</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rebuilding TMB obj without random effects...</code></pre>
@@ -1179,7 +1204,7 @@ unreliable</code></pre>
 <pre><code>dense metric selected b/c faster than sparse and high correlation (max=1)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>log-posterior at inits=(-52187322813.44); at conditional mode=-3539.953</code></pre>
+<pre><code>log-posterior at inits=(-52048698641.05); at conditional mode=-3539.953</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Starting MCMC sampling...</code></pre>
@@ -1187,15 +1212,15 @@ unreliable</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 
-Gradient evaluation took 0.000422 seconds
-1000 transitions using 10 leapfrog steps per transition would take 4.22 seconds.
+Gradient evaluation took 0.000336 seconds
+1000 transitions using 10 leapfrog steps per transition would take 3.36 seconds.
 Adjust your expectations accordingly!
 
 
 
- Elapsed Time: 625.89 seconds (Warm-up)
-               5044.23 seconds (Sampling)
-               5670.12 seconds (Total)</code></pre>
+ Elapsed Time: 486.359 seconds (Warm-up)
+               3840.74 seconds (Sampling)
+               4327.1 seconds (Total)</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -1786,11 +1811,14 @@ Adjust your expectations accordingly!
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../content/NEFSC-yellowtail.html" class="pagination-link" aria-label="Southern New England-Mid Atlantic Yellowtail Flounder">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Southern New England-Mid Atlantic Yellowtail Flounder</span>
+      <a href="../content/NWFSC-petrale.html" class="pagination-link" aria-label="NWFSC Case Study Petrale Sole">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">NWFSC Case Study Petrale Sole</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../content/PIFSC-opakapaka.html" class="pagination-link" aria-label="PIFSC ʻŌpakapaka Case Study">
+        <span class="nav-page-text">PIFSC ʻŌpakapaka Case Study</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
