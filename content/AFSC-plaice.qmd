@@ -37,14 +37,15 @@ This section loads necessary libraries and defines some common variables that wi
 ```{r}
 #| label: setup-objects
 common_name <- "Alaska plaice"
+library(FIMS)
 ```
 
 * R version: `r R_version`
 * TMB version: `r TMB_version`
 * FIMS commit: `r FIMS_commit`
 * Stock name: `r common_name`
-* Region: NWFSC
-* Analyst: Ian G. Taylor
+* Region: AFSC
+* Analyst: Elizabeth F. Perl & Grant Adams
 
 **A Note on This Demonstration:** The models presented in this case study are changed substantially from the operational version and should not be considered reflective of the `r common_name` stock. These results are intended to be a demonstration of the FIMS conversion process and nothing more.
 
@@ -52,7 +53,11 @@ common_name <- "Alaska plaice"
 
 FIMS is a powerful but newer framework and does not yet have all the features of SS3 (e.g., two-sex models, certain selectivity patterns). Therefore, a critical first step is often to simplify the existing SS3 model to a "FIMS-compatible" structure. This also helps in making a more direct, "apples-to-apples" comparison between the two modeling platforms.
 
-The original Alaska plaice model is a two-sex model. As FIMS currently only supports single-sex (or combined-sex) models, our primary simplification will be to convert the model to a female-only model.
+Changes made to the SS3 model:
+ -  The original Alaska plaice model is a two-sex model. As FIMS currently only supports single-sex (or combined-sex) models, our primary simplification will be to convert the model to a female-only model.
+ - Change selectivity to logistic because this is what is in FIMS
+ - Remove blocks and variance adjustments for simplicity
+ - Adjust recruitment deviation years to put them all into the main vector
 
 To keep our code organized and reduce repetition, we'll create a helper function to perform these simplifications below.
 
@@ -180,7 +185,6 @@ Now we can use this function to create our two simplified SS3 models.
 Here, we simplify the SS3 model and configure it to estimate growth internally rather than using empirical weight-at-age.
 
 ```{r}
-library(FIMS)
 #| label: prep-no-ewaa-model
 # Read the original assessment model from GitHub
 plaice_input_base <- r4ss::SS_read(
@@ -544,7 +548,7 @@ Finally, we can run the model. It's often a good idea to first run without optim
 test_fit <- parameters |>
     FIMS::initialize_fims(data = data_4_fims) |>
     FIMS::fit_fims(optimize = FALSE)
-
+clear()
 # need to fix error message to say "fit" or whatever instead of FIMSFit
 
 # Run the model with optimization
@@ -684,6 +688,7 @@ get_ss3_timeseries <- function(report, model) {
             model = model
         )
 }
+
 get_fims_timeseries <- function(fit, model, recruitment_scale = 1) {
     report <- get_report(fit)
     tibble::tibble(
