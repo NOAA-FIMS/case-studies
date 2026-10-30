@@ -356,14 +356,16 @@ parameters <- default_parameters |>
     ),
     by = c("module_name", "label")
   ) |>
-  dplyr::rows_update( #Note: this could probably be combined with Growth block above and put NAs for age for the other parameters
+  # update SD parameters (could be combined with those above)
+  # uses names implemented on 2026-10-30
+  dplyr::rows_update(
     tibble::tibble(
       module_name = "Growth",
-      label = "length_at_age_sd_at_reference_ages",
-      age = c(0, 21),
+      label = c("length_at_age_sd_young", "length_at_age_sd_old"),
+      age = NA_real_,
       value = c(0.51, 5.71)
     ),
-    by=c("module_name", "label", "age")
+    by = c("module_name", "label")
   ) |>
   dplyr::rows_update(
     tibble::tibble(
