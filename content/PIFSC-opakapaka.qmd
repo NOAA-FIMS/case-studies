@@ -255,21 +255,31 @@ opaka_dat_fims_raw <- r4ss::ss3_data_to_fims(
   ss3_output = rep,
   fleets = c(1, 2, 3),
   maxage = max(ages),
-  lengths = comp_lengths
+  lengths = comp_lengths,
+  EWAA = FALSE
 ) |>
   dplyr::filter(type != "age_comp")
 
-opaka_age_to_length <- opaka_dat_fims_raw |>
-  dplyr::filter(type == "age_to_length_conversion") |>
-  dplyr::select(-timing) |>
-  dplyr::mutate(
-    fleet = "BFISH"
-  ) |>
-  tidyr::crossing(timing = alk_years)
+# set EWAA to TRUE to get the weight-at-age data
+# which is necessary to specify age bins in the FIMS model
+opaka_dat_fims_raw_EWAA <- r4ss::ss3_data_to_fims(
+  ss3_inputs = opaka_inputs_bootstrap,
+  ss3_output = rep,
+  fleets = c(1, 2, 3),
+  maxage = max(ages),
+  lengths = comp_lengths,
+  EWAA = TRUE
+) |>
+  dplyr::filter(type != "age_comp") |> 
+  dplyr::filter(type != "age_to_length_conversion") |> 
+  # mutate weight-at-age to have fleet == NA
+  dplyr::mutate(fleet = ifelse(type == "weight_at_age", NA, fleet))
 
-opaka_dat_fims <- opaka_dat_fims_raw |>
-  dplyr::filter(type != "age_to_length_conversion") |>
-  dplyr::bind_rows(opaka_age_to_length) |>
+opaka_dat_fims_raw_EWAA |> 
+  dplyr::count(type)
+
+# reduce sample sizes for BFISH length comps
+opaka_dat_fims <- opaka_dat_fims_raw_EWAA |>
   dplyr::mutate(
     uncertainty = dplyr::if_else(
       type == "length_comp" & fleet == "BFISH",
@@ -279,7 +289,6 @@ opaka_dat_fims <- opaka_dat_fims_raw |>
   )
 
 data_4_model <- FIMS::FIMSFrame(opaka_dat_fims)
-
 
 ```
 
@@ -306,9 +315,15 @@ init_naa[n_ages] <- init_naa[n_ages] / 0.135
 
 # Create default parameters
 default_parameters <- FIMS::setup_default_parameters(
-    data = data_4_model,
-    growth_module_type = "VonBertalanffy"
-  )
+  data = data_4_model
+)|>
+    dplyr::filter(.data[["module_name"]] != "Growth") |>
+    dplyr::bind_rows(
+      FIMS::setup_default_Growth(
+        data = data_4_model,
+        module_type = "VonBertalanffySchnute"
+      )
+    )
 
 # modify the default parameters
 parameters <- default_parameters |>
@@ -328,11 +343,11 @@ parameters <- default_parameters |>
     tibble::tibble(
       module_name = "Growth",
       label = c(
-        "length_at_ref_age_1",
-        "length_at_ref_age_2",
-        "growth_coefficient_K",
-        "reference_age_for_length_1",
-        "reference_age_for_length_2",
+        "mean_length_young",
+        "mean_length_old",
+        "growth_coefficient",
+        "reference_age_for_length_young",
+        "reference_age_for_length_old",
         "length_weight_a", # added length-weight relationship parameters
         "length_weight_b"
       ),
@@ -344,7 +359,7 @@ parameters <- default_parameters |>
   dplyr::rows_update( #Note: this could probably be combined with Growth block above and put NAs for age for the other parameters
     tibble::tibble(
       module_name = "Growth",
-      label = "length_at_age_sd_at_ref_ages",
+      label = "length_at_age_sd_at_reference_ages",
       age = c(0, 21),
       value = c(0.51, 5.71)
     ),
@@ -414,7 +429,7 @@ parameters <- default_parameters |>
         -log(1.0 - opaka_inputs_bootstrap$ctl$SR_parms["SR_BH_steep", "INIT"]) +
           log(opaka_inputs_bootstrap$ctl$SR_parms["SR_BH_steep", "INIT"] - 0.2),
         # sigmaR
-        opaka_inputs_bootstrap$ctl$SR_parms["SR_sigmaR", "INIT"]
+        log(opaka_inputs_bootstrap$ctl$SR_parms["SR_sigmaR", "INIT"])
       ),
       estimation_type = c("constant", "constant", "constant") #fixing for convergence
     ),
@@ -608,8 +623,8 @@ observed_landings <- data_4_model@data |>
   dplyr::select(fleet, timing, observed) |> 
   dplyr::rename(fleet = "fleet", year = "timing")
 
-expected_landings <- output |>
-  dplyr::filter(label == "landings_expected") |>
+estimated_catch <- output |>
+  dplyr::filter(label == "catch_expected") |>
   dplyr::mutate(
         fleet = dplyr::recode_values(
           module_id,
@@ -623,11 +638,11 @@ expected_landings <- output |>
   dplyr::transmute(
     fleet = fleet,
     year,
-    expected = estimate
+    estimated
   )
 
 catch_results <- observed_landings |>
-  dplyr::left_join(expected_landings, by = c("fleet", "year")) |>
+  dplyr::left_join(estimated_catch, by = c("fleet", "year")) |>
   dplyr::filter(observed > -999)
 
 # print(catch_results)
@@ -636,7 +651,7 @@ ggplot2::ggplot(catch_results, ggplot2::aes(x = year, y = observed)) +
   ggplot2::geom_point(ggplot2::aes(color = fleet)) +
   ggplot2::xlab("Year") +
   ggplot2::ylab("Catch (mt)") +
-  ggplot2::geom_line(ggplot2::aes(x = year, y = expected, color = fleet)) +
+  ggplot2::geom_line(ggplot2::aes(x = year, y = estimated, color = fleet)) +
   ggplot2::theme_bw()
 
 # SS3 timeseries includes one extra initial biomass year before the first
@@ -745,9 +760,6 @@ lengthcomp <- rbind(
   # length comps from FIMS output
   output |>
     dplyr::filter(label == "lengthcomp_expected", observed != -999) |>
-    dplyr::mutate(
-      length = comp_lengths[length_i]
-    ) |>
     dplyr::select(year, length, estimated, observed) |>
     dplyr::mutate(platform = "FIMS"),
 
