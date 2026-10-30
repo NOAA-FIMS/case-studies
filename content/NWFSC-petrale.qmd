@@ -66,19 +66,7 @@ rep <- r4ss::SS_output(
 )
 
 # alternative output processing using stockplotr
-output_petrale <- stockplotr::convert_output(
-  "https://raw.githubusercontent.com/pfmc-assessments/petrale/main/models/2023.a050.005_FIMS_case-study_1sex_with_growth_no_fecundity/Report.sso",
-  model = "ss3"
-)
-
-output_petrale_modified <- output_petrale |>
-  dplyr::mutate(
-    module_name = ifelse(
-      module_name == "TIME_SERIES",
-      "Population",
-      module_name
-    )
-  )
+output_petrale <- stockplotr::convert_output(rep)
 ```
 
 ## Run FIMS model
@@ -161,7 +149,8 @@ convert_ss3_logistic_to_fims <- function(ss3_parameters) {
   return(c(fims_inflection, fims_slope))
 }
 
-parameters <- default_parameters |>
+# update parameters with SS3 estimates for LOTS of things
+parameters_lots_of_changes <- default_parameters |>
   # update the growth parameters with initial values from SS3
   dplyr::rows_update(
     tibble::tibble(
@@ -302,15 +291,15 @@ parameters <- default_parameters |>
   #   ),
   #   by = c("module_name", "label", "timing")
   # ) |>
-  dplyr::rows_update(
-    tibble::tibble(
-      module_name = "Recruitment",
-      label = "log_devs",
-      timing = recdev_years,
-      value = recdevs
-    ),
-    by = c("module_name", "label", "timing")
-  ) |>
+  # dplyr::rows_update(
+  #   tibble::tibble(
+  #     module_name = "Recruitment",
+  #     label = "log_devs",
+  #     timing = recdev_years,
+  #     value = recdevs
+  #   ),
+  #   by = c("module_name", "label", "timing")
+  # ) |>
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Fleet",
@@ -341,7 +330,7 @@ parameters <- default_parameters |>
     ),
     by = c("module_name", "label", "age")
   ) |>
-  # set initial M based on SS3 output
+  # set initial (or fixed) M based on SS3 output
   dplyr::rows_update(
     tibble::tibble(
       module_name = "Population",
@@ -350,6 +339,145 @@ parameters <- default_parameters |>
       estimation_type = "constant"
     ),
     by = c("module_name", "label")
+  )
+
+# alternative parameters closer to defaults
+parameters <- default_parameters |>
+  # update the growth parameters with initial values from SS3
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Growth",
+      label = c(
+        "mean_length_young",
+        "mean_length_old",
+        "growth_coefficient",
+        "reference_age_for_length_young",
+        "reference_age_for_length_old",
+        "length_weight_a", # added length-weight relationship parameters
+        "length_weight_b"
+      ),
+      # values below are SS3 estimates, code won't work for 2-sex model
+      # or model with time-varying growth parameters
+      value = c(
+        rep$Growth_Parameters$L_a_A1,
+        rep$Growth_Parameters$L_a_A2,
+        rep$Growth_Parameters$K,
+        rep$Growth_Parameters$A1,
+        rep$Growth_Parameters$A2,
+        rep$Growth_Parameters$WtLen1,
+        rep$Growth_Parameters$WtLen2
+      ),
+      estimation_type = "constant"
+    ),
+    by = c("module_name", "label")
+  ) |>
+  # change first reference age for sd values from 0 to 1
+  dplyr::mutate(
+    age = dplyr::if_else(
+      module_name == "Growth" &
+        label == "length_at_age_sd_at_reference_ages" &
+        age == 0,
+      1,
+      age
+    )
+  ) |>
+  dplyr::rows_update(
+    # Note: this could probably be combined with Growth block above and put NAs for age for the other parameters
+    tibble::tibble(
+      module_name = "Growth",
+      label = "length_at_age_sd_at_reference_ages",
+      age = c(1, 17),
+      value = c(rep$Growth_Parameters$CVmin, rep$Growth_Parameters$CVmax)
+    ),
+    by = c("module_name", "label", "age")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Maturity",
+      label = c("inflection_point", "slope"),
+      value = c(7.0, 1.0), # maturity based on the derived age-based pattern from original length-based SS3 model, arbitrary guess of slope
+    ),
+    by = c("module_name", "label")
+  ) |>
+  # selectivity
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Selectivity",
+      fleet = "North",
+      label = c("inflection_point", "slope"),
+      value = c(
+        get_ss3_estimate("Age_inflection_North(1)"),
+        log(19) / get_ss3_estimate("Age_95%width_North(1)")
+      ),
+      estimation_type = "constant"
+    ),
+    by = c("module_name", "fleet", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Selectivity",
+      fleet = "South",
+      label = c("inflection_point", "slope"),
+      # south fleet set to mirror north fleet in SS3 model, so use same values here
+      value = c(
+        get_ss3_estimate("Age_inflection_North(1)"),
+        log(19) / get_ss3_estimate("Age_95%width_North(1)")
+      ),
+      estimation_type = "constant"
+    ),
+    by = c("module_name", "fleet", "label")
+  ) |>
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Selectivity",
+      fleet = "WCGBTS",
+      label = c("inflection_point", "slope"),
+      value = c(
+        get_ss3_estimate("Age_inflection_WCGBTS(4)"),
+        log(19) / get_ss3_estimate("Age_95%width_WCGBTS(4)")
+      ),
+      estimation_type = "constant"
+    ),
+    by = c("module_name", "fleet", "label")
+  ) |>
+  # set initial values for stock-recruitment parameters based on SS3 output
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Recruitment",
+      label = c("log_rzero", "logit_steep", "log_sd"),
+      value = c(
+        # log(1000) + # adding log(1000) to account for R0 units in 1000s in SS3
+        get_ss3_estimate("SR_LN(R0)"),
+        FIMS::logit(
+          0.2,
+          1.0,
+          get_ss3_estimate("SR_BH_steep")
+        ),
+        log(get_ss3_estimate("SR_sigmaR"))
+      )
+    ),
+    by = c("module_name", "label")
+  ) |>
+  # set fixed M based on SS3 output
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Population",
+      label = "log_M",
+      value = log(get_ss3_estimate("NatM_uniform_Fem_GP_1")),
+      estimation_type = "constant"
+    ),
+    by = c("module_name", "label")
+  ) |>
+  # set initial numbers at age based on SS3 output calculated above
+  dplyr::rows_update(
+    tibble::tibble(
+      module_name = "Population",
+      label = "log_init_naa",
+      age = FIMS::get_ages(data_4_model),
+      value = log(init_naa),
+      estimation_type = "fixed_effects"
+    ),
+    by = c("module_name", "label", "age")
   )
 ```
 
@@ -372,6 +500,7 @@ test_fit@report$nll_components
 # run with estimation
 fit <- input |>
   FIMS::fit_fims(optimize = TRUE, get_sd = FALSE)
+# saveRDS(fit, file = "content/NWFSC-petrale-fit.rds")
 ```
 
 ## Plotting inputs
@@ -423,13 +552,18 @@ output <- FIMS::get_estimates(fit) |>
     )
   )
 
+stockplotr::plot_spawning_biomass(output)
+stockplotr::plot_recruitment(output)
+
 # # attempt at stockplotr plot didn't turn out well, so commented out for now
-# stockplotr::plot_spawning_biomass(
-#   list(
-#     "FIMS" = output,
-#     "SS3" = output_petrale_modified
-#   )
-# )
+stockplotr::plot_spawning_biomass(
+  list(
+    "FIMS" = output,
+    "SS3" = output_petrale |> dplyr::mutate(age = as.numeric(age))
+  ),
+  ref_line = NULL
+)
+
 
 # SS3 timeseries includes one extra initial biomass year before the initial year
 ss3_biomass <- rep$timeseries |>
@@ -465,8 +599,19 @@ fims_biomass <- tibble::tibble(
 
 biomass <- dplyr::bind_rows(ss3_biomass, fims_biomass)
 
-biomass |> 
-  # dplyr::filter(year > 1970) |> 
+# plot of all years is dominated by big recruitment in initial year
+biomass |>
+  ggplot2::ggplot(ggplot2::aes(x = year, y = value)) +
+  ggplot2::geom_line(ggplot2::aes(color = Model)) +
+  ggplot2::xlab("Year") +
+  ggplot2::ylab("") +
+  ggplot2::facet_wrap(~Type, scales = "free_y") +
+  ggplot2::theme_bw() +
+  ggplot2::ylim(0, NA)
+
+# comparing recent years shows good fit
+biomass |>
+  dplyr::filter(year > 1950) |>
   ggplot2::ggplot(ggplot2::aes(x = year, y = value)) +
   ggplot2::geom_line(ggplot2::aes(color = Model)) +
   ggplot2::xlab("Year") +
