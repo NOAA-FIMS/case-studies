@@ -149,7 +149,7 @@ update_parameters <- update_parameters |>
       module_name = "Recruitment",
       label = c("log_rzero", "log_sd"),
       value = c(rzero, log(sigmaR)),
-      estimation_type = c("fixed_effects", "fixed_effects") # estimate log_rzero, log_sd (for REs)
+      estimation_type = c("constant", "fixed_effects") # estimate log_rzero, log_sd (for REs)
     ),
     by = c("module_name", "label")
   ) |>
@@ -225,10 +225,56 @@ update_parameters <- update_parameters |>
       label = c("log_init_naa"),
       age = ages,
       value = log(init_naa),
-      estimation_type = "constant"
+      estimation_type = "fixed_effects"
     ),
     by = c("module_name", "age", "label")
   ) 
+
+```
+
+## Run base FIMS models, without annual variability in survey Q
+
+```{r}
+#| label: setup-run-base-FIMS-model
+
+# Document identifiability issues with Q that can arise if Q is required to be supplied for years w/o data and Q is estimated
+  # Flag it for the future
+  # JSON output will be hard to get - custom code to get outputs from TMB method
+
+# Fit the model
+clear()
+fit_constQ <- update_parameters |>
+  FIMS::initialize_fims(data = data_4_model) |>
+  FIMS::fit_fims(optimize = TRUE)
+output_constQ <- FIMS::get_estimates(fit_constQ) |>
+  dplyr::mutate(
+    uncertainty_label = "se",
+    year = year_i + get_start_year(data_4_model) - 1,
+    estimate = estimated
+  )
+fit_constQ@sdreport$pdHess
+output_constQ |> dplyr::filter(module_name == "Selectivity", module_type == "AgeSpecific") |> print()
+dplyr::filter(output_constQ, label == "log_q") |> as.data.frame() |> print() # why is nothing printed for year_i, year?
+dplyr::filter(output_constQ, label == "log_M") |> as.data.frame() |> print()
+dplyr::filter(output_constQ, label == "log_sd") |> as.data.frame() |> print() # why is log_sd not included in model output?
+dplyr::filter(output_constQ, label == "log_rzero") |> as.data.frame() |> print()
+dplyr::filter(output_constQ, label == "spawning_biomass") |> as.data.frame() |> print()
+
+dplyr::filter(output_constQ, label == "spawning_biomass") |> as.data.frame()
+dplyr::filter(output_constQ, label == "index_expected") |> as.data.frame()
+get_data(data_4_model)|>dplyr::filter(type == "catch")
+# Get information about the model and print a few characters to the screen
+# log <- FIMS::get_log_module("information")
+```
+
+## Run base FIMS models, with annual variability in survey Q
+
+```{r}
+#| label: setup-run-annualQ-FIMS-model
+
+# Document identifiability issues with Q that can arise if Q is required to be supplied for years w/o data and Q is estimated
+  # Flag it for the future
+  # JSON output will be hard to get - custom code to get outputs from TMB method
 
 # Update catchability to be time-varying (or attempt to)
   # Questions:
@@ -240,7 +286,8 @@ new_q <- update_parameters |>
   dplyr::filter(module_name == "Fleet", fleet == "survey1", label == "log_q") |>
   dplyr::slice(rep(1, each = length(years))) |>
   dplyr::mutate(timing = years)
-update_parameters <- update_parameters |>
+# Ensure years w/o survey data have Q values fixed to some constant
+update_parameters_annualQ <- update_parameters |>
   dplyr::filter(!(module_name == "Fleet" & fleet == "survey1" & label == "log_q")) |>
   rbind(new_q) |>
   dplyr::rows_update( # fix most estimated Q
@@ -251,47 +298,80 @@ update_parameters <- update_parameters |>
       value = logQ, 
       timing = years,
       # estimation_type = "fixed_effects"
-      estimation_type = c("fixed_effects", rep("constant", n_years-1))
+      estimation_type = c("fixed_effects",  
+                          rep("constant", 3), # no survey data
+                          rep("fixed_effects", 8),
+                          "constant", #no survey data
+                          "fixed_effects")
     ),
     by = c("module_name", "fleet", "timing", "label")
 ) 
 
-```
-
-## Run base FIMS model
-
-```{r}
-#| label: setup-base-FIMS-model
-
-# Document identifiability issues with Q that can arise if Q is required to be supplied for years w/o data and Q is estimated
-  # Flag it for the future
-  # JSON output will be hard to get - custom code to get outputs from TMB method
-
 # Fit the model
 clear()
-fit <- update_parameters |>
+fit_annualQ <- update_parameters_annualQ |>
   FIMS::initialize_fims(data = data_4_model) |>
   FIMS::fit_fims(optimize = TRUE)
-output <- FIMS::get_estimates(fit) |>
+output_annualQ <- FIMS::get_estimates(fit_annualQ) |>
   dplyr::mutate(
     uncertainty_label = "se",
     year = year_i + get_start_year(data_4_model) - 1,
     estimate = estimated
   )
-fit@sdreport$pdHess
-output |> dplyr::filter(module_name == "Selectivity", module_type == "AgeSpecific") |> print()
-dplyr::filter(output, label == "log_q") |> as.data.frame() |> print() # why is nothing printed for year_i, year?
-dplyr::filter(output, label == "log_M") |> as.data.frame() |> print()
-dplyr::filter(output, label == "log_sd") |> as.data.frame() |> print() # why is log_sd not included in model output?
-dplyr::filter(output, label == "log_rzero") |> as.data.frame() |> print()
-dplyr::filter(output, label == "spawning_biomass") |> as.data.frame() |> print()
-
-dplyr::filter(output, label == "spawning_biomass") |> as.data.frame()
-dplyr::filter(output, label == "index_expected") |> as.data.frame()
-get_data(data_4_model)|>dplyr::filter(type == "catch")
-# Get information about the model and print a few characters to the screen
-# log <- FIMS::get_log_module("information")
+fit_annualQ@sdreport$pdHess
+output_annualQ |> dplyr::filter(module_name == "Selectivity", module_type == "AgeSpecific") |> print()
+dplyr::filter(output_annualQ, label == "log_q") |> as.data.frame() |> print() # why is nothing printed for year_i, year?
+dplyr::filter(output_annualQ, label == "log_rzero") |> as.data.frame() |> print()
 ```
+
+## Run base FIMS models, with fixed annual variability in survey Q
+
+```{r}
+#| label: setup-run-fixannualQ-FIMS-model
+
+Q_vals <- data.frame(Year = c(2008:2021)) |>
+  dplyr::left_join(modfit$cpue |>
+    dplyr::select(Year = Yr, Q = Calc_Q) |>
+    dplyr::mutate(log_Q = log(Q)) |>
+    dplyr::select(Year, log_Q)
+  ) |>
+  dplyr::mutate(log_Q = ifelse(is.na(log_Q), -0.69, log_Q)) |>
+  dplyr::pull(log_Q)
+
+# Alternative fixed time-varying Q parameterization
+update_parameters_fixannualQ <- update_parameters |>
+  dplyr::filter(!(module_name == "Fleet" & fleet == "survey1" & label == "log_q")) |>
+  rbind(new_q) |>
+  dplyr::rows_update( # fix most estimated Q
+    tibble::tibble(
+      module_name = "Fleet",
+      fleet = "survey1",
+      label = "log_q",
+      value = Q_vals, 
+      timing = years,
+      estimation_type = c("constant")
+    ),
+    by = c("module_name", "fleet", "timing", "label")
+) 
+
+# Fit the model
+clear()
+fit_fixannualQ <- update_parameters_fixannualQ |>
+  FIMS::initialize_fims(data = data_4_model) |>
+  FIMS::fit_fims(optimize = TRUE)
+output_fixannualQ <- FIMS::get_estimates(fit_fixannualQ) |>
+  dplyr::mutate(
+    uncertainty_label = "se",
+    year = year_i + get_start_year(data_4_model) - 1,
+    estimate = estimated
+  )
+fit_fixannualQ@sdreport$pdHess
+output_fixannualQ |> dplyr::filter(module_name == "Selectivity", module_type == "AgeSpecific") |> print()
+dplyr::filter(output_fixannualQ, label == "log_q") |> as.data.frame() |> print()
+dplyr::filter(output_fixannualQ, label == "log_rzero") |> as.data.frame() |> print()
+dplyr::filter(output_fixannualQ, label == "spawning_biomass") |> as.data.frame() |> print()
+```
+
 
 ## Run custom time-block Q structure
 
@@ -303,7 +383,7 @@ get_data(data_4_model)|>dplyr::filter(type == "catch")
     # Confirm that that runs in standard FIMS
     # This version needs all time-varying Q values to be 'fixed_effects'
   # 2. Set up fims model up-through initialize_fims()
-  # 3. From that point, start following Kelli's code ~616
+  # 3. From that point, start following Kelli's code ~616 (pacific-hake.qmd)
     # parameter_list <- list()
     # obj <- TMB::MakeADFun()
       # Decide whether or not I want random effects
@@ -317,7 +397,7 @@ get_data(data_4_model)|>dplyr::filter(type == "catch")
   # Everything is done using factors
 
 clear()
-update_parameters_cust <- update_parameters |>
+update_parameters_cust <- update_parameters_annualQ |>
   dplyr::rows_update( # fix most estimated Q
     tibble::tibble(
       module_name = "Fleet",
@@ -363,7 +443,7 @@ map[["p"]] <- as.factor(c(map[["p"]][1],
                 "Fleet.1.log_q.2012", "Fleet.1.log_q.2013",
                 "Fleet.1.log_q.2014", "Fleet.1.log_q.2015", 
                 rep("Fleet.1.log_q.late", 6),
-                map[["p"]][16:18]))
+                map[["p"]][16:26]))
 
 # Create new object
 obj <- TMB::MakeADFun(
@@ -395,65 +475,65 @@ for (ii in 1:3) {
   )
 }
 
-sd_report <- TMB::sdreport(obj)
-sd_report$par.fixed; levels(map[["p"]])
-exp(sd_report$par.fixed[2:7]) # estimated survey catchability q
-# Check that the standard errors are not NA - they aren't
+sd_report_cust <- TMB::sdreport(obj)
+sd_report_cust$par.fixed; levels(map[["p"]])
+exp(sd_report_cust$par.fixed[2:7]) # estimated survey catchability q
+# Check that the standard errors are not NA - some issues
 any(is.na(summary(
   TMB::sdreport(obj, skip.delta.method = TRUE),
   "fixed"
 )[, 2]))
 
 # Summarize SSB
-ggplot2::ggplot(
-  data = data.frame(
-    year = get_start_year(data_4_model):(get_end_year(data_4_model) + 1),
-    spawning_biomass = sd_report$value[grepl("^spawning_biomass$", names(sd_report$value))]
-  ),
-  ggplot2::aes(x = year, y = spawning_biomass)
-) +
-  ggplot2::geom_line() +
-  ggplot2::geom_line(
-    data = data.frame(
-      year = modfit$timeseries |> dplyr::filter(Yr %in% c(2008:2021)) |> dplyr::select(Yr) |> dplyr::pull(),
-      spawning_biomass = modfit$timeseries |> dplyr::filter(Yr %in% c(2008:2021)) |> dplyr::select(SpawnBio) |> dplyr::pull()
-    ),
-    color = "blue"
-  )
-
-# Summarize recruitment
-ggplot2::ggplot(
-  data = data.frame(
-    year = get_start_year(data_4_model):(get_end_year(data_4_model) + 1),
-    recruitment = sd_report$value[grepl("^expected_recruitment$", names(sd_report$value))]/1000
-  ),
-  ggplot2::aes(x = year, y = recruitment)
-) +
-  ggplot2::geom_line() +
-  ggplot2::geom_line(
-    data = data.frame(
-      year = modfit$timeseries |> dplyr::filter(Yr %in% c(2008:2021)) |> dplyr::select(Yr) |> dplyr::pull(),
-      recruitment = modfit$timeseries |> dplyr::filter(Yr %in% c(2008:2021)) |> dplyr::select(Recruit_0) |> dplyr::pull()
-    ),
-    color = "blue"
-  )
-
-# Plot fit to index
-ggplot2::ggplot(
-  data = data.frame(
-    year = get_start_year(data_4_model):(get_end_year(data_4_model)),
-    index = sd_report$value[grepl("^index_expected$", names(sd_report$value))] |> (\(x) x[c(1:14)])()
-  ),
-  ggplot2::aes(x = year, y = index)
-) +
-  ggplot2::geom_line(color = "red") +
-  ggplot2::geom_line(
-    data = data.frame(
-      year = modfit$cpue |> dplyr::filter(Yr %in% c(2008:2021)) |> dplyr::select(Yr) |> dplyr::pull(),
-      index = modfit$cpue |> dplyr::filter(Yr %in% c(2008:2021)) |> dplyr::select(Exp) |> dplyr::pull()
-    ),
-    color = "blue"
-  )
+# ggplot2::ggplot(
+#   data = data.frame(
+#     year = get_start_year(data_4_model):(get_end_year(data_4_model) + 1),
+#     spawning_biomass = sd_report_cust$value[grepl("^spawning_biomass$", names(sd_report_cust$value))]
+#   ),
+#   ggplot2::aes(x = year, y = spawning_biomass)
+# ) +
+#   ggplot2::geom_line() +
+#   ggplot2::geom_line(
+#     data = data.frame(
+#       year = modfit$timeseries |> dplyr::filter(Yr %in% c(2008:2021)) |> dplyr::select(Yr) |> dplyr::pull(),
+#       spawning_biomass = modfit$timeseries |> dplyr::filter(Yr %in% c(2008:2021)) |> dplyr::select(SpawnBio) |> dplyr::pull()
+#     ),
+#     color = "blue"
+#   )
+# 
+# # Summarize recruitment
+# ggplot2::ggplot(
+#   data = data.frame(
+#     year = get_start_year(data_4_model):(get_end_year(data_4_model) + 1),
+#     recruitment = sd_report_cust$value[grepl("^expected_recruitment$", names(sd_report_cust$value))]/1000
+#   ),
+#   ggplot2::aes(x = year, y = recruitment)
+# ) +
+#   ggplot2::geom_line() +
+#   ggplot2::geom_line(
+#     data = data.frame(
+#       year = modfit$timeseries |> dplyr::filter(Yr %in% c(2008:2021)) |> dplyr::select(Yr) |> dplyr::pull(),
+#       recruitment = modfit$timeseries |> dplyr::filter(Yr %in% c(2008:2021)) |> dplyr::select(Recruit_0) |> dplyr::pull()
+#     ),
+#     color = "blue"
+#   )
+# 
+# # Plot fit to index
+# ggplot2::ggplot(
+#   data = data.frame(
+#     year = get_start_year(data_4_model):(get_end_year(data_4_model)),
+#     index = sd_report_cust$value[grepl("^index_expected$", names(sd_report_cust$value))] |> (\(x) x[c(1:14)])()
+#   ),
+#   ggplot2::aes(x = year, y = index)
+# ) +
+#   ggplot2::geom_line(color = "red") +
+#   ggplot2::geom_line(
+#     data = data.frame(
+#       year = modfit$cpue |> dplyr::filter(Yr %in% c(2008:2021)) |> dplyr::select(Yr) |> dplyr::pull(),
+#       index = modfit$cpue |> dplyr::filter(Yr %in% c(2008:2021)) |> dplyr::select(Exp) |> dplyr::pull()
+#     ),
+#     color = "blue"
+#   )
 
 
 # Plot expected survey catchability
@@ -464,7 +544,7 @@ ggplot2::ggplot(
 
 ```
 
-## Add your comparison figures
+## Plot comparison figures
 
 ```{r}
 #| label: comparison-plots
@@ -472,11 +552,27 @@ ggplot2::ggplot(
 
 #------------------------------------------------------------------------
 #------SSB
-ssbs <- modfit$timeseries |>
+ssbs <- modfit$timeseries |> # ss3
   dplyr::select(Yr, ss3 = SpawnBio) |>
-  dplyr::full_join(
-    dplyr::filter(output, label == "spawning_biomass") |>
-      dplyr::select(year, fims = estimate),
+  dplyr::full_join( # fims_singleQ
+    dplyr::filter(output_constQ, label == "spawning_biomass") |>
+      dplyr::select(year, fims_singleQ = estimate),
+    by = c("Yr" = "year")
+  ) |>
+  dplyr::full_join( # fims_annualQ
+    dplyr::filter(output_annualQ, label == "spawning_biomass") |>
+      dplyr::select(year, fims_annualQ = estimate),
+    by = c("Yr" = "year")
+  ) |>
+  dplyr::full_join( # fims_fixannualQ
+    dplyr::filter(output_fixannualQ, label == "spawning_biomass") |>
+      dplyr::select(year, fims_fixannualQ = estimate),
+    by = c("Yr" = "year")
+  ) |>
+  dplyr::full_join( # fims_custannualQ
+    data.frame(
+      year = get_start_year(data_4_model):(get_end_year(data_4_model) + 1),
+      fims_custannualQ = sd_report_cust$value[grepl("^spawning_biomass$", names(sd_report_cust$value))]),
     by = c("Yr" = "year")
   )
 
@@ -499,16 +595,19 @@ ggplot2::ggsave(
 
 #------------------------------------------------------------------------
 #-----Calculate age-1+ biomass
-#Multiply numbers at age by weight at age and sum
-naa <- get_report(fit)[["numbers_at_age"]][[1]]
+fims_names <- c("fims_singleQ", "fims_annualQ", "fims_fixannualQ", "fims_custannualQ")
 
+# fims_singleQ
+
+  #Multiply numbers at age by weight at age and sum
+naa <- get_report(fit_constQ)[["numbers_at_age"]][[1]]
 naa1 <- tidyr::crossing(c(years, 2022), ages) |> # add one year for forecast age-1+ biomass
   dplyr::mutate(naa = naa) |>
   as.data.frame()
 names(naa1) <- c("year", "age", "value")
 naa1$cohort <- naa1$year - naa1$age
 
-#Format Weight at age (identical WAA for each year and fleet)
+  #Format Weight at age (identical WAA for each year and fleet)
 waa <- data.frame(
   age = fims_data$age[(fims_data$timing == 2008 & fims_data$fleet == "fleet1" & fims_data$type == "weight_at_age")],
   waa = fims_data$observed[(fims_data$timing == 2008 & fims_data$fleet == "fleet1" & fims_data$type == "weight_at_age")]
@@ -520,23 +619,107 @@ naa1 <- naa1 |>
 
 naa1 <- naa1 |>
   dplyr::mutate(weight = value * waa)
-age1plus <- naa1 |>
+age1plus_singleQ <- naa1 |>
   dplyr::filter(age != 0) |>
   dplyr::group_by(year) |>
-  dplyr::summarize(summbio = sum(weight))
+  dplyr::summarize(fims_singleQ = sum(weight))
+rm(naa1, waa, naa)
 
+# fims_annualQ
+ #Multiply numbers at age by weight at age and sum
+naa <- get_report(fit_annualQ)[["numbers_at_age"]][[1]]
+naa1 <- tidyr::crossing(c(years, 2022), ages) |> # add one year for forecast age-1+ biomass
+  dplyr::mutate(naa = naa) |>
+  as.data.frame()
+names(naa1) <- c("year", "age", "value")
+naa1$cohort <- naa1$year - naa1$age
+
+  #Format Weight at age (identical WAA for each year and fleet)
+waa <- data.frame(
+  age = fims_data$age[(fims_data$timing == 2008 & fims_data$fleet == "fleet1" & fims_data$type == "weight_at_age")],
+  waa = fims_data$observed[(fims_data$timing == 2008 & fims_data$fleet == "fleet1" & fims_data$type == "weight_at_age")]
+) |>
+  dplyr::mutate(age = as.integer(age))
+
+naa1 <- naa1 |>
+  dplyr::left_join(waa, by = "age")
+
+naa1 <- naa1 |>
+  dplyr::mutate(weight = value * waa)
+age1plus_annualQ <- naa1 |>
+  dplyr::filter(age != 0) |>
+  dplyr::group_by(year) |>
+  dplyr::summarize(fims_annualQ = sum(weight))
+rm(naa1, waa, naa)
+
+# fims_fixannualQ
+ #Multiply numbers at age by weight at age and sum
+naa <- get_report(fit_fixannualQ)[["numbers_at_age"]][[1]]
+naa1 <- tidyr::crossing(c(years, 2022), ages) |> # add one year for forecast age-1+ biomass
+  dplyr::mutate(naa = naa) |>
+  as.data.frame()
+names(naa1) <- c("year", "age", "value")
+naa1$cohort <- naa1$year - naa1$age
+
+  #Format Weight at age (identical WAA for each year and fleet)
+waa <- data.frame(
+  age = fims_data$age[(fims_data$timing == 2008 & fims_data$fleet == "fleet1" & fims_data$type == "weight_at_age")],
+  waa = fims_data$observed[(fims_data$timing == 2008 & fims_data$fleet == "fleet1" & fims_data$type == "weight_at_age")]
+) |>
+  dplyr::mutate(age = as.integer(age))
+
+naa1 <- naa1 |>
+  dplyr::left_join(waa, by = "age")
+
+naa1 <- naa1 |>
+  dplyr::mutate(weight = value * waa)
+age1plus_fixannualQ <- naa1 |>
+  dplyr::filter(age != 0) |>
+  dplyr::group_by(year) |>
+  dplyr::summarize(fims_fixannualQ = sum(weight))
+rm(naa1, waa, naa)
+
+# fims_custannualQ
+ #Multiply numbers at age by weight at age and sum
+naa <- sd_report_cust$value[grepl("^numbers_at_age$", names(sd_report$value))]
+naa1 <- tidyr::crossing(c(years, 2022), ages) |> # add one year for forecast age-1+ biomass
+  dplyr::mutate(naa = naa) |>
+  as.data.frame()
+names(naa1) <- c("year", "age", "value")
+naa1$cohort <- naa1$year - naa1$age
+
+  #Format Weight at age (identical WAA for each year and fleet)
+waa <- data.frame(
+  age = fims_data$age[(fims_data$timing == 2008 & fims_data$fleet == "fleet1" & fims_data$type == "weight_at_age")],
+  waa = fims_data$observed[(fims_data$timing == 2008 & fims_data$fleet == "fleet1" & fims_data$type == "weight_at_age")]
+) |>
+  dplyr::mutate(age = as.integer(age))
+
+naa1 <- naa1 |>
+  dplyr::left_join(waa, by = "age")
+
+naa1 <- naa1 |>
+  dplyr::mutate(weight = value * waa)
+age1plus_custannualQ <- naa1 |>
+  dplyr::filter(age != 0) |>
+  dplyr::group_by(year) |>
+  dplyr::summarize(fims_custannualQ = sum(weight))
+rm(naa1, waa, naa)
+
+# ss3 
 bio1 <- modfit$timeseries |>
   dplyr::select(Yr, Bio_smry) |>
-  dplyr::mutate(year = Yr, ss3bio = Bio_smry) |>
+  dplyr::mutate(year = Yr, ss3 = Bio_smry) |>
   dplyr::select(-Yr, -Bio_smry)
 
-
-age1plus <- age1plus |>
+# Combine all
+age1plus <- age1plus_singleQ |>
+  dplyr::left_join(age1plus_annualQ) |>
+  dplyr::left_join(age1plus_fixannualQ) |>
+  dplyr::left_join(age1plus_custannualQ) |>
   dplyr::left_join(bio1, by = "year")
 
-names(age1plus) <- c("year", "fims", "ss3")
-
-#Full time series of age-1+ biomass
+# Plot full time series of age-1+ biomass
 age1plus |>
   reshape2::melt(id.var = "year") |>
   ggplot2::ggplot(ggplot2::aes(x = year, y = value, group = variable, color = variable)) +
@@ -570,7 +753,10 @@ ggplot2::ggsave(
 recs <- modfit$timeseries |>
   dplyr::select(Yr, ss3 = Recruit_0) |>
   dplyr::filter(Yr <= 2022) |>
-  dplyr::mutate(fims = c(0, 0, get_report(fit)[["expected_recruitment"]][[1]]) / 1000)
+  dplyr::mutate(fims_singleQ = c(0, 0, get_report(fit_constQ)[["expected_recruitment"]][[1]]) / 1000,
+                fims_annualQ = c(0, 0, get_report(fit_annualQ)[["expected_recruitment"]][[1]]) / 1000,
+                fims_fixannualQ = c(0, 0, get_report(fit_fixannualQ)[["expected_recruitment"]][[1]]) / 1000,
+                fims_custannualQ = c(0, 0, sd_report_cust$value[grepl("^expected_recruitment$", names(sd_report$value))]) / 1000)
 
 recs |>
   dplyr::filter(Yr >= 2008, Yr <= 2022) |>
@@ -589,25 +775,66 @@ ggplot2::ggsave("figures/SWFSC-mackerel-recruitment.png", width = 6.8, height = 
 
 #------------------------------------------------------------------------
 #------Numbers-at-age
-naa <- output |> # FIMS-estimated numbers at age for years 2008-2022
+#fims_singleQ
+naa_fims_singleQ <- output_constQ |> # FIMS-estimated numbers at age for years 2008-2022
   dplyr::filter(label == "numbers_at_age") |>
-  dplyr::select(year, age = age_i, fims = estimated) |>
+  dplyr::select(year, age = age_i, fims_singleQ = estimated) |>
   dplyr::mutate(age = age-1)
-naa <- output |> # append FIMS-estimated init_naa for year 2007
+naa_fims_singleQ <- output_constQ |> # append FIMS-estimated init_naa for year 2007
   dplyr::filter(label == "log_init_naa") |>
   dplyr::mutate(age_i = age_i-1, 
-                fims = exp(estimated),
+                fims_singleQ = exp(estimated),
                 year = 2007) |>
-  dplyr::select(year, age = age_i, fims) |>
-  rbind(naa)
+  dplyr::select(year, age = age_i, fims_singleQ) |>
+  rbind(naa_fims_singleQ)
+
+#fims_annualQ
+naa_fims_annualQ <- output_annualQ |> # FIMS-estimated numbers at age for years 2008-2022
+  dplyr::filter(label == "numbers_at_age") |>
+  dplyr::select(year, age = age_i, fims_annualQ = estimated) |>
+  dplyr::mutate(age = age-1)
+naa_fims_annualQ <- output_annualQ |> # append FIMS-estimated init_naa for year 2007
+  dplyr::filter(label == "log_init_naa") |>
+  dplyr::mutate(age_i = age_i-1, 
+                fims_annualQ = exp(estimated),
+                year = 2007) |>
+  dplyr::select(year, age = age_i, fims_annualQ) |>
+  rbind(naa_fims_annualQ)
+
+#fims_fixannualQ
+naa_fims_fixannualQ <- output_fixannualQ |> # FIMS-estimated numbers at age for years 2008-2022
+  dplyr::filter(label == "numbers_at_age") |>
+  dplyr::select(year, age = age_i, fims_fixannualQ = estimated) |>
+  dplyr::mutate(age = age-1)
+naa_fims_fixannualQ <- output_fixannualQ |> # append FIMS-estimated init_naa for year 2007
+  dplyr::filter(label == "log_init_naa") |>
+  dplyr::mutate(age_i = age_i-1, 
+                fims_fixannualQ = exp(estimated),
+                year = 2007) |>
+  dplyr::select(year, age = age_i, fims_fixannualQ) |>
+  rbind(naa_fims_fixannualQ)
+
+#fims_custannualQ
+naa_fims_custannualQ <- sd_report_cust$value[grepl("^numbers_at_age$", names(sd_report_cust$value))]
+naa_fims_custannualQ <- tidyr::crossing(c(years, 2022), ages) |> # add one year for forecast age-1+ biomass
+  dplyr::mutate(fims_custannualQ = naa_fims_custannualQ) |>
+  as.data.frame() |>
+  dplyr::select(year = `c(years, 2022)`, age = ages, fims_custannualQ)
+
+
+# ss3
 naa <- modfit$natage |> # append SS3-estimated naa for years 2007-2022
   dplyr::filter(Yr >= 2007, Yr <= 2022, `Beg/Mid` == "B") |>
   tidyr::pivot_longer(cols = `0`:`8`, names_to = "age", values_to = "ss3") |>
   dplyr::select(year = Yr, age, ss3) |>
   dplyr::mutate(ss3 = ss3 * 1000,
                 age = as.numeric(age)) |>
-  dplyr::left_join(naa) |>
-  tidyr::pivot_longer(cols = fims:ss3, names_to = "type", values_to = "NAA")
+  dplyr::left_join(naa_fims_singleQ) |>
+  dplyr::left_join(naa_fims_annualQ) |>
+  dplyr::left_join(naa_fims_fixannualQ) |>
+  dplyr::left_join(naa_fims_custannualQ) |>
+  tidyr::pivot_longer(cols = ss3:fims_custannualQ, names_to = "type", values_to = "NAA")
+
 ggplot2::ggplot(
   naa,
   ggplot2::aes(x = as.numeric(age), y = NAA, color = type, group = interaction(type))
@@ -623,38 +850,45 @@ ggplot2::ggsave("figures/SWFSC-mackerel-naa.png", width = 6.8, height = 5.25)
 #---------Age composition residuals (observed vs expected; TBD)
 
 #------------------------------------------------------------------------
-# --------Fishing mortality
-modfit$timeseries |>
-  dplyr::select(Yr, ss3 = "F:_1") |>
-  dplyr::full_join(
-    dplyr::filter(output, label == "log_Fmort", module_id == 2) |>
-      dplyr::mutate(estimate = exp(estimate)) |>
-      dplyr::select(year, fims = estimate),
-    by = c("Yr" = "year")
-  ) |>
-  dplyr::filter(Yr >= 2008, Yr <= 2021) |>
-  tidyr::pivot_longer(names_to = "variable", cols = dplyr::matches("ss3|fims")) |>
-  ggplot2::ggplot(ggplot2::aes(x = Yr, y = value, group = variable, color = variable)) +
-  ggplot2::geom_point() +
-  ggplot2::geom_line() +
-  ggplot2::ylab("Fishing mortality") +
-  ggplot2::theme_bw() +
-  ggplot2::xlab("year") +
-  ggplot2::theme(legend.position.inside = c(.9, .9))
-ggplot2::ggsave("figures/SWFSC-mackerel-Fmort.png", width = 6.8, height = 5.25)
+# --------Fishing mortality (TBD)
+# modfit$timeseries |>
+#   dplyr::select(Yr, ss3 = "F:_1") |>
+#   dplyr::full_join(
+#     dplyr::filter(output, label == "log_Fmort", module_id == 2) |>
+#       dplyr::mutate(estimate = exp(estimate)) |>
+#       dplyr::select(year, fims = estimate),
+#     by = c("Yr" = "year")
+#   ) |>
+#   dplyr::filter(Yr >= 2008, Yr <= 2021) |>
+#   tidyr::pivot_longer(names_to = "variable", cols = dplyr::matches("ss3|fims")) |>
+#   ggplot2::ggplot(ggplot2::aes(x = Yr, y = value, group = variable, color = variable)) +
+#   ggplot2::geom_point() +
+#   ggplot2::geom_line() +
+#   ggplot2::ylab("Fishing mortality") +
+#   ggplot2::theme_bw() +
+#   ggplot2::xlab("year") +
+#   ggplot2::theme(legend.position.inside = c(.9, .9))
+# ggplot2::ggsave("figures/SWFSC-mackerel-Fmort.png", width = 6.8, height = 5.25)
 
 #------------------------------------------------------------------------
-#------Index fits
+#------Index fits (**)
 all_yrs <- expand.grid(year = c(2008:2021))
 index <- modfit$cpue |>
   dplyr::select(year = Yr, obs = Obs, ss3 = Exp)
 index <- dplyr::left_join(all_yrs, index)
-index$fims <- FIMS::get_report(fit)[["index_expected"]][[1]] # AJ: what's the difference between 1 and 2?
+index$fims_singleQ <- FIMS::get_report(fit_constQ)[["index_expected"]][[1]] 
+index$fims_annualQ <- FIMS::get_report(fit_annualQ)[["index_expected"]][[1]] 
+index$fims_fixannualQ <- FIMS::get_report(fit_fixannualQ)[["index_expected"]][[1]]
+index$fims_custannualQ <- sd_report_cust$value[grepl("^index_expected$", names(sd_report$value))][1:14]
 index |>
-  tidyr::pivot_longer(names_to = "variable", cols = dplyr::matches("ss3|fims")) |>
+  tidyr::pivot_longer(names_to = "variable", cols = dplyr::matches("obs|ss3|fims")) |>
+  dplyr::group_by(variable) |>
+  dplyr::filter(!is.na(value)) |>
+  dplyr::ungroup() |>
   ggplot2::ggplot(ggplot2::aes(x = year)) +
-  ggplot2::geom_point(ggplot2::aes(y = obs)) +
+  # ggplot2::geom_point(ggplot2::aes(y = obs), col = "black") +
   ggplot2::geom_line(ggplot2::aes(y = value, color = variable, group = variable)) +
+  ggplot2::geom_point(ggplot2::aes(y = value, color = variable, group = variable)) +
   ggplot2::theme_bw() +
   ggplot2::theme(legend.position.inside = c(.9, .9)) +
   ggplot2::xlab("Year") +
@@ -662,69 +896,103 @@ index |>
 ggplot2::ggsave("figures/SWFSC-mackerel-surveyfit.png", width = 6.8, height = 5.25)
 
 #------------------------------------------------------------------------
-#------Fishery selectivity
-sel_fishery <- output |> 
-  dplyr::filter(module_name == "Selectivity", module_type == "AgeSpecific", module_id == 2) |> 
-  dplyr::mutate(age = age_i - 1,
-                fims = boot::inv.logit(estimated)) |>
-  dplyr::select(age, fims)
-sel_fishery <- modfit$ageselex |>
-  dplyr::filter(Yr >= 2008, Yr <= 2021, Fleet == 1, Factor == "Asel") |>
-  # dplyr::select(Yr, `0`:`8`) |>
-  tidyr::pivot_longer(cols = `0`:`8`, names_to = "age", values_to = "ss3") |>
-  dplyr::mutate(age = as.numeric(age)) |>
-  dplyr::select(Yr, age, ss3) |>
-  dplyr::left_join(sel_fishery) |>
-  tidyr::pivot_longer(cols = fims:ss3, names_to = "type", values_to = "Selectivity")
-ggplot2::ggplot(
-  sel_fishery,
-  ggplot2::aes(x = as.numeric(age), y = Selectivity, color = type, group = interaction(type, Yr))
-) +
-  ggplot2::geom_point() +
-  ggplot2::geom_line() +
-  ggplot2::scale_linewidth_manual(values=c(1,0.25))+
-  ggplot2::scale_linetype_manual(values=c(1,2))
-ggplot2::ggsave("figures/SWFSC-mackerel-fishselectivity.png", width = 6.8, height = 5.25)
+#------Fishery selectivity (TBD)
+# sel_fishery <- output |> 
+#   dplyr::filter(module_name == "Selectivity", module_type == "AgeSpecific", module_id == 2) |> 
+#   dplyr::mutate(age = age_i - 1,
+#                 fims = boot::inv.logit(estimated)) |>
+#   dplyr::select(age, fims)
+# sel_fishery <- modfit$ageselex |>
+#   dplyr::filter(Yr >= 2008, Yr <= 2021, Fleet == 1, Factor == "Asel") |>
+#   # dplyr::select(Yr, `0`:`8`) |>
+#   tidyr::pivot_longer(cols = `0`:`8`, names_to = "age", values_to = "ss3") |>
+#   dplyr::mutate(age = as.numeric(age)) |>
+#   dplyr::select(Yr, age, ss3) |>
+#   dplyr::left_join(sel_fishery) |>
+#   tidyr::pivot_longer(cols = fims:ss3, names_to = "type", values_to = "Selectivity")
+# ggplot2::ggplot(
+#   sel_fishery,
+#   ggplot2::aes(x = as.numeric(age), y = Selectivity, color = type, group = interaction(type, Yr))
+# ) +
+#   ggplot2::geom_point() +
+#   ggplot2::geom_line() +
+#   ggplot2::scale_linewidth_manual(values=c(1,0.25))+
+#   ggplot2::scale_linetype_manual(values=c(1,2))
+# ggplot2::ggsave("figures/SWFSC-mackerel-fishselectivity.png", width = 6.8, height = 5.25)
 
 #------------------------------------------------------------------------
-#-----------Survey selectivity
-sel_survey <- output |> 
-  dplyr::filter(module_name == "Selectivity", module_type == "AgeSpecific", module_id == 1) |> 
-  dplyr::mutate(age = age_i - 1,
-                fims = boot::inv.logit(estimated)) |>
-  dplyr::select(age, fims)
-sel_survey <- modfit$ageselex |>
-  dplyr::filter(Yr >= 2008, Yr <= 2021, Fleet == 2, Factor == "Asel") |>
-  # dplyr::select(Yr, `0`:`8`) |>
-  tidyr::pivot_longer(cols = `0`:`8`, names_to = "age", values_to = "ss3") |>
-  dplyr::mutate(age = as.numeric(age)) |>
-  dplyr::select(Yr, age, ss3) |>
-  dplyr::left_join(sel_survey) |>
-  tidyr::pivot_longer(cols = fims:ss3, names_to = "type", values_to = "Selectivity")
-ggplot2::ggplot(
-  sel_survey,
-  ggplot2::aes(x = as.numeric(age), y = Selectivity, color = type, group = interaction(type, Yr))
-) +
-  ggplot2::geom_point() +
-  ggplot2::geom_line() +
-  ggplot2::scale_linewidth_manual(values=c(1,0.25))+
-  ggplot2::scale_linetype_manual(values=c(1,2))
-ggplot2::ggsave("figures/SWFSC-mackerel-survselectivity.png", width = 6.8, height = 5.25)
+#-----------Survey selectivity (TBD)
+# sel_survey <- output |> 
+#   dplyr::filter(module_name == "Selectivity", module_type == "AgeSpecific", module_id == 1) |> 
+#   dplyr::mutate(age = age_i - 1,
+#                 fims = boot::inv.logit(estimated)) |>
+#   dplyr::select(age, fims)
+# sel_survey <- modfit$ageselex |>
+#   dplyr::filter(Yr >= 2008, Yr <= 2021, Fleet == 2, Factor == "Asel") |>
+#   # dplyr::select(Yr, `0`:`8`) |>
+#   tidyr::pivot_longer(cols = `0`:`8`, names_to = "age", values_to = "ss3") |>
+#   dplyr::mutate(age = as.numeric(age)) |>
+#   dplyr::select(Yr, age, ss3) |>
+#   dplyr::left_join(sel_survey) |>
+#   tidyr::pivot_longer(cols = fims:ss3, names_to = "type", values_to = "Selectivity")
+# ggplot2::ggplot(
+#   sel_survey,
+#   ggplot2::aes(x = as.numeric(age), y = Selectivity, color = type, group = interaction(type, Yr))
+# ) +
+#   ggplot2::geom_point() +
+#   ggplot2::geom_line() +
+#   ggplot2::scale_linewidth_manual(values=c(1,0.25))+
+#   ggplot2::scale_linetype_manual(values=c(1,2))
+# ggplot2::ggsave("figures/SWFSC-mackerel-survselectivity.png", width = 6.8, height = 5.25)
 
 #------------------------------------------------------------------------
 #-----------Survey catchability
-surv_yrs <- c()
-surv_q <- output |> 
-  dplyr::filter(label == "log_q", module_id == 1) |>
-  dplyr::mutate(fims = exp(estimate)) |>
-  dplyr::select(fims)
+#ss3
 surv_q <- modfit$cpue |>
-  dplyr::select(Year = Yr, ss3 = Calc_Q) |>
-  cbind(surv_q) |>
-  tidyr::pivot_longer(cols = ss3:fims, values_to = "Catchability", names_to = "type")
+  dplyr::select(Year = Yr, ss3 = Calc_Q)
+
+# fims_singleQ
+qest <- output_constQ |> 
+  dplyr::filter(label == "log_q", module_id == 1) |>
+  dplyr::mutate(q = exp(estimate)) |>
+  dplyr::pull(q)
+surv_q <- data.frame(Year = years, fims_singleQ = rep(qest, 14)) |>
+  dplyr::left_join(surv_q)
+
+# fims_annualQ
+surv_q <- output_annualQ |> 
+  dplyr::filter(label == "log_q", module_id == 1) |>
+  dplyr::mutate(
+    Year = years,
+    fims_annualQ = exp(estimate)) |>
+  dplyr::select(Year, fims_annualQ) |>
+  dplyr::left_join(surv_q)
+
+# fims_fixannualQ
+surv_q <- output_fixannualQ |> 
+  dplyr::filter(label == "log_q", module_id == 1) |>
+  dplyr::mutate(
+    Year = years,
+    fims_fixannualQ = exp(estimate)) |>
+  dplyr::select(Year, fims_fixannualQ) |>
+  dplyr::left_join(surv_q)
+
+# fims_custannualQ
+surv_q <- data.frame(Year = years,
+                     fims_custannualQ = exp(c(rep(sd_report_cust$par.fixed[2], 4),
+                                              sd_report_cust$par.fixed[3:6],
+                                              rep(sd_report_cust$par.fixed[7], 6)))) |>
+  dplyr::left_join(surv_q)
+
+# re-organize all
+surv_q <- surv_q |>
+  tidyr::pivot_longer(cols = ss3:fims_custannualQ, values_to = "Catchability", names_to = "type")
 
 surv_q |>
   dplyr::filter(Year >= 2008, Year <= 2022) |>
+    dplyr::group_by(type) |>
+  dplyr::filter(!is.na(Catchability)) |>
+  dplyr::ungroup() |>
   ggplot2::ggplot(ggplot2::aes(x = Year, y = Catchability, group = type, color = type)) +
   ggplot2::theme_bw() +
   ggplot2::geom_point() +
@@ -754,20 +1022,50 @@ bio_ss3 <- data.frame(Type = "Summary biomass",
                       ss3 = age1plus |> dplyr::filter(year %in% c(2020, 2021, 2022)) |> dplyr::pull(ss3))
 ss3_smry <- rbind(parm_ss3, bio_ss3)
 
-#fims
-fims_M <- output |> dplyr::filter(label == "log_M", age_i == 1, year_i == 1) |> dplyr::pull(estimate) |> exp() |> round(3)
-fims_lnR0 <- output |> dplyr::filter(label == "log_rzero") |> dplyr::pull(estimate) |> round(3)
-fims_steep <- output |> dplyr::filter(label == "logit_steep") |> dplyr::pull(estimate) |> boot::inv.logit() |> round(3)
+#fims_singleQ
+fims_M <- output_constQ |> dplyr::filter(label == "log_M", age_i == 1, year_i == 1) |> dplyr::pull(estimate) |> exp() |> round(3)
+fims_lnR0 <- output_constQ |> dplyr::filter(label == "log_rzero") |> dplyr::pull(estimate) |> round(3)
+fims_steep <- output_constQ |> dplyr::filter(label == "logit_steep") |> dplyr::pull(estimate) |> boot::inv.logit() |> round(3)
 fims_sigmaR <- update_parameters |> dplyr::filter(label == "log_sd") |> dplyr::pull(value) |> exp() |> round(3)
 parm_fims <- data.frame(Type = "Parameters",
                         Component = c("M", "ln(R0)", "Steepness", "SigmaR"),
-                        fims = c(fims_M, fims_lnR0, fims_steep, fims_sigmaR))
+                        fims_singleQ = c(fims_M, fims_lnR0, fims_steep, fims_sigmaR))
 bio_fims <- data.frame(Type = "Summary biomass",
                         Component = c("2020", "2021", "2022"),
-                        fims = age1plus |> dplyr::filter(year %in% c(2020, 2021, 2022)) |> dplyr::pull(fims))
-fims_smry <- rbind(parm_fims, bio_fims)
+                        fims_singleQ = age1plus_singleQ |> dplyr::filter(year %in% c(2020, 2021, 2022)) |> dplyr::pull(fims_singleQ))
+fims_smry_singleQ <- rbind(parm_fims, bio_fims)
 
-smry <- cbind(fims_smry, ss3_smry |> dplyr::select(ss3))
+#fims_annualQ
+fims_M <- output_annualQ |> dplyr::filter(label == "log_M", age_i == 1, year_i == 1) |> dplyr::pull(estimate) |> exp() |> round(3)
+fims_lnR0 <- output_annualQ |> dplyr::filter(label == "log_rzero") |> dplyr::pull(estimate) |> round(3)
+fims_steep <- output_annualQ |> dplyr::filter(label == "logit_steep") |> dplyr::pull(estimate) |> boot::inv.logit() |> round(3)
+fims_sigmaR <- update_parameters |> dplyr::filter(label == "log_sd") |> dplyr::pull(value) |> exp() |> round(3)
+parm_fims <- data.frame(Type = "Parameters",
+                        Component = c("M", "ln(R0)", "Steepness", "SigmaR"),
+                        fims_annualQ = c(fims_M, fims_lnR0, fims_steep, fims_sigmaR))
+bio_fims <- data.frame(Type = "Summary biomass",
+                        Component = c("2020", "2021", "2022"),
+                        fims_annualQ = age1plus_annualQ |> dplyr::filter(year %in% c(2020, 2021, 2022)) |> dplyr::pull(fims_annualQ))
+fims_smry_annualQ <- rbind(parm_fims, bio_fims)
+
+#fims_fixannualQ
+fims_M <- output_fixannualQ |> dplyr::filter(label == "log_M", age_i == 1, year_i == 1) |> dplyr::pull(estimate) |> exp() |> round(3)
+fims_lnR0 <- output_fixannualQ |> dplyr::filter(label == "log_rzero") |> dplyr::pull(estimate) |> round(3)
+fims_steep <- output_fixannualQ |> dplyr::filter(label == "logit_steep") |> dplyr::pull(estimate) |> boot::inv.logit() |> round(3)
+fims_sigmaR <- update_parameters |> dplyr::filter(label == "log_sd") |> dplyr::pull(value) |> exp() |> round(3)
+parm_fims <- data.frame(Type = "Parameters",
+                        Component = c("M", "ln(R0)", "Steepness", "SigmaR"),
+                        fims_fixannualQ = c(fims_M, fims_lnR0, fims_steep, fims_sigmaR))
+bio_fims <- data.frame(Type = "Summary biomass",
+                        Component = c("2020", "2021", "2022"),
+                        fims_fixannualQ = age1plus_fixannualQ |> dplyr::filter(year %in% c(2020, 2021, 2022)) |> dplyr::pull(fims_fixannualQ))
+fims_smry_fixannualQ <- rbind(parm_fims, bio_fims)
+
+
+smry <- cbind(ss3_smry |> dplyr::select(ss3),
+              fims_smry_singleQ |> dplyr::select(fims_singleQ), 
+              fims_smry_annualQ |> dplyr::select(fims_annualQ), 
+              fims_smry_fixannualQ |> dplyr::select(fims_fixannualQ))
 
 knitr::kable(smry)
 
@@ -787,18 +1085,43 @@ Model:
 Output:
 * Include estimated SRR log_sd (when log_devs are estimated using random_effects)
 
+## Still to do:
+* Troubleshoot discrepancy between FIMS estimates of SSB and Age-1+ Biomass (relative to SS3)
+  * Possible explanations:
+    * Nothing - it's actually fine
+    * Incorrect manual calculations of SmryBio
+    * Incorrect maturity curve specified somewhere
+* Finish diagnostic plots
+  * E.g., survey selectivity, fishery selectivity, rec_devs, total biomass
+* De-emphasize model fit to fishery selectivity and increase fit to survey selectivity
+  * E.g., decrease fishery agecomp weighting, add more fishery selectivity flexibility
+* Explore space for increased model flexibility
+  * E.g., w/ fixed Q, could I now estimate log_rzero and log_init_naa
+
 ## Ongoing questions
 
 * What's the status of being able to specify informative priors in FIMS?
+  * I think I need this for reasonable estimation of survey Q
+* When specifying random effects on log_devs, are there recommendations for fixing or estimating log_sd?
+* How can I extract estimated value of log_sd from model output?
 
 ## Model fitting takeaways
 
-* Model fitting benefits greatly with estimation of log_init_naa
+* Current best model is as follows:
+  * Only estimate the following: 
+    * log_init_naa
+    * log_sd (for RE rec_devs)
+    * log_q (likely fixed annual Q, to remove scaling issues and more closely match selectivity estimates)
+    * age-0 survey selectivity
+    * age-0 fishery selectivity
+* Model fitting benefits greatly with estimation of log_init_naa (relative to fitting ln(R0) instead)
   * This is closest analogue to estimating early ss3 rec_devs for non-equilibrium start
-* Difficulty in model convergence when estimating multiple paramters that affect scaling
+* Difficulty in model convergence when estimating multiple parameters that affect scaling
   * E.g., log_rzero, log_init_naa, and log_q
   * E.g., log_M, log_rzero, and log_q
   * E.g., log_M, log_init_naa, and log_q
+* Time-varying Q values have to be supplied for every year in input data for FIMS to run
+  * Estimating annual Q values for years without corresponding survey data will cause issues in identifiability
 
 ## What other model configurations were explored that may not have worked well?
 
