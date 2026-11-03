@@ -432,26 +432,17 @@ parameters <- default_parameters |>
         ),
         by = c("module_name", "label")
     ) |>
-    # change first reference age for sd values from 0 to 1
-    dplyr::mutate(
-    age = dplyr::if_else(
-      module_name == "Growth" &
-        label == "length_at_age_sd_at_reference_ages" &
-        age == 0,
-      1,
-      age
-    )) |>
     # Update SD of length-at-age (cm, not a CV) at the growth reference ages
     # If you want to look at what these parameters are, and how many there are, you can do the following:
     # default_parameters |> dplyr::filter(module_name == "Growth") |> dplyr::filter(label == "length_at_age_sd_at_reference_ages")
     dplyr::rows_update(
         tibble::tibble(
         module_name = "Growth",
-        label = "length_at_age_sd_at_reference_ages",
-        age = growth_reference_ages,
+        label = c("length_at_age_sd_young", "length_at_age_sd_old"),
+        age = NA_real_,
         value = length_sd_at_reference_ages
         ),
-        by = c("module_name", "label", "age")
+        by = c("module_name", "label")
     ) |>
     # Update Maturity parameters from the logistic fit to the SS3 maturity-at-age
     dplyr::rows_update(
