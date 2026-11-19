@@ -1,0 +1,209 @@
+# need to think about how to deal with multiple fleets, only using 1 right now
+get_asap_data <- function(asap_input) {
+  res <- data.frame(type = character(),
+                fleet = character(),
+                age = integer(),
+                timing = double(),
+                observed = double(),
+                unit = character(),
+                uncertainty = character())
+  years_in_model <- seq(asap_input$parms$styr, asap_input$parms$endyr)
+  
+  catch <- data.frame(type = "catch",
+                     fleet = "fishing",
+                     age = NA,
+                     timing = years_in_model,
+                     observed = as.numeric(asap_input$catch.obs[1,]),
+                     unit = "mt",
+                     # This was
+                     # asap_input$control.parms$catch.tot.cv[,1]
+                     # but it was just reset to the following later in the parameters so using internal functionality to set it now
+                     # uncertainty = rep(log(sqrt(log(as.numeric(mean(asap_input$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1))), asap_input[["parms"]][["nyears"]])
+                     uncertainty = paste0(
+                       "~dlnorm(meanlog = log_catch_expected, sdlog = ",
+                       rep(sqrt(log(as.numeric(mean(asap_input$control.parms$catch.tot.cv[,1], na.rm=TRUE)^2) + 1)), asap_input[["parms"]][["nyears"]]),
+                       ")"
+                     )
+  )
+  
+  # loop over all indices
+  for (i in seq(asap_input$parms$nindices)) {
+    index <- data.frame(
+      type = "index",
+      fleet = paste0("survey", i),
+      age = NA_integer_,
+      timing = years_in_model[asap_input$index.year.counter[[i]]],
+      observed = as.numeric(asap_input$index.obs[[i]]),
+      unit = "mt",
+      # uncertainty = rep(log(sqrt(log(as.numeric(mean(asap_input$index.cv[[i]], na.rm=TRUE)^2 + 1)))), asap_input[["parms"]][["nyears"]]))
+      uncertainty = paste0(
+        "~dlnorm(meanlog = log_index_expected, sdlog = ",
+        rep(
+          sqrt(log(as.numeric(mean(asap_input$index.cv[[i]], na.rm=TRUE)^2 + 1))),
+          length(asap_input$index.year.counter[[i]])
+        ),
+        ")"
+      )
+    )
+    if (i == 1){
+      allinds <- index
+    }else{
+      allinds <- rbind(allinds, index)
+    }
+  }
+  
+  catchage <- data.frame(
+    type = "age_comp",
+    fleet = "fishing",
+    age = rep(seq(1,asap_input$parms$nages), asap_input$parms$nyears),
+    timing = rep(seq(asap_input$parms$styr, asap_input$parms$endyr), each = asap_input$parms$nages),
+    observed = as.numeric(t(asap_input$catch.comp.mats$catch.fleet1.ob)),
+    unit = "proportion",
+    uncertainty = paste0(
+      "~dmultinom(prob = agecomp_proportion, size =",
+      rep(asap_input$fleet.catch.Neff.init[1,], each = asap_input$parms$nages),
+      ")"
+    )
+  )
+  
+  # loop over all indices
+  for (i in 1:asap_input$parms$nindices){
+    indexage <- data.frame(
+      type = "age_comp",
+      fleet = paste0("survey", i),
+      age = rep(seq(1,asap_input$parms$nages), asap_input$parms$nyears),
+      timing = rep(seq(asap_input$parms$styr, asap_input$parms$endyr), each = asap_input$parms$nages),
+      observed = as.numeric(t(asap_input$index.comp.mats[[i*2-1]])),
+      unit = "proportion",
+      uncertainty = paste0(
+        "~dmultinom(prob = agecomp_proportion, size = ",
+        rep(asap_input$index.Neff.init[i,], each = asap_input$parms$nages),
+        ")"
+      )
+    )
+    if (i == 1){
+      allindsage <- indexage
+    }else{
+      allindsage <- rbind(allindsage, indexage)
+    }
+  }
+  
+  # Weight at age is in asap_input$WAA.mats$WAA.catch.all but for yellowtail the data
+  # is time-invariant. Could just use the first row but the code below shows how
+  # to use values for every year/age combination. Additionally, it adds the
+  # extra year of data needed for FIMS to predict spawning biomass after all
+  # catches are removed
+  weight_at_age_matrix <- rbind(
+      asap_input[["WAA.mats"]][["WAA.catch.all"]],
+      asap_input[["WAA.mats"]][["WAA.catch.all"]][
+        NROW(asap_input[["WAA.mats"]][["WAA.catch.all"]]), 
+      ]
+    )
+  
+  weight_at_age <- data.frame(
+    type = "weight_at_age",
+    fleet = NA_character_,
+    age = rep(
+      seq(asap_input[["parms"]][["nages"]]),
+      length(seq(asap_input[["parms"]][["styr"]], asap_input[["parms"]][["endyr"]] + 1))
+    ),
+    timing = rep(
+      seq(asap_input[["parms"]][["styr"]], asap_input[["parms"]][["endyr"]] + 1),
+      each = asap_input[["parms"]][["nages"]]
+    ),
+    observed = c(t(weight_at_age_matrix)),
+    unit = "mt",
+    uncertainty = NA_character_
+  )
+
+  res <- rbind(res, catch, allinds, catchage, allindsage, weight_at_age)
+  return(res)
+}
+
+
+#' Convert ASAP model output to stockplotr output
+#'
+#' @param report A dat object from an ASAP model
+#' @return
+#' A data frame.
+convert_output_asap <- function(report) {
+  years <- seq(report$parms$styr, report$parms$endyr)
+  # TODO: Figure out structure of this when there is > 1 fleet
+  catch <- data.frame(
+    module_name = "Fleet",
+    # TODO: Change to actual fleet names
+    fleet = "fishing",
+    # TODO: Change the label to expected and add uncertainty
+    label = "landings_observed",
+    year = as.numeric(dimnames(report$catch.pred)[[2]]),
+    estimate = c(report$catch.pred),
+    estimation_type = "derived_quantity",
+    unit = "mt"
+  )
+  index <- data.frame(
+    module_name = "Fleet",
+    label = "index_expected",
+    year = unlist(report$index.year),
+    estimate = stack(report$index.pred),
+    estimation_type = "derived_quantity"
+  ) |>
+    dplyr::rename(
+      estimate = "estimate.values",
+      fleet = "estimate.ind"
+    )
+  index_observed <- index |>
+    dplyr::mutate(
+      label = "index_observed",
+      estimate = unlist(report$index.obs)
+    )
+  spawning_biomass <- data.frame(
+    module_name = "Population",
+    label = "spawning_biomass",
+    year = years,
+    estimate = report$SSB * 0.5,
+    estimation_type = "derived_quantity",
+    unit = "mt"
+  )
+  expected_recruitment <- data.frame(
+    module_name = "Population",
+    label = "predicted_recruitment",
+    year = years,
+    estimate = as.numeric(report$N.age[, 1]),
+    estimation_type = "derived_quantity",
+    unit = "numbers"
+  )
+  # I don't know the structure of F.report when more than one fleet is present
+  log_Fmort <- data.frame(
+    module_name = "Fleet",
+    fleet = "fishing",
+    label = "log_fishing_mortality",
+    type = "vector",
+    year = years,
+    estimate = log(report$F.report),
+    estimation_type = "fixed_effects"
+  )
+  log_init_naa <- data.frame(
+    module_name = "Population",
+    label = "log_init_naa",
+    type = "vector",
+    age_i = rep(
+      seq(NCOL(report$N.age)),
+      NROW(report$N.age)
+    ),
+    year = as.numeric(rep(
+      row.names(report$N.age),
+      each = NCOL(report$N.age)
+    )),
+    estimate = log(c(t(report$N.age))),
+    estimation_type = "fixed_effects"
+  )
+  dplyr::bind_rows(
+    catch, index, index_observed,
+    spawning_biomass, expected_recruitment, log_Fmort, log_init_naa
+  ) |>
+    dplyr::mutate(
+      uncertainty = NA_real_,
+      uncertainty_label = "se",
+      era = "time"
+    )
+}

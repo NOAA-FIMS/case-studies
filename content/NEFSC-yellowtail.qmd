@@ -170,209 +170,37 @@ report <- get_report(fit)
 ```{r}
 #| label: comparison-plots
 
-convert_output_asap <- function(report, fleets) {
-  years <- seq(report$parms$styr, report$parms$endyr)
-  catch <- data.frame(
-    module_name = "Fleet",
-    module_id = rep(seq(NROW(report$catch.pred)), each = length(years)),
-    label = "catch_expected",
-    year_i = rep(seq(NCOL(report$catch.pred)), NROW(report$catch.pred)),
-    estimate = c(report$catch.pred),
-    estimation_type = "derived_quantity"
-  )
-  index <- data.frame(
-    module_name = "Fleet",
-    module_id = rep(seq(report$index.pred) + NROW(report$catch.pred), each = length(years)),
-    label = "indices_expected",
-    year_i = unlist(report$index.year.counter),
-    estimate = unlist(report$index.pred),
-    estimation_type = "derived_quantity"
-  )
-  index_observed <- index |>
+output_asap <- convert_output_asap(rdat)
+output_original <- convert_output_asap(orig)
+output_fims <- stockplotr::convert_output(output, model = "fims")
+output_combined <- dplyr::bind_rows(
+  .id = "model",
+  "ASAP" = output_asap,
+  "FIMS" = output_fims,
+  "ASAP_original" = output_original
+)
+stockplotr::plot_spawning_biomass(output_combined, group = "model")
+stockplotr::plot_recruitment(output_combined, facet = "model")
+# TODO: ask Chris which surveys map to old survey names
+stockplotr::plot_index(output_combined)
+stockplotr::plot_landings(output_combined, group = "model")
+stockplotr::plot_fishing_mortality(
+  output_combined |>
     dplyr::mutate(
-      label = "indices_observed",
-      estimate = unlist(report$index.obs)
-    )
-  spawning_biomass <- data.frame(
-    module_name = "Population",
-    label = "spawning_biomass",
-    year_i = seq(years),
-    estimate = report$SSB * 0.5,
-    estimation_type = "derived_quantity"
-  )
-  expected_recruitment <- data.frame(
-    module_name = "Population",
-    label = "expected_recruitment",
-    year_i = seq(years),
-    estimate = as.numeric(report$N.age[, 1]),
-    estimation_type = "derived_quantity"
-  )
-  # I don't know the structure of F.report when more than one fleet is present
-  log_Fmort <- data.frame(
-    module_name = "Fleet",
-    module_id = 1,
-    label = "log_Fmort",
-    type = "vector",
-    year_i = seq(years),
-    estimate = log(report$F.report),
-    estimation_type = "fixed_effects"
-  )
-  log_init_naa <- data.frame(
-    module_name = "Population",
-    label = "log_init_naa",
-    type = "vector",
-    age_i = rep(
-      seq(NCOL(report$N.age)),
-      NROW(report$N.age)
-    ),
-    year_i = rep(
-      seq(NROW(report$N.age)),
-      each = NCOL(report$N.age)
-    ),
-    estimate = log(c(t(report$N.age))),
-    estimation_type = "fixed_effects"
-  )
-  dplyr::bind_rows(
-    catch, index, index_observed,
-    spawning_biomass, expected_recruitment, log_Fmort, log_init_naa
-  ) |>
-    dplyr::left_join(
-      data.frame(
-        year = years,
-        year_i = seq(years)
+      estimate = dplyr::if_else(
+        .data$label == "log_fishing_mortality",
+        exp(estimate),
+        estimate
       ),
-      by = "year_i"
+      label = dplyr::if_else(
+        .data$label == "log_fishing_mortality",
+        "fishing_mortality",
+        .data$label
+      )
     ) |>
-    dplyr::mutate(
-      uncertainty = NA_real_,
-      uncertainty_label = "se",
-      fleet = as.character(factor(module_id, labels = fleets)),
-      era = "time"
-    )
-}
-output_asap <- convert_output_asap(rdat, get_fleets(data_4_model))
-output_fims <- output |>
-  dplyr::mutate(
-    uncertainty_label = "se",
-    year = year_i + FIMS::get_start_year(data_4_model) - 1,
-    estimate = estimated,
-    era = "time"
-  )
-stockplotr::plot_spawning_biomass(
-  list(
-    "ASAP" = output_asap,
-    "FIMS" = output_fims
-  )
+    dplyr::filter(estimate > exp(-200), label == "fishing_mortality"),
+  group = "model",
 )
-stockplotr::plot_recruitment(
-  list(
-    "ASAP" = output_asap,
-    "FIMS" = output_fims
-  ),
-  facet = "model"
-)
-
-# Not showing this plot because the hard-coded one is better
-# stockplotr::plot_indices(
-#   dat = list(
-#     "ASAP" = output_asap,
-#     "FIMS" = dplyr::mutate(output_fims,
-#       label = dplyr::if_else(label == "index_expected", "indices_expected", label),
-#       fleet = as.character(factor(module_id, labels = get_fleets(data_4_model)))
-#     ) |>
-#       dplyr::filter(!is.na(observed))
-#   )
-# )
-
-mycols <- c("FIMS" = "blue", "ASAP" = "red", "ASAP_orig" = "darkgreen")
-for (i in seq(rdat$parms$nindices)) {
-  index_results <- data.frame(
-    survey = i,
-    year = years,
-    observed = rdat$index.obs[[i]],
-    FIMS = report$index_expected[[rdat$parms$nfleet+i]],
-    ASAP = rdat$index.pred[[i]]
-  )
-  if (i==1){
-    allinds_results <- index_results
-  }else{
-    allinds_results <- rbind(allinds_results, index_results)
-  }
-}
-#print(allinds_results)
-
-comp_index <- ggplot2::ggplot(allinds_results, ggplot2::aes(x = year, y = observed)) +
-  ggplot2::geom_point() +
-  ggplot2::geom_line(ggplot2::aes(x = year, y = FIMS), color = "blue") +
-  ggplot2::geom_line(ggplot2::aes(x = year, y = ASAP), color = "red") +
-  ggplot2::facet_wrap(~survey, scales = "free_y", nrow = 2) +
-  ggplot2::xlab("Year") +
-  ggplot2::ylab("Index") +
-  ggplot2::ggtitle("Blue=FIMS, Red=ASAP") +
-  ggplot2::theme_bw()
-print(comp_index)
-
-catch_results <- data.frame(
-  observed = get_data(data_4_model) |>
-    dplyr::filter(type == "catch", fleet == "fishery") |>
-    dplyr::pull(observed),
-  FIMS = report$catch_expected[[1]],
-  ASAP = as.numeric(rdat$catch.pred[1,])
-)
-#print(catch_results)
-
-comp_catch <- ggplot2::ggplot(catch_results, ggplot2::aes(x = years, y = observed)) +
-  ggplot2::geom_point() +
-  ggplot2::xlab("Year") +
-  ggplot2::ylab("Catch (mt)") +
-  ggplot2::geom_line(ggplot2::aes(x = years, y = FIMS), color = "blue") +
-  ggplot2::geom_line(ggplot2::aes(x = years, y = ASAP), color = "red") +
-  ggplot2::ggtitle("Blue=FIMS, Red=ASAP") +
-  ggplot2::theme_bw()
-print(comp_catch)
-
-pop_results <- data.frame(
-  Year = c(years, max(years)+1, years, years, years, years, max(years)+1, years),
-  Metric = c(rep("Spawning biomass", 2*get_n_years(data_4_model)+1), rep("Fishing mortality", 2*get_n_years(data_4_model)), rep("Recruitment", 2*get_n_years(data_4_model)+1)),
-  Model = c(rep("FIMS", get_n_years(data_4_model)+1), rep("ASAP", get_n_years(data_4_model)), rep(c("FIMS", "ASAP"), each = get_n_years(data_4_model)), 
-             rep("FIMS", get_n_years(data_4_model)+1), rep("ASAP", get_n_years(data_4_model))),
-  Value = c(
-    report$spawning_biomass[[1]],
-    rdat$SSB / 2,
-    output |>
-      dplyr::filter(label == "log_Fmort", module_id == 1) |>
-      dplyr::pull(estimated) |>
-      exp(),
-    rdat$F.report,
-    report$expected_recruitment[[1]],
-    as.numeric(rdat$N.age[,1])
-  )
-)
-#print(pop_results)
-
-ggplot2::ggplot(dplyr::filter(pop_results, Year <=2019), ggplot2::aes(x=Year, y=Value, color=Model)) +
-  ggplot2::geom_line() +
-  ggplot2::facet_wrap(~Metric, ncol=1, scales = "free_y") +
-  ggplot2::theme_bw() +
-  ggplot2::scale_color_manual(values = mycols)
-
-orig_years <- seq(orig$parms$styr, orig$parms$endyr)
-orig_pop_results <- data.frame(
-  Year = rep(orig_years, 3),
-  Metric = rep(c("Spawning biomass", "Fishing mortality", "Recruitment"), each = length(orig_years)),
-  Model = "ASAP_orig",
-  Value = c(orig$SSB / 2, orig$F.report, as.numeric(orig$N.age[,1]))
-)
-
-pop_results_3 <- rbind(pop_results, orig_pop_results)
-#print(pop_results_3)
-
-comp_FRSSB3 <- ggplot2::ggplot(pop_results_3, ggplot2::aes(x=Year, y=Value, color=Model)) +
-  ggplot2::geom_line() +
-  ggplot2::facet_wrap(~Metric, ncol=1, scales = "free_y") +
-  ggplot2::theme_bw() +
-  ggplot2::scale_color_manual(values = mycols)
-print(comp_FRSSB3)
 
 FIMS_naa_results <- data.frame(
   Year = rep(c(years, max(years)+1), each = get_n_ages(data_4_model)),
@@ -381,7 +209,6 @@ FIMS_naa_results <- data.frame(
   Model = "FIMS",
   Value = report$numbers_at_age[[1]]
 )
-
 ASAP_naa_results <- data.frame(
   Year = rep(years, each = get_n_ages(data_4_model)),
   Age = rep(get_ages(data_4_model), get_n_years(data_4_model)),
@@ -389,7 +216,6 @@ ASAP_naa_results <- data.frame(
   Model = "ASAP",
   Value = as.numeric(t(rdat$N.age))
 )
-
 orig_naa_results <- data.frame(
   Year = rep(orig_years, each = get_n_ages(data_4_model)),
   Age = rep(get_ages(data_4_model), length(orig_years)),
@@ -397,16 +223,33 @@ orig_naa_results <- data.frame(
   Model = "ASAP_orig",
   Value = as.numeric(t(orig$N.age))
 )
-naa_results <- rbind(FIMS_naa_results, ASAP_naa_results, orig_naa_results)
-#print(naa_results)
-
-comp_naa3 <- ggplot2::ggplot(dplyr::filter(naa_results, Year <= 2019), ggplot2::aes(x=Year, y=Value, color=Model)) +
+comp_naa3 <- ggplot2::ggplot(
+  dplyr::filter(
+    rbind(FIMS_naa_results, ASAP_naa_results, orig_naa_results),
+    Year <= 2019
+  ),
+  ggplot2::aes(x=Year, y=Value, color=Model)
+) +
   ggplot2::geom_line() +
   ggplot2::facet_wrap(~Age, ncol=1, scales = "free_y") +
   ggplot2::ylab("NAA") +
-  ggplot2::theme_bw() +
-  ggplot2::scale_color_manual(values = mycols)
+  ggplot2::theme_bw()
 print(comp_naa3)
+```
+
+```{r}
+#| label: residual-figures
+stockplotr::plot_abundance_at_age(
+  output_fims,
+  # TODO: fix unit to be internal
+  # Add abundance at age to ASAP output
+  unit = "mt"
+)
+
+# TODO: turn this plot on when available in main
+# stockplotr::plot_composition_residuals(
+#   output_fims
+# )
 ```
 
 ## Comparison table
