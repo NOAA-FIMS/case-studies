@@ -202,6 +202,7 @@ stockplotr::plot_fishing_mortality(
   group = "model",
 )
 
+orig_years <- seq(orig$parms$styr, orig$parms$endyr)
 FIMS_naa_results <- data.frame(
   Year = rep(c(years, max(years)+1), each = get_n_ages(data_4_model)),
   Age = rep(get_ages(data_4_model), get_n_years(data_4_model)+1),
@@ -238,7 +239,9 @@ print(comp_naa3)
 ```
 
 ```{r}
+#| eval: false
 #| label: residual-figures
+# TODO: turn these plots on when available in main
 stockplotr::plot_abundance_at_age(
   output_fims,
   # TODO: fix unit to be internal
@@ -246,10 +249,9 @@ stockplotr::plot_abundance_at_age(
   unit = "mt"
 )
 
-# TODO: turn this plot on when available in main
-# stockplotr::plot_composition_residuals(
-#   output_fims
-# )
+stockplotr::plot_composition_residuals(
+  output_fims
+)
 ```
 
 ## Comparison table
