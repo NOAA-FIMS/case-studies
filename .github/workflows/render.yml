@@ -17,6 +17,9 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  RENV_CONFIG_AUTOLOADER_ENABLED: "FALSE"
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -58,6 +61,7 @@ jobs:
         with:
           pak-version: stable
           cache: true
+          cache-version: 2
           packages: |
             cran::rmarkdown
             cran::knitr
