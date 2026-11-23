@@ -51,7 +51,25 @@ jobs:
             libgit2-dev \
             libnode-dev \
             libx11-dev \
+            libblas-dev \
+            liblapack-dev \
+            gfortran \
             pandoc
+
+      - name: Install JAGS 5.0.2
+        shell: bash
+        run: |
+          version=5.0.2
+          archive="$RUNNER_TEMP/JAGS-${version}.tar.gz"
+          curl -fsSL "https://downloads.sourceforge.net/project/mcmc-jags/JAGS/5.x/Source/JAGS-${version}.tar.gz" -o "$archive"
+          echo "80143E23FC6FECA01D4CCE440FD8F6AA865A03333ED36BAF9E0CE30A8F9E3AEA  $archive" | sha256sum --check
+          tar -xzf "$archive" -C "$RUNNER_TEMP"
+          cd "$RUNNER_TEMP/JAGS-${version}"
+          ./configure --prefix=/usr/local
+          make -j"$(nproc)"
+          sudo make install
+          sudo ldconfig
+          test "$(pkg-config --modversion jags)" = "$version"
 
       - name: Set up R package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
