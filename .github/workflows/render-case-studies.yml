@@ -5,13 +5,11 @@ on:
     branches: [ main ]
     paths:
       - "content/**"
-      - "renv.lock"
       - ".github/workflows/render-case-studies.yml"
   pull_request:
     branches: [ main ]
     paths:
       - "content/**"
-      - "renv.lock"
       - ".github/workflows/render-case-studies.yml"
   workflow_dispatch:
   schedule:
@@ -20,9 +18,6 @@ on:
 permissions:
   contents: read
   actions: write
-
-env:
-  RENV_CONFIG_AUTOLOADER_ENABLED: "FALSE"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

@@ -40,10 +40,7 @@ If needed for use, `reshape2` will need to be install on the R terminal using `i
 
 ## R package dependencies
 
-- If this repository includes a `renv.lock` file, use `{renv}` to install and activate packages:
-  - `install.packages("renv")`
-  - `renv::restore()`
-- If you are not using `{renv}`, you can install the same R package list used by CI without manually copying package names:
+Install the same R package list used by CI without manually copying package names:
 
 ```r
 install.packages(c("pak", "yaml"))
