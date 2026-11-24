@@ -9,13 +9,13 @@ If you want to run a FIMS model and don't know where to start, you can submit yo
 <!-- TABLE_START -->
 Stock | Previous Model | Status | Notable Features |
 -- | -- | -- | --
-AFSC GOA walleye pollock | AFSC custom ADMB model | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | Bayesian
+AFSC GOA walleye pollock | AFSC custom ADMB model | ![Status](https://img.shields.io/badge/Status-failing-red) | Bayesian
 NEFSC yellowtail Flounder | ASAP | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
-NWFSC petrale | SS3 | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
-pacific hake | SS3 | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | Bayesian
-PIFSC Opakapaka | SS3 | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
-SEFSC scamp | BAM | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
-SWFSC sardine | SS3 | ![Status](https://img.shields.io/badge/Status-working-brightgreen) | 
+NWFSC petrale | SS3 | ![Status](https://img.shields.io/badge/Status-failing-red) | 
+pacific hake | SS3 | ![Status](https://img.shields.io/badge/Status-failing-red) | Bayesian
+PIFSC Opakapaka | SS3 | ![Status](https://img.shields.io/badge/Status-failing-red) | 
+SEFSC scamp | BAM | ![Status](https://img.shields.io/badge/Status-failing-red) | 
+SWFSC sardine | SS3 | ![Status](https://img.shields.io/badge/Status-failing-red) | 
 <!-- TABLE_END -->
 
 ## How to add a case study
